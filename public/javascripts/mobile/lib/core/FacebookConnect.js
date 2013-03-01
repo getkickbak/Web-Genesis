@@ -151,9 +151,10 @@
 // **************************************************************************
 Genesis.fb =
 {
+   titleMsg : 'Facebook Connect',
    fbScope : ['email', 'user_birthday', 'publish_stream', 'read_friendlists', 'publish_actions'],
    fbConnectErrorMsg : 'Cannot retrive Facebook account information!',
-   fbConnectRequestMsg : 'By enabling Facebook connectivity, you will be received additional reward points everytime we update your KICKBAK activity to your Facebook account!',
+   fbConnectRequestMsg : 'By connecting to Facebook, you will be received additional Reward Pts everytime we update your KICKBAK activity to your Facebook account!',
    //   fbConnectRequestMsg : 'Would you like to update your Facebook Timeline?',
    fbConnectReconnectMsg : 'Please confirm to Reconnect to Facebook',
    connectingToFBMsg : 'Connecting to Facebook ...',
@@ -208,7 +209,7 @@ Genesis.fb =
          {
             Ext.device.Notification.show(
             {
-               title : 'Facebook Connect',
+               title : me.titleMsg,
                message : me.friendsRetrieveErrorMsg,
                buttons : ['Cancel', 'Relogin'],
                callback : function(button)
@@ -261,19 +262,17 @@ Genesis.fb =
             // Even if the UpdateFbLogin failed (!operation.wasSuccessful()),
             // we should still allow them to do Facebook related activities ...
             //
-            if (params)
-            {
-               cb(params, operation);
-            }
-            else if (!me.cb['supress'])
+            cb(params, operation);
+            if (!me.cb['supress'])
             {
                Ext.device.Notification.show(
                {
-                  title : 'Facebook Connect',
-                  message : me.fbConnectFailMsg
+                  title : me.titleMsg,
+                  message : me.fbConnectFailMsg,
+                  buttons : ['Dismiss']
                });
             }
-         }, me, [callback], true) : Ext.emptyFn,
+         }, null, [callback], true) : Ext.emptyFn,
          supress : supress,
          iter : 0
       }
@@ -301,14 +300,14 @@ Genesis.fb =
                appId : "" + _appId
             }, Ext.bind(me.facebook_loginCallback, me));
          };
-         
+
          if (!me.cb['supress'])
          {
             var buttons = (db['enableFB']) ? ['Confirm', 'Cancel'] : ['OK', 'Cancel'];
             message = message || ((db['enableFB']) ? me.fbConnectReconnectMsg : me.fbConnectRequestMsg);
             Ext.device.Notification.show(
             {
-               title : 'Facebook Connect',
+               title : me.titleMsg,
                message : message,
                buttons : buttons,
                callback : function(btn)
@@ -316,6 +315,10 @@ Genesis.fb =
                   if (btn.toLowerCase() == buttons[0].toLowerCase())
                   {
                      fbConnect();
+                  }
+                  else
+                  {
+                     me.cb['callback'](null, null);
                   }
                }
             });
@@ -347,7 +350,7 @@ Genesis.fb =
          {
             Ext.device.Notification.show(
             {
-               title : 'Facebook Connect',
+               title : me.titleMsg,
                message : me.fbConnectErrorMsg,
                buttons : ['Try Again', 'Continue'],
                callback : function(btn)

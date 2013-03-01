@@ -2,7 +2,7 @@ Ext.define('Genesis.controller.client.Settings',
 {
    extend : 'Genesis.controller.SettingsBase',
    settingsTitle : 'Account Settings',
-   enableFBMsg : 'By enabling Facebook connectivity, you will be received additional reward points everytime we update your KICKBAK activity to your Facebook account!',
+   enableFBMsg : 'By connecting to Facebook, you will be received additional Reward Pts everytime we update your KICKBAK activity to your Facebook account!',
    disableFBMsg : '',
    enableTwitterMsg : 'By enabling Twitter connectivity, you will be received additional reward points everytime we update your KICKBAK activity to their site!',
    disableTwitterMsg : '',
@@ -325,7 +325,7 @@ Ext.define('Genesis.controller.client.Settings',
             Ext.Viewport.setMasked(null);
             if (!params || ((operation && !operation.wasSuccessful())))
             {
-               if (me.getSettingsPage().isVisible())
+               if (!me.getSettingsPage().isHidden())
                {
                   toggle.toggle();
                }
@@ -334,27 +334,27 @@ Ext.define('Genesis.controller.client.Settings',
             {
                toggle.originalValue = newValue;
                /*
-               if (!db['enableTwitter'])
-               {
-                  Ext.device.Notification.show(
-                  {
-                     title : me.settingsTitle,
-                     message : me.enableFBMsg,
-                     buttons : ['Dismiss'],
-                     callback : function()
-                     {
-                        updateFBSettings(params);
-                     }
-                  });
-               }
-               else
-               */
+                if (!db['enableTwitter'])
+                {
+                Ext.device.Notification.show(
+                {
+                title : me.settingsTitle,
+                message : me.enableFBMsg,
+                buttons : ['Dismiss'],
+                callback : function()
+                {
+                updateFBSettings(params);
+                }
+                });
+                }
+                else
+                */
                {
                   updateFBSettings(params);
                }
                me.updateAccountInfo();
             }
-         }, false);
+         }, db['enableTwitter']);
       }
       else if (db['enableFB'])
       {
@@ -390,7 +390,7 @@ Ext.define('Genesis.controller.client.Settings',
                      Genesis.fb.facebook_onLogout(null, true);
                   }
                }
-               else if (me.getSettingsPage().isVisible())
+               else if (!me.getSettingsPage().isHidden())
                {
                   toggle.toggle();
                }
@@ -438,7 +438,7 @@ Ext.define('Genesis.controller.client.Settings',
                      message : me.twitterUnconfiguredMsg,
                      buttons : ['Dismiss']
                   });
-                  if (me.getSettingsPage().isVisible())
+                  if (!me.getSettingsPage().isHidden())
                   {
                      toggle.toggle();
                   }

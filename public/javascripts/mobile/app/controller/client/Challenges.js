@@ -146,8 +146,7 @@ Ext.define('Genesis.controller.client.Challenges',
       {
          errorMsg = Genesis.constants.addCRLF() + errors;
       }
-      else
-      if (Ext.isObject(errors))
+      else if (Ext.isObject(errors))
       {
          errorMsg = Genesis.constants.addCRLF() + errors.statusText;
       }
@@ -401,8 +400,7 @@ Ext.define('Genesis.controller.client.Challenges',
       {
          me.sendEmailIOS(qrcode, emailTpl, subject);
       }
-      else
-      if (Ext.os.is('Android'))
+      else if (Ext.os.is('Android'))
       {
          me.sendEmailAndroid(qrcode, emailTpl, subject);
       }
@@ -1278,31 +1276,34 @@ Ext.define('Genesis.controller.client.Challenges',
       {
          Genesis.fb.facebook_onLogin(function(params)
          {
-            console.log("Accessing Camera Plugin ...");
-            Ext.Viewport.setMasked(null);
-            Ext.Viewport.setMasked(
+            if (params)
             {
-               xtype : 'loadmask',
-               message : me.cameraAccessMsg
-            });
+               console.log("Accessing Camera Plugin ...");
+               Ext.Viewport.setMasked(null);
+               Ext.Viewport.setMasked(
+               {
+                  xtype : 'loadmask',
+                  message : me.cameraAccessMsg
+               });
 
-            Ext.device.Camera.capture(
-            {
-               success : me.onCameraSuccessFn,
-               failure : me.onCameraErrorFn,
-               scope : me,
-               quality : 49,
-               correctOrientation : true,
-               //correctOrientation : false,
-               //saveToPhotoAlbum : false,
-               destination : 'file',
-               source : sourceType,
-               allowEdit : false,
-               encoding : "jpeg",
-               width : 960,
-               height : 960
-               //targetHeight : 480
-            });
+               Ext.device.Camera.capture(
+               {
+                  success : me.onCameraSuccessFn,
+                  failure : me.onCameraErrorFn,
+                  scope : me,
+                  quality : 49,
+                  correctOrientation : true,
+                  //correctOrientation : false,
+                  //saveToPhotoAlbum : false,
+                  destination : 'file',
+                  source : sourceType,
+                  allowEdit : false,
+                  encoding : "jpeg",
+                  width : 960,
+                  height : 960
+                  //targetHeight : 480
+               });
+            }
          }, false, me.photoUploadFbReqMsg);
       }
       else

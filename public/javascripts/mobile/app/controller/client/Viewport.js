@@ -263,38 +263,41 @@ Ext.define('Genesis.controller.client.Viewport',
       //var db = Genesis.db.getLocaDB();
       Genesis.fb.facebook_onLogin(function(params)
       {
-         var venue = me.getVenue();
-         var merchant = venue.getMerchant();
-         var photoUrl = merchant.get('photo')['thumbnail_large_url'];
+         if (params)
+         {
+            var venue = me.getVenue();
+            var merchant = venue.getMerchant();
+            var photoUrl = merchant.get('photo')['thumbnail_large_url'];
 
-         console.log('Posting to Facebook ...');
-         FB.requestWithGraphPath('/me/feed',
-         {
-            name : venue.get('name'),
-            //link : href,
-            link : venue.get('website') || site,
-            caption : venue.get('website') || site,
-            description : venue.get('description'),
-            picture : photoUrl,
-            message : 'Check out this place!'
-         }, 'POST', function(response)
-         {
-            Ext.Viewport.setMasked(null);
-            if (!response || response.error || Ext.isString(response))
+            console.log('Posting to Facebook ...');
+            FB.requestWithGraphPath('/me/feed',
             {
-               console.log('Post was not published to Facebook.');
-            }
-            else
+               name : venue.get('name'),
+               //link : href,
+               link : venue.get('website') || site,
+               caption : venue.get('website') || site,
+               description : venue.get('description'),
+               picture : photoUrl,
+               message : 'Check out this place!'
+            }, 'POST', function(response)
             {
-               console.log(me.fbShareSuccessMsg);
-               Ext.device.Notification.show(
+               Ext.Viewport.setMasked(null);
+               if (!response || response.error || Ext.isString(response))
                {
-                  title : 'Facebook Connect',
-                  message : me.fbShareSuccessMsg,
-                  buttons : ['OK']
-               });
-            }
-         });
+                  console.log('Post was not published to Facebook.');
+               }
+               else
+               {
+                  console.log(me.fbShareSuccessMsg);
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Facebook Connect',
+                     message : me.fbShareSuccessMsg,
+                     buttons : ['OK']
+                  });
+               }
+            });
+         }
       }, true);
    },
    onInfoTap : function(b, e, eOpts, eInfo)

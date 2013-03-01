@@ -464,40 +464,43 @@ Ext.define('Genesis.controller.client.MainPage',
       Genesis.db.removeLocalDBAttrib('currFbId');
       Genesis.fb.facebook_onLogin(function(params)
       {
-         Customer['setFbLoginUrl']();
-         console.log("setFbLoginUrl - Logging in ...");
-         me.updatedDeviceToken = (Genesis.constants.device) ? true : false;
-         Ext.StoreMgr.get('CustomerStore').load(
+         if (params)
          {
-            jsonData :
+            Customer['setFbLoginUrl']();
+            console.log("setFbLoginUrl - Logging in ...");
+            me.updatedDeviceToken = (Genesis.constants.device) ? true : false;
+            Ext.StoreMgr.get('CustomerStore').load(
             {
-            },
-            params : Ext.apply(
-            {
-               device_pixel_ratio : window.devicePixelRatio,
-               device : Ext.encode(Genesis.constants.device)
-            }, params),
-            callback : function(records, operation)
-            {
-               me._loggingIn = false;
-               //
-               // Login Error, let the user login again
-               //
-               if (!operation.wasSuccessful())
+               jsonData :
                {
-                  //
-                  // If we are already in Login Page, reset all values
-                  //
-                  //Genesis.db.resetStorage();
-               }
-               else
+               },
+               params : Ext.apply(
                {
-                  Ext.Viewport.setMasked(null);
-                  Genesis.db.setLocalDBAttrib('enableFB', true);
-                  me.persistSyncStores('CustomerStore');
+                  device_pixel_ratio : window.devicePixelRatio,
+                  device : Ext.encode(Genesis.constants.device)
+               }, params),
+               callback : function(records, operation)
+               {
+                  me._loggingIn = false;
+                  //
+                  // Login Error, let the user login again
+                  //
+                  if (!operation.wasSuccessful())
+                  {
+                     //
+                     // If we are already in Login Page, reset all values
+                     //
+                     //Genesis.db.resetStorage();
+                  }
+                  else
+                  {
+                     Ext.Viewport.setMasked(null);
+                     Genesis.db.setLocalDBAttrib('enableFB', true);
+                     me.persistSyncStores('CustomerStore');
+                  }
                }
-            }
-         });
+            });
+         }
       }, true);
    },
    onCreateAccountTap : function(b, e, eOpts, eInfo)
