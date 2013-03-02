@@ -49,91 +49,93 @@
 		<div id="page-background">
 			<img src="http://files.getkickbak.com/v1/contentbg.png">
 		</div>
-		<div class="navbar navbar-fixed-top">
-			<div class="navbar-inner">
-				<div class="container">
-					<% if signed_in? %>
-					<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> <!----> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> <!----> </a>
-					<% end %>
-					<a class="brand" href="/">&#160;</a>
-					<% if signed_in? %>
-					<div class="nav-collapse">
-						<ul class="nav pull-right">
-							<li class="dropdown">
-								<!---->
-								<a href="#" class="dropdown-toggle" data-toggle="dropdown">Account <b class="caret"></b></a>
-								<ul class="dropdown-menu">
-									<li>
-										<a href="<%= account_path %>">Basic Info</a>
-									</li>
-									<li>
-										<a href="<%= account_password_path %>">Update Password</a>
-									</li>
-								</ul>
+		<div id="wrap">
+			<div id="header" class="navbar navbar-fixed-top">
+				<div class="navbar-inner">
+					<div class="container">
+						<% if signed_in? %>
+						<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> <!----> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> <!----> </a>
+						<% end %>
+						<a class="brand" href="/">&#160;</a>
+						<% if signed_in? %>
+						<div class="nav-collapse">
+							<ul class="nav pull-right">
+								<li class="dropdown">
+									<!---->
+									<a href="#" class="dropdown-toggle" data-toggle="dropdown">Account <b class="caret"></b></a>
+									<ul class="dropdown-menu">
+										<li>
+											<a href="<%= account_path %>">Basic Info</a>
+										</li>
+										<li>
+											<a href="<%= account_password_path %>">Update Password</a>
+										</li>
+									</ul>
+								</li>
+								<li class="">
+									<a href="<%= destroy_staff_session_path %>">Sign Out</a>
+								</li>
+							</ul>
+						</div>
+						<% end %>
+					</div>
+				</div>
+			</div>
+			<!--/navbar-->
+			<div class="subnavbar">
+				<% if signed_in? %>
+				<div class="subnavbar-inner">
+					<div class="container">
+						<ul class="mainnav">
+							<li>
+								<a href="<%= marketing_path %>"><i class="icon-rss"></i><span>Marketing</span></a>
 							</li>
-							<li class="">
-								<a href="<%= destroy_staff_session_path %>">Sign Out</a>
+							<li>
+								<a href="<%= merchants_path %>"><i class="icon-money"></i><span>Merchants</span></a>
+							</li>
+							<% if current_staff.role == 'admin' || current_staff.role == 'super_admin' %>
+							<li>
+								<a href="<%= users_path %>"><i class="icon-user"></i><span>Users</span></a>
+							</li>
+							<li>
+								<a href="<%= staffs_path %>"><i class="icon-user-md"></i><span>Staffs</span></a>
+							</li>
+							<li>
+								<a href="<%= resque_server_path %>"><i class="icon-reorder"></i> <span>Resque</span></a>
+							</li>
+							<% end %>
+						</ul>
+					</div>
+					<!-- /container -->
+				</div>
+				<!-- /subnavbar-inner -->
+				<% end %>
+			</div>
+			<!-- /subnavbar -->
+			<div name="top" class="container">
+				<div class="alert alert-warning fade hide">
+					<a class="close">x</a>
+				</div>
+				<div class="alert alert-error fade hide">
+					<a class="close">x</a>
+				</div>
+			</div>
+			<%= yield %>
+			<!-- Footer  -->
+			<% if signed_in? %>
+			<div id="footer" class="navbar navbar-fixed-bottom">
+				<div class="navbar-inner">
+					<div class="container">
+						<ul class="nav pull-left">
+							<li>
+								<a href="/">&copy; Copyright KICKBAK 2013</a>
 							</li>
 						</ul>
 					</div>
-					<% end %>
 				</div>
 			</div>
-		</div>
-		<!--/navbar-->
-		<div class="subnavbar">
-			<% if signed_in? %>
-			<div class="subnavbar-inner">
-				<div class="container">
-					<ul class="mainnav">
-						<li>
-							<a href="<%= marketing_path %>"><i class="icon-rss"></i><span>Marketing</span></a>
-						</li>
-						<li>
-							<a href="<%= merchants_path %>"><i class="icon-money"></i><span>Merchants</span></a>
-						</li>
-						<% if current_staff.role == 'admin' || current_staff.role == 'super_admin' %>
-						<li>
-							<a href="<%= users_path %>"><i class="icon-user"></i><span>Users</span></a>
-						</li>
-						<li>
-							<a href="<%= staffs_path %>"><i class="icon-user-md"></i><span>Staffs</span></a>
-						</li>
-						<li>
-							<a href="<%= resque_server_path %>"><i class="icon-reorder"></i> <span>Resque</span></a>
-						</li>
-						<% end %>
-					</ul>
-				</div>
-				<!-- /container -->
-			</div>
-			<!-- /subnavbar-inner -->
 			<% end %>
 		</div>
-		<!-- /subnavbar -->
-		<div name="top" class="container">
-			<div class="alert alert-warning fade hide">
-				<a class="close">x</a>
-			</div>
-			<div class="alert alert-error fade hide">
-				<a class="close">x</a>
-			</div>
-		</div>
-		<%= yield %>
-		<!-- Footer  -->
-		<% if signed_in? %>
-		<div class="navbar navbar-fixed-bottom">
-			<div class="navbar-inner">
-				<div class="container">
-					<ul class="nav pull-left">
-						<li>
-							<a href="/">&copy; Copyright KICKBAK 2013</a>
-						</li>
-					</ul>
-				</div>
-			</div>
-		</div>
-		<% end %>
 		<div class="modal fade" id="modalPopup">
 			<div class="modal-header">
 				<a class="close" data-dismiss="modal">&times;</a>
