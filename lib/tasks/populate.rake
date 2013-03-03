@@ -472,7 +472,8 @@ namespace :db do
           :data => String.random_alphanumeric(32),
           :data_expiry_ts => now,
           :points => challenge.points,
-          :created_ts => now
+          :created_ts => now,
+          :update_ts => now
         )
         challenge_record.merchant = merchant
         challenge_record.customer = customer
@@ -490,7 +491,7 @@ namespace :db do
         trans_record.customer = customer
         trans_record.user = user
         trans_record.save
-        if customer.visits == 1 && 
+        if customer.visits == 1
           signup_record = EarnRewardRecord.new(
             :type => :signup,
             :venue_id => venues[rand(2)].id,
@@ -524,7 +525,8 @@ namespace :db do
           :data_expiry_ts => now,
           :points => (amount / merchant.reward_model.price_per_point).to_i,
           :amount => amount,
-          :created_ts => now
+          :created_ts => now,
+          :update_ts => now
         )
         purchase_record.merchant = merchant
         purchase_record.customer = customer
@@ -549,7 +551,8 @@ namespace :db do
           :type => :game,
           :venue_id => venues[rand(2)].id,
           :points => (amount / merchant.reward_model.price_per_prize_point).to_i,
-          :created_ts => now
+          :created_ts => now,
+          :update_ts => now
         )
         prize_record.merchant = merchant
         prize_record.customer = customer
