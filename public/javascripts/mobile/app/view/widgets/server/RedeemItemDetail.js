@@ -69,9 +69,7 @@ Ext.define('Genesis.view.widgets.server.RedeemItemDetail',
                defaultUnit : 'em',
                html : (function()//Send
                {
-                  return 'Please Swipe TAG or' + Genesis.constants.addCRLF() + //
-                  'Tap Mobile Device or' + Genesis.constants.addCRLF() + //
-                  'Enter Phone Number';
+                  return 'Tap your Mobile Device onto the Terminal' + Genesis.constants.addCRLF()//
                })()
                //,ui : 'orange-large'
             },

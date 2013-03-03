@@ -32,7 +32,7 @@
 </script>
 <% end %>
 
-<div class="container">
+<div id="main" class="container">
 	<!--/Hero Unit-->
 	<div class="row addbusiness">
 		<!--
@@ -71,6 +71,7 @@
 					To schedule a FREE consultation for your business:
 				</p>
 			</div>
+			<div class="span2"></div>
 			<div class="span8 createForm">
 				<%= simple_form_for @merchant_contact, :url => create_add_merchant_contact_path do |f| %>
 				<%= f.input :name, :input_html => { :style => 'width:260px;' }, :wrapper_html => { :class => 'span_field' } %>
@@ -86,6 +87,7 @@
 				</div>
 				<% end %>
 			</div>
+			<div class="span2"></div>
 		</div>
 	</div>
 </div>
