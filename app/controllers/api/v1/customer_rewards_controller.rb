@@ -47,11 +47,11 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
       if (data_expiry_ts >= Time.now) && Cache.add(params[:data], true, 43200)
         @reward = CustomerReward.first(:id => params[:id], :merchant => @venue.merchant)
         raise "Reward(#{params[:id]}) not found" if @reward.nil?
-        if params[:frequency]
+        if decrypted_data["frequency"]
           data = { 
             :reward_id => @reward.id
           }.to_json
-          frequency = JSON.parse(params[:frequency])
+          frequency = JSON.parse(decrypted_data["frequency"])
           channel_group = Channel.get_group(encrypted_data[0])
           request_info = {
             :type => RequestType::REDEEM,
@@ -87,7 +87,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
       return  
     end
         
-    if params[:frequency]
+    if decrypted_data["frequency"]
       if (response = @request.is_status?(:complete))[:result]
         logger.info("Venue(#{@venue.id}) successfully completed Request(#{@request.id})")
         respond_to do |format|
@@ -186,7 +186,9 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
     authorize! :read, @customer
        
     begin  
-      frequency = JSON.parse(params[:frequency])
+      cipher = Gibberish::AES.new(@venue.auth_code)
+      decrypted = cipher.dec(params[:data])
+      frequency = JSON.parse(decrypted["frequency"])
       request_info = {
         :type => RequestType::REDEEM,
         :frequency1 => frequency[0],

@@ -82,7 +82,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       # Cache expires in 12 hrs
       if decrypted_data["type"] == EncryptedDataType::EARN_POINTS 
         if (data_expiry_ts >= Time.now) && EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => data_expiry_ts, :data => data).nil? 
-          frequency = JSON.parse(params[:frequency])
+          frequency = JSON.parse(decrypted_data["frequency"])
           channel_group = Channel.get_group(encrypted_data[0])
           request_info = {
             :type => RequestType::EARN_POINTS,
@@ -155,8 +155,10 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       if APP_PROP["SIMULATOR_MODE"]
         data = String.random_alphanumeric(32)
       else
-        if params[:frequency]
-          frequency = JSON.parse(params[:frequency])
+        cipher = Gibberish::AES.new(@venue.auth_token)
+        decrypted = cipher.dec(params[:data])
+        if decrypted["frequency"]
+          frequency = JSON.parse(decrypted["frequency"])
           request_info = {
             :type => RequestType::EARN_POINTS,
             :frequency1 => frequency[0],
@@ -281,8 +283,23 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
     authorized = false
     
     begin
-      if params[:data].nil?
-        frequency = JSON.parse(params[:frequency])
+      data = params[:data] 
+      encrypted_data = data.split('$')
+      if encrypted_data.length != 2
+        raise "Invalid referral code format"
+      end
+      merchant = Merchant.get(encrypted_data[0]) 
+      if merchant.nil?
+        raise "No such merchant: #{encrypted_data[0]}"
+      end
+      data = encrypted_data[1] 
+      #logger.debug("data: #{data}")
+      cipher = Gibberish::AES.new(@customer.merchant.auth_code)
+      decrypted = cipher.dec(data)
+      #logger.debug("decrypted text: #{decrypted}")
+      decrypted_data = JSON.parse(decrypted)
+      if decrypted_data["frequency"]
+        frequency = JSON.parse(decrypted_data["frequency"])
         request_info = {
           :type => RequestType::REFERRAL,
           :frequency1 => frequency[0],
@@ -300,22 +317,6 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
         if merchant.nil?
           raise "No such merchant: #{decrypted_data["merchant_id"]}"
         end
-      else
-        data = params[:data] 
-        encrypted_data = data.split('$')
-        if encrypted_data.length != 2
-          raise "Invalid referral code format"
-        end
-        merchant = Merchant.get(encrypted_data[0]) 
-        if merchant.nil?
-          raise "No such merchant: #{encrypted_data[0]}"
-        end
-        data = encrypted_data[1] 
-        #logger.debug("data: #{data}")
-        cipher = Gibberish::AES.new(@customer.merchant.auth_code)
-        decrypted = cipher.dec(data)
-        #logger.debug("decrypted text: #{decrypted}")
-        decrypted_data = JSON.parse(decrypted)
       end
       
       if merchant.status != :active
