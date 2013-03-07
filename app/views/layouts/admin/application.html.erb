@@ -121,21 +121,21 @@
 				</div>
 			</div>
 			<%= yield %>
-			<!-- Footer  -->
-			<% if signed_in? %>
-			<div id="footer" class="navbar navbar-fixed-bottom">
-				<div class="navbar-inner">
-					<div class="container">
-						<ul class="nav pull-left">
-							<li>
-								<a href="/">&copy; Copyright KICKBAK 2013</a>
-							</li>
-						</ul>
-					</div>
+		</div>
+		<!-- Footer  -->
+		<% if signed_in? %>
+		<div id="footer" class="navbar navbar-fixed-bottom">
+			<div class="navbar-inner">
+				<div class="container">
+					<ul class="nav pull-left">
+						<li>
+							<a href="/">&copy; Copyright KICKBAK 2013</a>
+						</li>
+					</ul>
 				</div>
 			</div>
-			<% end %>
 		</div>
+		<% end %>
 		<div class="modal fade" id="modalPopup">
 			<div class="modal-header">
 				<a class="close" data-dismiss="modal">&times;</a>
