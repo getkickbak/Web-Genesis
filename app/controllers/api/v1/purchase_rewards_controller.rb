@@ -100,7 +100,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
             if params[:frequency]
               frequency = JSON.parse(params[:frequency])
             else
-              frequency = JSON.parse(@decrypted_data["frequency"])
+              frequency = @decrypted_data["frequency"]
             end
             channel_group = Channel.get_group(params[:venue_id])
             request_info = {
