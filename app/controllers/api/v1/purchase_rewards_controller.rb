@@ -13,7 +13,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           if @venue.nil?
             raise "No such venue: #{params[:venue_id]}"
           end
-          data = params[:data].split('$')[1]
+          data = params[:data] ? params[:data].split('$')[1] : params[:data]
         else
           data = params[:data]  
         end  
