@@ -17,7 +17,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         if params[:frequency]
           frequency = JSON.parse(params[:frequency])
         else
-          cipher = Gibberish::AES.new(form_authenticity_token)
+          cipher = Gibberish::AES.new(current_user.authentication_token)
           decrypted = cipher.dec(params[:data])
           frequency = JSON.parse(decrypted)["frequency"]
         end
