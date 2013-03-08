@@ -82,7 +82,11 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       # Cache expires in 12 hrs
       if decrypted_data["type"] == EncryptedDataType::EARN_POINTS 
         if (data_expiry_ts >= Time.now) && EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => data_expiry_ts, :data => data).nil? 
-          frequency = JSON.parse(decrypted_data["frequency"])
+          if params[:frequency]
+            frequency = JSON.parse(params[:frequency])
+          else
+            frequency = JSON.parse(decrypted_data["frequency"])
+          end
           channel_group = Channel.get_group(encrypted_data[0])
           request_info = {
             :type => RequestType::EARN_POINTS,
@@ -155,10 +159,16 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       if APP_PROP["SIMULATOR_MODE"]
         data = String.random_alphanumeric(32)
       else
-        cipher = Gibberish::AES.new(@venue.auth_token)
-        decrypted = cipher.dec(params[:data])
-        if decrypted["frequency"]
-          frequency = JSON.parse(decrypted["frequency"])
+        if params[:frequency].nil?
+          cipher = Gibberish::AES.new(@venue.auth_token)
+          decrypted = cipher.dec(params[:data])
+        end
+        if params[:frequency] || decrypted["frequency"]
+          if params[:frequency]
+            frequency = JSON.parse(params[:frequency])
+          else  
+            frequency = JSON.parse(decrypted["frequency"])
+          end
           request_info = {
             :type => RequestType::EARN_POINTS,
             :frequency1 => frequency[0],
@@ -298,8 +308,12 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       decrypted = cipher.dec(data)
       #logger.debug("decrypted text: #{decrypted}")
       decrypted_data = JSON.parse(decrypted)
-      if decrypted_data["frequency"]
-        frequency = JSON.parse(decrypted_data["frequency"])
+      if params[:frequency] || decrypted_data["frequency"]
+        if params[:frequency]
+          frequency = JSON.parse(params[:frequency])
+        else  
+          frequency = JSON.parse(decrypted_data["frequency"])
+        end
         request_info = {
           :type => RequestType::REFERRAL,
           :frequency1 => frequency[0],

@@ -13,12 +13,16 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           if @venue.nil?
             raise "No such venue: #{params[:venue_id]}"
           end
-          cipher = Gibberish::AES.new(@venue.auth_code)
+          cipher = Gibberish::AES.new(@venue.auth_code) if params[:frequency].nil?
         else
-          cipher = Gibberish::AES.new(form_authenticity_token)
+          cipher = Gibberish::AES.new(form_authenticity_token) if params[:frequency].nil?
         end  
-        decrypted = cipher.dec(params[:data])
-        frequency = JSON.parse(decrypted["frequency"])
+        if params[:frequency]
+          frequency = JSON.parse(params[:frequency])
+        else
+          decrypted = cipher.dec(params[:data])
+          frequency = JSON.parse(decrypted["frequency"])
+        end
         request_info = {
           :type => RequestType::EARN_POINTS,
           :frequency1 => frequency[0],
@@ -92,8 +96,12 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
               :venue_id => @venue.id
             }.to_json
           end  
-          if @decrypted_data["frequency"]
-            frequency = JSON.parse(@decrypted_data["frequency"])
+          if params[:frequency] || @decrypted_data["frequency"]
+            if params[:frequency]
+              frequency = JSON.parse(params[:frequency])
+            else
+              frequency = JSON.parse(@decrypted_data["frequency"])
+            end
             channel_group = Channel.get_group(params[:venue_id])
             request_info = {
               :type => RequestType::EARN_POINTS,
@@ -123,7 +131,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       return
     end
     
-    if @decrypted_data["frequency"]
+    if params[:frequency] || @decrypted_data["frequency"]
       if (response = @request.is_status?(:complete))[:result]
         logger.info("Venue(#{@venue.id}) successfully completed Request(#{@request.id})")
         respond_to do |format|
