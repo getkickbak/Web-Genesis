@@ -13,12 +13,15 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           if @venue.nil?
             raise "No such venue: #{params[:venue_id]}"
           end
+          data = params[:data].split('$')[1]
+        else
+          data = params[:data]  
         end  
         if params[:frequency]
           frequency = JSON.parse(params[:frequency])
         else
-          cipher = Gibberish::AES.new("1")
-          decrypted = cipher.dec(params[:data])
+          cipher = Gibberish::AES.new(form_authenticity_token)
+          decrypted = cipher.dec(data)
           frequency = JSON.parse(decrypted)["frequency"]
         end
         request_info = {
