@@ -21,6 +21,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           frequency = JSON.parse(params[:frequency])
         else
           decrypted = cipher.dec(params[:data])
+          logger.debug("decrypted text: #{decrypted}")
           frequency = JSON.parse(decrypted["frequency"])
         end
         request_info = {
@@ -67,7 +68,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       #logger.debug("data: #{data}")
       cipher = Gibberish::AES.new(@venue.auth_code)
       decrypted = cipher.dec(data)
-      #logger.debug("decrypted text: #{decrypted}")
+      logger.debug("decrypted text: #{decrypted}")
       @decrypted_data = JSON.parse(decrypted) 
       expiry_ts_secs = @decrypted_data["expiry_ts"]/1000
       data_expiry_ts = Time.at(expiry_ts_secs)  
