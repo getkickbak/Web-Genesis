@@ -162,13 +162,11 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
         if params[:frequency].nil?
           cipher = Gibberish::AES.new(@venue.auth_token)
           decrypted = cipher.dec(params[:data])
+          frequency = JSON.parse(decrypted)["frequency"]
+        else
+          frequency = JSON.parse(params[:frequency])  
         end
-        if params[:frequency] || decrypted["frequency"]
-          if params[:frequency]
-            frequency = JSON.parse(params[:frequency])
-          else  
-            frequency = JSON.parse(decrypted["frequency"])
-          end
+        if frequency
           request_info = {
             :type => RequestType::EARN_POINTS,
             :frequency1 => frequency[0],
@@ -312,7 +310,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
         if params[:frequency]
           frequency = JSON.parse(params[:frequency])
         else  
-          frequency = JSON.parse(decrypted_data["frequency"])
+          frequency = decrypted_data["frequency"]
         end
         request_info = {
           :type => RequestType::REFERRAL,

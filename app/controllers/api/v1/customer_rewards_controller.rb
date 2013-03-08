@@ -195,7 +195,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
       else
         cipher = Gibberish::AES.new(@venue.auth_code)
         decrypted = cipher.dec(params[:data])
-        frequency = JSON.parse(decrypted["frequency"])
+        frequency = JSON.parse(decrypted)["frequency"]
       end
       request_info = {
         :type => RequestType::REDEEM,
