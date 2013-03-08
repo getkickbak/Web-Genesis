@@ -78,6 +78,15 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
             if (!response || response.error || Ext.isString(response))
             {
                console.log('Post was not published to Facebook.');
+               Ext.defer(function(earnprize)
+               {
+                  var me = this;
+                  Genesis.fb.facebook_onLogout(null, false);
+                  Genesis.fb.facebook_onLogin(function()
+                  {
+                     me.updatingRedemptionOnFacebook(earnprize);
+                  }, false);
+               }, 1, me, [earnprize]);
             }
             else
             {
@@ -214,6 +223,13 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
 
       if (Genesis.fn.isNative())
       {
+         var privKey = Genesis.fn.privKey =
+         {
+            'venueId' : venueId,
+            'venue' : venue.get('name')
+         };
+         privKey['r' + venueId] = privKey['p' + venueId] = db['csrf_code'];
+
          me.broadcastLocalID(function(ids)
          {
             identifiers = ids;
@@ -255,7 +271,10 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
             console.log("Broadcast underway ...");
             me.redeemItemFn(Ext.apply(params,
             {
-               'frequency' : Ext.encode(identifiers['localID'])
+               data : me.self.encryptFromParams(
+               {
+                  'frequency' : identifiers['localID']
+               }, 'reward')
             }));
          }, function()
          {

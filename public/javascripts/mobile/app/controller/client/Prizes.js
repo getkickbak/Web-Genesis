@@ -230,6 +230,15 @@ Ext.define('Genesis.controller.client.Prizes',
             if (!response || response.error || Ext.isString(response))
             {
                console.log('Post was not published to Facebook.');
+               Ext.defer(function(earnprize)
+               {
+                  var me = this;
+                  Genesis.fb.facebook_onLogout(null, false);
+                  Genesis.fb.facebook_onLogin(function()
+                  {
+                     me.updatingPrizeOnFacebook(earnprize);
+                  }, false);
+               }, 1, me, [earnprize]);
             }
             else
             {
@@ -292,6 +301,15 @@ Ext.define('Genesis.controller.client.Prizes',
             if (!response || response.error || Ext.isString(response))
             {
                console.log('Post was not published to Facebook.');
+               Ext.defer(function(badge)
+               {
+                  var me = this;
+                  Genesis.fb.facebook_onLogout(null, false);
+                  Genesis.fb.facebook_onLogin(function()
+                  {
+                     me.updatingBadgeOnFacebook(badge);
+                  }, false);
+               }, 1, me, [badge]);
             }
             else
             {

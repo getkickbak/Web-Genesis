@@ -387,7 +387,6 @@ Ext.define('Genesis.controller.client.MainPage',
             callback : function(records, operation)
             {
                me._loggingOut = false;
-               Ext.Viewport.setMasked(null);
                if (operation.wasSuccessful())
                {
                   console.log("Logout Successful!")

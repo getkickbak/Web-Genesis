@@ -41,8 +41,7 @@ Ext.define('Genesis.controller.ControllerBase',
          rc += // ((Ext.os.version.isLessThan('4.1')) ? //
          'Enable Location Services under Main Screen of your phone: \"Settings App >> Location Services >> GPS satellites\"';
       }
-      else
-      if (Ext.os.is('iOS'))
+      else if (Ext.os.is('iOS'))
       {
          rc += ((Ext.os.version.isLessThan('6.0')) ? //
          'Enable Location Services under Main Screen of your phone: \"Settings App >> Location Services >> KICKBAK\"' :
@@ -96,8 +95,7 @@ Ext.define('Genesis.controller.ControllerBase',
       {
          errorMsg = Genesis.constants.addCRLF() + errors;
       }
-      else
-      if (Ext.isObject(errors))
+      else if (Ext.isObject(errors))
       {
          errorMsg = Genesis.constants.addCRLF() + errors.statusText;
       }
@@ -225,7 +223,7 @@ Ext.define('Genesis.controller.ControllerBase',
       {
          GibberishAES.size(256);
          var encrypted = null, venueId = Genesis.fn.getPrivKey('venueId'), key = null;
-         if (venueId > 0)
+         if ((venueId > 0) || (venueId < 0))
          {
             try
             {
@@ -244,7 +242,8 @@ Ext.define('Genesis.controller.ControllerBase',
                      key = Genesis.fn.getPrivKey('r' + venueId);
                      break;
                }
-               encrypted = venueId + '$' + GibberishAES.enc(Ext.encode(params), key);
+               encrypted = (venueId > 0) ? venueId + '$' : '';
+               encrypted += GibberishAES.enc(Ext.encode(params), key);
             }
             catch (e)
             {
@@ -831,8 +830,7 @@ Ext.define('Genesis.controller.ControllerBase',
             stores[i][0] = Ext.StoreMgr.get('Persistent' + stores[i][1]);
             //console.debug("Created [" + 'Persistent' + stores[i][1] + "]");
          }
-         else
-         if (stores[i][0].getStoreId() == ('Persistent' + storeName))
+         else if (stores[i][0].getStoreId() == ('Persistent' + storeName))
          {
             //console.debug("Store[" + stores[i][0].getStoreId() + "] found!");
             return stores[i][0];
@@ -1040,8 +1038,7 @@ Ext.define('Genesis.controller.ControllerBase',
                me.fireEvent('locationupdate', position);
             }
          }
-         else
-         if (bLocationUnavailable)
+         else if (bLocationUnavailable)
          {
             if (i < me.geoRetryAttempts)
             {
@@ -1155,8 +1152,7 @@ Ext.define('Genesis.controller.ControllerBase',
                         qrcode = Math.random().toFixed(16);
                      }
                   }
-                  else
-                  if (qrcode.cancelled)
+                  else if (qrcode.cancelled)
                   {
                      qrcode = Math.random().toFixed(16);
                   }

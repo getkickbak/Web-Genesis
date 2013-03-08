@@ -223,8 +223,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
                Ext.Viewport.setMasked(null);
                me.onEnterTagIdTap();
             }
-            else
-            if (!dismissDialog)
+            else if (!dismissDialog)
             {
                Ext.Viewport.setMasked(null);
                me.onDoneTap();
@@ -255,9 +254,9 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
                task = null;
                me.redeemItemFn(
                {
-                  'frequency' : Ext.encode(identifiers['localID']),
                   data : me.self.encryptFromParams(
                   {
+                     'frequency' : identifiers['localID'],
                      'expiry_ts' : new Date().addHours(3).getTime()
                   }, 'reward')
                }, true);

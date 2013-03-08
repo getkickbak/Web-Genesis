@@ -285,6 +285,15 @@ Ext.define('Genesis.controller.client.Viewport',
                if (!response || response.error || Ext.isString(response))
                {
                   console.log('Post was not published to Facebook.');
+                  Ext.defer(function()
+                  {
+                     var me = this;
+                     Genesis.fb.facebook_onLogout(null, false);
+                     Genesis.fb.facebook_onLogin(function()
+                     {
+                        me.onShareEmailTap();
+                     }, false);
+                  }, 1, me);
                }
                else
                {

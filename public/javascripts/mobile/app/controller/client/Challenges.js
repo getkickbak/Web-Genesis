@@ -1013,7 +1013,7 @@ Ext.define('Genesis.controller.client.Challenges',
    completeChallenge : function(qrcode, position, eOpts, eInfo)
    {
       var me = this, task, viewport = me.getViewPortCntlr(), identifiers = null, id, type, params;
-      var venueId = viewport.getVenue().getId();
+      var db = Genesis.db.getLocalDB(), venue = viewport.getVenue(), venueId = venue.getId();
       var customerId = viewport.getCustomer().getId();
 
       me.challengeItemFn = function()
@@ -1059,15 +1059,17 @@ Ext.define('Genesis.controller.client.Challenges',
          {
             params = Ext.apply(params,
             {
-               'data' : qrcode
+               data : qrcode
             });
          }
          else
          {
-            var localID = identifiers['localID'];
             params = Ext.apply(params,
             {
-               'frequency' : Ext.encode(localID)
+               data : me.self.encryptFromParams(
+               {
+                  'frequency' : identifiers['localID']
+               })
             });
          }
 
@@ -1130,6 +1132,13 @@ Ext.define('Genesis.controller.client.Challenges',
                });
             }
             Challenge['setCompleteChallengeURL'](id);
+
+            var privKey = Genesis.fn.privKey =
+            {
+               'venueId' : venueId,
+               'venue' : venue.get('name')
+            };
+            privKey['r' + venueId] = privKey['p' + venueId] = db['csrf_code'];
 
             me.broadcastLocalID(function(idx)
             {

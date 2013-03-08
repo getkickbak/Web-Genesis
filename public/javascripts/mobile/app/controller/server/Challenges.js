@@ -222,8 +222,8 @@ Ext.define('Genesis.controller.server.Challenges',
             {
                data :
                {
-               },
-               'frequency' : Ext.encode(identifiers['localID'])
+                  'frequency' : identifiers['localID']
+               }
             }, true);
          }, function()
          {

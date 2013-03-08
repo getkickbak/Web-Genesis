@@ -257,8 +257,7 @@ Ext.define('Genesis.controller.server.Rewards',
             Ext.Viewport.setMasked(null);
             me.onEnterTagIdTap();
          }
-         else
-         if (!dismissDialog)
+         else if (!dismissDialog)
          {
             Ext.Viewport.setMasked(null);
             me.onDoneTap();
@@ -291,8 +290,8 @@ Ext.define('Genesis.controller.server.Rewards',
             {
                data :
                {
-               },
-               'frequency' : Ext.encode(identifiers['localID'])
+                  'frequency' : identifiers['localID']
+               }
             }, true);
          }, function()
          {

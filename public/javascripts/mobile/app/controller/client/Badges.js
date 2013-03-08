@@ -53,7 +53,10 @@ Ext.define('Genesis.controller.client.Badges',
          }
       }
    },
-   badgeLevelNotAchievedMsg : 'You have achieved this badge level yet!',
+   badgeLevelNotAchievedMsg : function()
+   {
+      return ('You have achieved this' + Genesis.constants.addCRLF() + 'badge level yet!');
+   },
    init : function(app)
    {
       var me = this;
@@ -176,7 +179,7 @@ Ext.define('Genesis.controller.client.Badges',
          Ext.device.Notification.show(
          {
             title : 'Badges',
-            message : me.badgeLevelNotAchievedMsg,
+            message : me.badgeLevelNotAchievedMsg(),
             buttons : ['Dismiss']
          });
       }

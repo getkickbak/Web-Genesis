@@ -369,13 +369,13 @@ Ext.define('Genesis.controller.client.Rewards',
             return;
          }
 
-         var position = viewport.getLastPosition(), localID = me.identifiers['localID'];
-         var venueId = (notUseGeolocation) ? viewport.getVenue().getId() : null;
+         var db = Genesis.db.getLocalDB(), position = viewport.getLastPosition(), localID = me.identifiers['localID'];
+         var venue = viewport.getVenue(), venueId = (notUseGeolocation) ? venue.getId() : null;
          var reader = PurchaseReward.getProxy().getReader();
          var params =
          {
-            'frequency' : Ext.encode(localID)
-         }
+         }, privKey;
+
          //
          // With or without Geolocation support
          //
@@ -405,6 +405,10 @@ Ext.define('Genesis.controller.client.Rewards',
 
             params = Ext.apply(params,
             {
+               data : me.self.encryptFromParams(
+               {
+                  'frequency' : localID
+               }, 'reward'),
                //'data' : me.qrcode,
                'latitude' : position.coords.getLatitude(),
                'longitude' : position.coords.getLongitude()
@@ -414,6 +418,10 @@ Ext.define('Genesis.controller.client.Rewards',
          {
             params = Ext.apply(params,
             {
+               data : me.self.encryptFromParams(
+               {
+                  'frequency' : localID
+               }, 'reward'),
                venue_id : venueId
             });
          }
@@ -461,14 +469,34 @@ Ext.define('Genesis.controller.client.Rewards',
 
       if (Genesis.fn.isNative())
       {
+         var db = Genesis.db.getLocalDB(), venue = viewport.getVenue(), venueId;
+
          viewport.setLastPosition(null);
          //
          // Get GeoLocation and frequency markers
          //
          if (!notUseGeolocation)
          {
+            venueId = -1;
+            privKey = Genesis.fn.privKey =
+            {
+               'venueId' : venueId,
+               'venue' : Genesis.constants.debugVenuePrivKey
+            };
+            privKey['r' + venueId] = privKey['p' + venueId] = db['csrf_code'];
             me.getGeoLocation();
          }
+         else
+         {
+            venueId = venue.getId();
+            privKey = Genesis.fn.privKey =
+            {
+               'venueId' : venueId,
+               'venue' : venue.get('name')
+            };
+            privKey['r' + venueId] = privKey['p' + venueId] = db['csrf_code'];
+         }
+
          me.broadcastLocalID(function(idx)
          {
             me.identifiers = idx;

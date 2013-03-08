@@ -156,8 +156,10 @@ Genesis.fb =
    fbConnectErrorMsg : 'Cannot retrive Facebook account information!',
    fbConnectRequestMsg : 'By connecting to Facebook, you will be received additional Reward Pts everytime we update your KICKBAK activity to your Facebook account!',
    //   fbConnectRequestMsg : 'Would you like to update your Facebook Timeline?',
-   fbConnectReconnectMsg : 'Please confirm to Reconnect to Facebook',
+   fbConnectReconnectMsg : 'By connecting to Facebook, you will be received additional Reward Pts everytime we update your KICKBAK activity to your Facebook account!',
+   //fbConnectReconnectMsg : 'Please confirm to Reconnect to Facebook',
    connectingToFBMsg : 'Connecting to Facebook ...',
+   loggingOutOfFBMsg : 'Logging out of Facebook ...',
    fbConnectFailMsg : 'Error Connecting to Facebook.',
    friendsRetrieveErrorMsg : 'You cannot retrieve your Friends List from Facebook. Login and Try Again.',
    /*
@@ -252,7 +254,28 @@ Genesis.fb =
    {
       var me = this, FB = window.plugins.facebookConnect, db = Genesis.db.getLocalDB();
       var refreshConn = (!(db['currFbId'] > 0) || !parseInt(db['fbExpiresIn']) || //
-      ((db['currFbId'] > 0) && (db['fbExpiresIn'] > 0) && (parseInt(db['fbExpiresIn']) <= (new Date().addHours(2)).getTime())));
+      ((db['currFbId'] > 0) && (db['fbExpiresIn'] > 0) && (parseInt(db['fbExpiresIn']) <= (new Date()).getTime())));
+      var fbConnect = function()
+      {
+         Ext.Viewport.setMasked(null);
+         Ext.Viewport.setMasked(
+         {
+            xtype : 'loadmask',
+            message : me.connectingToFBMsg,
+            listeners :
+            {
+               'tap' : function()
+               {
+                  Ext.Viewport.setMasked(null);
+               }
+            }
+         });
+         FB.login(
+         {
+            permissions : me.fbScope,
+            appId : "" + _appId
+         }, Ext.bind(me.facebook_loginCallback, me));
+      };
 
       me.cb =
       {
@@ -262,15 +285,31 @@ Genesis.fb =
             // Even if the UpdateFbLogin failed (!operation.wasSuccessful()),
             // we should still allow them to do Facebook related activities ...
             //
-            cb(params, operation);
-            if (!me.cb['supress'])
+            if ((operation && !operation.wasSuccessful()))
             {
-               Ext.device.Notification.show(
+               //
+               // Reconnect with Facebook
+               //
+               me.facebook_onLogout(null, false);
+               Ext.defer(function()
                {
-                  title : me.titleMsg,
-                  message : me.fbConnectFailMsg,
-                  buttons : ['Dismiss']
-               });
+                  me.facebook_onLogin(cb, false, message);
+               }, 1, me);
+               /*
+                if (!me.cb['supress'])
+                {
+                Ext.device.Notification.show(
+                {
+                title : me.titleMsg,
+                message : me.fbConnectFailMsg,
+                buttons : ['Dismiss']
+                });
+                }
+                */
+            }
+            else
+            {
+               cb(params, operation);
             }
          }, null, [callback], true) : Ext.emptyFn,
          supress : supress,
@@ -279,28 +318,6 @@ Genesis.fb =
 
       if (refreshConn)
       {
-         var fbConnect = function()
-         {
-            Ext.Viewport.setMasked(null);
-            Ext.Viewport.setMasked(
-            {
-               xtype : 'loadmask',
-               message : me.connectingToFBMsg,
-               listeners :
-               {
-                  'tap' : function()
-                  {
-                     Ext.Viewport.setMasked(null);
-                  }
-               }
-            });
-            FB.login(
-            {
-               permissions : me.fbScope,
-               appId : "" + _appId
-            }, Ext.bind(me.facebook_loginCallback, me));
-         };
-
          if (!me.cb['supress'])
          {
             var buttons = (db['enableFB']) ? ['Confirm', 'Cancel'] : ['OK', 'Cancel'];
@@ -416,7 +433,7 @@ Genesis.fb =
       {
          FB.requestWithGraphPath('/me', function(response)
          {
-            if (!response.error || response.id && (response.id > 0))
+            if (!response.error || (response.id && (response.id > 0)))
             {
                var db = Genesis.db.getLocalDB(), facebook_id = response.id;
 
@@ -507,13 +524,18 @@ Genesis.fb =
       Genesis.db.setLocalDB(db);
 
       console.debug("facebook_onLogout");
-      Ext.Viewport.setMasked(null);
       try
       {
          if (contactFB)
          {
+            Ext.Viewport.setMasked(
+            {
+               xtype : 'loadmask',
+               message : me.loggingOutOfFBMsg
+            });
             FB.logout(function(response)
             {
+               Ext.Viewport.setMasked(null);
                //FB.Auth.setAuthResponse(null, 'unknown');
                cb();
             });
