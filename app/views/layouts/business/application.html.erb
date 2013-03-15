@@ -98,11 +98,9 @@
 							</li>
 							<!--<% if session[:is_admin] %><li><a href="/marketing"> <i class="icon-rss"></i> <span>Marketing</span>
 							</a></li><% end %>-->
-							<% if session[:is_admin] %>
 							<li>
 								<a href="<%= promotions_path %>" class="dropdown-toggle"> <i class="icon-bullhorn"></i> <span>Promotions</span> </a>
 							</li>
-							<% end %>
 							<li>
 								<a href="<%= customers_path %>"> <i class="icon-user"></i> <span>Members</span> </a>
 							</li>
