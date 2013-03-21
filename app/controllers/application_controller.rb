@@ -6,6 +6,7 @@ class ApplicationController < ActionController::Base
   use Rails::DataMapper::Middleware::IdentityMap
   protect_from_forgery
   check_authorization :unless => :devise_controller?
+  before_filter :secure_with_ssl
   before_filter :set_cache_buster
   layout :layout_by_resource
   
@@ -61,6 +62,12 @@ class ApplicationController < ActionController::Base
 
   private
 
+  def secure_with_ssl
+    if (request.subdomain == 'manage'  || request.subdomain == 'merchant') && request.protocol != 'https'
+      redirect_to :protocol => 'https'
+    end
+  end
+  
   def get_template
     template = "/error/error.html.erb"
     if !Domain.matches?(request)
