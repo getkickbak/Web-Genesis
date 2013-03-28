@@ -75,12 +75,7 @@ class Request
     
     n = 50 - 1
     n.times do |x|
-      # Performance Test
-      start_time = Time.now
       request = c.call
-      end_time = Time.now
-      logger.info("Performance Test: Execute Request Match #{end_time - start_time} secs")
-      # end
       if request.length > 0
         return Request.get(request[0].id)
       elsif x < n

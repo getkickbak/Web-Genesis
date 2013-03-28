@@ -175,6 +175,8 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
   private
 
   def earn_common
+    # Performance Test
+    start_time = Time.now
     @venue_id = params[:venue_id]
     if signed_in? && APP_PROP["SIMULATOR_MODE"]
       if @venue_id.nil?
@@ -338,7 +340,12 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         return
       end
     end
-
+    end_time = Time.now
+    logger.info("Performance Test: Earn Common Part 1 #{end_time - start_time} secs")
+    # end
+      
+    # Performance Test
+    start_time = Time.now  
     if @venue.status != :active
       Request.set_status(@request, :failed)
       logger.info("User(#{@current_user.id}) failed to earn points at Venue(#{@venue.id}), venue is not active")
@@ -379,13 +386,13 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       end
       return
     end
-
+    end_time = Time.now
+    logger.info("Performance Test: Earn Common Part 2 #{end_time - start_time} secs")
+    # end
+  
     # Performance Test
     start_time = Time.now
     @badges = Common.populate_badges(@venue.merchant, session[:user_agent] || :iphone, session[:resolution] || :mxhdpi)
-    end_time = Time.now
-    logger.info("Performance Test: Populate Badges #{end_time - start_time} secs")
-    # end
     
     Time.zone = @venue.time_zone
     begin
@@ -583,12 +590,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           @customer.badge, @customer.next_badge_visits = Common.find_badge(@badges.to_a, @customer.visits)
           @customer.badge_reset_ts = now
         end
-        # Performance Test
-        start_time = Time.now
         next_badge = Common.find_next_badge(@badges.to_a, @customer.badge)
-        end_time = Time.now
-        logger.info("Performance Test: Find Next Badge #{end_time - start_time} secs")
-        # end
         if (@customer.next_badge_visits >= next_badge.visits) && (@customer.badge.id != next_badge.id)
           #logger.debug("expected average spend: #{reward_model.expected_avg_spend}")
           #logger.debug("next badge visits: #{next_badge.visits}")
@@ -603,12 +605,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           @customer.badge = next_badge
           @customer.points += badge_points
           @customer.next_badge_visits = 0
-          # Performance Test
-          start_time = Time.now
           next_badge = Common.find_next_badge(@badges.to_a, @customer.badge)
-          end_time = Time.now
-          logger.info("Performance Test: Badge Promotion - Find Next Badge #{end_time - start_time} secs")
-          # end
           @reward_info[:badge_points] = badge_points
 
           badge_record = EarnRewardRecord.new(
@@ -714,37 +711,12 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         @account_info[:prize_points] = @customer.prize_points
         @account_info[:badge_id] = @customer.badge.id
         @account_info[:next_badge_id] = next_badge.id
-        # Performance Test
-        start_time = Time.now
         rewards = Common.get_rewards_by_venue(@venue, :reward)
-        end_time = Time.now
-        logger.info("Performance Test: Get Rewards by Venue(Rewards) #{end_time - start_time} secs")
-        # end
-        # Performance Test
-        start_time = Time.now
         prizes = Common.get_rewards_by_venue(@venue, :prize)
-        end_time = Time.now
-        logger.info("Performance Test: Get Rewards by Venue(Prizes) #{end_time - start_time} secs")
-        # end
-        # Performance Test
-        start_time = Time.now
         new_eligible_prize = Common.find_eligible_reward(prizes.to_a, @customer.prize_points - previous_prize_points)
-        end_time = Time.now
-        logger.info("Performance Test: Find Eligible Reward(New Prize) #{end_time - start_time} secs")
-        # end
         @reward_info[:eligible_prize_id] = new_eligible_prize.id if !new_eligible_prize.nil?
-        # Performance Test
-        start_time = Time.now
         eligible_reward = Common.find_eligible_reward(rewards.to_a, @customer.points)
-        end_time = Time.now
-        logger.info("Performance Test: Find Eligible Reward(Rewards) #{end_time - start_time} secs")
-        # end 
-        # Performance Test
-        start_time = Time.now
         eligible_prize = Common.find_eligible_reward(prizes.to_a, @customer.prize_points)
-        end_time = Time.now
-        logger.info("Performance Test: Find Eligible Reward(Prizes) #{end_time - start_time} secs")
-        # end
         eligible_for_reward = !eligible_reward.nil?
         eligible_for_prize = !eligible_prize.nil?
         @customer.eligible_for_reward = eligible_for_reward
@@ -764,27 +736,17 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           Subscription.create(@current_user)
         end
         if !signed_in? && @current_user.status != :pending && @current_user.subscription.email_notif
-          # Performance Test
-          start_time = Time.now
           if @reward_info[:birthday_points] > 0 || @reward_info[:badge_points] > 0 || @reward_info[:prize_points] > 1
             UserMailer.reward_notif_email(@customer, @reward_info).deliver
           elsif eligible_for_reward
             @reward_info[:eligible_reward] = eligible_reward
             UserMailer.eligible_reward_email(@customer, @reward_info).deliver
-          end  
-          end_time = Time.now
-          logger.info("Performance Test: Send Reward Notif or Eligible Reward Email #{end_time - start_time} secs")
-          # end
+          end
         end
         if referral_challenge
           UserMailer.referral_challenge_confirm_email(referrer.user, @current_user, @venue, referral_record).deliver
         end
-        # Performance Test
-        start_time = Time.now
         render :template => '/api/v1/purchase_rewards/earn'
-        end_time = Time.now
-        logger.info("Performance Test: Render Template #{end_time - start_time} secs")
-        # end
         logger.info(
           "User(#{@current_user.id}) successfully earned #{@reward_info[:points]} points, #{@reward_info[:signup_points]} signup points, #{@reward_info[:referral_points]} referral points, #{@reward_info[:birthday_points]} birthday points, #{@reward_info[:badge_points]} badge points, #{@reward_info[:prize_points]} prize points at Venue(#{@venue.id})"
         )
@@ -808,6 +770,10 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       @referrer_mutex.release if ((defined? @referrer_mutex) && !@referrer_mutex.nil?)
       @customer_mutex.release if ((defined? @customer_mutex) && !@customer_mutex.nil?)
     end
+    
+    end_time = Time.now
+    logger.info("Performance Test: Earn Common Part 3 #{end_time - start_time} secs")
+    # end
   end
   
   def pick_prize_interval(reward_model, venue)
