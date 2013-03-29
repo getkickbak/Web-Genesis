@@ -397,9 +397,17 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
     Time.zone = @venue.time_zone
     begin
       Customer.transaction do
+        # Performance Test
+        start_time1 = Time.now
         @customer_mutex = CacheMutex.new(@customer.mutex_key, Cache.memcache)
         acquired = @customer_mutex.acquire
         @customer.reload
+        end_time1 = Time.now
+        logger.info("Performance Test: Earn Common Part 3-1 #{end_time1 - start_time1} secs")
+        # end
+        
+        # Performance Test
+        start_time2 = Time.now
         #logger.debug("Authorized to earn points.")
         prize_points = 1
         @reward_info = { :points => 0, :signup_points => 0, :referral_points => 0, :birthday_points => 0, :badge_points => 0, :prize_points => 0, :eligible_prize_id => 0 }
@@ -575,7 +583,12 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         trans_record.save
         @customer.points += points
         @reward_info[:points] = points
-
+        end_time2 = Time.now
+        logger.info("Performance Test: Earn Common Part 3-2 #{end_time2 - start_time2} secs")
+        # end
+  
+        # Performance Test
+        start_time3 = Time.now
         #logger.debug("Before acquiring cache mutex.")
         @venue_mutex = CacheMutex.new(@venue.mutex_key, Cache.memcache)
         acquired = @venue_mutex.acquire
@@ -632,7 +645,12 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           badge_trans_record.user = @current_user
           badge_trans_record.save
         end
-          
+        end_time3 = Time.now
+        logger.info("Performance Test: Earn Common Part 3-3 #{end_time3 - start_time3} secs")
+        # end
+        
+        # Performance Test
+        start_time4 = Time.now  
         prize_info = @venue.prize_info
         if prize_info.prize_interval == 0
           prize_interval = pick_prize_interval(reward_model, @venue)
@@ -750,6 +768,9 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         logger.info(
           "User(#{@current_user.id}) successfully earned #{@reward_info[:points]} points, #{@reward_info[:signup_points]} signup points, #{@reward_info[:referral_points]} referral points, #{@reward_info[:birthday_points]} birthday points, #{@reward_info[:badge_points]} badge points, #{@reward_info[:prize_points]} prize points at Venue(#{@venue.id})"
         )
+        end_time4 = Time.now
+        logger.info("Performance Test: Earn Common Part 3-4 #{end_time4 - start_time4} secs")
+        # end
       end
     rescue DataMapper::SaveFailureError => e
       Request.set_status(@request, :failed)
