@@ -261,6 +261,8 @@ GEM
       redis (>= 2.0.1)
       resque (>= 1.20.0)
       rufus-scheduler
+    resque_mailer (2.2.3)
+      actionmailer (~> 3.0)
     rqrcode (0.4.2)
     rqrcode_png (0.1.1)
       chunky_png
@@ -377,6 +379,7 @@ DEPENDENCIES
   redis
   resque
   resque-scheduler
+  resque_mailer
   rqrcode_png (~> 0.1.1)
   rspec-rails (~> 2.6.1)
   ruby-debug19
