@@ -4,9 +4,9 @@ class UserAsyncMailer < ActionMailer::Base
   default :from => "KICKBAK <mail@getkickbak.com>"
   include Resque::Mailer
   
-  def eligible_reward_email(customer_id, reward_info)
+  def eligible_reward_email(customer_id, reward_id)
     @customer = Customer.get(customer_id)
-    @reward_info = reward_info
+    @eligible_reward = CustomerReward.get(reward_id)
     mail(:to => @customer.user.email, :subject => (I18n.t("mailer.email_subject_eligible_reward") % [@customer.merchant.name]))
   end
   

@@ -757,8 +757,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           if @reward_info[:birthday_points] > 0 || @reward_info[:badge_points] > 0 || @reward_info[:prize_points] > 1
             UserAsyncMailer.reward_notif_email(@customer.id, @reward_info).deliver
           elsif eligible_for_reward
-            @reward_info[:eligible_reward] = eligible_reward
-            UserAsyncMailer.eligible_reward_email(@customer.id, @reward_info).deliver
+            UserAsyncMailer.eligible_reward_email(@customer.id, eligible_reward.id).deliver
           end
         end
         if referral_challenge

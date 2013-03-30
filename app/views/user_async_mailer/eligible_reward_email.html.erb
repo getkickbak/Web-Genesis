@@ -42,10 +42,10 @@
 										<tr style="background-color:#f3f3f4;">
 											<td style="padding:5px 5px 5px 10px;">
 												You have just earned enough points to get<br> 
-												<b><%= @reward_info[:eligible_reward].title %></b>! 
+												<b><%= @eligible_reward.title %></b>! 
 											</td>
 											<td style="padding:5px 10px 5px 5px;">
-												<%= image_tag Common.get_reward_icon_file_path(@customer.merchant.type.value, @reward_info[:eligible_reward].type.value, :ios, :mxhdpi), :style => "width:50px;margin-right:10px;" %>
+												<%= image_tag Common.get_reward_icon_file_path(@customer.merchant.type.value, @eligible_reward.type.value, :ios, :mxhdpi), :style => "width:50px;margin-right:10px;" %>
 											</td>
 										</tr>
 										<tr>
