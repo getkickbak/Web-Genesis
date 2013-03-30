@@ -23,4 +23,18 @@ class UserAsyncMailer < ActionMailer::Base
     @record = ReferralChallengeRecord.get(record_id)
     mail(:to => @referrer.email, :subject => I18n.t("mailer.email_subject_confirm_referral_challenge"))
   end
+  
+  def transfer_points_confirm_email(sender_id, recipient_id, merchant_id, record_id)
+    @sender = User.get(sender_id)
+    @recipient = User.get(recipient_id)
+    @merchant = Merchant.get(merchant_id)
+    @record = TransferPointsRecord.get(record_id)
+    mail(:to => @sender.email, :subject => I18n.t("mailer.email_subject_confirm_points_transfer"))
+  end
+  
+  def reset_password_email(user_id, new_password)
+    @user = User.get(user_id)
+    @new_password = new_password
+    mail(:to => @user.email, :subject => I18n.t("mailer.email_subject_reset_password"))
+  end
 end

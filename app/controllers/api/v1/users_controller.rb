@@ -97,7 +97,7 @@ class Api::V1::UsersController < Api::V1::BaseApplicationController
     new_password = String.random_alphanumeric(8)
     @user.reset_password!(new_password, new_password)
     @user.reset_authentication_token!
-    UserMailer.reset_password_email(@user, new_password).deliver
+    UserAsyncMailer.reset_password_email(@user.id, new_password).deliver
     respond_to do |format|
       #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
       format.json { render :json => { :success => true } }
