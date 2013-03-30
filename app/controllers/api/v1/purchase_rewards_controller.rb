@@ -36,6 +36,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         start_time = Time.now
         @request = Request.match(request_info, current_user)
         end_time = Time.now
+        logger.info("Earn Request Match Finished at #{end_time.strftime("%a %m/%d/%y %H:%M:%S:%L %Z")}")
         logger.info("Performance Test: Earn Request Match #{end_time - start_time} secs")
         # end
         if @request.nil?
@@ -142,6 +143,8 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       return
     end
     
+    logger.info("Merchant Earn Request Create Finished at #{Time.now.strftime("%a %m/%d/%y %H:%M:%S:%L %Z")}")
+
     if params[:frequency] || @decrypted_data["frequency"]
       # Performance Test
       start_time = Time.now
