@@ -72,6 +72,8 @@ gem "koala"
 gem "geocoder"
 gem 'carmen-rails', '~> 1.0.0.beta3'
 gem "braintree", "~> 2.22.0"
+gem "resque_mailer"
+#gem "faraday", "~> 0.8.6"
 
 group(:development, :test) do
   gem 'dm-sqlite-adapter', DM_VERSION

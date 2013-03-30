@@ -755,14 +755,14 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         end
         if !signed_in? && @current_user.status != :pending && @current_user.subscription.email_notif
           if @reward_info[:birthday_points] > 0 || @reward_info[:badge_points] > 0 || @reward_info[:prize_points] > 1
-            UserMailer.reward_notif_email(@customer, @reward_info).deliver
+            UserAsyncMailer.reward_notif_email(@customer.id, @reward_info).deliver
           elsif eligible_for_reward
             @reward_info[:eligible_reward] = eligible_reward
-            UserMailer.eligible_reward_email(@customer, @reward_info).deliver
+            UserAsyncMailer.eligible_reward_email(@customer.id, @reward_info).deliver
           end
         end
         if referral_challenge
-          UserMailer.referral_challenge_confirm_email(referrer.user, @current_user, @venue, referral_record).deliver
+          UserAsyncMailer.referral_challenge_confirm_email(referrer.user.id, @current_user.id, @venue.id, referral_record.id).deliver
         end
         render :template => '/api/v1/purchase_rewards/earn'
         logger.info(
