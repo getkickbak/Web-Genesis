@@ -555,6 +555,8 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           @reward_info[:signup_points] = reward_model.signup_points
         end
         
+        # Performance Test
+        start_time2_2 = Time.now
         if reward_model_type.value == "amount_spend"
           points = (amount / reward_model.price_per_point).to_i
         end  
@@ -587,6 +589,9 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         trans_record.save
         @customer.points += points
         @reward_info[:points] = points
+        end_time2_2 = Time.now
+        logger.info("Performance Test: Earn Common Part 3-2-2 #{end_time2_2 - start_time2_2} secs")
+        # end
         end_time2 = Time.now
         logger.info("Performance Test: Earn Common Part 3-2 #{end_time2 - start_time2} secs")
         # end
