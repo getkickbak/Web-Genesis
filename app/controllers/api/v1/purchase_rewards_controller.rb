@@ -574,6 +574,8 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         record.customer = @customer
         record.user = @current_user
         record.save
+        end_time2_2_1 = Time.now
+        logger.info("Performance Test: Earn Common Part 3-2-2-1 #{end_time2_2_1 - start_time2_2} secs")
         trans_record = TransactionRecord.new(
           :type => :earn_points,
           :ref_id => record.id,
@@ -590,6 +592,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         @customer.points += points
         @reward_info[:points] = points
         end_time2_2 = Time.now
+        logger.info("Performance Test: Earn Common Part 3-2-2-2 #{end_time2_2 - start_time2_2_1} secs")        
         logger.info("Performance Test: Earn Common Part 3-2-2 #{end_time2_2 - start_time2_2} secs")
         # end
         end_time2 = Time.now
