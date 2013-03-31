@@ -34,6 +34,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         }  
         # Performance Test
         start_time = Time.now
+        logger.info("Earn Request Match Starts at #{start_time.strftime("%a %m/%d/%y %H:%M:%S:%L %Z")}")
         @request = Request.match(request_info, current_user)
         end_time = Time.now
         logger.info("Earn Request Match Finished at #{end_time.strftime("%a %m/%d/%y %H:%M:%S:%L %Z")}")
@@ -127,6 +128,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
               :channel => Channel.reserve(channel_group)
             }
             @request = Request.create(request_info)
+            logger.info("Merchant Earn Request Create Finished at #{Time.now.strftime("%a %m/%d/%y %H:%M:%S:%L %Z")}")
           end
         else
           raise "Authorization code expired"  
@@ -143,11 +145,10 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       return
     end
     
-    logger.info("Merchant Earn Request Create Finished at #{Time.now.strftime("%a %m/%d/%y %H:%M:%S:%L %Z")}")
-
     if params[:frequency] || @decrypted_data["frequency"]
       # Performance Test
       start_time = Time.now
+      logger.info("Merchant Earn Request Wait Starts at #{start_time.strftime("%a %m/%d/%y %H:%M:%S:%L %Z")}")
       if (response = @request.is_status?(:complete))[:result]
         logger.info("Venue(#{@venue.id}) successfully completed Request(#{@request.id})")
         respond_to do |format|
