@@ -10,10 +10,11 @@ class UserAsyncMailer < ActionMailer::Base
     mail(:to => @customer.user.email, :subject => (I18n.t("mailer.email_subject_eligible_reward") % [@customer.merchant.name]))
   end
   
-  def reward_notif_email(customer_id, reward_info)
+  def reward_notif_email(customer_id, reward_info, reward_info_orig)
     @customer = Customer.get(customer_id)
     @reward_info = JSON.parse(reward_info)
     Rails.logger.info("#{@reward_info}")
+    Rails.logger.info('#{reward_info_orig}')
     mail(:to => @customer.user.email, :subject => (I18n.t("mailer.email_subject_reward_notif") % [@customer.merchant.name]))
   end
   
