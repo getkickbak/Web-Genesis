@@ -767,7 +767,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         end
         if !signed_in? && @current_user.status != :pending && @current_user.subscription.email_notif
           if @reward_info[:birthday_points] > 0 || @reward_info[:badge_points] > 0 || @reward_info[:prize_points] > 1
-            UserAsyncMailer.reward_notif_email(@customer.id, @reward_info.to_json, @record_info).deliver
+            UserAsyncMailer.reward_notif_email(@customer.id, @reward_info.to_json).deliver
           elsif eligible_for_reward
             UserAsyncMailer.eligible_reward_email(@customer.id, eligible_reward.id).deliver
           end
