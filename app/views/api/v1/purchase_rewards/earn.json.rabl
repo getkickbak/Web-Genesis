@@ -2,7 +2,7 @@ object false
 node :success do 
 	true
 end
-if signed_in?
+if false && signed_in?
 	node :metaData do
 		{
 			:merchant_id => @venue.merchant.id,

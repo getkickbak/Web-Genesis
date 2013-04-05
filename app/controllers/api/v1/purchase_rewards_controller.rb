@@ -760,8 +760,16 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           @prizes = prizes
         end
         Request.set_status(@request, :complete)
-        #posts = []
-        #Resque.enqueue(ShareOnFacebook, @current_user.id, posts.to_json)
+=begin      
+        post = 
+            FacebookPost.new(
+              :type => "share",
+              :link => @venue.website,
+              :latitude => @venue.latitude,
+              :longitude => @venue.longitude
+            )
+        Resque.enqueue(ShareOnFacebook, @current_user.id, post.to_json)
+=end      
         if @current_user.subscription.nil?
           Subscription.create(@current_user)
         end
