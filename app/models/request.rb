@@ -79,7 +79,7 @@ class Request
       if request.length > 0
         return Request.get(request[0].id)
       elsif x < n
-        sleep(0.3) 
+        sleep(0.5) 
       end
     end  
     return nil    
