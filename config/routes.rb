@@ -198,7 +198,8 @@ Genesis::Application.routes.draw do
     match "/contact_us/create" => 'pages#contact_us_create', :via => :post, :as => :create_contact
     #match "/faq" => 'pages#faq'
     match "/business" => 'pages#add_business'
-    match "/business/create" => 'pages#add_business_create', :via => :post, :as => :create_merchant_contact
+    match "/add_business" => 'pages#add_business'
+    match "/add_business/create" => 'pages#add_business_create', :via => :post, :as => :create_merchant_contact
     match "/d", :to => 'pages#index'
     match "/download", :to => 'pages#index'
     
