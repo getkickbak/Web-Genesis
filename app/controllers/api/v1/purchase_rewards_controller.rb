@@ -198,16 +198,15 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         points = Random.rand(10)+1
       end  
     else
+      normal_exit = false
       begin
         User.transaction do
           if signed_in?
             @decrypted_data = JSON.parse(@request.data)
             data = @decrypted_data["data"]
-            if !(defined? @venue)
-              @venue = Venue.get(@decrypted_data["venue_id"])
-              if @venue.nil?
-                raise "No such venue: #{@decrypted_data["venue_id"]}"
-              end
+            @venue = Venue.get(@decrypted_data["venue_id"])
+            if @venue.nil?
+              raise "No such venue: #{@decrypted_data["venue_id"]}"
             end
             reward_model_type = @venue.merchant.reward_model.type 
           else
@@ -229,14 +228,15 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
                 
           if @venue_id && (@venue.id != @venue_id.to_i)
             Request.set_status(@request, :failed)
-            logger.error("Mismatch venue information', venue_id:#{@venue_id}, venue id:#{@venue.id}")
+            logger.error("Mismatch venue information, venue_id:#{@venue_id}, venue id:#{@venue.id}")
             respond_to do |format|
               #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
               format.json { render :json => { :success => false, :message => t("api.purchase_rewards.venue_mismatch").split(/\n/) } }
             end
-            return
+            normal_exit = true
+            raise
           end
-               
+                  
           data = encrypted_data[1]
 
           if not signed_in?
@@ -249,7 +249,8 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
                     #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
                     format.json { render :json => { :success => false, :message => t("api.invalid_tag").split(/\n/) } }
                   end
-                  return
+                  normal_exit = true
+                  raise
                 end
                 user_to_tag = UserToTag.first(:fields => [:user_id], :user_tag_id => tag.id)
                 if user_to_tag.nil? && tag.status == :pending
@@ -275,7 +276,8 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
                         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
                         format.json { render :json => { :success => false, :message => t("api.invalid_user").split(/\n/) } }
                       end
-                      return
+                      normal_exit = true
+                      raise
                     end
                   else
                     logger.error("No user is associated with this non-pending tag: #{tag.tag_id}")
@@ -283,7 +285,8 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
                       #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
                       format.json { render :json => { :success => false, :message => t("api.invalid_tag").split(/\n/) } }
                     end
-                    return
+                    normal_exit = true
+                    raise
                   end  
                 end
               else
@@ -292,7 +295,8 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
                   #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
                   format.json { render :json => { :success => false, :message => t("api.invalid_tag").split(/\n/) } }
                 end
-                return
+                normal_exit = true
+                raise
               end
             elsif @decrypted_data["phone_id"]
               @current_user = User.first(:phone => @decrypted_data["phone_id"])
@@ -302,7 +306,8 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
                   #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
                   format.json { render :json => { :success => false, :message => t("api.invalid_phone").split(/\n/) } }
                 end
-                return 
+                normal_exit = true
+                raise 
               end 
             else 
               logger.error("Missing user identification info")
@@ -310,7 +315,8 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
                 #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
                 format.json { render :json => { :success => false, :message => t("api.missing_user_info").split(/\n/) } }
               end
-              return  
+              normal_exit = true
+              raise  
             end  
           else
             @current_user = current_user  
@@ -323,7 +329,8 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
               #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
               format.json { render :json => { :success => false, :message => t("api.inactive_user").split(/\n/) } }
             end
-            return
+            normal_exit = true
+            raise
           end
         end
       rescue DataMapper::SaveFailureError => e  
@@ -336,10 +343,12 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         return
       rescue StandardError => e
         Request.set_status(@request, :failed)
-        logger.error("Exception: " + e.message)
-        respond_to do |format|
-          #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split(/\n/) } }
+        if not normal_exit
+          logger.error("Exception: " + e.message)
+          respond_to do |format|
+            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+            format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split(/\n/) } }
+          end
         end
         return
       end
@@ -760,16 +769,16 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           @prizes = prizes
         end
         Request.set_status(@request, :complete)
-=begin      
+=begin        
         post = 
             FacebookPost.new(
-              :type => "share",
+              :type => "checkin",
               :link => @venue.website,
               :latitude => @venue.latitude,
               :longitude => @venue.longitude
             )
         Resque.enqueue(ShareOnFacebook, @current_user.id, post.to_json)
-=end      
+=end        
         if @current_user.subscription.nil?
           Subscription.create(@current_user)
         end
