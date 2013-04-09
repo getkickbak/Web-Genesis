@@ -203,6 +203,7 @@ en:
         limit_reached_ok: "Thank you for completing this challenge!"
         limit_reached_invalid: "You can't do this more than %s %s a %s!"
         unsupported_success: "Nothing to do here."
+        venue_mismatch: "You chose the wrong venue."
       check_ins:
         invalid_code: "Invalid check-in code.\nPlease try again."
         create_failure: "Trouble with check-in.\nPlease try again." 
@@ -225,6 +226,7 @@ en:
         redeem_mismatch_merchant: "You selected a different reward than the customer."
         redeem_mismatch_customer: "You selected a different reward than the merchant."
         invalid_reward: "The chosen reward/prize is not valid."
+        venue_mismatch: "You chose the wrong venue."
       purchase_rewards:
         expired_code: "Authorization code no longer valid."
         invalid_code: "Authorization code is not valid."
@@ -349,6 +351,6 @@ en:
       facebook_disconnect_success: "Your account is no longer connected to facebook."  
   facebook_post:
       message:
-        redeem_reward: "Got a %s from %s just now!"
+        redeem_reward: "I just got %s from %s!"
       description:
         text: "Sign up with KICKBAK to earn reward points at your favorite locations."        
