@@ -228,7 +228,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
                 
           if @venue_id && (@venue.id != @venue_id.to_i)
             Request.set_status(@request, :failed)
-            logger.error("Mismatch venue information, venue_id:#{@venue_id}, venue id:#{@venue.id}")
+            logger.error("Mismatch venue information, venue id:#{@venue_id}, merchant venue id:#{@venue.id}")
             respond_to do |format|
               #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
               format.json { render :json => { :success => false, :message => t("api.purchase_rewards.venue_mismatch").split(/\n/) } }
@@ -769,7 +769,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           @prizes = prizes
         end
         Request.set_status(@request, :complete)
-=begin        
+=begin      
         post = 
             FacebookPost.new(
               :type => "checkin",
@@ -778,7 +778,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
               :longitude => @venue.longitude
             )
         Resque.enqueue(ShareOnFacebook, @current_user.id, post.to_json)
-=end        
+=end      
         if @current_user.subscription.nil?
           Subscription.create(@current_user)
         end
