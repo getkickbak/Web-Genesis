@@ -143,7 +143,6 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
             end  
             render :template => '/api/v1/customers/transfer_points'
             logger.info("User(#{current_user.id}) successfully created email transfer qr code worth #{points} points for Customer Account(#{@customer.id})")
-            return
           else
             data = { 
               :type => EncryptedDataType::POINTS_TRANSFER_DIRECT,
@@ -154,7 +153,6 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
             @encrypted_data = "#{@customer.merchant.id}$#{cipher.enc(data)}"     
             render :template => '/api/v1/customers/transfer_points'
             logger.info("User(#{current_user.id}) successfully created direct transfer request worth #{points} points for Customer Account(#{@customer.id})")
-            return
           end
         else
           logger.info("User(#{current_user.id}) failed to create transfer qr code worth #{points} points for Customer Account(#{@customer.id}), insufficient points")
@@ -162,7 +160,6 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
             format.json { render :json => { :success => false, :message => (t("api.customers.insufficient_transfer_points") % [points, t('api.point', :count => points)]).split(/\n/) } }
           end
-          return
         end
       end
     rescue DataMapper::SaveFailureError => e  
@@ -171,14 +168,12 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.customers.transfer_points_failure").split(/\n/) } }
       end  
-      return  
     rescue StandardError => e
       logger.error("Exception: " + e.message)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.customers.transfer_points_failure").split(/\n/) } }
       end  
-      return
     end
   end
 

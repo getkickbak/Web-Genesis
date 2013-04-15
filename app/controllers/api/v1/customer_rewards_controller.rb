@@ -49,7 +49,8 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
         raise "Reward(#{params[:id]}) not found" if @reward.nil?
         if params[:frequency] || decrypted_data["frequency"]
           data = { 
-            :reward_id => @reward.id
+            :reward_id => @reward.id,
+            :venue_id => @venue.id
           }.to_json
           if params[:frequency]
             frequency = JSON.parse(params[:frequency])
@@ -101,8 +102,8 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
       else
         logger.info("Venue(#{@venue.id}) failed to complete Request(#{@request.id})")
         @request.reload
-        result_data = JSON.parse(response[:data])
-        if result_data["message"]
+        if response[:data]
+          result_data = JSON.parse(response[:data])
           message = result_data["message"]
         else
           message = (t("api.customer_rewards.redeem_failure") % [@reward.mode == :reward ? t("api.reward") : t("api.prize")]).split(/\n/)  
@@ -215,6 +216,15 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
         return
       else 
         request_data = JSON.parse(@request.data)
+        if @venue.id != request_data["venue_id"] 
+          Request.set_status(@request, :failed)
+          logger.error("Mismatch venue information, venue id:#{@venue.id}, merchant venue id:#{request_data["venue_id"]}")
+          respond_to do |format|
+            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+            format.json { render :json => { :success => false, :message => t("api.customer_rewards.venue_mismatch").split(/\n/) } }
+          end
+          return
+        end
         if params[:id].to_i != request_data["reward_id"]
           Request.set_status(@request, :failed, { :message => t("api.customer_rewards.redeem_mismatch_merchant").split(/\n/) }.to_json)
           logger.error("Mismatch rewards, reward_id:#{params[:id].to_i}, request reward_id:#{request_data["reward_id"]}")
@@ -359,7 +369,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
           @account_info[:eligible_for_prize] = eligible_for_prize
           Request.set_status(@request, :complete)
 =begin          
-          posts = [
+          post = 
             FacebookPost.new(
               :type => "share",
               :message => (t("facebook_post.message.redeem_reward") % [@reward.title, @venue.name]),
@@ -369,8 +379,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
               :caption => @venue.website,
               :description => t("facebook_post.description.text")
             )
-          ]
-          Resque.enqueue(ShareOnFacebook, user.id, posts.to_json)
+          Resque.enqueue(ShareOnFacebook, user.id, post.to_json)
 =end          
           render :template => '/api/v1/customer_rewards/redeem' 
           logger.info("User(#{user.id}) successfully redeemed Reward(#{@reward.id}), worth #{@reward.points} points")

@@ -88,6 +88,10 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
             frequency = decrypted_data["frequency"]
           end
           channel_group = Channel.get_group(encrypted_data[0])
+          request_data = { 
+            :data => params[:data],
+            :venue_id => @venue.id
+          }.to_json
           request_info = {
             :type => RequestType::EARN_POINTS,
             :frequency1 => frequency[0],
@@ -95,7 +99,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
             :frequency3 => frequency[2],
             :latitude => @venue.latitude,
             :longitude => @venue.longitude,
-            :data => data,
+            :data => request_data,
             :channel_group => channel_group,
             :channel => Channel.reserve(channel_group)
           }
@@ -179,7 +183,17 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
           if @request.nil?
             raise "No matching challenge complete request"
           end
-          data = @request.data
+          decrypted_data = JSON.parse(@request.data)
+          if @venue.id != decrypted_data["venue_id"] 
+            Request.set_status(@request, :failed)
+            logger.error("Mismatch venue information, venue id:#{@venue.id}, merchant venue id:#{decrypted_data["venue_id"]}")
+            respond_to do |format|
+              #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+              format.json { render :json => { :success => false, :message => t("api.challenges.venue_mismatch").split(/\n/) } }
+            end
+            return
+          end
+          data = decrypted_data["data"]
         else
           data = params[:data] 
         end  
