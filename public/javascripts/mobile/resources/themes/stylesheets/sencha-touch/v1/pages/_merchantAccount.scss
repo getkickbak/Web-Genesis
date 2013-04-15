@@ -170,6 +170,9 @@ $itemDescHeightSmall : calc-px-em($icon-size*$icon-multiplier,0em, $smallFontSiz
                left : -1*$panelGap*1.5;
                z-index:1;
             }
+            .x-loading-spinner-outer {
+               height:6em;
+            }
          }  
       }
    }

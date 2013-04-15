@@ -97,7 +97,7 @@ Ext.define('Genesis.controller.server.Viewport',
                   }
                   else
                   {
-                     me.initNotification(me.licenseKeyInvalidMsg);
+                     lstore.getProxy()._errorCallback = Ext.bind(me.initNotification, me, [me.licenseKeyInvalidMsg]);
                   }
                }
             });
@@ -211,8 +211,7 @@ Ext.define('Genesis.controller.server.Viewport',
                Ext.Viewport.setMasked(null);
                return;
             }
-            else
-            if (!operation.wasSuccessful() && !metaData)
+            else if (!operation.wasSuccessful() && !metaData)
             {
                proxy.supressErrorsPopup = true;
                console.log(me.setupInfoMissingMsg);
@@ -239,7 +238,7 @@ Ext.define('Genesis.controller.server.Viewport',
          });
          delete me._mimeTypeCallback;
       }
-      if (controller)
+      if (controller && Genesis.constants.isNfcEnabled)
       {
          me._mimeTypeCallback = function(nfcEvent)
          {
@@ -329,44 +328,22 @@ Ext.define('Genesis.controller.server.Viewport',
       if (Genesis.fn.isNative())
       {
          //
-         // Sender/Receiver Volume Settings
-         // ===============================
-         // - For Merchant Devices
-         if (Ext.os.is('iOS'))
-         {
-            Ext.device.Notification.show(
-            {
-               title : 'System Setup',
-               message : me.unsupportedPlatformMsg,
-               buttons : ['Dismiss'],
-               callback : function(btn)
-               {
-                  return;
-               }
-            });
-            return;
-         }
-         //
-         // Merchant Device always receives
-         //
-         else
-         if (Ext.os.is('Android'))
-         {
-            s_vol_ratio = 0.4;
-            //Default Volume laying flat on a surface
-            c.s_vol = 40;
+         // Volume Settings
+         // ===============
+         s_vol_ratio = 0.4;
+         //Default Volume laying flat on a surface
+         c.s_vol = 40;
 
-            r_vol_ratio = 0.5;
-            // Read fresh data as soon as there's a miss
-            c.conseqMissThreshold = 1;
-            c.magThreshold = 20000;
-            c.numSamples = 4 * 1024;
-            //Default Overlap of FFT signal analysis over previous samples
-            c.sigOverlapRatio = 0.25;
+         r_vol_ratio = 0.5;
+         // Read fresh data as soon as there's a miss
+         c.conseqMissThreshold = 1;
+         c.magThreshold = 20000;
+         c.numSamples = 4 * 1024;
+         //Default Overlap of FFT signal analysis over previous samples
+         c.sigOverlapRatio = 0.25;
 
-            c.proximityTxTimeout = 20 * 1000;
-            c.proximityRxTimeout = 40 * 1000;
-         }
+         c.proximityTxTimeout = 20 * 1000;
+         c.proximityRxTimeout = 40 * 1000;
          Genesis.fn.printProximityConfig();
          window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
       }

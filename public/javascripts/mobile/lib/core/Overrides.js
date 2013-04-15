@@ -11,6 +11,7 @@ window.plugins = window.plugins ||
 
 Genesis.constants =
 {
+   //host : 'http://192.168.0.46:3000',
    //host : 'http://76.10.173.153',
    //host : 'http://www.dev1getkickbak.com',
    //host : 'http://www.devgetkickbak.com',
@@ -18,8 +19,8 @@ Genesis.constants =
    isNfcEnabled : false,
    userName : 'Eric Chan',
    appMimeType : 'application/kickbak',
-   clientVersion : '2.1.1',
-   serverVersion : '2.1.1',
+   clientVersion : '2.1.2',
+   serverVersion : '2.1.2',
    themeName : 'v1',
    _thumbnailAttribPrefix : '',
    _iconPath : '',
@@ -30,7 +31,7 @@ Genesis.constants =
 
       if (Ext.os.is('Tablet'))
       {
-         ratio = 2 * ratio;
+         ratio = (window.innerHeight > 640) ? 2 * ratio : 1.5 * ratio;
       }
       return Math.floor(((16 * ratio * Math.min(1.0, window.devicePixelRatio)) || (16 * ratio)));
    })(),
@@ -58,39 +59,78 @@ Genesis.constants =
    minDistance : 0.3 * 1000,
    //minDistance : 100000 * 1000,
    createAccountMsg : 'Create user account using Facebook Profile information',
+   spinnerDom : '<div class="x-loading-spinner-outer"><div class="x-loading-spinner"><span class="x-loading-top"></span><span class="x-loading-right"></span><span class="x-loading-bottom"></span><span class="x-loading-left"></span></div></div>',
    init : function()
    {
+      var me = this;
       if (Ext.os.is('iOS'))
       {
-         this._iconPath = '/ios';
-         this._thumbnailAttribPrefix = 'thumbnail_ios_';
-         this._iconSize = 57;
-      }
-      else
-      if (Ext.os.is('Android'))
-      {
-         if ((window.devicePixelRatio == 1) || (window.devicePixelRatio >= 2))
+         me._iconPath = '/ios';
+         me._thumbnailAttribPrefix = 'thumbnail_ios_';
+         me._iconSize = 57;
+         
+         //
+         // Push Notification
+         //
+         if (debugMode)
          {
-            this._iconSize = 48 * ((Ext.os.is('Tablet')) ? 3.0 : 1.2);
-            this._iconPath = '/android/mxhdpi';
-            this._thumbnailAttribPrefix = 'thumbnail_android_mxhdpi_';
+            me.pushNotifAppName = 'KickBak Dev Latest';
+            me.pushNotifAppId = '93D8A-5BE72';
          }
          else
          {
-            this._iconSize = 36 * ((Ext.os.is('Tablet')) ? 3.0 : 1.5);
-            this._iconPath = '/android/lhdpi';
-            this._thumbnailAttribPrefix = 'thumbnail_android_lhdpi_';
+            me.pushNotifAppName = 'KickBak Production';
+            me.pushNotifAppId = '4fef6fb0691c12.54726991';
          }
+         me.pushNotifType = 1;
+         
+         console.log("Running a iOS System");
+      }
+      else if (Ext.os.is('Android'))
+      {
+         if ((window.devicePixelRatio == 1) || (window.devicePixelRatio >= 2))
+         {
+            me._iconSize = 48 * ((Ext.os.is('Tablet')) ? 3.0 : 1.2);
+            me._iconPath = '/android/mxhdpi';
+            me._thumbnailAttribPrefix = 'thumbnail_android_mxhdpi_';
+         }
+         else
+         {
+            me._iconSize = 36 * ((Ext.os.is('Tablet')) ? 3.0 : 1.5);
+            me._iconPath = '/android/lhdpi';
+            me._thumbnailAttribPrefix = 'thumbnail_android_lhdpi_';
+         }
+         
+         //
+         // Push Notification
+         //
+         if (debugMode)
+         {
+            me.pushNotifAppName = 'KickBak Dev Latest';
+            me.pushNotifAppId = '93D8A-5BE72';
+            me.pushNotifProjectId = '658015469194';
+         }
+         else
+         {
+            me.pushNotifAppName = 'KickBak Production';
+            me.pushNotifAppId = '4fef6fb0691c12.54726991';
+            me.pushNotifProjectId = '733275653511';
+         }
+         me.pushNotifType = 3;
+
+         console.log("Running a Android System");
       }
       else
       {
-         this._iconPath = '/ios';
-         this._thumbnailAttribPrefix = 'thumbnail_ios_';
-         this._iconSize = 57;
+         me._iconPath = '/ios';
+         me._thumbnailAttribPrefix = 'thumbnail_ios_';
+         me._iconSize = 57;
+         
+         console.log("Running a Unknown System");
       }
-      this._iconPath = this.themeName + this._iconPath;
+      me._iconPath = me.themeName + me._iconPath;
 
-      console.debug("IconSize = " + this._iconSize + "px");
+      console.debug("IconSize = " + me._iconSize + "px");
    },
    addCRLF : function()
    {
@@ -353,8 +393,7 @@ Genesis.fn =
             {
                rfile = (fileSystem.root.fullPath + '/../' + appName + '.app' + '/www/') + path;
             }
-            else
-            if (Ext.os.is('Android'))
+            else if (Ext.os.is('Android'))
             {
                //rfile = ('file:///mnt/sdcard/' + appName + '/') + path;
                rfile = (appName + '/') + path;
@@ -400,8 +439,7 @@ Genesis.fn =
             {
                wfile = (fileSystem.root.fullPath + '/../' + appName + '.app' + '/www/') + path;
             }
-            else
-            if (Ext.os.is('Android'))
+            else if (Ext.os.is('Android'))
             {
                //wfile = ('file:///mnt/sdcard/' + appName + '/') + path;
                wfile = (appName + '/') + path;
@@ -903,8 +941,7 @@ Ext.define('Genesis.data.proxy.Server',
                   }
                });
             }
-            else
-            if (operation.initialConfig.doNotRetryAttempt)
+            else if (operation.initialConfig.doNotRetryAttempt)
             {
                Ext.device.Notification.show(
                {

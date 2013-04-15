@@ -80,11 +80,11 @@ Ext.define('Genesis.controller.ViewportBase',
 
             merchants.getMain().cleanView(checkins.getExplore());
             checkins.fireEvent('setupCheckinInfo', 'checkin', viewport.getVenue(), ccustomer, metaData);
-            
+
             console.debug("New Customer Record Added.");
 
             me.persistSyncStores('CustomerStore');
-            
+
             customer = ccustomer;
          }
       };
@@ -343,8 +343,7 @@ Ext.define('Genesis.controller.ViewportBase',
          {
             path = "";
          }
-         else
-         if (Ext.os.is('Android'))
+         else if (Ext.os.is('Android'))
          {
             path = "file:///android_asset/www/";
          }
@@ -415,8 +414,7 @@ Ext.define('Genesis.controller.ViewportBase',
       //
       // Pop view
       //
-      else
-      if (lastView && (lastView['view'] == view))
+      else if (lastView && (lastView['view'] == view))
       {
          me.popView();
       }
@@ -549,16 +547,13 @@ Ext.define('Genesis.controller.ViewportBase',
          'resetview' : 'resetView'
       });
 
-      if (Ext.os.is('Android'))
+      if (Ext.os.is('Android') && merchantMode)
       {
-         if (merchantMode)
+         nfc.isEnabled(function()
          {
-            nfc.isEnabled(function()
-            {
-               Genesis.constants.isNfcEnabled = true;
-               console.log('NFC is enabled on this device');
-            });
-         }
+            Genesis.constants.isNfcEnabled = true;
+            console.log('NFC is enabled on this device');
+         });
       }
 
       Ext.regStore('LicenseStore',
@@ -567,6 +562,22 @@ Ext.define('Genesis.controller.ViewportBase',
          autoLoad : false,
       });
 
+      me.last_click_time = new Date().getTime();
+      //
+      // Prevent Strange Double Click problem ...
+      //
+      document.addEventListener('click', function(e)
+      {
+         var click_time = e['timeStamp'];
+         if (click_time && (click_time - me.last_click_time) < 1000)
+         {
+            e.stopPropagation();
+            e.preventDefault();
+            return false;
+         }
+         me.last_click_time = click_time;
+         return true;
+      });
       console.log("ViewportBase Init");
    },
    loadSoundFile : function(tag, sound_file, type)

@@ -151,6 +151,7 @@
 // **************************************************************************
 Genesis.fb =
 {
+   appId : null,
    titleMsg : 'Facebook Connect',
    fbScope : ['email', 'user_birthday', 'publish_stream', 'read_friendlists', 'publish_actions'],
    fbConnectErrorMsg : 'Cannot retrive Facebook account information!',
@@ -170,6 +171,8 @@ Genesis.fb =
    initFb : function()
    {
       var me = this, FB = window.plugins.facebookConnect;
+
+      me.appId = (debugMode) ? 477780595628080 : 197968780267830;
    },
    getFriendsList : function(callback)
    {
@@ -273,7 +276,7 @@ Genesis.fb =
          FB.login(
          {
             permissions : me.fbScope,
-            appId : "" + _appId
+            appId : "" + me.appId
          }, Ext.bind(me.facebook_loginCallback, me));
       };
 
@@ -379,7 +382,7 @@ Genesis.fb =
                         FB.login(
                         {
                            permissions : me.fbScope,
-                           appId : "" + _appId
+                           appId : "" + me.appId
                         }, Ext.bind(me.facebook_loginCallback, me));
                      }, 1, me);
                   }
@@ -405,7 +408,7 @@ Genesis.fb =
                FB.login(
                {
                   permissions : me.fbScope,
-                  appId : "" + _appId
+                  appId : "" + me.appId
                }, Ext.bind(me.facebook_loginCallback, me));
             }, 2 * me.cb['iter'] * 1000, me);
          }
@@ -496,13 +499,13 @@ Genesis.fb =
    _fb_connect : function()
    {
       /*
-       $.cookie(Genesis.fbAppId + "_expires", null);
-       $.cookie(Genesis.fbAppId + "_session_key", null);
-       $.cookie(Genesis.fbAppId + "_ss", null);
-       $.cookie(Genesis.fbAppId + "_user", null);
-       $.cookie(Genesis.fbAppId, null);
+       $.cookie(this.appId + "_expires", null);
+       $.cookie(this.appId + "_session_key", null);
+       $.cookie(this.appId + "_ss", null);
+       $.cookie(this.appId + "_user", null);
+       $.cookie(this.appId, null);
        $.cookie("base_domain_", null);
-       $.cookie("fbsr_" + Genesis.fbAppId, null);
+       $.cookie("fbsr_" + this.appId, null);
        */
    },
    _fb_disconnect : function()

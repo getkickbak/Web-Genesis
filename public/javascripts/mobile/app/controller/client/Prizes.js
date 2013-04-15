@@ -362,38 +362,40 @@ Ext.define('Genesis.controller.client.Prizes',
       }
 
       //Update on Facebook
-      if (( typeof (FB) != "undefined") && ((eligible) || (points > 0)))
-      {
-         Genesis.fb.facebook_onLogin(function(params)
-         {
-            if (params)
-            {
-               Ext.Viewport.setMasked(null);
-               if (eligible)
-               {
-                  //me.updatingPrizeOnFacebook(prize);
-               }
-               if (points > 0)
-               {
-                  var ainfo = metaData['account_info'], badgeId = ainfo['badge_id'], badge = Ext.StoreMgr.get('BadgeStore').getById(badgeId);
-                  me.updatingBadgeOnFacebook(Ext.create('Genesis.model.CustomerReward',
-                  {
-                     'title' : badge.get('type').display_value,
-                     'type' :
-                     {
-                        value : 'promotion'
-                     },
-                     'photo' : Genesis.view.client.Badges.getPhoto(badge.get('type'), 'thumbnail_large_url'),
-                     'points' : points,
-                     'time_limited' : false,
-                     'quantity_limited' : false,
-                     'merchant' : null
-                  }));
-               }
-            }
-            //}, false, me.updateOnFbMsg);
-         }, false);
-      }
+      /*
+       if (( typeof (FB) != "undefined") && ((eligible) || (points > 0)))
+       {
+       Genesis.fb.facebook_onLogin(function(params)
+       {
+       if (params)
+       {
+       Ext.Viewport.setMasked(null);
+       if (eligible)
+       {
+       //me.updatingPrizeOnFacebook(prize);
+       }
+       if (points > 0)
+       {
+       var ainfo = metaData['account_info'], badgeId = ainfo['badge_id'], badge = Ext.StoreMgr.get('BadgeStore').getById(badgeId);
+       me.updatingBadgeOnFacebook(Ext.create('Genesis.model.CustomerReward',
+       {
+       'title' : badge.get('type').display_value,
+       'type' :
+       {
+       value : 'promotion'
+       },
+       'photo' : Genesis.view.client.Badges.getPhoto(badge.get('type'), 'thumbnail_large_url'),
+       'points' : points,
+       'time_limited' : false,
+       'quantity_limited' : false,
+       'merchant' : null
+       }));
+       }
+       }
+       //}, false, me.updateOnFbMsg);
+       }, false);
+       }
+       */
 
       return false;
    },

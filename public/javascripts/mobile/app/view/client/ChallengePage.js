@@ -149,7 +149,7 @@ Ext.define('Genesis.view.client.ChallengePage',
       element.addCls('x-item-selected');
 
       var data = Ext.create('Genesis.model.Challenge', Ext.decode(decodeURIComponent(e.delegatedTarget.getAttribute('data'))));
-      _application.getController('client.Challenges').fireEvent('itemTap', data);
+      _application.getController('client' + '.Challenges').fireEvent('itemTap', data);
    },
    cleanView : function()
    {
@@ -167,8 +167,7 @@ Ext.define('Genesis.view.client.ChallengePage',
             itemPerPage = 8;
          }
       }
-      else
-      if (Ext.os.is('Android') && (window.screen.height > 480))
+      else if (Ext.os.is('Android') && (window.screen.height > 480))
       {
          if (window.screen.height <= 568)
          {

@@ -2,8 +2,6 @@
 <html>
    <head>
       <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-      <meta property="fb:admins" content="725565520"/>
-      <meta property="fb:app_id" content="197968780267830"/>
       <meta name="format-detection" content="telephone=no" />
       <meta name="format-detection" content="email=no" />
       <meta name="format-detection" content="address=no" />
@@ -28,7 +26,7 @@
       Phone Gap Libs
       -->
       <script type="text/javascript" src="lib/gibberish-aes.min.js"></script>
-      <script type="text/javascript" src="lib/cordova-2.3.0.android.js"></script>
+      <script type="text/javascript" src="lib/cordova-2.6.0.android.js"></script>
       <script type="text/javascript" src="lib/core/PushNotification.android.js"></script>
       <!-- Debug Javascript on mobile browser -->
       <script type="text/javascript" src="lib/sencha-touch-all.js"></script>
@@ -81,6 +79,7 @@
                //this.redirectTo('');
                console.log("Launched App");
                //navigator.splashscreen.hide();
+               initPushwoosh();
             }
          }
       </script>
@@ -94,20 +93,9 @@
          var merchantMode = false;
          var appName = 'GetKickBak';
          
-         var pushNotifAppName = 'KickBak Production';
-         var pushNotifAppId = '4fef6fb0691c12.54726991';
-         var pushNotifProjectId = '733275653511';
-         /*
-         var pushNotifAppName = 'KickBak Dev Latest';
-         var pushNotifAppId = '93D8A-5BE72';
-         var pushNotifProjectId = '658015469194';
-         */
-         var pushNotifType = 3;
-
          var hostRoot = "";
          //"/assets/www/";
          var _appPath = hostRoot + "app", _extPath = hostRoot + 'lib/touch-2.1.1/src';
-         var _appId = "197968780267830";
          var _application;
 
          // If you want to prevent dragging, uncomment this section
@@ -253,9 +241,8 @@
 
                console.log("PhoneGap App Launch");
                launched = 0x110;
-               initPushwoosh();
-               document.addEventListener("backbutton", onBackKeyDown, false);
                _appLaunch();
+               document.addEventListener("backbutton", onBackKeyDown, false);
             }, false);
 
             // Fix for problem  with android 3.x and 4.x which is

@@ -42,6 +42,32 @@ Ext.define('Genesis.device.notification.PhoneGap',
 function initPushwoosh()
 {
    var pushNotification = window.plugins.pushNotification;
+   document.addEventListener('push-notification', function(event)
+   {
+      if (event.notification)
+      {
+         var notification = event.notification, title = notification.title, userData = notification.userdata, viewport = _application.getController('client' + '.Viewport');
+
+         console.debug('push notifcation - [' + JSON.stringify(notification) + ']');
+         //if ( typeof (userData) != "undefined")
+         {
+            Ext.device.Notification.show(
+            {
+               title : 'KICKBAK Notification',
+               message : title,
+               buttons : ['Dismiss']
+            });
+            viewport.setApsPayload(userData)
+            viewport.getGeoLocation();
+         }
+      }
+      else
+      {
+         console.warn('push notifcation - Null Notification');
+      }
+   });
+   pushNotification.onDeviceReady();
+
    //var callback = function(rc)
    {
       // rc could be registrationId or errorCode
@@ -49,15 +75,15 @@ function initPushwoosh()
       // CHANGE projectid & appid
       pushNotification.registerDevice(
       {
-         projectid : pushNotifProjectId,
-         appid : pushNotifAppId
+         projectid : Genesis.constants.pushNotifProjectId,
+         appid : Genesis.constants.pushNotifAppId
       }, function(status)
       {
          var deviceToken = status, viewport;
          console.debug('registerDevice: ' + deviceToken);
          Genesis.constants.device =
          {
-            'device_type' : pushNotifType, //1 for iOS, 3 for Android
+            'device_type' : Genesis.constants.pushNotifType, //1 for iOS, 3 for Android
             'device_id' : deviceToken
          };
 
@@ -69,31 +95,6 @@ function initPushwoosh()
       {
          console.debug('failed to register : ' + JSON.stringify(status));
          Genesis.constants.device = null;
-      });
-
-      document.addEventListener('push-notification', function(event)
-      {
-         if (event.notification)
-         {
-            var notification = event.notification, title = notification.title, userData = notification.userdata, viewport = _application.getController('client' + '.Viewport');
-
-            console.debug('push notifcation - [' + JSON.stringify(notification) + ']');
-            //if ( typeof (userData) != "undefined")
-            {
-               Ext.device.Notification.show(
-               {
-                  title : 'KICKBAK Notification',
-                  message : title,
-                  buttons : ['Dismiss']
-               });
-               viewport.setApsPayload(userData)
-               viewport.getGeoLocation();
-            }
-         }
-         else
-         {
-            console.warn('push notifcation - Null Notification');
-         }
       });
    };
 

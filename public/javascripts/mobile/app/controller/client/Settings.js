@@ -2,9 +2,9 @@ Ext.define('Genesis.controller.client.Settings',
 {
    extend : 'Genesis.controller.SettingsBase',
    settingsTitle : 'Account Settings',
-   enableFBMsg : 'By connecting to Facebook, you will be received additional Reward Pts everytime we update your KICKBAK activity to your Facebook account!',
+   enableFBMsg : 'By connecting to Facebook, you will receive additional Reward Pts everytime we update your KICKBAK activity to your Facebook account!',
    disableFBMsg : '',
-   enableTwitterMsg : 'By enabling Twitter connectivity, you will be received additional reward points everytime we update your KICKBAK activity to their site!',
+   enableTwitterMsg : 'By enabling Twitter connectivity, you will receive additional reward points everytime we update your KICKBAK activity to their site!',
    disableTwitterMsg : '',
    twitterUnconfiguredMsg : 'Please configure your Twitter App',
    inheritableStatics :
@@ -173,6 +173,68 @@ Ext.define('Genesis.controller.client.Settings',
             }
          });
    },
+   updateFBSettings : function(params)
+   {
+      var me = this;
+
+      Ext.defer(function()
+      {
+         Ext.device.Notification.show(
+         {
+            title : 'Facebook Connect',
+            message : me.fbLoggedInIdentityMsg(params['email']),
+            buttons : ['OK']
+         });
+      }, 1, me);
+   },
+   updateFBSettingsPopup : function(title, toggle)
+   {
+      var me = this, db = Genesis.db.getLocalDB();
+      var _fbLogin = function()
+      {
+         Genesis.fb.facebook_onLogin(function(params, operation)
+         {
+            Ext.Viewport.setMasked(null);
+            if (!params || ((operation && !operation.wasSuccessful())))
+            {
+               if (me.getSettingsPage() && !me.getSettingsPage().isHidden() && toggle)
+               {
+                  toggle.toggle();
+               }
+            }
+            else
+            {
+               me.updateFBSettings(params);
+               if (toggle)
+               {
+                  toggle.originalValue = 1;
+                  me.updateAccountInfo();
+               }
+            }
+         }, db['enableTwitter']);
+      };
+
+      _fbLogin();
+      /*
+       Ext.device.Notification.show(
+       {
+       title : title,
+       message : me.enableFBMsg,
+       buttons : ['Proceed', 'Cancel'],
+       callback : function(btn)
+       {
+       if (btn.toLowerCase() == 'proceed')
+       {
+       _fbLogin();
+       }
+       else if (toggle)
+       {
+       toggle.toggle();
+       }
+       }
+       });
+       */
+   },
    updateAccountInfo : function()
    {
       var i, f, me = this, db = Genesis.db.getLocalDB(), fields = me.getAccountFields(), form = me.getSettingsPage();
@@ -306,55 +368,10 @@ Ext.define('Genesis.controller.client.Settings',
    onToggleFB : function(toggle, slider, thumb, newValue, oldValue, eOpts)
    {
       var me = this, db = Genesis.db.getLocalDB();
-      var updateFBSettings = function(params)
-      {
-         Ext.defer(function()
-         {
-            Ext.device.Notification.show(
-            {
-               title : 'Facebook Connect',
-               message : me.fbLoggedInIdentityMsg(params['email']),
-               buttons : ['OK']
-            });
-         }, 1, me);
-      }
+
       if (newValue == 1)
       {
-         Genesis.fb.facebook_onLogin(function(params, operation)
-         {
-            Ext.Viewport.setMasked(null);
-            if (!params || ((operation && !operation.wasSuccessful())))
-            {
-               if (!me.getSettingsPage().isHidden())
-               {
-                  toggle.toggle();
-               }
-            }
-            else
-            {
-               toggle.originalValue = newValue;
-               /*
-                if (!db['enableTwitter'])
-                {
-                Ext.device.Notification.show(
-                {
-                title : me.settingsTitle,
-                message : me.enableFBMsg,
-                buttons : ['Dismiss'],
-                callback : function()
-                {
-                updateFBSettings(params);
-                }
-                });
-                }
-                else
-                */
-               {
-                  updateFBSettings(params);
-               }
-               me.updateAccountInfo();
-            }
-         }, db['enableTwitter']);
+         me.updateFBSettingsPopup(me.settingsTitle, toggle);
       }
       else if (db['enableFB'])
       {

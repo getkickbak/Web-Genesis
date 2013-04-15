@@ -57,7 +57,7 @@ $panelGap: 0.8em;
 $panelTopGap: 0.7em;
 $panelBorderRadius : 0.6em;
 // Font sizes
-$defaultFontSize : (16px * 2 * 1.14 * 1.0);
+$defaultFontSize : (16px * 1.5 * 1.14 * 1.0);
 $xsmallFontSize : 0.3em;
 $smallFontSize : 0.4em;
 $normalFontSize : 0.6em;
@@ -100,12 +100,28 @@ $badgePoints-bg-gradient: $base-gradient;
 //------------------------------------------------------------------------------
 @import 'sencha-touch/v1/all';
 
-body {
-   font-size : 114%;
-   //background-image : url(/resources/startup/640x920.png) no-repeat;
-   background-size : contain;
+@media only screen and (orientation : landscape)
+{
+   body {
+      font-size : 114%;
+      //background-image : url(/resources/startup/640x920.png) no-repeat;
+      background-size : contain;
+   }
+   
+   body.x-tablet {
+      font-size :171%;
+   }
 }
 
-body.x-tablet {
-   font-size : 228%;  
+@media only screen and (orientation : portrait)
+{
+   body {
+      font-size : 114%;
+      //background-image : url(/resources/startup/640x920.png) no-repeat;
+      background-size : contain;
+   }
+   
+   body.x-tablet {
+      font-size : 228%;  
+   }
 }

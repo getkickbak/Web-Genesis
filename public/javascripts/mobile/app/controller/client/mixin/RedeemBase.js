@@ -172,19 +172,21 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
                   Ext.device.Notification.beep();
 
                   //Update on Facebook
-                  if ((db['currFbId'] > 0) && ( typeof (FB) != "undefined"))
-                  {
-                     Genesis.fb.facebook_onLogin(function(params)
-                     {
-                        if (params)
-                        {
-                           var redeemItem = store.getById(item.getData().getId());
-                           Ext.Viewport.setMasked(null);
-                           me.updatingRedemptionOnFacebook(redeemItem);
-                        }
-                        //}, false, me.updateOnFbMsg);
-                     }, false);
-                  }
+                  /*
+                   if ((db['currFbId'] > 0) && ( typeof (FB) != "undefined"))
+                   {
+                   Genesis.fb.facebook_onLogin(function(params)
+                   {
+                   if (params)
+                   {
+                   var redeemItem = store.getById(item.getData().getId());
+                   Ext.Viewport.setMasked(null);
+                   me.updatingRedemptionOnFacebook(redeemItem);
+                   }
+                   //}, false, me.updateOnFbMsg);
+                   }, false);
+                   }
+                   */
 
                   Ext.device.Notification.show(
                   {

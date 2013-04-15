@@ -4,9 +4,8 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
       <meta name="apple-mobile-web-app-capable" content="yes" />
       <meta name="apple-touch-fullscreen" content="yes" />
-      <meta property="fb:admins" content="725565520"/>
-      <meta property="fb:app_id" content="197968780267830"/>
       <meta name="format-detection" content="telephone=no" />
+      <meta name="format-detection" content="address=no" />
       <meta name="format-detection" content="email=no" />
       <!-- Default Fontsize = 11px
       iPad @132dpi = 100% - iPhone @163dpi = 114% - iPhone Retina @326dpi = 228%
@@ -31,7 +30,7 @@
       Phone Gap Libs
       -->
       <script type="text/javascript" src="lib/gibberish-aes.min.js"></script>
-      <script type="text/javascript" src="lib/cordova-2.3.0.ios.js"></script>
+      <script type="text/javascript" src="lib/cordova-2.6.0.ios.js"></script>
       <script type="text/javascript" src="lib/core/PushNotification.ios.js"></script>
 
       <script type="text/javascript" src="lib/sencha-touch-all.js"></script>
@@ -81,6 +80,7 @@
                //this.redirectTo('');
                console.log("Launched App");
                navigator.splashscreen.hide();
+               initPushwoosh();
             }
          }
       </script>
@@ -93,16 +93,7 @@
          var debugMode = false;
          var merchantMode = false;
          var appName = 'GetKickBak';
-         var pushNotifAppName = 'KickBak Production';
-         var pushNotifAppId = '4fef6fb0691c12.54726991';
-         /*
-         var pushNotifAppName = 'KickBak Dev Latest';
-         var pushNotifAppId = '93D8A-5BE72';
-		 */
-         var pushNotifType = 1;
-
          var _appPath = "app", _extPath = 'lib/touch-2.1.1/src';
-         var _appId = "197968780267830";
          var _application;
 
          // If you want to prevent dragging, uncomment this section
@@ -190,7 +181,6 @@
 
                console.log("PhoneGap App Launch");
                launched = 0x110;
-               initPushwoosh();
                _appLaunch();
             }, false);
 

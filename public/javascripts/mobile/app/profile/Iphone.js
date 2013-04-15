@@ -105,37 +105,6 @@ Ext.define('Genesis.device.camera.PhoneGap',
 function initPushwoosh()
 {
    var pushNotification = window.plugins.pushNotification;
-   pushNotification.onDeviceReady();
-
-   pushNotification.registerDevice(
-   {
-      alert : true,
-      badge : true,
-      sound : true,
-      pw_appid : pushNotifAppId,
-      appname : pushNotifAppName
-   }, function(status)
-   {
-      var deviceToken = status['deviceToken'], viewport;
-      console.debug('registerDevice: ' + deviceToken);
-      Genesis.constants.device =
-      {
-         'device_type' : pushNotifType, //1 for iOS, 3 for Android
-         'device_id' : deviceToken
-      };
-
-      if (_application && (( viewport = _application.getController('client' + '.Viewport')) != null))
-      {
-         viewport.fireEvent('updateDeviceToken');
-      }
-   }, function(status)
-   {
-      console.debug('failed to register : ' + JSON.stringify(status));
-      Genesis.constants.device = null;
-      //navigator.notification.alert(JSON.stringify(['failed to register ', status]));
-   });
-
-   //pushNotification.setApplicationIconBadgeNumber(0);
 
    document.addEventListener('push-notification', function(event)
    {
@@ -158,4 +127,36 @@ function initPushwoosh()
          }
       }
    });
+   
+   pushNotification.onDeviceReady();
+
+   pushNotification.registerDevice(
+   {
+      alert : true,
+      badge : true,
+      sound : true,
+      pw_appid : Genesis.constants.pushNotifAppId,
+      appname : Genesis.constants.pushNotifAppName
+   }, function(status)
+   {
+      var deviceToken = status['deviceToken'], viewport;
+      console.debug('registerDevice: ' + deviceToken);
+      Genesis.constants.device =
+      {
+         'device_type' : Genesis.constants.pushNotifType, //1 for iOS, 3 for Android
+         'device_id' : deviceToken
+      };
+
+      if (_application && (( viewport = _application.getController('client' + '.Viewport')) != null))
+      {
+         viewport.fireEvent('updateDeviceToken');
+      }
+   }, function(status)
+   {
+      console.debug('failed to register : ' + JSON.stringify(status));
+      Genesis.constants.device = null;
+      //navigator.notification.alert(JSON.stringify(['failed to register ', status]));
+   });
+
+   //pushNotification.setApplicationIconBadgeNumber(0);
 }

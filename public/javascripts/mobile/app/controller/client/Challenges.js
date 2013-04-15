@@ -824,6 +824,12 @@ Ext.define('Genesis.controller.client.Challenges',
       });
       switch (model.get('type').value)
       {
+         case 'facebook' :
+         {
+            var hideFB = (db['enableFB'] && (db['currFbId'] > 0)) || !Genesis.fn.isNative();
+            me.getChallengeContainer()[hideFB ? 'hide' : 'show']();
+            break;
+         }
          case 'birthday' :
          {
             me.getChallengeContainer()['hide']();
@@ -904,6 +910,12 @@ Ext.define('Genesis.controller.client.Challenges',
             }
             case 'birthday' :
             {
+               break;
+            }
+            case 'facebook' :
+            {
+               var controller = me.getApplication().getController('client' + '.Settings');
+               controller.updateFBSettingsPopup(selectedItem.get('name') + ' Challenge', null);
                break;
             }
             case 'photo' :
