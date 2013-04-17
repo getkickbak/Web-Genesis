@@ -11,11 +11,11 @@ window.plugins = window.plugins ||
 
 Genesis.constants =
 {
-   host : 'http://192.168.0.46:3000',
+   //host : 'http://192.168.0.46:3000',
    //host : 'http://76.10.173.153',
    //host : 'http://www.dev1getkickbak.com',
    //host : 'http://www.devgetkickbak.com',
-   //host : 'http://www.getkickbak.com',
+   host : 'http://www.getkickbak.com',
    isNfcEnabled : false,
    userName : 'Eric Chan',
    appMimeType : 'application/kickbak',

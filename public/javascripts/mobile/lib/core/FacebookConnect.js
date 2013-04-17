@@ -162,6 +162,7 @@ Genesis.fb =
    connectingToFBMsg : 'Connecting to Facebook ...',
    loggingOutOfFBMsg : 'Logging out of Facebook ...',
    fbConnectFailMsg : 'Error Connecting to Facebook.',
+   fbPermissionFailMsg : 'Failed to get the required access permission.',
    friendsRetrieveErrorMsg : 'You cannot retrieve your Friends List from Facebook. Login and Try Again.',
    /*
    * Clean up any Facebook cookies, otherwise, we have page loading problems
@@ -551,6 +552,128 @@ Genesis.fb =
       catch(e)
       {
          cb();
+      }
+   },
+   createFBReminderMsg : function()
+   {
+      var me = this;
+
+      if (!me.actions)
+      {
+         me.actions = (Ext.create('Ext.Sheet',
+            {
+               bottom : 0,
+               left : 0,
+               top : 0,
+               right : 0,
+               padding : '1.0',
+               hideOnMaskTap : false,
+               defaultUnit : 'em',
+               layout :
+               {
+                  type : 'vbox',
+                  pack : 'middle'
+               },
+               defaults :
+               {
+                  xtype : 'container',
+                  defaultUnit : 'em'
+               },
+               items : [
+               {
+                  width : '100%',
+                  flex : 1,
+                  style : 'text-align:center;display:inline-table;color:white;font-size:1.1em;',
+                  html : me.fbConnectRequestMsg + '<img width="160" style="margin:0.7em 0;" src="resources/themes/images/v1/facebook_icon.png"/>'
+               },
+               {
+                  docked : 'bottom',
+                  defaults :
+                  {
+                     xtype : 'button',
+                     defaultUnit : 'em',
+                     scope : me
+                  },
+                  padding : '0 1.0 1.0 1.0',
+                  items : [
+                  {
+                     margin : '0 0 0.5 0',
+                     text : 'Sign In',
+                     ui : 'action',
+                     handler : function()
+                     {
+                        me.actions.hide();
+                        var mainPage = _application.getController('client' + '.MainPage');
+                        mainPage.fireEvent('facebookTap', null, null, null, null, function()
+                        {
+                           Ext.device.Notification.show(
+                           {
+                              title : me.titleMsg,
+                              message : me.fbPermissionFailMsg,
+                              buttons : ['Dismiss'],
+                              callback : function(button)
+                              {
+                                 mainPage._loggingIn = false;
+                                 
+                                 var viewport = _application.getController('client' + '.Viewport');
+                                 var vport = viewport.getViewport();
+                                 var activeItem = vport.getActiveItem();
+                                 if (!activeItem)
+                                 {
+                                    Ext.Viewport.setMasked(null);
+                                    viewport.resetView();
+                                    viewport.redirectTo('login');
+                                 }
+                                 else
+                                 {
+                                    //console.log("XType:" + activeItem.getXTypes())
+                                 }
+                              }
+                           });
+                        });
+
+                        me.actions.destroy();
+                        delete me.actions;
+                     }
+                  },
+                  {
+                     margin : '0.5 0 0.5 0',
+                     text : 'Skip',
+                     ui : 'cancel',
+                     handler : function()
+                     {
+                        me.actions.hide();
+                        _application.getController('client' + '.Viewport').redirectTo('checkin');
+
+                        me.actions.destroy();
+                        delete me.actions;
+                     }
+                  },
+                  {
+                     margin : '0.5 0 0 0',
+                     text : 'Don\'t Remind Me Again',
+                     //ui : 'decline',
+                     handler : function()
+                     {
+                        me.actions.hide();
+                        Genesis.db.setLocalDBAttrib('disableFBReminderMsg', true);
+
+                        _application.getController('client' + '.Viewport').redirectTo('checkin');
+
+                        me.actions.destroy();
+                        delete me.actions;
+                     }
+                  }]
+               }]
+            }));
+         Ext.Viewport.add(me.actions);
+         me.actions.show();
+      }
+      else
+      {
+         //
+         // Prevent Recursion ... Do nothing
+         //
       }
    },
    //

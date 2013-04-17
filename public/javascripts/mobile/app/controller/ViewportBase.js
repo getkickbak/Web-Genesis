@@ -1,6 +1,7 @@
 Ext.define('Genesis.controller.ViewportBase',
 {
    extend : 'Genesis.controller.ControllerBase',
+   requires : ['Ext.Sheet'],
    inheritableStatics :
    {
    },
@@ -251,7 +252,17 @@ Ext.define('Genesis.controller.ViewportBase',
             // No Venue Checked-In from previous session
             if (!db['last_check_in'])
             {
-               me.redirectTo('checkin');
+            	//
+            	// Trigger Facebook Login reminder
+            	//
+               if ((db['enableFB'] && (db['currFbId'] > 0)) || (db['disableFBReminderMsg']))
+               {
+                  me.redirectTo('checkin');
+               }
+               else
+               {
+                  Genesis.fb.createFBReminderMsg();
+               }
             }
 
             return;

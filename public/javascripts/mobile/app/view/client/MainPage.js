@@ -27,7 +27,7 @@ Ext.define('Genesis.view.client.MainPage',
                         this.actions = Ext.create('Ext.ActionSheet',
                         {
                            defaultUnit : 'em',
-                           padding : '1em',
+                           padding : '1.0',
                            hideOnMaskTap : false,
                            defaults :
                            {
