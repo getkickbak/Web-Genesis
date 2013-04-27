@@ -1,6 +1,6 @@
 .title, .subtitle {
    @extend .shadows;
-   font-size:$xlargeFontSize;
+   font-size:$xlargeFontSize * 0.9;
    font-weight:bold;
    height : 3.8em;
    text-align:center;

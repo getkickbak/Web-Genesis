@@ -42,10 +42,6 @@ Ext.define('Genesis.controller.server.Rewards',
          {
             tap : 'onCalcBtnTap'
          },
-         'serverrewardsview calculator[tag=amount] container[tag=bottomButtons] button[tag=earnPtsTag]' :
-         {
-            tap : 'onEnterTagIdTap'
-         },
          'serverrewardsview calculator[tag=amount] container[tag=bottomButtons] button[tag=earnPts]' :
          {
             tap : 'onEarnPtsTap'
@@ -71,6 +67,10 @@ Ext.define('Genesis.controller.server.Rewards',
    invalidAmountMsg : 'Please enter a valid amount (eg. 5.00), upto $1000',
    earnPtsConfirmMsg : 'Please confirm to submit',
    earnPtsTitle : 'Earn Reward Points',
+   unRegAccountMsg : function()
+   {
+      return ('This account is unregistered' + Genesis.constants.addCRLF() + 'Phone Number is required for registration');
+   },
    init : function()
    {
       this.callParent(arguments);
@@ -182,6 +182,7 @@ Ext.define('Genesis.controller.server.Rewards',
                'expiry_ts' : new Date().addHours(3).getTime()
             }
          });
+         me._params = params['data'];
          params['data'] = me.self.encryptFromParams(params['data']);
          //
          // Update Server
@@ -217,6 +218,36 @@ Ext.define('Genesis.controller.server.Rewards',
                {
                   //proxy._errorCallback = Ext.bind(me.onDoneTap, me);
                   proxy.supressErrorsPopup = true;
+                  if (proxy.getReader().metaData)
+                  {
+                     switch(proxy.getReader().metaData['rescode'])
+                     {
+                        case 'unregistered_account' :
+                        {
+                           //
+                           //
+                           //
+                           Ext.device.Notification.show(
+                           {
+                              title : me.earnPtsTitle,
+                              message : me.unRegAccountMsg(),
+                              buttons : ['Register', 'Cancel'],
+                              callback : function(btn)
+                              {
+                                 proxy.supressErrorsCallbackFn();
+                                 if (btn.toLowerCase() == 'register')
+                                 {
+                                    me.onEnterPhoneNum();
+                                 }
+                              }
+                           });
+                           return;
+                           break;
+                        }
+                        default :
+                           break;
+                     }
+                  }
                   Ext.device.Notification.show(
                   {
                      title : me.earnPtsTitle,
@@ -255,7 +286,7 @@ Ext.define('Genesis.controller.server.Rewards',
          if (b && (b.toLowerCase() == 'manual'))
          {
             Ext.Viewport.setMasked(null);
-            me.onEnterTagIdTap();
+            me.onEnterPhoneNum();
          }
          else if (!dismissDialog)
          {
@@ -309,7 +340,7 @@ Ext.define('Genesis.controller.server.Rewards',
    // --------------------------------------------------------------------------
    // Amount Tab
    // --------------------------------------------------------------------------
-   onEnterTagIdTap : function(b, e, eOpts, eInfo)
+   onEnterPhoneNum : function()
    {
       var me = this, amount = me.validateAmount(), container = me.getRewardsContainer();
 
@@ -446,12 +477,14 @@ Ext.define('Genesis.controller.server.Rewards',
                {
                   me.onNfc(
                   {
-                     id : null,
+                     id : (me._params) ? me._params['uid'] : null,
                      result :
                      {
+                        'tagID' : (me._params) ? me._params['tag_id'] : null,
                         'phoneID' : phoneId
                      }
                   });
+                  delete me._params;
                }
                else
                {
@@ -478,6 +511,7 @@ Ext.define('Genesis.controller.server.Rewards',
    {
       var me = this;
       var container = me.getRewardsContainer();
+      delete me._params;
       container.setActiveItem(0);
       console.debug("Rewards onDoneTap Called ...");
    },

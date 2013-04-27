@@ -217,7 +217,7 @@ Ext.define('Genesis.controller.client.Challenges',
 
             var ft = new FileTransfer();
             var res, metaData = me.metaData;
-            ft.upload(me.imageURI, encodeURI(Genesis.constants.host + '/api/v1/venues/share_photo'), function(r)
+            ft.upload(me.imageURI, encodeURI(serverHost + '/api/v1/venues/share_photo'), function(r)
             {
                try
                {
@@ -927,26 +927,66 @@ Ext.define('Genesis.controller.client.Challenges',
                {
                   var send = function()
                   {
-                     Ext.device.Notification.show(
+                     if (!me._actions)
                      {
-                        title : selectedItem.get('name') + ' Challenge',
-                        message : me.showToServerMsg(),
-                        buttons : ['Proceed', 'Cancel'],
-                        callback : function(btn)
+                        me._actions = Ext.create('Genesis.view.widgets.PopupItemDetail',
                         {
-                           if (btn.toLowerCase() == 'proceed')
+                           title : me.showToServerMsg(),
+                           buttons : [
                            {
-                              if (selectedItem.get('type').value == 'photo')
+                              margin : '0 0 0.5 0',
+                              text : 'Proceed',
+                              ui : 'action',
+                              height : '3em',
+                              handler : function()
                               {
-                                 me.getGeoLocation();
+                                 me._actions.hide();
+                                 if (selectedItem.get('type').value == 'photo')
+                                 {
+                                    me.getGeoLocation();
+                                 }
+                                 else
+                                 {
+                                    me.onLocationUpdate(null);
+                                 }
                               }
-                              else
+                           },
+                           {
+                              margin : '0.5 0 0 0',
+                              text : 'Cancel',
+                              ui : 'cancel',
+                              height : '3em',
+                              handler : function()
                               {
-                                 me.onLocationUpdate(null);
+                                 me._actions.hide();
                               }
-                           }
-                        }
-                     });
+                           }]
+                        });
+                        Ext.Viewport.add(me._actions);
+                     }
+                     me._actions.show();
+                     /*
+                      Ext.device.Notification.show(
+                      {
+                      title : selectedItem.get('name') + ' Challenge',
+                      message : me.showToServerMsg(),
+                      buttons : ['Proceed', 'Cancel'],
+                      callback : function(btn)
+                      {
+                      if (btn.toLowerCase() == 'proceed')
+                      {
+                      if (selectedItem.get('type').value == 'photo')
+                      {
+                      me.getGeoLocation();
+                      }
+                      else
+                      {
+                      me.onLocationUpdate(null);
+                      }
+                      }
+                      }
+                      });
+                      */
                   };
 
                   if (Genesis.fn.isNative())
@@ -1493,28 +1533,71 @@ Ext.define('Genesis.controller.client.Challenges',
       {
          case 'referrals' :
          {
-            Ext.device.Notification.show(
+            if (!me._referralActions)
             {
-               title : 'Referral Challenge',
-               message : me.confirmRecvReferralsMsg,
-               buttons : ['Proceed', 'Cancel'],
-               callback : function(btn)
+               me._referralActions = Ext.create('Genesis.view.widgets.PopupItemDetail',
                {
-                  if (btn.toLowerCase() == 'proceed')
+                  title : me.confirmRecvReferralsMsg,
+                  buttons : [
                   {
-                     if (cb)
+                     margin : '0 0 0.5 0',
+                     text : 'Proceed',
+                     ui : 'action',
+                     height : '3em',
+                     handler : function()
                      {
-                        me.referralCbFn = cb;
+                        me._referralActions.hide();
+                        if (cb)
+                        {
+                           me.referralCbFn = cb;
+                        }
+                        delete me.selectedItem;
+                        me.metaData =
+                        {
+                           position : null
+                        };
+                        me.scanQRCode();
                      }
-                     delete me.selectedItem;
-                     me.metaData =
+                  },
+                  {
+                     margin : '0.5 0 0 0',
+                     text : 'Cancel',
+                     ui : 'cancel',
+                     height : '3em',
+                     handler : function()
                      {
-                        position : null
-                     };
-                     me.scanQRCode();
-                  }
-               }
-            });
+                        me._referralActions.hide();
+                     }
+                  }]
+               });
+               Ext.Viewport.add(me._referralActions);
+            }
+            me._referralActions.show();
+
+            /*
+             Ext.device.Notification.show(
+             {
+             title : 'Referral Challenge',
+             message : me.confirmRecvReferralsMsg,
+             buttons : ['Proceed', 'Cancel'],
+             callback : function(btn)
+             {
+             if (btn.toLowerCase() == 'proceed')
+             {
+             if (cb)
+             {
+             me.referralCbFn = cb;
+             }
+             delete me.selectedItem;
+             me.metaData =
+             {
+             position : null
+             };
+             me.scanQRCode();
+             }
+             }
+             });
+             */
             break;
          }
          default:

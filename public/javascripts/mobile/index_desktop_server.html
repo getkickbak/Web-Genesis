@@ -12,12 +12,12 @@
       -->
       <!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www
       directory and include it here -->
-      <script type="text/javascript" src="lib/gibberish-aes.min.js"></script>
-      <script type="text/javascript" src="lib/core/qrcode.js"></script>
-      <script type="text/javascript" src="lib/core/date.js"></script>
-      <script type="text/javascript" src="lib/core/extras.js"></script>
+      <script type="text/javascript" src="../lib/gibberish-aes.min.js"></script>
+      <script type="text/javascript" src="../lib/core/qrcode.js"></script>
+      <script type="text/javascript" src="../lib/core/date.js"></script>
+      <script type="text/javascript" src="../lib/core/extras.js"></script>
       <!-- Debug Javascript on mobile browser -->
-      <script type="text/javascript" src="lib/touch-2.1.1/sencha-touch-all-debug.js"></script>
+      <script type="text/javascript" src="../lib/touch-2.1.1/sencha-touch-all-debug.js"></script>
       <!--
       Phone Gap Libs
       -->
@@ -26,10 +26,16 @@
          var backBtnCallbackListFn = [];
          var phoneGapAvailable = false;
          var debugMode = true;
+         var serverHost;
+         //serverHost = 'http://192.168.0.46:3000';
+		 //serverHost = 'http://76.10.173.153';
+		 serverHost = 'http://www.dev1getkickbak.com';
+		 //serverHost = 'http://www.devgetkickbak.com';
+		 //serverHost = 'http://www.getkickbak.com',
          var merchantMode = true;
          var appName = 'MerchantKickBak';
 
-         var _appPath = "app", _extPath = 'lib/touch-2.1.1/src';
+         var _appPath = "app", _extPath = '../lib/touch-2.1.1/src';
 
          var _browser = Ext.browser;
          if (!!window.isNK)
@@ -70,7 +76,9 @@
       <script type="text/javascript" src="app/view/widgets/ListField.js"></script>
       <script type="text/javascript" src="app/view/widgets/ComponentListItem.js"></script>
       <script type="text/javascript" src="app/view/widgets/ComponentList.js"></script>
-      <script type="text/javascript" src="app/view/widgets/RedeemItem.js"></script>
+      <script type="text/javascript" src="app/view/ViewBase.js"></script>
+      <script type="text/javascript" src="app/view/widgets/Item.js"></script>
+      <script type="text/javascript" src="app/view/widgets/ItemDetail.js"></script>
       <script type="text/javascript" src="app/view/widgets/MerchantAccountPtsItem.js"></script>
       <script type="text/javascript" src="app/view/widgets/RedeemPtsItem.js"></script>
       <script type="text/javascript" src="app/view/widgets/Calculator.js"></script>
@@ -89,7 +97,6 @@
       <script type="text/javascript" src="app/model/frontend/Account.js"></script>
       <script type="text/javascript" src="app/model/frontend/Signin.js"></script>
       <!-- Views -->
-      <script type="text/javascript" src="app/view/ViewBase.js"></script>
       <script type="text/javascript" src="app/view/Document.js"></script>
       <script type="text/javascript" src="app/view/Viewport.js"></script>
       <script type="text/javascript" src="app/view/MainPageBase.js"></script>

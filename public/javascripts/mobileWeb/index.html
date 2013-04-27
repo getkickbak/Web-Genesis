@@ -1,0 +1,147 @@
+<!DOCTYPE HTML>
+<html manifest="" lang="en-US">
+	<head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-touch-fullscreen" content="yes" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="format-detection" content="address=no" />
+        <meta name="format-detection" content="email=no" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<meta charset="UTF-8">
+		<title>KickBak</title>
+		<style type="text/css">
+			/**
+			 * Example of an initial loading indicator.
+			 * It is recommended to keep this as minimal as possible to provide instant feedback
+			 * while other resources are still being loaded for the first time
+			 */
+			html, body {
+				height:100%;
+				background-color:#1985D0
+			}
+			#appLoadingIndicator {
+				position:absolute;
+				top:50%;
+				margin-top:-15px;
+				text-align:center;
+				width:100%;
+				height:30px;
+				-webkit-animation-name:appLoadingIndicator;
+				-webkit-animation-duration:0.5s;
+				-webkit-animation-iteration-count:infinite;
+				-webkit-animation-direction:linear;
+			}
+			#appLoadingIndicator> * {
+				background-color:#FFFFFF;
+				display:inline-block;
+				height:30px;
+				-webkit-border-radius:15px;
+				margin:0 5px;
+				width:30px;
+				opacity:0.8;
+			}
+			@-webkit-keyframes appLoadingIndicator{
+			0% {
+			opacity: 0.8
+			}
+			50% {
+			opacity: 0
+			}
+			100% {
+			opacity: 0.8
+			}
+			}
+		</style>
+		<script type="text/javascript">
+			var launched=0x000, pausedDisabled=true;
+			var backBtnCallbackListFn=[];
+			var offlineDialogShown=false;
+			var debugMode=true;
+			var serverHost, __init__;
+			//serverHost = 'http://192.168.0.46:3000';
+			//serverHost = 'http://76.10.173.153';
+			serverHost='http://www.dev1getkickbak.com';
+			//serverHost = 'http://www.devgetkickbak.com';
+			//serverHost = 'http://www.getkickbak.com';
+			var merchantMode=false;
+			var appName='KickBak';
+			var _application;			
+		</script>
+		<!-- The line below must be kept intact for Sencha Command to build your application -->
+		<script id="microloader" type="text/javascript" src="touch/microloader/development.js"></script>
+	</head>
+	<body>
+        <div id="fb-root"></div>
+        <script>
+           window.fbAsyncInit = function() {
+              // init the FB JS SDK
+              if (debugMode)
+              {
+                 console.debug("Facebook init Debug");
+                 FB.init({
+                   cookie : true,
+                   frictionlessRequests : false,
+                   appId      : (debugMode) ? '477780595628080' : '197968780267830',                        // App ID from the app dashboard
+                   status     : true,                                 // Check Facebook Login status
+                   xfbml      : true                                  // Look for social plugins on the page
+                 });
+              }
+              else
+              {
+                 console.debug("Facebook init Production");
+                 FB.init({
+                   cookie : true,
+                   frictionlessRequests : false,
+                   appId      : (debugMode) ? '477780595628080' : '197968780267830',                        // App ID from the app dashboard
+                   channelUrl : '//'+serverHost+'/channel.html', // Channel file for x-domain comms
+                   status     : true,                                 // Check Facebook Login status
+                   xfbml      : true                                  // Look for social plugins on the page
+                 });
+              }
+
+              // Additional initialization code such as adding Event Listeners goes here
+           };
+
+           // Load the SDK asynchronously
+           (function(d, s, id){
+             var js, fjs = d.getElementsByTagName(s)[0];
+             if (d.getElementById(id)) {return;}
+             js = d.createElement(s); js.id = id;
+             js.src = "//connect.facebook.net/en_US/all.js";
+             fjs.parentNode.insertBefore(js, fjs);
+           }(document, 'script', 'facebook-jssdk'));
+        </script>
+		<div id="appLoadingIndicator">
+			<div></div>
+			<div></div>
+			<div></div>
+		</div>
+		<div class="clientPhotoCache"></div>
+		<p style="display:none;">
+			<!--
+			<audio id="win_prize_sound" preload="auto" autobuffer>
+				<source src="resources/audio/win_prize_sound.mp3" type="audio/mp3" />
+			</audio>
+			<audio id="lose_prize_sound" preload="auto" autobuffer>
+				<source src="resources/audio/lose_prize_sound.mp3" type="audio/mp3" />
+			</audio>
+			<audio id="refresh_list_sound" preload="auto" autobuffer>
+				<source src="resources/audio/refresh_list_sound.mp3" type="audio/mp3" />
+			</audio>
+			<audio id="click_sound" preload="auto" autobuffer>
+				<source src="resources/audio/click_sound.mp3" type="audio/mp3" />
+			</audio>
+			<audio id="promote_sound" preload="auto" autobuffer>
+				<source src="resources/audio/promote_sound.mp3" type="audio/mp3" />
+			</audio>
+			<audio id="roulette_spin_sound" preload="auto" autobuffer>
+				<source src="resources/audio/roulette_spin_sound.mp3" type="audio/mp3" />
+			</audio>
+			<audio id="beep" preload="auto" autobuffer>
+				<source src="resources/audio/beep.wav" type="audio/wav" />
+			</audio>
+			-->
+		</p>
+	</body>
+</html>

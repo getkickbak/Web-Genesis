@@ -57,7 +57,7 @@ Ext.define('Genesis.model.frontend.LicenseKey',
          {
             read : 'GET'
          });
-         this.getProxy().setUrl(Genesis.constants.host);
+         this.getProxy().setUrl(serverHost);
       }
    }
 });

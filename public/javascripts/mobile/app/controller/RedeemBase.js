@@ -70,7 +70,7 @@ Ext.define('Genesis.controller.RedeemBase',
    onCreateView : function(activeItem)
    {
       var me = this;
-      activeItem.redeemItem = me.redeemItem;
+      activeItem.item = me.redeemItem;
    },
    onShowView : function(activeItem)
    {
@@ -194,7 +194,7 @@ Ext.define('Genesis.controller.RedeemBase',
       var me = this;
       var view = me.getRedeemMainPage();
 
-      view.redeemItem = me.redeemItem;
+      view.item = me.redeemItem;
    },
    onRedeemItemActivate : function(activeItem, c, oldActiveItem, eOpts)
    {

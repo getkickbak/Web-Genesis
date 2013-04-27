@@ -18,7 +18,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
    // --------------------------------------------------------------------------
    // Tag Tab
    // --------------------------------------------------------------------------
-   onEnterTagIdTap : function(b, e, eOpts, eInfo)
+   onEnterPhoneNum : function()
    {
       var me = this, container = me.getRedeemItemCardContainer();
       container.setActiveItem(1);
@@ -137,7 +137,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
       {
          venue_id : venueId
       }
-      var message = (Genesis.fn.isNative()) ? me.lookingForMobileDeviceMsg() : me.retrievingQRCodeMsg;
+      var message = me.lookingForMobileDeviceMsg();
       var proxy = store.getProxy();
 
       me.redeemItemFn = function(p, closeDialog)
@@ -221,7 +221,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
             if (b && (b.toLowerCase() == 'manual'))
             {
                Ext.Viewport.setMasked(null);
-               me.onEnterTagIdTap();
+               me.onEnterPhoneNum();
             }
             else if (!dismissDialog)
             {
@@ -266,10 +266,12 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
             }, Ext.bind(me.onRedeemItem, me, arguments));
             viewport.setActiveController(me);
          }
+         /*
          else
          {
             me.redeemItemFn(params, false);
          }
+         */
       }
    },
    onRedeemItemTap : function(b, e, eOpts, eInfo)

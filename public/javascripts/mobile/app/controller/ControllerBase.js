@@ -103,9 +103,7 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    showToServerMsg : function()
    {
-      return 'Press \'Proceed\' before tapping ' + Genesis.constants.addCRLF() + //
-      'your device against the ' + Genesis.constants.addCRLF() + //
-      'Merchant Device';
+      return ('Please confirm to Proceed');
    },
    errProcQRCodeMsg : 'Error Processing Authentication Code',
    cameraAccessMsg : 'Accessing your Camera Phone ...',
@@ -633,6 +631,74 @@ Ext.define('Genesis.controller.ControllerBase',
     });
     },
     */
+   earnRedeemPopup : function(callback)
+   {
+      var me = this;
+
+      if (!me.earnRedeemPopup)
+      {
+         me.earnRedeemPopup = (Ext.create('Ext.Sheet',
+            {
+               bottom : 0,
+               left : 0,
+               top : 0,
+               right : 0,
+               padding : '1.0',
+               hideOnMaskTap : false,
+               defaultUnit : 'em',
+               cls : 'x-mask transmit-mask',
+               layout :
+               {
+                  type : 'vbox',
+                  pack : 'middle'
+               },
+               defaults :
+               {
+                  xtype : 'container',
+                  defaultUnit : 'em'
+               },
+               items : [
+               {
+                  width : '100%',
+                  flex : 1,
+                  style : 'text-align:center;display:inline-table;color:white;font-size:1.1em;',
+                  html : me.fbConnectRequestMsg + '<img width="160" style="margin:0.7em 0;" src="resources/themes/images/v1/facebook_icon.png"/>'
+               },
+               {
+                  docked : 'bottom',
+                  defaults :
+                  {
+                     xtype : 'button',
+                     defaultUnit : 'em',
+                     scope : me
+                  },
+                  padding : '0 1.0 1.0 1.0',
+                  items : [
+                  {
+                     margin : '0 0 0.5 0',
+                     text : 'Proceed',
+                     ui : 'action',
+                     handler : function()
+                     {
+                        me.earnRedeemPopup.hide();
+                        callback();
+                     }
+                  },
+                  {
+                     margin : '0.5 0 0 0',
+                     text : 'Cancel',
+                     //ui : 'decline',
+                     handler : function()
+                     {
+                        me.earnRedeemPopup.hide();
+                     }
+                  }]
+               }]
+            }));
+         Ext.Viewport.add(me.earnRedeemPopup);
+      }
+      me.earnRedeemPopup.show();
+   },
    gravityThreshold : 4.0,
    accelerometerHandler : function(vol, callback)
    {

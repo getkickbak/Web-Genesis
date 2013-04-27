@@ -14,7 +14,6 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
    },
    retrievingQRCodeMsg : 'Retrieving QRCode ...',
    showQrCodeMsg : 'Show this Authorization Code to your merchant to redeem!',
-   redeemItemConfirmMsg : 'Please confirm to redeem this item',
    updateOnFbMsg : 'Would you like to tell your friends on Facebook about it?',
    redeemItemEmailMsg : function(redemptionName, venueName)
    {
@@ -51,12 +50,12 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
           {
           case 'rewards' :
           {
-          params['rewards'] = Genesis.constants.host + "/opengraph?" + params1;
+          params['rewards'] = serverHost + "/opengraph?" + params1;
           break;
           }
           case 'prizes' :
           {
-          params['prizes'] = Genesis.constants.host + "/opengraph?" + params1;
+          params['prizes'] = serverHost + "/opengraph?" + params1;
           break;
           }
           }
@@ -301,19 +300,52 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
          {
             var send = function()
             {
-               Ext.device.Notification.show(
+               if (!me._actions)
                {
-                  title : title,
-                  message : me.redeemItemConfirmMsg,
-                  buttons : ['Confirm', 'Cancel'],
-                  callback : function(b)
+                  me._actions = Ext.create('Genesis.view.widgets.PopupItemDetail',
                   {
-                     if (b.toLowerCase() == 'confirm')
+                     title : me.showToServerMsg(),
+                     buttons : [
                      {
-                        me.fireEvent('redeemitem', btn, venue, view);
-                     }
-                  }
-               });
+                        margin : '0 0 0.5 0',
+                        text : 'Proceed',
+                        ui : 'action',
+                        height : '3em',
+                        handler : function()
+                        {
+                           me._actions.hide();
+                           me.fireEvent('redeemitem', btn, venue, view);
+                        }
+                     },
+                     {
+                        margin : '0.5 0 0 0',
+                        text : 'Cancel',
+                        ui : 'cancel',
+                        height : '3em',
+                        handler : function()
+                        {
+                           me._actions.hide();
+                        }
+                     }]
+                  });
+                  Ext.Viewport.add(me._actions);
+               }
+               me._actions.show();
+               /*
+                Ext.device.Notification.show(
+                {
+                title : title,
+                message : me.showToServerMsg(),
+                buttons : ['Confirm', 'Cancel'],
+                callback : function(b)
+                {
+                if (b.toLowerCase() == 'confirm')
+                {
+                me.fireEvent('redeemitem', btn, venue, view);
+                }
+                }
+                });
+                */
             };
 
             if (Genesis.fn.isNative())

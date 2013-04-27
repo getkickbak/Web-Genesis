@@ -124,7 +124,7 @@ Ext.define('Genesis.controller.client.Badges',
    onBadgeDescCreateView : function(activeItem)
    {
       var me = this;
-      activeItem.redeemItem = me.redeemItem;
+      activeItem.item = me.item;
    },
    onBadgeDescActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
@@ -159,7 +159,7 @@ Ext.define('Genesis.controller.client.Badges',
          };
          photoUrl[prefix] = Genesis.view.client.Badges.getPhoto(badge.get('type'), 'thumbnail_large_url');
 
-         me.redeemItem = Ext.create('Genesis.model.CustomerReward',
+         me.item = Ext.create('Genesis.model.CustomerReward',
          {
             'title' : badge.get('type').display_value,
             'type' :

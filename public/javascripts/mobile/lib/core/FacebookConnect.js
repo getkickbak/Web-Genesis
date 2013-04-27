@@ -159,7 +159,10 @@ Genesis.fb =
    //   fbConnectRequestMsg : 'Would you like to update your Facebook Timeline?',
    fbConnectReconnectMsg : 'By connecting to Facebook, you will receive additional Reward Pts everytime we update your KICKBAK activity to your Facebook account!',
    //fbConnectReconnectMsg : 'Please confirm to Reconnect to Facebook',
-   connectingToFBMsg : 'Connecting to Facebook ...',
+   connectingToFBMsg : function()
+   {
+      return ('Connecting to Facebook ...' + Genesis.constants.addCRLF() + '(Tap to Close)');
+   },
    loggingOutOfFBMsg : 'Logging out of Facebook ...',
    fbConnectFailMsg : 'Error Connecting to Facebook.',
    fbPermissionFailMsg : 'Failed to get the required access permission.',
@@ -265,7 +268,7 @@ Genesis.fb =
          Ext.Viewport.setMasked(
          {
             xtype : 'loadmask',
-            message : me.connectingToFBMsg,
+            message : me.connectingToFBMsg(),
             listeners :
             {
                'tap' : function()
@@ -614,7 +617,7 @@ Genesis.fb =
                               callback : function(button)
                               {
                                  mainPage._loggingIn = false;
-                                 
+
                                  var viewport = _application.getController('client' + '.Viewport');
                                  var vport = viewport.getViewport();
                                  var activeItem = vport.getActiveItem();

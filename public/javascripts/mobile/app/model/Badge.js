@@ -27,7 +27,7 @@ Ext.define('Genesis.model.Badge',
          {
             read : 'GET'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/badges');
+         this.getProxy().setUrl(serverHost + '/api/v1/badges');
       }
    }
 });

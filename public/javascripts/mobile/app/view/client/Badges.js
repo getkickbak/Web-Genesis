@@ -55,6 +55,7 @@ Ext.define('Genesis.view.client.Badges',
    },
    createView : function()
    {
+      var me = this;
       var carousel = this;
       var itemsPerPage = 12;
 
@@ -65,8 +66,7 @@ Ext.define('Genesis.view.client.Badges',
             itemPerPage = 15;
          }
       }
-      else
-      if (Ext.os.is('Android') && (window.screen.height > 480))
+      else if (Ext.os.is('Android') && (window.screen.height > 480))
       {
          if (window.screen.height <= 568)
          {
@@ -93,7 +93,7 @@ Ext.define('Genesis.view.client.Badges',
 
       for (var i = 0; i < Math.ceil(list.length / itemsPerPage); i++)
       {
-         this.getPreRender().push(
+         me.getPreRender().push(
          {
             xtype : 'component',
             cls : 'badgesMenuSelections',
@@ -124,7 +124,7 @@ Ext.define('Genesis.view.client.Badges',
                   var customer = _application.getController(((merchantMode) ? 'server' : 'client') + '.Viewport').getCustomer();
                   var badge = Ext.StoreMgr.get('BadgeStore').getById(customer.get('badge_id'));
                   var rank = badge.get('rank');
-                  return Genesis.view.client.Badges.getPhoto((values['rank'] <= rank) ? type : 'nobadge', 'thumbnail_medium_url');
+                  return me.self.getPhoto((values['rank'] <= rank) ? type : 'nobadge', 'thumbnail_medium_url');
                }
             })
          });
@@ -159,8 +159,7 @@ Ext.define('Genesis.view.client.Badges',
                {
                   size = 'small';
                }
-               else
-               if (size.match(/medium/))
+               else if (size.match(/medium/))
                {
                   size = 'medium';
                }

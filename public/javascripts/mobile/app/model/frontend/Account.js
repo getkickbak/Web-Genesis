@@ -70,7 +70,7 @@ Ext.define('Genesis.model.frontend.Account',
          {
             read : 'POST'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/account/update_facebook_info');
+         this.getProxy().setUrl(serverHost + '/api/v1/account/update_facebook_info');
       },
       setPasswdResetUrl : function()
       {
@@ -78,7 +78,7 @@ Ext.define('Genesis.model.frontend.Account',
          {
             read : 'POST'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/account/reset_password');
+         this.getProxy().setUrl(serverHost + '/api/v1/account/reset_password');
       },
       setPasswdChangeUrl : function()
       {
@@ -86,7 +86,7 @@ Ext.define('Genesis.model.frontend.Account',
          {
             read : 'POST'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/account/change_password');
+         this.getProxy().setUrl(serverHost + '/api/v1/account/change_password');
       },
       setRefreshCsrfTokenUrl : function()
       {
@@ -94,7 +94,7 @@ Ext.define('Genesis.model.frontend.Account',
          {
             read : 'GET'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/tokens/get_csrf_token');
+         this.getProxy().setUrl(serverHost + '/api/v1/tokens/get_csrf_token');
       },
       setUpdateRegUserDeviceUrl : function()
       {
@@ -102,7 +102,7 @@ Ext.define('Genesis.model.frontend.Account',
          {
             read : 'POST'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/account/register_user_device');
+         this.getProxy().setUrl(serverHost + '/api/v1/account/register_user_device');
       },
       setUpdateAccountUrl : function()
 
@@ -111,7 +111,7 @@ Ext.define('Genesis.model.frontend.Account',
          {
             read : 'POST'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/account/update');
+         this.getProxy().setUrl(serverHost + '/api/v1/account/update');
       }
    }
 });
