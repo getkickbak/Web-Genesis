@@ -112,7 +112,7 @@ Genesis::Application.routes.draw do
       :omniauth_callbacks => "user_devise/omniauth_callbacks"
     } do
       match "/facebook_sign_in" => 'user_devise/sessions#create_from_facebook'
-      get '/users/auth/:provider' => 'user_devise/omniauth_callbacks#passthru'
+      get "/auth/failure" => "user_devise/omniauth_callbacks#failure"
     end
     
     namespace :api do
@@ -189,6 +189,9 @@ Genesis::Application.routes.draw do
     match "/account/facebook_settings" => 'users#facebook_settings', :as => :facebook_settings
     match "/account/facebook_settings/disconnect" => 'users#facebook_disconnect', :via => :post, :as => :facebook_disconnect
     match "/account/facebook_settings/update" => 'users#update_facebook_settings', :via => :post, :as => :update_facebook_settings
+    match "/account/facebook_settings/update_facebook_checkins" => 'users#update_facebook_checkins', :via => :post, :as => :update_facebook_checkins
+    match "/account/facebook_settings/update_facebook_badge_promotions" => 'users#update_facebook_badge_promotions', :via => :post, :as => :update_facebook_badge_promotions
+    match "/account/facebook_settings/update_facebook_rewards" => 'users#update_facebook_rewards', :via => :post, :as => :update_facebook_rewards
     
     match "/validate_phone" => 'pages#validate_phone', :via => :post, :as => :validate_phone
     #match "/how_it_works" => 'pages#how_it_works'

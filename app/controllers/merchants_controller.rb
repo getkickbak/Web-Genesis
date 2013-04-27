@@ -1,16 +1,17 @@
 class MerchantsController < ApplicationController
-  before_filter :authenticate_user!
-  #load_and_authorize_resource
+  skip_authorization_check
   
   def show
     @merchant = Merchant.get(params[:id]) || not_found
-    authorize! :read, @merchant
-    
-    @customer = Customer.first(:user => current_user, :merchant => @merchant)
-    if @customer
-      Common.populate_badge(@customer.badge, :iphone, :mxhdpi)
-      @next_badge = Common.find_next_badge(@merchant.badges.to_a, @customer.badge)
+
+    if signed_in?
+      @customer = Customer.first(:user => current_user, :merchant => @merchant)
+      if @customer
+        Common.populate_badge(@customer.badge, :iphone, :mxhdpi)
+        @next_badge = Common.find_next_badge(@merchant.badges.to_a, @customer.badge)
+      end
     end
+    @challenges = Common.get_challenges_by_merchant(@merchant)
     @customer_rewards = Common.get_rewards_by_merchant(@merchant)
 
     respond_to do |format|

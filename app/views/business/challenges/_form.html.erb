@@ -21,7 +21,9 @@
    <%= render "challenge_data", :f => builder, :type => @challenge.type.value %>
    <% end %>
    <% end %>
+   <% if current_merchant.reward_model.type == "amount_spent" %>
    <%= f.input :reward_amount, :input_html => {:class=>"input-medium"} %>
+   <% end %>
    <%= f.input :points, :input_html => {:class=>"input-medium"} %>
    <%= f.input :venue_ids, :label => 'Venues', :collection => current_merchant.venues.collect{ |p| [p.display_name, p.id, ] }, :as => :check_boxes, :checked => @venue_ids %>
    <br />

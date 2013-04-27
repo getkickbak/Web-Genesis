@@ -15,6 +15,7 @@
 	}));
 </script>
 <script type="text/javascript" src="/javascripts/desktop/src/base.js"></script>
+<script type="text/javascript" src="/javascripts/desktop/src/facebook_settings.js"></script>
 <% end %>
 <% if flash[:notice] %>
 <div style="display:none;" id="notice">
@@ -46,16 +47,64 @@
 						<div class="widget-content">
 							<h3>Share on Facebook</h3>
 							<div style="padding:20px 0 10px 0;">
-								<% if current_user.facebook_auth.nil? %>
-								<p style="padding-top: 9px;"><%= link_to "Connect with Facebook", user_omniauth_authorize_path(:facebook), :id => 'facebookButton' %></p>
+								<div class="facebook-connect-promo" style="padding: 10px; margin-bottom: 20px;">
+									<span class="bonus-points">Earn bonus reward points</span>
+									<p>
+										By posting your KICKBAK activities every time you visit your favorite locations, you will earn extra rewards.
+									</p>
+									<ul>
+										<li>
+											Get bonus points for every 3 check-ins
+										</li>
+										<li>
+											Get bonus points for every badge promotion you share
+										</li>
+										<li>
+											Get bonus points for every reward you share
+										</li>
+									</ul>
+								</div>
+								<% if current_user.facebook_auth.nil?%>
+								<div>You are not currently connected to Facebook.</div>
+								<div class="account_connect">
+									<%= link_to "Connect with Facebook", user_omniauth_authorize_path(:facebook), :id => 'facebookButton' %>
+								</div>
 								<% else %>
-								<div class="account_sharing">
+								<% if !@has_permission %>
+								<div><b>To earn bonus points</b>, you have to grant us permission to post on Facebook.</div>
+								<div class="account_connect">
+									<%= link_to "Grant Permission to Post", user_omniauth_authorize_path(:facebook), :id => 'facebookButton' %>
+								</div>
+								<% elsif !@visible_to_friends %>
+								<div><b>To earn bonus points</b>, you must allow us to post to your friends on Facebook</div>
+								<div class="account_connect">
+									<%= link_to "Share with Friends", "https://www.facebook.com/appcenter/my", :target => "_blank", :id => 'facebookButton' %>
+								</div>
+								<% else %>
+								<div class="account_disconnect">
 									<img class="" src="http://files.getkickbak.com/v1/facebook.png"/>
 									<p>
 										<%= link_to 'disconnect', facebook_disconnect_path, :method => :post %>
 									</p>
 								</div>
 								<% end %>
+								<% end %>
+								<div class="facebook_share_settings">
+									<table id="facebook_share">
+										<tr>
+											<td> <%= check_box_tag 'checkins', "", current_user.facebook_share_settings.checkins %> </td>
+											<td> Automatically check in when you make a visit </td>
+										</tr>
+										<tr>
+											<td> <%= check_box_tag 'badge_promotions', "", current_user.facebook_share_settings.badge_promotions %> </td>
+											<td> Automatically share your badge promotion with your friends </td>
+										</tr>
+										<tr>
+											<td> <%= check_box_tag 'rewards', "", current_user.facebook_share_settings.rewards %> </td>
+											<td> Automatically share your rewards with your friends when you redeem </td>
+										</tr>
+									</table>
+								</div>
 							</div>
 						</div>
 					</div>

@@ -14,6 +14,7 @@ class Venue
   property :time_zone, String, :required => true, :default => ""
   property :phone, String, :required => true, :default => ""
   property :website, String, :default => "", :format => :url 
+  property :facebook_page_id, String, :default => ""
   # Disable auto-validation http://j.mp/gMORhy 
   property :photo, String, :auto_validation => false
   property :latitude, Decimal, :precision => 20, :scale => 15, :required => true, :default => 0
@@ -28,7 +29,7 @@ class Venue
   
   attr_accessor :type_id, :distance, :eager_load_type
   
-  attr_accessible :type_id, :name, :description, :address, :city, :state, :zipcode, :country, :time_zone, :phone, :website, :latitude, :longitude, :auth_code
+  attr_accessible :type_id, :name, :description, :address, :city, :state, :zipcode, :country, :time_zone, :phone, :website, :facebook_page_id, :latitude, :longitude, :auth_code
   
   belongs_to :merchant
   has 1, :venue_to_type, :constraint => :destroy
@@ -58,6 +59,7 @@ class Venue
       :time_zone => venue_info[:time_zone],
       :phone => venue_info[:phone].strip,
       :website => venue_info[:website].strip,
+      :facebook_page_id => venue_info[:facebook_page_id].strip,
       :latitude => venue_info[:latitude].to_f,
       :longitude => venue_info[:longitude].to_f,
       :auth_code => String.random_alphanumeric(32)
@@ -248,6 +250,7 @@ class Venue
     self.time_zone = venue_info[:time_zone]
     self.phone = venue_info[:phone].strip
     self.website = venue_info[:website].strip
+    self.facebook_page_id = venue_info[:facebook_page_id].strip
     self.longitude = venue_info[:longitude].to_f
     self.latitude = venue_info[:latitude].to_f
     self.update_ts = now

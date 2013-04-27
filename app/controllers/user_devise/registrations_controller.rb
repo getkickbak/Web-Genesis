@@ -4,6 +4,12 @@ class UserDevise::RegistrationsController < Devise::RegistrationsController
   # GET /resource/sign_up
   def new
     @user = build_resource({})
+    user = User.first(:phone => session[:phone_number])
+    if user
+      session[:has_tag] = !user.tags.first.nil?
+    else
+      session[:has_tag] = false
+    end  
     respond_with @user
   end
   
@@ -12,14 +18,19 @@ class UserDevise::RegistrationsController < Devise::RegistrationsController
       User.transaction do  
         params[:user][:role] = "user"
         params[:user][:status] = :active
+        params[:user][:phone].gsub!(/\-/, "")
         if session["devise.facebook_data"]
           data = session["devise.facebook_data"] && session["devise.facebook_data"]["extra"]["raw_info"]
           params[:user][:gender] = (data["gender"] == "male" ? :m : :f) if data["gender"]
           params[:user][:birthday] = Date.strptime(data["birthday"], '%m/%d/%Y') if data["birthday"]
         end
         resource = User.create(params[:user])
-        user_tag = UserTag.first(:tag_id => params[:user][:tag_id])
-        resource.register_tag(user_tag)
+        if params[:user][:tag_id] && !params[:user][:tag_id].empty?
+          user_tag = UserTag.first(:tag_id => params[:user][:tag_id])
+          resource.register_tag(user_tag)
+        end
+        session.delete session[:phone_number]
+        session.delete session[:has_tag]
         if resource.active_for_authentication?
           set_flash_message :notice, :signed_up if is_navigational_format?
           sign_in(resource_name, resource)
@@ -33,7 +44,16 @@ class UserDevise::RegistrationsController < Devise::RegistrationsController
     rescue DataMapper::SaveFailureError => e
       logger.error("Exception: " + e.resource.errors.inspect)
       @user = e.resource
+      if !@user.new?
+        @user.persistence_state = DataMapper::Resource::PersistenceState::Transient.new(@user)
+      end
       session[:phone_number] = @user.phone
+      user = User.first(:phone => session[:phone_number])
+      if user
+        session[:has_tag] = !user.tags.first.nil?
+      else
+        session[:has_tag] = false
+      end  
       clean_up_passwords(@user)  
       respond_with @user
     end    

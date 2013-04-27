@@ -38,8 +38,8 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
       cipher = Gibberish::AES.new(@venue.auth_code)
       decrypted = cipher.dec(data)
       #logger.debug("decrypted text: #{decrypted}")
-      decrypted_data = JSON.parse(decrypted)
-      expiry_ts_secs = decrypted_data["expiry_ts"]/1000
+      decrypted_data = JSON.parse(decrypted, { :symbolize_names => true })
+      expiry_ts_secs = decrypted_data[:expiry_ts]/1000
       data_expiry_ts = Time.at(expiry_ts_secs)
       #logger.debug("decrypted expiry_ts: #{data_expiry_ts}")
       #logger.debug("Time comparison: #{data_expiry_ts >= Time.now}")
@@ -47,15 +47,15 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
       if (data_expiry_ts >= Time.now) && Cache.add(params[:data], true, 43200)
         @reward = CustomerReward.first(:id => params[:id], :merchant => @venue.merchant)
         raise "Reward(#{params[:id]}) not found" if @reward.nil?
-        if params[:frequency] || decrypted_data["frequency"]
+        if params[:frequency] || decrypted_data[:frequency]
           data = { 
             :reward_id => @reward.id,
             :venue_id => @venue.id
           }.to_json
           if params[:frequency]
-            frequency = JSON.parse(params[:frequency])
+            frequency = JSON.parse(params[:frequency], { :symbolize_names => true })
           else
-            frequency = decrypted_data["frequency"]
+            frequency = decrypted_data[:frequency]
           end
           channel_group = Channel.get_group(encrypted_data[0])
           request_info = {
@@ -92,7 +92,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
       return  
     end
         
-    if params[:frequency] || decrypted_data["frequency"]
+    if params[:frequency] || decrypted_data[:frequency]
       if (response = @request.is_status?(:complete))[:result]
         logger.info("Venue(#{@venue.id}) successfully completed Request(#{@request.id})")
         respond_to do |format|
@@ -103,8 +103,8 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
         logger.info("Venue(#{@venue.id}) failed to complete Request(#{@request.id})")
         @request.reload
         if response[:data]
-          result_data = JSON.parse(response[:data])
-          message = result_data["message"]
+          result_data = JSON.parse(response[:data], { :symbolize_names => true })
+          message = result_data[:message]
         else
           message = (t("api.customer_rewards.redeem_failure") % [@reward.mode == :reward ? t("api.reward") : t("api.prize")]).split(/\n/)  
         end  
@@ -115,11 +115,11 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
       end
       @request.destroy if Rails.env == "production"  
     else
-      if decrypted_data["tag_id"]
-        tag = UserTag.first(:tag_id => decrypted_data["tag_id"], :uid => decrypted_data["uid"])
+      if decrypted_data[:tag_id]
+        tag = UserTag.first(:tag_id => decrypted_data[:tag_id], :uid => decrypted_data[:uid])
         if tag
           if tag.status != :active
-            logger.info("Tag: #{decrypted_data["tag_id"]} is not active")
+            logger.info("Tag: #{decrypted_data[:tag_id]} is not active")
             respond_to do |format|
               #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
               format.json { render :json => { :success => false, :message => t("api.inactive_tag").split(/\n/) } }
@@ -128,7 +128,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
           end
           user_to_tag = UserToTag.first(:fields => [:user_id], :user_tag_id => tag.id)
           if user_to_tag.nil?
-            logger.error("No user is associated with this tag: #{decrypted_data["tag_id"]}")
+            logger.error("No user is associated with this tag: #{decrypted_data[:tag_id]}")
             respond_to do |format|
               #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
               format.json { render :json => { :success => false, :message => t("api.invalid_tag").split(/\n/) } }
@@ -145,17 +145,17 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
             return
           end
         else
-          logger.error("No such tag_id: #{decrypted_data["tag_id"]}")
+          logger.error("No such tag_id: #{decrypted_data[:tag_id]}")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
             format.json { render :json => { :success => false, :message => t("api.invalid_tag").split(/\n/) } }
           end
           return  
         end
-      elsif decrypted_data["phone_id"]
-        user = User.first(:phone => decrypted_data["phone_id"])
+      elsif decrypted_data[:phone_id]
+        user = User.first(:phone => decrypted_data[:phone_id])
         if user.nil?
-          logger.error("No such phone number: #{decrypted_data["phone_id"]}")
+          logger.error("No such phone number: #{decrypted_data[:phone_id]}")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
             format.json { render :json => { :success => false, :message => t("api.invalid_phone").split(/\n/) } }
@@ -196,7 +196,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
       else
         cipher = Gibberish::AES.new(form_authenticity_token)
         decrypted = cipher.dec(params[:data].split('$')[1])
-        frequency = JSON.parse(decrypted)["frequency"]
+        frequency = JSON.parse(decrypted, { :symbolize_names => true })[:frequency]
       end
       request_info = {
         :type => RequestType::REDEEM,
@@ -215,19 +215,19 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
         end
         return
       else 
-        request_data = JSON.parse(@request.data)
-        if @venue.id != request_data["venue_id"] 
+        request_data = JSON.parse(@request.data, { :symbolize_names => true })
+        if @venue.id != request_data[:venue_id] 
           Request.set_status(@request, :failed)
-          logger.error("Mismatch venue information, venue id:#{@venue.id}, merchant venue id:#{request_data["venue_id"]}")
+          logger.error("Mismatch venue information, venue id:#{@venue.id}, merchant venue id:#{request_data[:venue_id]}")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
             format.json { render :json => { :success => false, :message => t("api.customer_rewards.venue_mismatch").split(/\n/) } }
           end
           return
         end
-        if params[:id].to_i != request_data["reward_id"]
+        if params[:id].to_i != request_data[:reward_id]
           Request.set_status(@request, :failed, { :message => t("api.customer_rewards.redeem_mismatch_merchant").split(/\n/) }.to_json)
-          logger.error("Mismatch rewards, reward_id:#{params[:id].to_i}, request reward_id:#{request_data["reward_id"]}")
+          logger.error("Mismatch rewards, reward_id:#{params[:id].to_i}, request reward_id:#{request_data[:reward_id]}")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
             format.json { render :json => { :success => false, :message => t("api.customer_rewards.redeem_mismatch_customer").split(/\n/) } }
@@ -368,19 +368,28 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
           @account_info[:eligible_for_reward] = eligible_for_reward
           @account_info[:eligible_for_prize] = eligible_for_prize
           Request.set_status(@request, :complete)
-=begin          
-          post = 
-            FacebookPost.new(
-              :type => "share",
-              :message => (t("facebook_post.message.redeem_reward") % [@reward.title, @venue.name]),
-              :picture => @venue.merchant.photo.url,
-              :link_name => @venue.name,
-              :link => @venue.website,
-              :caption => @venue.website,
-              :description => t("facebook_post.description.text")
-            )
-          Resque.enqueue(ShareOnFacebook, user.id, post.to_json)
-=end          
+          if user.facebook_auth && (session[:version].nil? || session[:version] && session[:version] >= "2.1.2")
+            reward_model = @venue.merchant.reward_model
+            if reward_model.type.value == "amount_spent"
+              message = t("facebook_post.description.amount_spent")
+            elsif reward_model.type.value == "items_purchased"
+              message = t("facebook_post.description.items_purchased") % [reward_model.rebate_rate]
+            elsif reward_model.type.value == "visits"  
+              message = t("facebook_post.description.visits") % [reward_model.rebate_rate]
+            end
+            posts = [
+              FacebookPost.new(
+                :type => "redeem",
+                :message => (t("facebook_post.message.redeem_reward") % [@reward.title, @venue.name]),
+                :picture => @venue.merchant.photo.url,
+                :link_name => @venue.name,
+                :link => business_profile_url(@venue.merchant),
+                :caption => "www.getkickbak.com",
+                :description => "#{message}\n#{t("facebook_post.description.text")}"
+              )
+            ]
+            Resque.enqueue(ShareOnFacebook, user.id, @venue.id, ShareOnFacebook::REDEEM, posts.to_json)
+          end
           render :template => '/api/v1/customer_rewards/redeem' 
           logger.info("User(#{user.id}) successfully redeemed Reward(#{@reward.id}), worth #{@reward.points} points")
         else

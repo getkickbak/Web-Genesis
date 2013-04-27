@@ -26,14 +26,14 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
       cipher = Gibberish::AES.new(@venue.auth_code)
       decrypted = cipher.dec(data)
       #logger.debug("decrypted text: #{decrypted}")
-      decrypted_data = JSON.parse(decrypted)
-      @tag = UserTag.first(:tag_id => decrypted_data["tag_id"])
+      decrypted_data = JSON.parse(decrypted, { :symbolize_names => true })
+      @tag = UserTag.first(:tag_id => decrypted_data[:tag_id])
       if @tag.nil?
-        raise "No such tag: #{decrypted_data["tag_id"]}"
+        raise "No such tag: #{decrypted_data[:tag_id]}"
       end
       user_to_tag = UserToTag.first(:fields => [:user_id], :user_tag_id => @tag.id)
       if user_to_tag.nil?
-        raise "No user is associated with this tag: #{decrypted_data["tag_id"]}"
+        raise "No user is associated with this tag: #{decrypted_data[:tag_id]}"
       end
       @user = User.get(user_to_tag.user_id)
       if @user.nil?
@@ -197,7 +197,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
       cipher = Gibberish::AES.new(merchant.auth_code)
       decrypted = cipher.dec(data)
       #logger.debug("decrypted text: #{decrypted}")
-      decrypted_data = JSON.parse(decrypted) 
+      decrypted_data = JSON.parse(decrypted, { :symbolize_names => true }) 
     
       if merchant.status != :active
         logger.info("User(#{current_user.id}) failed to receive points at Merchant(#{merchant.id}), merchant is not active")
@@ -222,12 +222,12 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
         end  
       end
     
-      transfer_id = decrypted_data["id"]
-      #logger.debug("decrypted type: #{decrypted_data["type"]}")
+      transfer_id = decrypted_data[:id]
+      #logger.debug("decrypted type: #{decrypted_data[:type]}")
       #logger.debug("decrypted id: #{transfer_id}")
-      #logger.debug("Type comparison: #{decrypted_data["type"] == EncryptedDataType::POINTS_TRANSFER_EMAIL && decrypted_data["type"] == EncryptedDataType::POINTS_TRANSFER_DIRECT}")
+      #logger.debug("Type comparison: #{decrypted_data[:type] == EncryptedDataType::POINTS_TRANSFER_EMAIL && decrypted_data[:type] == EncryptedDataType::POINTS_TRANSFER_DIRECT}")
       #logger.debug("TranferPointsRecord doesn't exists: #{TransferPointsRecord.first(:id => transfer_id, :status => :pending, :expiry_ts.gte => Time.now).nil?}")
-      if (decrypted_data["type"] == EncryptedDataType::POINTS_TRANSFER_EMAIL || decrypted_data["type"] == EncryptedDataType::POINTS_TRANSFER_DIRECT)
+      if (decrypted_data[:type] == EncryptedDataType::POINTS_TRANSFER_EMAIL || decrypted_data[:type] == EncryptedDataType::POINTS_TRANSFER_DIRECT)
         if (@record = TransferPointsRecord.first(:id => transfer_id, :status => :pending, :expiry_date.gte => Date.today))
           #logger.debug("Set authorized to true")
           authorized = true
@@ -309,7 +309,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
             @record.update_ts = now
             @record.save 
             render :template => '/api/v1/customers/receive_points'
-            if decrypted_data["type"] == EncryptedDataType::POINTS_TRANSFER_EMAIL
+            if decrypted_data[:type] == EncryptedDataType::POINTS_TRANSFER_EMAIL
               UserAsyncMailer.transfer_points_confirm_email(sender.user.id, current_user.id, merchant.id, @record.id).deliver
             end
             logger.info("Customer(#{@record.sender_id}) successfully received #{@record.points} points from Customer(#{@record.recipient_id})") 

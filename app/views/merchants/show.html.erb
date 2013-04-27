@@ -7,16 +7,18 @@
 <script type="text/javascript" src="/javascripts/desktop/lib/Highcharts-2.2.5/js/highcharts.js" ></script>
 <script type="text/javascript" src="/javascripts/desktop/lib/Highcharts-2.2.5/js/modules/exporting.js"></script>
 <script type="text/javascript" src="/javascripts/desktop/src/base.js"></script>
-<script type="text/javascript" src="/javascripts/desktop/src/venue.js"></script>
+<% if signed_in? && @customer %>
+<script type="text/javascript" src="/javascripts/desktop/src/business.js"></script>
 <script type="text/javascript">
 	var visits = {
 total : <%= @next_badge.visits %>
 	,
-	next_badge :
-<%= @customer.next_badge_visits %>
+	next_badge : 
+ <%= @customer.next_badge_visits %>
 	};
 	//
 </script>
+<% end %>
 <% end %>
 <div id="main" class="main">
 	<div class="main-inner">
@@ -69,7 +71,7 @@ total : <%= @next_badge.visits %>
 							</div>
 						</div>
 					</div>
-					<% if @customer %>
+					<% if signed_in? && @customer %>
 					<div class="widget">
 						<div class="widget-header">
 							<i class="icon-signal"></i>
@@ -86,27 +88,57 @@ total : <%= @next_badge.visits %>
 									src="http://devfiles.getkickbak.com/v1/icons/miscicons/ios/mxhdpi/prize_points.png"/>
 									--> <%= @customer.prize_points %></span> Prize Points</a>
 								<div data="#badge" class="stat">
-									<span class="stat-value"> 
-									<% if @customer.badge.custom %>
+									<span class="stat-value"> <% if @customer.badge.custom %>
 										<%= image_tag @customer.badge.custom_type.thumbnail_large_url, :class => "merchant-badge" %> </span>You are our <%= @customer.badge.custom_type.display_value %>
 									<% else %>
-										<%= image_tag @customer.badge.type.thumbnail_large_url, :class => "merchant-badge" %></span>You are our <%= @customer.badge.type.display_value %>
+									<%= image_tag @customer.badge.type.thumbnail_large_url, :class => "merchant-badge" %></span>You are our <%= @customer.badge.type.display_value %>
 									<% end %>
 								</div>
 								<div data="#visits" class="stat">
 									<div id="visits_chart"></div>
 									<span class="stat-value visit_count"> <%= @next_badge.visits - @customer.next_badge_visits %> </span>
-									More visits to be our 
+									More visits to be our
 									<% if @customer.badge.custom %>
-										<%= @next_badge.custom_type.display_value %>
+									<%= @next_badge.custom_type.display_value %>
 									<% else %>
-										<%= @next_badge.type.display_value %>	
-									<% end %>	
+									<%= @next_badge.type.display_value %>
+									<% end %>
 								</div>
 							</div>
 						</div>
 					</div>
 					<% end %>
+					<div class="widget">
+						<div class="widget-header">
+							<i class="icon-trophy"></i>
+							<h3>Challenges</h3>
+						</div>
+						<div class="widget-content">
+							<% i = 0 %>
+							<% while i < @challenges.length do %>
+							<div class="stats" style="padding-left: 0px;">
+								<% x = 0 %>
+								<% while x < 2 && i < @challenges.length do %>
+								<% if @challenges[i].eager_load_type.value != "photo" && @challenges[i].eager_load_type.value != "referral" %>
+								<div class="stat challenge">
+									<%= @challenges[i].name %>
+									<span class="x-badge round"><%= @challenges[i].points %> Points</span>
+									<span class="stat-value" style="margin-top: .3em;">
+										<%= image_tag Common.get_challenge_icon_file_path(@challenges[i].eager_load_type.value, :ios, :mxhdpi), :style => "width:50px;" %>
+									</span>
+									<p><%= @challenges[i].description %></p>
+								</div>
+								<% x += 1 %>
+								<% end %>
+								<% i += 1 %>
+								<% end %>
+								<% if x < 2 %>
+								<div class="stat challenge"></div>
+								<% end %>
+							</div>
+							<% end %>
+						</div>
+					</div>
 					<% rewards = @customer_rewards.all(:mode => :reward, :order => [:points.asc]) %>
 					<% prizes = @customer_rewards.all(:mode => :prize, :order => [:points.asc]) %>
 					<div class="widget widget-table action-table">
@@ -140,7 +172,7 @@ total : <%= @next_badge.visits %>
 					</div>
 					<div class="widget widget-table action-table">
 						<div id="prizes" class="widget-header">
-							<i class="icon-trophy"></i>
+							<i class="icon-star"></i>
 							<h3>Prizes</h3>
 						</div>
 						<div class="widget-content">

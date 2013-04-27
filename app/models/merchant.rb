@@ -39,7 +39,8 @@ class Merchant
   property :account_first_name, String, :required => true, :default => ""
   property :account_last_name, String, :required => true, :default => ""
   property :phone, String, :required => true, :default => ""
-  property :website, String, :default => "", :format => :url
+  property :website, String, :default => "", :format => :url 
+  property :facebook_page_id, String, :default => ""
   property :payment_account_id, String, :default => ""
   property :role, String, :required => true, :default => "merchant"
   property :status, Enum[:active, :pending, :suspended, :deleted], :required => true, :default => :pending
@@ -57,7 +58,7 @@ class Merchant
   attr_accessor :type_id, :visit_frequency_id, :current_password, :eager_load_type, :termination_date_str
   attr_accessor :crop_x, :crop_y, :crop_w, :crop_h
 
-  attr_accessible :type_id, :visit_frequency_id, :name, :description, :email, :account_first_name, :account_last_name, :phone, :website,
+  attr_accessible :type_id, :visit_frequency_id, :name, :description, :email, :account_first_name, :account_last_name, :phone, :website, :facebook_page_id,
                   :photo, :alt_photo, :role, :status, :will_terminate, :termination_date, :reward_terms, :auth_code, :current_password, :password, 
                   :password_confirmation, :badges_attributes
 
@@ -96,6 +97,7 @@ class Merchant
       account_last_name = merchant_info[:account_last_name].strip
       phone = merchant_info[:phone].strip
       website = merchant_info[:website].strip
+      facebook_page_id = merchant_info[:facebook_page_id].strip
       role = merchant_info[:role]
       status = merchant_info[:status]
       will_terminate = merchant_info[:will_terminate]
@@ -114,6 +116,7 @@ class Merchant
       account_last_name = merchant_info.account_last_name
       phone = merchant_info.phone
       website = merchant_info.website
+      facebook_page_id = merchant_info.facebook_page_id
       role = merchant_info.role
       status = merchant_info.status
       will_terminate = merchant_info.will_terminate
@@ -235,6 +238,7 @@ class Merchant
     self.account_last_name = merchant_info[:account_last_name].strip
     self.phone = merchant_info[:phone].strip
     self.website = merchant_info[:website].strip
+    self.facebook_page_id = merchant_info[:facebook_page_id].strip
     self.role = merchant_info[:role]
     self.status = merchant_info[:status]
     self.will_terminate = merchant_info[:will_terminate]

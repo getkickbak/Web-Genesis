@@ -13,7 +13,7 @@ module Business
       elsif @reward_model.type
         @reward_model.type_id = @reward_model.type.id
       else
-        @reward_model.type = RewardModelType.value_to_type["amount_spend"]  
+        @reward_model.type = RewardModelType.value_to_type["amount_spent"]  
         @reward_model.type_id = @reward_model.type.id 
       end
       respond_to do |format|

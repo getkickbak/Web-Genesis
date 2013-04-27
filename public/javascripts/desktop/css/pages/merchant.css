@@ -63,7 +63,9 @@
    text-decoration: none;
    line-height:100px;
 }
-
+.stats .stat p {
+	color: #333;	
+}
 .stats div[data="#badge"].stat {
    padding:0;
    background:transparent;
@@ -91,4 +93,17 @@ div#visits_chart {
 	width:45px;
 	margin:0px -25px;
 	text-align:center;
+}
+
+.challenge {
+	position: relative;	
+}
+
+.x-badge {
+	position: absolute;
+	top: 30px;
+	right: 10px;
+	color: #444;
+	border: 1px solid;
+	padding: 5px;
 }

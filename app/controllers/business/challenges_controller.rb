@@ -258,11 +258,17 @@ module Business
         })
       end
       challenge_info.update({
+        "facebook" =>
+        {
+          :name => (t "challenge.type.facebook.name"),
+          :description => (t "challenge.type.facebook.description"),
+          :require_verif => false
+        },
         "birthday" =>
         {
           :name => (t "challenge.type.birthday.name"),
           :description => (t "challenge.type.birthday.description"),
-          :require_verif => true
+          :require_verif => false
         },
         "photo" =>
         {

@@ -68,12 +68,13 @@ gem 'thin'
 #gem 'gsl'
 gem 'omniauth'
 gem 'omniauth-facebook'
-gem "koala"
+gem "koala", "~> 1.6.0"
 gem "geocoder"
 gem 'carmen-rails', '~> 1.0.0.beta3'
 gem "braintree", "~> 2.22.0"
 gem "resque_mailer"
 #gem "faraday", "~> 0.8.6"
+gem "plivo"
 
 group(:development, :test) do
   gem 'dm-sqlite-adapter', DM_VERSION

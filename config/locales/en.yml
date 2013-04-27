@@ -21,6 +21,7 @@ en:
         not_an_integer: "%{attribute} must be an integer"
         not_valid: "is not valid"
         invalid_tag: "Key tag is not valid"
+        tag_already_in_use: "Key tag is already in use."
         carrierwave_processing_error: "Cannot resize image."
         carrierwave_integrity_error: "Not an image."
         carrierwave_download_error: "Couldn't download image."
@@ -71,11 +72,14 @@ en:
         restaurant: "Restaurant"  
   reward_model:
       type:
-        amount_spend: "Amount Spend"
+        amount_spent: "Amount Spend"
         items_purchased: "Items Purchased"
         visits: "Visits"      
   challenge:
       type:
+        facebook:
+          name: "Facebook"
+          description: "Get rewarded for every 3 check-ins, every badge promotion or every reward that you automatically share on Facebook." 
         birthday: 
           name: "Birthday"
           description: "Get rewarded when you visit on your birthday."
@@ -90,7 +94,7 @@ en:
           description: "Get rewarded when you refer friends and they become customers."
         custom: 
           name: "Custom"
-          description: "Whatever you want!"
+          description: "Whatever you want!" 
   customer_reward:
       terms: "To redeem you must accumulate sufficient points balance. All rewards and prizes are subject to KICKBAK terms of service."
       type:
@@ -241,11 +245,11 @@ en:
         change_password_invalid_info: "Invalid password.\nPlease try again."
       tokens:
         create_missing_info: "Missing email or password."
-        create_missing_facebook_info: "Missing facebook info."
+        create_missing_facebook_info: "Missing Facebook info."
         create_invalid_info: "The email/password you entered is incorrect.\nPlease try again."
-        create_invalid_facebook_info: "Invalid facebook sign in."
+        create_invalid_facebook_info: "Invalid Facebook sign in."
         create_failure: "Trouble with sign in.\nPlease try again."
-        create_from_facebook_failure: "Trouble with facebook sign in.\nPlease try again."
+        create_from_facebook_failure: "Trouble with Facebook sign in.\nPlease try again."
         destroy_failure: "Trouble with logout.\nPlease try again."  
       devices:
         get_encryption_key_failure: "Trouble with device initialization.\nPlease contact support."  
@@ -338,19 +342,35 @@ en:
       email_subject_reset_password: "Reset password instructions"
       email_subject_reward_notif: "You earned bonus points from %s"
       email_subject_eligible_reward: "You earned a reward from %s"
+      email_subject_facebook_token_expired: "Facebook offline access expired"
+      email_subject_business_inquiry: "Business Inquiry"
   users:
       update_success: "Account was successfully updated."
       update_password_success: "Password was successfully updated." 
       register_tag_failure: "Trouble registering user tag. Please try again."
       deregister_tag_failure: "Trouble deregistering user tag. Please try again."
-      tag_already_in_use_failure: "Key tag is already in use."
       register_tag_success: "Key tag was successfully activated." 
       update_facebook_info_success: "Facebook info successfully updated."
-      update_facebook_info_failure: "Failed to update facebook info."    
+      update_facebook_info_failure: "Failed to update Facebook info."    
+      not_connected_to_facebook: "You can't perform this operation because you are not connected to Facebook yet."
+      update_facebook_checkins_failure: "Failed to update check-in setting."
+      update_facebook_badge_promotions_failure: "Failed to update badge promotion setting."
+      update_facebook_rewards_failure: "Failed to update reward setting"
       update_email_notif_failure: "Failed to update email notification setting."  
-      facebook_disconnect_success: "Your account is no longer connected to facebook."  
+      facebook_disconnect_success: "Your account is no longer connected to Facebook."  
+      facebook_connect_success: "Your are now connected to Facebook."
   facebook_post:
       message:
         redeem_reward: "I just got %s from %s!"
+        earn_points: "I just earned points with my KICKBAK Card"
+        badge_promotion: "I just got promoted to %s at %s!"
       description:
-        text: "Sign up with KICKBAK to earn reward points at your favorite locations."        
+        amount_spent: "Earn 1 point for every dollar spent."
+        items_perchased: "%s."
+        visits: "%s."
+        text: "Sign up with KICKBAK to get rewards at your favorite locations in the local area."        
+  sms:
+      registration_1: "Welcome to the KICKBAK Rewards Program at %s! You have earned %s points and %s prize points during this visit."
+      registration_2: "To get your bonus sign up points, please go to www.getkickbak.com to complete your registration."
+      registration_reminder_1: "Thank you for coming to %s! You have earned %s points and %s prize points during this visit."
+      registration_reminder_2: "Don't forget to signup for your KICKBAK Rewards Program. Go to www.getkickbak.com to complete your registration."

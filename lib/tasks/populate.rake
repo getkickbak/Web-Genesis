@@ -400,7 +400,7 @@ namespace :db do
       {
         :name => (I18n.t "challenge.type.birthday.name"),
         :description => (I18n.t "challenge.type.birthday.description"),
-        :require_verif => true,
+        :require_verif => false,
         :reward_amount => reward_amount,
         :points => reward_points
       },
@@ -454,6 +454,19 @@ namespace :db do
         :name => (I18n.t "challenge.type.custom.name"),
         :description => (I18n.t "challenge.type.custom.description"),
         :require_verif => true,
+        :reward_amount => reward_amount,
+        :points => reward_points
+      },
+      venues)
+      challenges << challenge
+      challenge_type = ChallengeType.get(6)
+      reward_amount = 1.00
+      reward_points = (reward_amount / merchant.reward_model.price_per_prize_point / merchant.reward_model.rebate_rate * 100).to_i
+      challenge = Challenge.create(merchant,challenge_type,
+      {
+        :name => (I18n.t "challenge.type.facebook.name"),
+        :description => (I18n.t "challenge.type.facebook.description"),
+        :require_verif => false,
         :reward_amount => reward_amount,
         :points => reward_points
       },

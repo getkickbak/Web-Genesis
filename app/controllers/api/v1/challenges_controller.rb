@@ -77,15 +77,15 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       cipher = Gibberish::AES.new(@venue.auth_code)
       decrypted = cipher.dec(data)
       #logger.debug("decrypted text: #{decrypted}")
-      decrypted_data = JSON.parse(decrypted)
-      data_expiry_ts = Time.at(decrypted_data["expiry_ts"]/1000)  
+      decrypted_data = JSON.parse(decrypted, { :symbolize_names => true })
+      data_expiry_ts = Time.at(decrypted_data[:expiry_ts]/1000)  
       # Cache expires in 12 hrs
-      if decrypted_data["type"] == EncryptedDataType::EARN_POINTS 
+      if decrypted_data[:type] == EncryptedDataType::EARN_POINTS 
         if (data_expiry_ts >= Time.now) && EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => data_expiry_ts, :data => data).nil? 
           if params[:frequency]
-            frequency = JSON.parse(params[:frequency])
+            frequency = JSON.parse(params[:frequency], { :symbolize_names => true })
           else
-            frequency = decrypted_data["frequency"]
+            frequency = decrypted_data[:frequency]
           end
           channel_group = Channel.get_group(encrypted_data[0])
           request_data = { 
@@ -166,9 +166,9 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
         if params[:frequency].nil?
           cipher = Gibberish::AES.new(form_authenticity_token)
           decrypted = cipher.dec(params[:data].split('$')[1])
-          frequency = JSON.parse(decrypted)["frequency"]
+          frequency = JSON.parse(decrypted, { :symbolize_names => true })[:frequency]
         else
-          frequency = JSON.parse(params[:frequency])  
+          frequency = JSON.parse(params[:frequency], { :symbolize_names => true })  
         end
         if frequency
           request_info = {
@@ -183,17 +183,17 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
           if @request.nil?
             raise "No matching challenge complete request"
           end
-          decrypted_data = JSON.parse(@request.data)
-          if @venue.id != decrypted_data["venue_id"] 
+          decrypted_data = JSON.parse(@request.data, { :symbolize_names => true })
+          if @venue.id != decrypted_data[:venue_id] 
             Request.set_status(@request, :failed)
-            logger.error("Mismatch venue information, venue id:#{@venue.id}, merchant venue id:#{decrypted_data["venue_id"]}")
+            logger.error("Mismatch venue information, venue id:#{@venue.id}, merchant venue id:#{decrypted_data[:venue_id]}")
             respond_to do |format|
               #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
               format.json { render :json => { :success => false, :message => t("api.challenges.venue_mismatch").split(/\n/) } }
             end
             return
           end
-          data = decrypted_data["data"]
+          data = decrypted_data[:data]
         else
           data = params[:data] 
         end  
@@ -319,12 +319,12 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       cipher = Gibberish::AES.new(@customer.merchant.auth_code)
       decrypted = cipher.dec(data)
       #logger.debug("decrypted text: #{decrypted}")
-      decrypted_data = JSON.parse(decrypted)
-      if params[:frequency] || decrypted_data["frequency"]
+      decrypted_data = JSON.parse(decrypted, { :symbolize_names => true })
+      if params[:frequency] || decrypted_data[:frequency]
         if params[:frequency]
           frequency = JSON.parse(params[:frequency])
         else  
-          frequency = decrypted_data["frequency"]
+          frequency = decrypted_data[:frequency]
         end
         request_info = {
           :type => RequestType::REFERRAL,
@@ -338,10 +338,10 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
         if @request.nil?
           raise "No matching referral request"
         end
-        decrypted_data = JSON.parse(@request.data)
-        merchant = Merchant.get(decrypted_data["merchant_id"])
+        decrypted_data = JSON.parse(@request.data, { :symbolize_names => true })
+        merchant = Merchant.get(decrypted_data[:merchant_id])
         if merchant.nil?
-          raise "No such merchant: #{decrypted_data["merchant_id"]}"
+          raise "No such merchant: #{decrypted_data[:merchant_id]}"
         end
       end
       
@@ -372,15 +372,15 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
         already_customer = true
       end
       
-      referrer_id = decrypted_data["refr_id"]
-      challenge_id = decrypted_data["chg_id"]
-      #logger.debug("decrypted type: #{decrypted_data["type"]}")
+      referrer_id = decrypted_data[:refr_id]
+      challenge_id = decrypted_data[:chg_id]
+      #logger.debug("decrypted type: #{decrypted_data[:type]}")
       #logger.debug("decrypted referrer_id: #{referrer_id}")
       #logger.debug("decrypted challenge_id: #{challenge_id}")
-      #logger.debug("Type comparison: #{decrypted_data["type"] == EncryptedDataType::REFERRAL_CHALLENGE_EMAIL || decrypted_data["type"] == EncryptedDataType::REFERRAL_CHALLENGE_DIRECT}")
+      #logger.debug("Type comparison: #{decrypted_data[:type] == EncryptedDataType::REFERRAL_CHALLENGE_EMAIL || decrypted_data[:type] == EncryptedDataType::REFERRAL_CHALLENGE_DIRECT}")
       #logger.debug("Challenge doesn't exists: #{Challenge.get(challenge_id).nil?}")
       #logger.debug("ReferralChallengeRecord doesn't exists: #{ReferralChallengeRecord.first(:referrer_id => referrer_id, :referral_id => @customer.id).nil?}")
-      if (decrypted_data["type"] == EncryptedDataType::REFERRAL_CHALLENGE_EMAIL || decrypted_data["type"] == EncryptedDataType::REFERRAL_CHALLENGE_DIRECT) && (@challenge = Challenge.get(challenge_id)) 
+      if (decrypted_data[:type] == EncryptedDataType::REFERRAL_CHALLENGE_EMAIL || decrypted_data[:type] == EncryptedDataType::REFERRAL_CHALLENGE_DIRECT) && (@challenge = Challenge.get(challenge_id)) 
         #logger.debug("Set authorized to true")
         authorized = true  
       end  
@@ -474,7 +474,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       end
       logger.info("Invalid photo upload token: Real(#{session[:photo_upload_token]}), Passed(#{params[:upload_token]})")
       return false
-    elsif @challenge.type.value == "referral" || @challenge.type.value == "birthday"
+    elsif @challenge.type.value == "referral"
       return false
     end
     return true
@@ -546,8 +546,6 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
     case @challenge.type.value
     when "photo"
       t("api.challenges.limit_reached_ok")
-    when "birthday"
-      t("api.challenges.limit_reached_invalid") % [1, I18n.t('api.time', :count => 1), I18n.t('api.year', :count => 1)]  
     else  
       t("api.challenges.limit_reached_ok")
     end

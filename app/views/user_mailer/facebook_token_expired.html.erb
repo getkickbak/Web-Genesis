@@ -22,21 +22,17 @@
 						<table width="100%" border="0" cellspacing="0" cellpadding="0">
 							<tbody>
 								<tr valign="middle">
-									<td valign="top" style="width:50px;padding-right:10px;padding-bottom:10px;">
-										<%= link_to image_tag(@promotion.merchant.photo.thumbnail_ios_small.url), business_profile_url(@promotion.merchant) %>
-									</td>
 									<td>
-									<b><a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= business_profile_url(@promotion.merchant) %>"><%= "#{@promotion.merchant.name}" %></a></b>	
 									<br>
 									<br>
-									<%= @promotion.message %>
+									<b>Hi <%= @user.name.split(' ')[0] %>,</b>
 									<br>
 									<br>
-									<% if @promotion.photo_url %>
-									<%= image_tag @promotion.photo.thumbnail_ios_large.url %>
+									Your Facebook offline access has expired.  Please 
+									<a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= new_user_session_url %>">login</a> using Facebook to renew access.
 									<br>
 									<br>
-									<% end %>
+									Remember, you get bonus reward points for connecting with Facebook!
 									</td>
 								</tr>
 							</tbody>
@@ -46,16 +42,10 @@
 								<tr>
 									<td align="center">
 									<br>
-									Questions or comments? Email us at <a rel="nofollow" ymailto="mailto:help@getkickbak.com" target="_blank" style="text-decoration: none;" href="mailto:help@getkickbak.com">help@getkickbak.com</a>
+										Questions or comments? Email us at <a rel="nofollow" ymailto="mailto:help@getkickbak.com" target="_blank" style="text-decoration: none;" href="mailto:help@getkickbak.com">help@getkickbak.com</a>
 									<br>
 									<br>
-									Thanks from the <a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= root_url %>">KICKBAK</a> team.
-									<br>
-									<br>
-										<div style="font-size:10px;">
-											If you would like to change your email notification settings,
-											<a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= account_subscriptions_url %>">click here</a>
-										</div>	
+										Thanks from the <a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= root_url %>">KICKBAK</a> team.
 									<br>
 									<br>
 									</td>

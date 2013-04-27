@@ -48,6 +48,7 @@ class Api::V1::TokensController < Api::V1::BaseApplicationController
             device_info = JSON.parse(params[:device], { :symbolize_names => true })
             Common.register_user_device(@user, device_info)
           end
+          session[:version] = params[:version]
           session[:user_agent] = Common.get_user_agent(request.env['HTTP_USER_AGENT'])
           session[:resolution] = Common.get_thumbail_resolution(session[:user_agent], params[:device_pixel_ratio].to_f)
           render :template => '/api/v1/tokens/create'
@@ -130,6 +131,7 @@ class Api::V1::TokensController < Api::V1::BaseApplicationController
           device_info = JSON.parse(params[:device], { :symbolize_names => true })
           Common.register_user_device(@user, device_info)
         end
+        session[:version] = params[:version]
         session[:user_agent] = Common.get_user_agent(request.env['HTTP_USER_AGENT'])
         session[:resolution] = Common.get_thumbail_resolution(session[:user_agent], params[:device_pixel_ratio].to_f)
         render :template => '/api/v1/tokens/create'
@@ -154,6 +156,7 @@ class Api::V1::TokensController < Api::V1::BaseApplicationController
       device_info = JSON.parse(params[:device], { :symbolize_names => true })
       Common.register_user_device(current_user, device_info)
     end
+    session[:version] = params[:version]
     session[:user_agent] = Common.get_user_agent(request.env['HTTP_USER_AGENT'])
     session[:resolution] = Common.get_thumbail_resolution(session[:user_agent], params[:device_pixel_ratio].to_f)
     render :template => '/api/v1/tokens/get_csrf_token'

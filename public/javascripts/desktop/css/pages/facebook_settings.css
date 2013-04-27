@@ -1,9 +1,31 @@
-.account_sharing img {
+.account_disconnect {
+	padding-top: 20px;	
+}
+
+.account_disconnect img {
 	float: left;
 	margin-right: 10px;
 }
 
-.account_sharing p {
+.account_disconnect p {
 	float: left;
 	line-height: 32px;
+}
+
+.account_connect {
+	padding-top: 19px;	
+}
+
+.bonus-points {
+	font-size: 14px;
+	font-weight: bold;
+}
+
+.facebook_share_settings {
+	clear: both;
+	margin: 20px 0 10px 0;	
+}
+
+table#facebook_share td {
+	padding: 5px;
 }

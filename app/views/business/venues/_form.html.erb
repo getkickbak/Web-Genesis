@@ -15,6 +15,7 @@
    <%= f.input :time_zone, :as => :time_zone, :input_html=>{:class => "input-large"} %>
    <%= f.input :phone, :input_html=>{:class => "input-medium"} %>
    <%= f.input :website, :required => false, :input_html=>{:class => "input-large"} %>
+   <%= f.input :facebook_page_id, :required => false, :input_html=>{:class => "input-large"} %>
    <%= f.input :longitude, :as => :hidden, :input_html => { :value => @venue.longitude } %>
    <%= f.input :latitude, :as => :hidden, :input_html => { :value => @venue.latitude } %>
    <br />

@@ -51,7 +51,7 @@ class UserDevise::SessionsController < Devise::SessionsController
       end
     end
   end
-  
+
   protected
   
   def clear_flash

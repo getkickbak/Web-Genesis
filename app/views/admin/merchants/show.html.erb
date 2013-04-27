@@ -77,6 +77,14 @@
 												</div>
 											</div>
 											<% end %>
+											<% if not @merchant.facebook_page_id.empty? %>
+											<div class="control-group">
+												<label class="control-label"> Facebook Page ID: </label>
+												<div class="controls">
+													<%= @merchant.facebook_page_id %>
+												</div>
+											</div>
+											<% end %>
 											<div class="control-group">
 												<label class="control-label"> Status: </label>
 												<div class="controls">

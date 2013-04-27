@@ -106,7 +106,7 @@
 									<% end %>
 									<% if @customers.length == 0 %>
 									<tr>
-										<td colspan="4" class="no-data">You have not earned any points yet</td>
+										<td colspan="4" class="no-data">You have not earned any points yet.</td>
 									</tr>
 									<% end %>
 								</tbody>
@@ -114,6 +114,9 @@
 						</div>
 					</div>
 				</div>
+				<% if current_user.facebook_auth.nil? || !@has_permission || !@visible_to_friends %>
+				<%= render "facebook" %>
+				<% end %>
 				<%= render "info" %>
 			</div>
 		</div>

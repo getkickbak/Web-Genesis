@@ -30,6 +30,7 @@ module Business
       @venue[:name] = current_merchant.name
       @venue[:description] = current_merchant.description
       @venue[:website] = current_merchant.website
+      @venue[:facebook_page_id] = current_merchant.facebook_page_id
       
       respond_to do |format|
         format.html # index.html.erb

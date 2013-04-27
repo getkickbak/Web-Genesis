@@ -455,7 +455,7 @@ Genesis =
          }, this));
       }
    },
-   ajax : function(relPath, url, type, data, dataType, successCallBack, button, reenableButton, failCallback)
+   ajax : function(relPath, url, type, data, dataType, successCallBack, button, reenableButton, failCallBack)
    {
       var path = (relPath) ? location.protocol + '//' + location.host + location.pathname : '';
       if (button)
@@ -485,7 +485,7 @@ Genesis =
             {
                successCallBack(response);
             }
-            if (!Genesis.isEmpty(failCallback) && (!response || !response.success))
+            if (!Genesis.isEmpty(failCallBack) && (!response || !response.success))
             {
                failCallBack(response);
             }
