@@ -567,21 +567,56 @@ Ext.define('Genesis.controller.client.Rewards',
       {
          var send = function()
          {
-            Ext.device.Notification.show(
+            if (!me._actions)
             {
-               title : 'Earn Reward Points',
-               message : me.showToServerMsg(),
-               buttons : ['Proceed', 'Cancel'],
-               callback : function(btn)
+               me._actions = Ext.create('Genesis.view.widgets.PopupItemDetail',
                {
-                  if (btn.toLowerCase() == 'proceed')
+                  title : me.showToServerMsg(),
+                  buttons : [
                   {
-                     //var earnPts = Ext.bind(me.onEarnPtsSC, me);
-                     //me.checkReferralPrompt(earnPts, earnPts);
-                     me.fireEvent('rewarditem', notUseGeolocation);
-                  }
-               }
-            });
+                     margin : '0 0 0.5 0',
+                     text : 'Proceed',
+                     ui : 'action',
+                     height : '3em',
+                     handler : function()
+                     {
+                        me._actions.hide();
+                        //var earnPts = Ext.bind(me.onEarnPtsSC, me);
+                        //me.checkReferralPrompt(earnPts, earnPts);
+                        me.fireEvent('rewarditem', notUseGeolocation);
+                     }
+                  },
+                  {
+                     margin : '0.5 0 0 0',
+                     text : 'Cancel',
+                     ui : 'cancel',
+                     height : '3em',
+                     handler : function()
+                     {
+                        me._actions.hide();
+                     }
+                  }]
+               });
+               Ext.Viewport.add(me._actions);
+            }
+            me._actions.show();
+            /*
+             Ext.device.Notification.show(
+             {
+             title : 'Earn Reward Points',
+             message : me.showToServerMsg(),
+             buttons : ['Proceed', 'Cancel'],
+             callback : function(btn)
+             {
+             if (btn.toLowerCase() == 'proceed')
+             {
+             //var earnPts = Ext.bind(me.onEarnPtsSC, me);
+             //me.checkReferralPrompt(earnPts, earnPts);
+             me.fireEvent('rewarditem', notUseGeolocation);
+             }
+             }
+             });
+             */
          };
 
          if (Genesis.fn.isNative())
@@ -668,7 +703,7 @@ Ext.define('Genesis.controller.client.Rewards',
    onPromotionCreateView : function(activeItem)
    {
       var me = this;
-      activeItem.redeemItem = me.redeemItem;
+      activeItem.item = me.redeemItem;
    },
    onPromotionActivate : function(activeItem, c, oldActiveItem, eOpts)
    {

@@ -55,12 +55,6 @@ Ext.define('Genesis.view.server.Rewards',
             title : 'Amount Spent',
             placeHolder : '0.00',
             bottomButtons : [
-            /*{
-             tag : 'earnPtsTag',
-             text : 'TAG it',
-             ui : 'orange-large'
-             },
-             */
             {
                tag : 'earnPts',
                text : 'GO!',

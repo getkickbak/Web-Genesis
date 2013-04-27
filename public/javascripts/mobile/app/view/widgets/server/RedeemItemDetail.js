@@ -1,18 +1,11 @@
 Ext.define('Genesis.view.widgets.server.RedeemItemDetail',
 {
-   extend : 'Genesis.view.ViewBase',
+   extend : 'Genesis.view.widgets.ItemDetail',
    requires : ['Ext.XTemplate', 'Genesis.view.widgets.RedeemItem'],
    alias : 'widget.serverredeemitemdetailview',
    config :
    {
-      scrollable : undefined,
-      cls : 'redeemItemMain viewport',
-      layout :
-      {
-         type : 'vbox',
-         pack : 'center',
-         align : 'stretch'
-      },
+      itemXType : 'redeemitem',
       items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
          title : 'Prizes',
@@ -87,12 +80,6 @@ Ext.define('Genesis.view.widgets.server.RedeemItemDetail',
                   flex : 1
                },
                items : [
-               /*{
-                tag : 'redeemPtsTag',
-                text : 'TAG it',
-                ui : 'orange-large'
-                },
-                */
                {
                   tag : 'merchantRedeem',
                   text : 'GO!',
@@ -147,14 +134,14 @@ Ext.define('Genesis.view.widgets.server.RedeemItemDetail',
    createView : function()
    {
       var me = this, redeemItemContainer = me.query("container[tag=redeemItemContainer]")[0];
-      if (!this.callParent(arguments) && redeemItemContainer && (redeemItemContainer.getInnerItems().length > 0))
+      if (!Genesis.view.ViewBase.prototype.createView.call(me, arguments) && redeemItemContainer && (redeemItemContainer.getInnerItems().length > 0))
       {
          var item = redeemItemContainer.getInnerItems()[0];
          //
          // Refresh RedeemItem
          //
-         item.setData(me.redeemItem)
-         item.updateItem(me.redeemItem);
+         item.setData(me.item)
+         item.updateItem(me.item);
       }
       else
       {
@@ -162,11 +149,11 @@ Ext.define('Genesis.view.widgets.server.RedeemItemDetail',
          me.setPreRender([
          {
             flex : 1,
-            xtype : 'redeemitem',
+            xtype : me.getItemXType(),
             hideMerchant : true,
-            data : me.redeemItem
+            data : me.item
          }]);
       }
-      delete me.redeemItem;
+      delete me.item;
    }
 });

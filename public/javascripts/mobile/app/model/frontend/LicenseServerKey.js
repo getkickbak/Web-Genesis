@@ -57,7 +57,7 @@ Ext.define('Genesis.model.frontend.LicenseKey',
          {
             read : 'GET'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/devices/get_encryption_key');
+         this.getProxy().setUrl(serverHost + '/api/v1/devices/get_encryption_key');
       }
    }
 });

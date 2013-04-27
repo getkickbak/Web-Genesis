@@ -52,7 +52,7 @@ Ext.define('Genesis.model.CustomerReward',
          {
             read : 'GET'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/customer_rewards?mode=reward');
+         this.getProxy().setUrl(serverHost + '/api/v1/customer_rewards?mode=reward');
       },
       setRedeemPointsURL : function(id)
       {
@@ -60,7 +60,7 @@ Ext.define('Genesis.model.CustomerReward',
          {
             read : 'POST'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/customer_rewards/' + id + '/redeem');
+         this.getProxy().setUrl(serverHost + '/api/v1/customer_rewards/' + id + '/redeem');
       },
       setMerchantRedeemPointsURL : function(id)
       {
@@ -68,7 +68,7 @@ Ext.define('Genesis.model.CustomerReward',
          {
             read : 'POST'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/customer_rewards/' + id + '/merchant_redeem');
+         this.getProxy().setUrl(serverHost + '/api/v1/customer_rewards/' + id + '/merchant_redeem');
       },
       //
       // Prize Points
@@ -79,7 +79,7 @@ Ext.define('Genesis.model.CustomerReward',
          {
             read : 'GET'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/customer_rewards?mode=prize');
+         this.getProxy().setUrl(serverHost + '/api/v1/customer_rewards?mode=prize');
       },
       setRedeemPrizePointsURL : function(id)
       {
@@ -87,7 +87,7 @@ Ext.define('Genesis.model.CustomerReward',
          {
             read : 'POST'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/customer_rewards/' + id + '/redeem');
+         this.getProxy().setUrl(serverHost + '/api/v1/customer_rewards/' + id + '/redeem');
       }
    }
 });

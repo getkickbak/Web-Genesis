@@ -121,7 +121,8 @@ Ext.define('Genesis.controller.client.MainPage',
       },
       listeners :
       {
-         'refreshCSRF' : 'onRefreshCSRF'
+         'refreshCSRF' : 'onRefreshCSRF',
+         'facebookTap' : 'onFacebookTap'
       }
    },
    _loggingIn : false,
@@ -362,7 +363,7 @@ Ext.define('Genesis.controller.client.MainPage',
       Ext.StoreMgr.get('VenueStore').removeAll();
       me.persistSyncStores(null, true);
       viewport.setLoggedIn(false);
-      me.loggingIn = false;
+      me._loggingIn = false;
 
       //this.getInfoBtn().hide();
       //activeItem.createView();
@@ -449,14 +450,16 @@ Ext.define('Genesis.controller.client.MainPage',
          me._logout();
       }
    },
-   onFacebookTap : function(b, e, eOpts, eInfo)
+   onFacebookTap : function(b, e, eOpts, eInfo, failCallback)
    {
       var me = this;
+      failCallback = failCallback || Ext.emptyFn;
       //
       // Forced to Login to Facebook
       //
       if (Ext.Viewport.getMasked() || me._loggingOut || me._logginIn)
       {
+         failCallback();
          return;
       }
       me._loggingIn = true;
@@ -490,6 +493,7 @@ Ext.define('Genesis.controller.client.MainPage',
                      // If we are already in Login Page, reset all values
                      //
                      //Genesis.db.resetStorage();
+                     failCallback();
                   }
                   else
                   {
@@ -499,6 +503,10 @@ Ext.define('Genesis.controller.client.MainPage',
                   }
                }
             });
+         }
+         else
+         {
+            failCallback();
          }
       }, true);
    },
@@ -542,6 +550,7 @@ Ext.define('Genesis.controller.client.MainPage',
          },
          params :
          {
+            version : Genesis.constants.clientVersion,
             device_pixel_ratio : window.devicePixelRatio,
             device : Ext.encode(Genesis.constants.device)
          },
@@ -580,6 +589,7 @@ Ext.define('Genesis.controller.client.MainPage',
          console.debug("Creating Account ...");
          var params =
          {
+         	version : Genesis.constants.clientVersion,
             name : values.name,
             email : values.username,
             password : values.password,
@@ -649,6 +659,7 @@ Ext.define('Genesis.controller.client.MainPage',
       var me = this;
       var params =
       {
+         version : Genesis.constants.clientVersion,
          device_pixel_ratio : window.devicePixelRatio,
          device : Ext.encode(Genesis.constants.device)
       };

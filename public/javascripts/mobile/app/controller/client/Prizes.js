@@ -197,12 +197,12 @@ Ext.define('Genesis.controller.client.Prizes',
           {
           case 'rewards' :
           {
-          params['rewards'] = Genesis.constants.host + "/opengraph?" + params1;
+          params['rewards'] = serverHost + "/opengraph?" + params1;
           break;
           }
           case 'prizes' :
           {
-          params['prizes'] = Genesis.constants.host + "/opengraph?" + params1;
+          params['prizes'] = serverHost + "/opengraph?" + params1;
           break;
           }
           }
@@ -275,7 +275,7 @@ Ext.define('Genesis.controller.client.Prizes',
           og_description : desc,
           body : message
           });
-          params['promotions'] = Genesis.constants.host + "/opengraph?" + params1;
+          params['promotions'] = serverHost + "/opengraph?" + params1;
           */
 
          console.log('Posting Badge Promotion to Facebook ...' + '\n' + //

@@ -11,11 +11,6 @@ window.plugins = window.plugins ||
 
 Genesis.constants =
 {
-   //host : 'http://192.168.0.46:3000',
-   //host : 'http://76.10.173.153',
-   //host : 'http://www.dev1getkickbak.com',
-   //host : 'http://www.devgetkickbak.com',
-   host : 'http://www.getkickbak.com',
    isNfcEnabled : false,
    userName : 'Eric Chan',
    appMimeType : 'application/kickbak',
@@ -68,7 +63,7 @@ Genesis.constants =
          me._iconPath = '/ios';
          me._thumbnailAttribPrefix = 'thumbnail_ios_';
          me._iconSize = 57;
-         
+
          //
          // Push Notification
          //
@@ -83,7 +78,7 @@ Genesis.constants =
             me.pushNotifAppId = '4fef6fb0691c12.54726991';
          }
          me.pushNotifType = 1;
-         
+
          console.log("Running a iOS System");
       }
       else if (Ext.os.is('Android'))
@@ -100,7 +95,7 @@ Genesis.constants =
             me._iconPath = '/android/lhdpi';
             me._thumbnailAttribPrefix = 'thumbnail_android_lhdpi_';
          }
-         
+
          //
          // Push Notification
          //
@@ -125,7 +120,7 @@ Genesis.constants =
          me._iconPath = '/ios';
          me._thumbnailAttribPrefix = 'thumbnail_ios_';
          me._iconSize = 57;
-         
+
          console.log("Running a Unknown System");
       }
       me._iconPath = me.themeName + me._iconPath;
@@ -858,6 +853,10 @@ Ext.define('Genesis.data.proxy.Server',
 
       switch (metaData['rescode'])
       {
+         case 'unregistered_account' :
+         {
+            break;
+         }
          //
          // Error from server, display this to user
          //
@@ -1507,17 +1506,16 @@ Ext.define('Ext.device.notification.Abstract',
  );
  },
  */
-Ext.define('Ext.device.notification.PhoneGap',
+
+Ext.define('Ext.device.notification.Simulator',
 {
    extend : 'Ext.device.notification.Abstract',
    requires : ['Ext.MessageBox'],
-
    // @private
    msg : null,
-
    show : function()
    {
-      var config = this.callParent(arguments), buttons = [], ln = config.buttons.length, button, i, callback, msg;
+      var config = this.callSuper(arguments), buttons = [], ln = config.buttons.length, button, i, callback, msg;
 
       //buttons
       for ( i = 0; i < ln; i++)
@@ -1579,6 +1577,11 @@ Ext.define('Ext.device.notification.PhoneGap',
       }
       //navigator.notification.dismiss();
    }
+});
+
+Ext.define('Ext.device.notification.PhoneGap',
+{
+   extend : 'Ext.device.notification.Simulator'
 });
 
 // **************************************************************************

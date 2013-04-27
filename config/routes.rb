@@ -205,6 +205,7 @@ Genesis::Application.routes.draw do
     match "/add_business/create" => 'pages#add_business_create', :via => :post, :as => :create_merchant_contact
     match "/d", :to => 'pages#index'
     match "/download", :to => 'pages#index'
+    match "/channel" => 'pages#channel'
     
     #match '/users/:id/account' => 'users#edit'
     #match '/users/:user_id/coupons' => 'orders#index', :via => :get , :as => :user_coupons

@@ -2,24 +2,7 @@
 // RedeemItem Page
 //------------------------------------------------------------------------------
 .redeemItem {
-   .title {
-      //line-height:$xlargeFontSize*2 + 2*$panelTopGap;
-      display:table;
-      width:100%;
-      padding:0 $panelGap;
-      .x-innerhtml {
-         display:table-cell;
-         vertical-align:middle;
-      }
-   }
-   .itemPhoto {
-      width:100%;
-      height:100%;
-      .x-innerhtml {
-         height:100%;
-         text-align:center;
-      }
-   }
+   @extend .item;
    .itemPoints {
       position:absolute;
       bottom:$panelTopGap;
@@ -129,36 +112,6 @@
             .itemDesc {
                //font-size:$largeFontSize !important;
             }
-         }
-      }
-   }
-}
-
-//------------------------------------------------------------------------------
-// iOS
-//-------------------------------------------------------------------------------
-.x-ios, .x-desktop {
-   .redeemItem {
-      .itemPhoto {
-         .x-innerhtml {
-            img {
-               width : $icon-size*3;
-               height :$icon-size*3;
-            }
-         }
-      }
-   }
-}
-
-//------------------------------------------------------------------------------
-// Android
-//-------------------------------------------------------------------------------
-.x-android .redeemItem {
-   .itemPhoto {
-      .x-innerhtml {
-         img {
-            width : $icon-size*4;
-            height :$icon-size*4;
          }
       }
    }

@@ -50,7 +50,7 @@ Ext.define('Genesis.model.Venue',
          {
             read : 'GET'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/venues/' + venueId + '/merchant_explore');
+         this.getProxy().setUrl(serverHost + '/api/v1/venues/' + venueId + '/merchant_explore');
       },
       setFindNearestURL : function()
       {
@@ -58,7 +58,7 @@ Ext.define('Genesis.model.Venue',
          {
             read : 'GET'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/venues/find_nearest');
+         this.getProxy().setUrl(serverHost + '/api/v1/venues/find_nearest');
       },
       setGetClosestVenueURL : function()
       {
@@ -66,7 +66,7 @@ Ext.define('Genesis.model.Venue',
          {
             read : 'GET'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/venues/find_closest');
+         this.getProxy().setUrl(serverHost + '/api/v1/venues/find_closest');
       },
       setSharePhotoURL : function()
       {
@@ -77,7 +77,7 @@ Ext.define('Genesis.model.Venue',
          {
             read : 'POST'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/venues/share_photo');
+         this.getProxy().setUrl(serverHost + '/api/v1/venues/share_photo');
       },
       setGetLicenseKeyURL : function()
       {
@@ -85,7 +85,7 @@ Ext.define('Genesis.model.Venue',
          {
             read : 'POST'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/venues/updateLicenseKey');
+         this.getProxy().setUrl(serverHost + '/api/v1/venues/updateLicenseKey');
       }
    }
 

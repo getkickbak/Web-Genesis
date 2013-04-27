@@ -1,18 +1,11 @@
 Ext.define('Genesis.view.widgets.client.RedeemItemDetail',
 {
-   extend : 'Genesis.view.ViewBase',
+   extend : 'Genesis.view.widgets.ItemDetail',
    requires : ['Ext.XTemplate', 'Genesis.view.widgets.RedeemItem'],
    alias : 'widget.clientredeemitemdetailview',
    config :
    {
-      scrollable : undefined,
-      cls : 'redeemItemMain viewport',
-      layout :
-      {
-         type : 'vbox',
-         pack : 'center',
-         align : 'stretch'
-      },
+   	itemXType : 'redeemitem',
       items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
          title : 'Prizes',
@@ -55,30 +48,6 @@ Ext.define('Genesis.view.widgets.client.RedeemItemDetail',
       var me = this, viewport = _application.getController('client' + '.Viewport');
       viewport.self.playSoundFile(viewport.sound_files['clickSound']);
       me.fireEvent('redeemItemTap', null);
-   },
-   createView : function()
-   {
-      var me = this;
-      if (!me.callParent(arguments) && (me.getInnerItems().length > 0))
-      {
-         var item = me.getInnerItems()[0];
-         //
-         // Refresh RedeemItem
-         //
-         item.setData(me.redeemItem);
-         item.updateItem(me.redeemItem);
-      }
-      else
-      {
-         me.setPreRender([
-         {
-            flex : 1,
-            xtype : 'redeemitem',
-            hideMerchant : false,
-            data : me.redeemItem
-         }]);
-      }
-      delete me.redeemItem;
    }
 });
 
@@ -88,8 +57,6 @@ Ext.define('Genesis.view.widgets.client.PromotionItem',
    alias : 'widget.clientpromotionalitemview',
    config :
    {
-      scrollable : undefined,
-      cls : 'redeemItemMain viewport',
       layout : 'fit',
       items : [
       {

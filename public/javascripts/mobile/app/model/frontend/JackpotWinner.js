@@ -40,7 +40,7 @@ Ext.define('Genesis.model.frontend.JackpotWinner',
          {
             read : 'GET'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/customers/show_jackpot_winners');
+         this.getProxy().setUrl(serverHost + '/api/v1/customers/show_jackpot_winners');
       }
    }
 });

@@ -142,7 +142,7 @@ Ext.define('Genesis.model.Customer',
          {
             read : 'POST'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/tokens/create_from_facebook');
+         this.getProxy().setUrl(serverHost + '/api/v1/tokens/create_from_facebook');
       },
       setLoginUrl : function()
       {
@@ -150,7 +150,7 @@ Ext.define('Genesis.model.Customer',
          {
             read : 'POST'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/tokens');
+         this.getProxy().setUrl(serverHost + '/api/v1/tokens');
       },
       setLogoutUrl : function(auth_code)
       {
@@ -158,7 +158,7 @@ Ext.define('Genesis.model.Customer',
          {
             read : 'DELETE'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/tokens/' + auth_code);
+         this.getProxy().setUrl(serverHost + '/api/v1/tokens/' + auth_code);
       },
       setCreateAccountUrl : function()
       {
@@ -166,7 +166,7 @@ Ext.define('Genesis.model.Customer',
          {
             read : 'POST'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/sign_up');
+         this.getProxy().setUrl(serverHost + '/api/v1/sign_up');
       },
       setGetCustomerUrl : function()
       {
@@ -174,7 +174,7 @@ Ext.define('Genesis.model.Customer',
          {
             read : 'GET'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/customers/show_account');
+         this.getProxy().setUrl(serverHost + '/api/v1/customers/show_account');
       },
       setGetCustomersUrl : function()
       {
@@ -182,7 +182,7 @@ Ext.define('Genesis.model.Customer',
          {
             read : 'GET'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/customers');
+         this.getProxy().setUrl(serverHost + '/api/v1/customers');
       },
       setVenueScanCheckinUrl : function()
       {
@@ -194,7 +194,7 @@ Ext.define('Genesis.model.Customer',
          {
             read : 'POST'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/check_ins');
+         this.getProxy().setUrl(serverHost + '/api/v1/check_ins');
       },
       setVenueExploreUrl : function(venueId)
       {
@@ -202,7 +202,7 @@ Ext.define('Genesis.model.Customer',
          {
             read : 'GET'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/venues/' + venueId + '/explore');
+         this.getProxy().setUrl(serverHost + '/api/v1/venues/' + venueId + '/explore');
       },
       setSendPtsXferUrl : function()
       {
@@ -210,7 +210,7 @@ Ext.define('Genesis.model.Customer',
          {
             read : 'POST'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/customers/transfer_points');
+         this.getProxy().setUrl(serverHost + '/api/v1/customers/transfer_points');
       },
       setRecvPtsXferUrl : function()
       {
@@ -218,7 +218,7 @@ Ext.define('Genesis.model.Customer',
          {
             read : 'POST'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/customers/receive_points');
+         this.getProxy().setUrl(serverHost + '/api/v1/customers/receive_points');
       }
    }
 });
