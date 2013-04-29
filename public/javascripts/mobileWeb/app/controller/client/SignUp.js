@@ -366,7 +366,7 @@ Ext.define('KickBak.controller.client.SignUp',
          });
 
          Account['setCreateAccountUrl']();
-         Account.load(
+         Account.load(0,
          {
             jsonData :
             {
@@ -381,7 +381,7 @@ Ext.define('KickBak.controller.client.SignUp',
                }),
                web_signup : true
             },
-            callback : function(records, operation)
+            callback : function(record, operation)
             {
                Ext.Viewport.setMasked(null);
                //
