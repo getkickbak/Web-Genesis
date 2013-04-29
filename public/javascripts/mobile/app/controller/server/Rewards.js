@@ -499,32 +499,44 @@ Ext.define('Genesis.controller.server.Rewards',
          me.self.playSoundFile(viewport.sound_files['nfcEnd']);
          me.onEarnPtsTap(null);
 
-         Ext.device.Notification.show(
+         me.onNfc(
          {
-            title : me.earnPtsTitle,
-            message : me.earnPtsConfirmMsg,
-            buttons : ['Confirm', 'Cancel'],
-            callback : function(btn)
+            id : (me._params) ? me._params['uid'] : null,
+            result :
             {
-               if (btn.toLowerCase() == 'confirm')
-               {
-                  me.onNfc(
-                  {
-                     id : (me._params) ? me._params['uid'] : null,
-                     result :
-                     {
-                        'tagID' : (me._params) ? me._params['tag_id'] : null,
-                        'phoneID' : phoneId
-                     }
-                  });
-                  delete me._params;
-               }
-               else
-               {
-                  me.onDoneTap();
-               }
+               'tagID' : (me._params) ? me._params['tag_id'] : null,
+               'phoneID' : phoneId
             }
          });
+         delete me._params;
+         /*
+          Ext.device.Notification.show(
+          {
+          title : me.earnPtsTitle,
+          message : me.earnPtsConfirmMsg,
+          buttons : ['Confirm', 'Cancel'],
+          callback : function(btn)
+          {
+          if (btn.toLowerCase() == 'confirm')
+          {
+          me.onNfc(
+          {
+          id : (me._params) ? me._params['uid'] : null,
+          result :
+          {
+          'tagID' : (me._params) ? me._params['tag_id'] : null,
+          'phoneID' : phoneId
+          }
+          });
+          delete me._params;
+          }
+          else
+          {
+          me.onDoneTap();
+          }
+          }
+          });
+          */
       }
       else
       {

@@ -116,7 +116,7 @@ Ext.define('Genesis.view.widgets.server.RedeemItemDetail',
    {
       var me = this, viewport = _application.getController('server' + '.Viewport');
       viewport.self.playSoundFile(viewport.sound_files['clickSound']);
-      me.fireEvent('redeemItemTap', null);
+      me.fireEvent('redeemItemTap', b);
    },
    showView : function()
    {

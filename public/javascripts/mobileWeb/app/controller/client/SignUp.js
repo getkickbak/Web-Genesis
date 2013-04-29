@@ -136,6 +136,10 @@ Ext.define('KickBak.controller.client.SignUp',
                   field.setReadOnly(false);
                },
                field : form.query('textfield[name=user]')[0],
+               fn : function(field, response)
+               {
+                  return  db['account']['name'];
+               },
                fbFn : function(field, response)
                {
                   field.setReadOnly(true);
@@ -149,6 +153,10 @@ Ext.define('KickBak.controller.client.SignUp',
                   field.setReadOnly(false);
                },
                field : form.query('textfield[name=email]')[0],
+               fn : function(field, response)
+               {
+                  return db['account']['email'];
+               },
                fbFn : function(field, response)
                {
                   field.setReadOnly(true);

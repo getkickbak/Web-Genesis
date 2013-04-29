@@ -54,30 +54,40 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
          me.self.playSoundFile(viewport.sound_files['nfcEnd']);
          me.onRedeemItemTap(null);
 
-         Ext.device.Notification.show(
+         me.onNfc(
          {
-            title : me.getRedeemPopupTitle(),
-            message : me.redeemPtsConfirmMsg,
-            buttons : ['Confirm', 'Cancel'],
-            callback : function(btn)
+            id : null,
+            result :
             {
-               if (btn.toLowerCase() == 'confirm')
-               {
-                  me.onNfc(
-                  {
-                     id : null,
-                     result :
-                     {
-                        'phoneID' : phoneId
-                     }
-                  });
-               }
-               else
-               {
-                  container.setActiveItem(0);
-               }
+               'phoneID' : phoneId
             }
          });
+         /*
+          Ext.device.Notification.show(
+          {
+          title : me.getRedeemPopupTitle(),
+          message : me.redeemPtsConfirmMsg,
+          buttons : ['Confirm', 'Cancel'],
+          callback : function(btn)
+          {
+          if (btn.toLowerCase() == 'confirm')
+          {
+          me.onNfc(
+          {
+          id : null,
+          result :
+          {
+          'phoneID' : phoneId
+          }
+          });
+          }
+          else
+          {
+          container.setActiveItem(0);
+          }
+          }
+          });
+          */
       }
       else
       {

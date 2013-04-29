@@ -64,6 +64,7 @@ Ext.define('KickBak.model.frontend.Account',
    inheritableStatics :
    {
       phoneRegex : /^(\d{3})\D*(\d{3})\D*(\d{4})\D*(\d*)$/,
+      emailRegex : /^\s*[\w\-\+_]+(\.[\w\-\+_]+)*\@[\w\-\+_]+\.[\w\-\+_]+(\.[\w\-\+_]+)*\s*$/,
       setCreateAccountUrl : function()
       {
          this.getProxy().setActionMethods(
