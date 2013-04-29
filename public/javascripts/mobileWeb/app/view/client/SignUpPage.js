@@ -6,6 +6,7 @@ Ext.define('KickBak.view.client.SignUpPage',
    'KickBak.model.frontend.Account', 'KickBak.view.widgets.Item', 'KickBak.view.widgets.ItemDetail'],
    alias : 'widget.clientsignuppageview',
    fbConnectRequestMsg : 'By connecting to Facebook, you will receive additional Reward Pts everytime we update your KICKBAK activity to your Facebook account!',
+   unsupportedDeviceMsg : 'Sorry, this mobile device is not support at this time. Visit our website with your desktop to SignIn!',
    config :
    {
       preRender : null,
@@ -252,7 +253,12 @@ Ext.define('KickBak.view.client.SignUpPage',
                   }
                   else
                   {
-                     location.href = 'http://itunes.apple.com/us/app/kickbak-inc/id537476722?ls=1&mt=8'
+                     Ext.device.Notification.show(
+                     {
+                        title : 'KICKBAK',
+                        message : me.unsupportedDeviceMsg,
+                        buttons : ['Dismiss']
+                     });
                   }
                }
             }]
