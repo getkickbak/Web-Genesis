@@ -1,0 +1,91 @@
+//------------------------------------------------------------------------------
+// Utility CSS
+//------------------------------------------------------------------------------
+.wrap {
+   white-space:normal !important;  
+}
+.noWrap {
+   white-space:nowrap !important;
+} 
+.x-button-icon.dummymask {
+   width: 1.3em;
+   height: 1.3em;
+}
+
+
+.shadows {
+   @if $include-highlights {
+      @include box-shadow(0 0 0.2em rgba(0,0,0,.6));
+   }
+}
+.bold {
+   font-weight:bold;
+}
+
+.round {
+   @if $include-border-radius { @include border-radius($panelBorderRadius); }
+}
+
+.panelHdr {
+   &.x-toolbar {
+      height : $global-row-height*0.75;
+      @if $include-border-radius { @include border-top-radius($panelBorderRadius); }
+   }
+   .x-title {
+      font-size:$normalFontSize;
+   }
+   //margin:0em $panelGap;
+}
+
+.wrap {
+   .x-button-label {
+      white-space:normal !important;
+   }
+}
+
+.plain {
+   &.x-button, &.x-toolbar .x-button {
+      background:none;
+      border:none;
+   }
+}
+
+.clientPhotoCache {
+   background-image : //
+   url($theme-path-rel + "/green_roulette_bg" + ".png"), //
+   url($theme-path-rel + "/roulette2" + ".png"), //
+   url($theme-path-rel + "/ball" + ".png");
+   width:1px;
+   height:1px;
+   display:none;
+}
+
+.serverPhotoCache {
+   width:1px;
+   height:1px;
+   display:none;
+}
+
+.photoVCenterHelper {
+   height: 100%;
+   text-align: center;
+}
+.photoVCenterHelper, .photoVCenterContent {
+   display: inline-block;
+   vertical-align: middle;
+   text-align: center;
+}
+
+.bottomButtons {
+   height : 2.7em;
+   margin :$panelTopGap 0;
+   .x-button {
+       margin-left:$panelGap;
+       .x-button-label {
+          font-size:$xlargeFontSize;
+       }
+       &:last-child {
+          margin-right:$panelGap;        
+       }
+   }
+}

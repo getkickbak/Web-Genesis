@@ -1,0 +1,33 @@
+//------------------------------------------------------------------------------
+// CSS Overrides for default graphics
+//------------------------------------------------------------------------------
+.x-emptytext {
+  
+}
+
+.x-item-hidden {
+   display:none !important;
+}
+
+//------------------------------------------------------------------------------
+// Badge
+//------------------------------------------------------------------------------
+.x-hasbadge .x-badge {
+   top : -0.5em;
+   right : -0.5em;
+   &.round {
+      @if $include-border-radius { @include border-radius(0.5em); }
+   }
+}
+
+.x-transparent {
+   background : transparent !important;
+}
+
+.x-layout-card-item {
+   background : transparent;
+}
+
+.x-dock-body {
+   position : relative;
+}

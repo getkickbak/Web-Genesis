@@ -74,8 +74,15 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
       var buttons = config['buttons'] || [];
       delete config['buttons'];
 
+      var preItemsConfig = config['preItemsConfig'] || [];
+      var postItemsConfig = config['postItemsConfig'] || [];
+      delete config['preItemsConfig'];
+      delete config['postItemsConfig'];
+
       Ext.merge(config,
       {
+         preItemsConfig : preItemsConfig,
+         postItemsConfig : postItemsConfig,
          items : [
          {
             flex : 1,

@@ -1,0 +1,6 @@
+//------------------------------------------------------------------------------
+// Login Pages
+//------------------------------------------------------------------------------
+.viewport {
+   @include custom-radial-gradient($GreyStart 40%, $GreyEnd 70%, center center, url($theme-path-rel-iphone5 + '/texture.png'));
+}

@@ -2,6 +2,7 @@ Ext.define('KickBak.controller.client.SignUp',
 {
    extend : 'KickBak.controller.SignUpBase',
    signupTitle : 'Account SignUp',
+   creatingAccountMsg : 'Creating Your Account ...',
    enableFBMsg : 'By connecting to Facebook, you will receive additional Reward Pts everytime we update your KICKBAK activity to your Facebook account!',
    disableFBMsg : '',
    enableTwitterMsg : 'By enabling Twitter connectivity, you will receive additional reward points everytime we update your KICKBAK activity to their site!',
@@ -80,13 +81,9 @@ Ext.define('KickBak.controller.client.SignUp',
          {
             change : 'onTwitterChange'
          },
-         'clientsignuppageview listfield[name=changepassword]' :
+         'clientsignuppageview button[tag=signUp]' :
          {
-            clearicontap : 'onPasswordChangeTap'
-         },
-         'clientsignuppageview button[tag=accountUpdate]' :
-         {
-            tap : 'onAccountUpdateTap'
+            tap : 'onSignUpTap'
          },
          //
          // Terms & Conditions
@@ -119,8 +116,6 @@ Ext.define('KickBak.controller.client.SignUp',
       }
    },
    initializing : true,
-   accountUpdateSuccessMsg : 'Update Successful',
-   accountUpdateFailedMsg : 'Update Failed',
    fbLoggedInIdentityMsg : function(email)
    {
       return 'You\'re logged into Facebook as ' + KickBak.constants.addCRLF() + email;
@@ -212,57 +207,40 @@ Ext.define('KickBak.controller.client.SignUp',
             buttons : ['OK']
          });
       }, 1, me);
+
+      me.response = params;
+   },
+   updateFBSignUpPopupCallback : function(params, operation)
+   {
+      var me = this, page = me.getSignUpPage();
+      var toggle = page.query('togglefield[name=facebook]')[0];
+
+      Ext.Viewport.setMasked(null);
+      if (!params || ((operation && !operation.wasSuccessful())) || (params['type'] == 'timeout'))
+      {
+         if (!page.isHidden() && toggle)
+         {
+            toggle.toggle();
+         }
+      }
+      else
+      {
+         me.updateFBSignUp(params);
+         if (toggle)
+         {
+            toggle.setValue(1);
+            toggle.originalValue = 1;
+            me.updateAccountInfo(params);
+            var profile = page.query('fieldset[tag=profile]')[0];
+            page.getScrollable().getScroller().scrollTo(0, profile._title.element.getY() - 66, true);
+         }
+      }
    },
    updateFBSignUpPopup : function(title, toggle)
    {
       var me = this, page = me.getSignUpPage();
 
-      var _fbLogin = function()
-      {
-         KickBak.fb.facebook_onLogin(function(params, operation)
-         {
-            Ext.Viewport.setMasked(null);
-            if (!params || ((operation && !operation.wasSuccessful())))
-            {
-               if (!page.isHidden() && toggle)
-               {
-                  toggle.toggle();
-               }
-            }
-            else
-            {
-               me.updateFBSignUp(params);
-               if (toggle)
-               {
-                  toggle.originalValue = 1;
-                  me.updateAccountInfo(params);
-                  var profile = page.query('fieldset[tag=profile]')[0];
-                  page.getScrollable().getScroller().scrollTo(0, profile._title.element.getY() - 46, true);
-               }
-            }
-         }, false);
-      };
-
-      _fbLogin();
-      /*
-       Ext.device.Notification.show(
-       {
-       title : title,
-       message : me.enableFBMsg,
-       buttons : ['Proceed', 'Cancel'],
-       callback : function(btn)
-       {
-       if (btn.toLowerCase() == 'proceed')
-       {
-       _fbLogin();
-       }
-       else if (toggle)
-       {
-       toggle.toggle();
-       }
-       }
-       });
-       */
+      KickBak.fb.facebook_onLogin(false);
    },
    updateAccountInfo : function(response)
    {
@@ -325,14 +303,6 @@ Ext.define('KickBak.controller.client.SignUp',
    // --------------------------------------------------------------------------
    // Button Handlers
    // --------------------------------------------------------------------------
-   onPasswordChangeTap : function(b, e)
-   {
-      var me = this;
-      var viewport = me.getViewPortCntlr();
-
-      me.self.playSoundFile(viewport.sound_files['clickSound']);
-      me.redirectTo('password_change');
-   },
    onFacebookChange : function(toggle, slider, thumb, newValue, oldValue, eOpts)
    {
       var me = this, viewport = me.getViewPortCntlr();
@@ -359,53 +329,69 @@ Ext.define('KickBak.controller.client.SignUp',
 
       me.fireEvent('toggleTwitter', toggle, slider, thumb, newValue, oldValue, eOpts);
    },
-   onAccountUpdateTap : function(b, e, eOpts)
+   onSignUpTap : function(b, e, eOpts)
    {
       var me = this, form = me.getSignUpPage(), values = form.getValues(true), proxy = Account.getProxy();
       var account = me.self.accountValidate(form, values);
+      var response = me.response;
 
       if (account)
       {
          //
-         // Upate Account
+         // Create Account
          //
          Ext.Viewport.setMasked(
          {
             xtype : 'loadmask',
             message : me.establishConnectionMsg
          });
-         Account['setUpdateAccountUrl']();
-         account.save(
+         console.debug("Creating Account ...");
+         var params =
          {
-            action : 'read',
+            version : Genesis.constants.clientVersion,
+            name : values.name,
+            email : values.username,
+            password : values.password,
+            phone : values.phone.replace(/-/g, '')
+         };
+
+         if (response)
+         {
+            params = Ext.applyIf(params, response);
+         }
+         Ext.Viewport.setMasked(
+         {
+            xtype : 'loadmask',
+            message : me.creatingAccountMsg
+         });
+
+         Account['setCreateAccountUrl']();
+         Account.load(
+         {
             jsonData :
             {
             },
-            callback : function(record, operation)
+            params :
+            {
+               device_pixel_ratio : window.devicePixelRatio,
+               user : Ext.encode(params),
+               device : Ext.encode(
+               {
+               }),
+               web_signup : true
+            },
+            callback : function(records, operation)
             {
                Ext.Viewport.setMasked(null);
-               if (operation.wasSuccessful())
+               //
+               // Login Error, redo login
+               //
+               if (!operation.wasSuccessful())
                {
-                  Ext.device.Notification.show(
-                  {
-                     title : me.signupTitle,
-                     message : me.accountUpdateSuccessMsg,
-                     buttons : ['OK']
-                  });
                }
                else
                {
-                  proxy.supressErrorsPopup = true;
-                  Ext.device.Notification.show(
-                  {
-                     title : me.signupTitle,
-                     message : me.accountUpdateFailedMsg,
-                     buttons : ['Dismiss'],
-                     callback : function()
-                     {
-                        proxy.supressErrorsCallbackFn();
-                     }
-                  });
+                  form.signUpSuccessPopup();
                }
             }
          });
@@ -420,48 +406,11 @@ Ext.define('KickBak.controller.client.SignUp',
 
       if (newValue == 1)
       {
+         KickBak.fb.on('connected', me.updateFBSignUpPopupCallback, me);
+         KickBak.fb.on('unauthorized', me.updateFBSignUpPopupCallback, me);
+         KickBak.fb.on('exception', me.updateFBSignUpPopupCallback, me);
+
          me.updateFBSignUpPopup(me.signupTitle, toggle);
-      }
-      else if (db['enableFB'])
-      {
-         console.debug("Cancelling Facebook Login ...");
-         var params =
-         {
-            facebook_id : 0
-         };
-
-         Account['setUpdateFbLoginUrl']();
-         Account.load(0,
-         {
-            jsonData :
-            {
-            },
-            params :
-            {
-               user : Ext.encode(params)
-            },
-            callback : function(record, operation)
-            {
-               if (operation.wasSuccessful())
-               {
-                  db = KickBak.db.getLocalDB();
-                  db['enableFB'] = false;
-                  db['currFbId'] = 0;
-                  delete db['fbAccountId'];
-                  delete db['fbResponse'];
-                  KickBak.db.setLocalDB(db);
-
-                  if (KickBak.fn.isNative())
-                  {
-                     KickBak.fb.facebook_onLogout(null, true);
-                  }
-               }
-               else if (!me.getSignUpPage().isHidden())
-               {
-                  toggle.toggle();
-               }
-            }
-         });
       }
    },
    onToggleTwitter : function(toggle, slider, thumb, newValue, oldValue, eOpts)
@@ -531,13 +480,21 @@ Ext.define('KickBak.controller.client.SignUp',
    // --------------------------------------------------------------------------
    openSignUpPage : function()
    {
-      var me = this;
+      var me = this, db = KickBak.db.getLocalDB();
       me.updateAccountInfo();
       me.getSignUpPage().query('togglefield[name=facebook]')[0].label.setStyle(
       {
          'line-height' : '2.2em'
       });
       me.openPage('signup');
+
+      if (db['fbLoginInProgress'])
+      {
+         KickBak.fb.on('connected', me.updateFBSignUpPopupCallback, me);
+         KickBak.fb.on('unauthorized', me.updateFBSignUpPopupCallback, me);
+         KickBak.fb.on('exception', me.updateFBSignUpPopupCallback, me);
+      }
+
    }
    // --------------------------------------------------------------------------
    // Base Class Overrides

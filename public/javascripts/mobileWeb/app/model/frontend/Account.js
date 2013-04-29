@@ -63,55 +63,14 @@ Ext.define('KickBak.model.frontend.Account',
    },
    inheritableStatics :
    {
-   	phoneRegex : /^(\d{3})\D*(\d{3})\D*(\d{4})\D*(\d*)$/,
-      setUpdateFbLoginUrl : function()
+      phoneRegex : /^(\d{3})\D*(\d{3})\D*(\d{4})\D*(\d*)$/,
+      setCreateAccountUrl : function()
       {
          this.getProxy().setActionMethods(
          {
             read : 'POST'
          });
-         this.getProxy().setUrl(serverHost + '/api/v1/account/update_facebook_info');
-      },
-      setPasswdResetUrl : function()
-      {
-         this.getProxy().setActionMethods(
-         {
-            read : 'POST'
-         });
-         this.getProxy().setUrl(serverHost + '/api/v1/account/reset_password');
-      },
-      setPasswdChangeUrl : function()
-      {
-         this.getProxy().setActionMethods(
-         {
-            read : 'POST'
-         });
-         this.getProxy().setUrl(serverHost + '/api/v1/account/change_password');
-      },
-      setRefreshCsrfTokenUrl : function()
-      {
-         this.getProxy().setActionMethods(
-         {
-            read : 'GET'
-         });
-         this.getProxy().setUrl(serverHost + '/api/v1/tokens/get_csrf_token');
-      },
-      setUpdateRegUserDeviceUrl : function()
-      {
-         this.getProxy().setActionMethods(
-         {
-            read : 'POST'
-         });
-         this.getProxy().setUrl(serverHost + '/api/v1/account/register_user_device');
-      },
-      setUpdateAccountUrl : function()
-
-      {
-         this.getProxy().setActionMethods(
-         {
-            read : 'POST'
-         });
-         this.getProxy().setUrl(serverHost + '/api/v1/account/update');
+         this.getProxy().setUrl(serverHost + '/api/v1/sign_up');
       }
    }
 });

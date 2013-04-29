@@ -1,0 +1,14 @@
+//------------------------------------------------------------------------------
+// Login Pages
+//------------------------------------------------------------------------------
+.viewport {
+   @include custom-radial-gradient($GreyStart 40%, $GreyEnd 70%, center center, url($theme-path-rel + '/texture.png'));
+   background-repeat : repeat;
+   @include background-size(contain);
+}
+.bgImage {
+   @include custom-radial-gradient($BlueStart 50%, $BlueEnd 80%, center center, url($theme-path-rel + '/logohomescreen3.png'));
+   background-position : center center;
+   @include background-size(contain);
+   background-repeat : no-repeat;
+}

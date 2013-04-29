@@ -443,13 +443,6 @@ Ext.define('KickBak.controller.client.Viewport',
       me.callParent(arguments);
 
       console.log("Client Viewport Init");
-      //
-      // Initialize Facebook
-      //
-      //if (KickBak.fn.isNative())
-      {
-         KickBak.fb.initFb();
-      }
 
       //
       // Initialize Sound Files, make it non-blocking

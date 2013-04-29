@@ -18,7 +18,7 @@
 			 */
 			html, body {
 				height:100%;
-				background-color:#1985D0
+				/*background-color:#1985D0*/
 			}
 			#appLoadingIndicator {
 				position:absolute;
@@ -73,45 +73,6 @@
 	</head>
 	<body>
         <div id="fb-root"></div>
-        <script>
-           window.fbAsyncInit = function() {
-              // init the FB JS SDK
-              if (debugMode)
-              {
-                 console.debug("Facebook init Debug");
-                 FB.init({
-                   cookie : true,
-                   frictionlessRequests : false,
-                   appId      : (debugMode) ? '477780595628080' : '197968780267830',                        // App ID from the app dashboard
-                   status     : true,                                 // Check Facebook Login status
-                   xfbml      : true                                  // Look for social plugins on the page
-                 });
-              }
-              else
-              {
-                 console.debug("Facebook init Production");
-                 FB.init({
-                   cookie : true,
-                   frictionlessRequests : false,
-                   appId      : (debugMode) ? '477780595628080' : '197968780267830',                        // App ID from the app dashboard
-                   channelUrl : '//'+serverHost+'/channel.html', // Channel file for x-domain comms
-                   status     : true,                                 // Check Facebook Login status
-                   xfbml      : true                                  // Look for social plugins on the page
-                 });
-              }
-
-              // Additional initialization code such as adding Event Listeners goes here
-           };
-
-           // Load the SDK asynchronously
-           (function(d, s, id){
-             var js, fjs = d.getElementsByTagName(s)[0];
-             if (d.getElementById(id)) {return;}
-             js = d.createElement(s); js.id = id;
-             js.src = "//connect.facebook.net/en_US/all.js";
-             fjs.parentNode.insertBefore(js, fjs);
-           }(document, 'script', 'facebook-jssdk'));
-        </script>
 		<div id="appLoadingIndicator">
 			<div></div>
 			<div></div>

@@ -117,7 +117,7 @@ __init__ = function()
          }
          else
          {
-            me._iconPath = 'ios';
+            me._iconPath = '/ios';
             me._thumbnailAttribPrefix = 'thumbnail_ios_';
             me._iconSize = 57;
 
@@ -136,8 +136,8 @@ __init__ = function()
       getIconPath : function(type, name, remote)
       {
          return ((!remote) ? //
-         'resources/themes/images/' + this._iconPath : //
-         this.photoSite + '/' + this._iconPath + '/' + 'icons') + '/' + type + '/' + name + '.png';
+         'resources/images' + this._iconPath : //
+         this.photoSite + this._iconPath + '/' + 'icons') + '/' + type + '/' + name + '.png';
       }
    }
 
