@@ -76,14 +76,12 @@ Ext.define('Genesis.controller.ControllerBase',
    lookingForMobileDeviceMsg : function()//Send
    {
       return 'Please Swipe TAG or' + Genesis.constants.addCRLF() + //
-      'Tap Mobile Device or' + Genesis.constants.addCRLF() + //
-      'Enter Phone Number';
+      'Tap Mobile Device';
    },
    detectMobileDeviceMsg : function()//Recv
    {
       return 'Please Swipe TAG or' + Genesis.constants.addCRLF() + //
-      'Tap Mobile Device or' + Genesis.constants.addCRLF() + //
-      'Enter Phone Number';
+      'Tap Mobile Device';
    },
    //
    //

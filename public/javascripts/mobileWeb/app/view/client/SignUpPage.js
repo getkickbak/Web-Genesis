@@ -222,6 +222,8 @@ Ext.define('KickBak.view.client.SignUpPage',
       {
          me._actions = Ext.create('KickBak.view.widgets.PopupItemDetail',
          {
+         	iconType : 'prizewon',
+         	icon : 'giftcertificate',
             cls : 'viewport',
             title : 'Congratulations!' + KickBak.constants.addCRLF() + 'You have registered with KICKBAK',
             /*

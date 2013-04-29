@@ -28,20 +28,20 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
       var me = this, value = b.getText();
       var phoneIdField = me.getPhoneId(), phoneId = phoneIdField.getValue(), phoneIdFieldLength = phoneId.length;
 
-      if (phoneIdFieldLength < me.phoneIdMaxLength)
+      switch (value)
       {
-         switch (value)
+         case 'AC' :
          {
-            case 'AC' :
+            phoneIdField.reset();
+            break;
+         }
+         default :
+            if (phoneIdFieldLength < me.phoneIdMaxLength)
             {
-               phoneIdField.reset();
-               break;
-            }
-            default :
                phoneId += value;
                phoneIdField.setValue(phoneId);
-               break;
-         }
+            }
+            break;
       }
    },
    onTagItTap : function()
@@ -143,12 +143,13 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
       me.redeemItemFn = function(p, closeDialog)
       {
          dismissDialog = closeDialog;
+         me._actions.hide();
          Ext.Viewport.setMasked(
          {
             xtype : 'loadmask',
             message : me.establishConnectionMsg
          });
-         Ext.device.Notification.dismiss();
+         //Ext.device.Notification.dismiss();
          //
          // Update Server
          //
@@ -205,6 +206,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
       {
          var callback = function(b)
          {
+            me._actions.hide();
             viewport.setActiveController(null);
             if (task)
             {
@@ -230,22 +232,52 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
             }
          };
 
-         Ext.device.Notification.show(
+         if (!me._actions)
          {
-            title : me.getRedeemPopupTitle(),
-            message : message,
-            ignoreOnHide : true,
-            buttons : [
+            me._actions = Ext.create('Genesis.view.widgets.PopupItemDetail',
             {
-               text : 'Phone Number',
-               itemId : 'manual'
-            },
-            {
-               text : 'Cancel',
-               itemId : 'cancel'
-            }],
-            callback : callback
-         });
+               iconType : 'prizewon',
+               icon : 'rss',
+               //cls : 'viewport',
+               title : message,
+               buttons : [
+               {
+                  margin : '0 0 0.5 0',
+                  text : 'Enter Phone Number',
+                  ui : 'action',
+                  height : '3em',
+                  handler : Ext.bind(callback, me, ['manual'])
+               },
+               {
+                  margin : '0.5 0 0 0',
+                  text : 'Cancel',
+                  ui : 'cancel',
+                  height : '3em',
+                  handler : Ext.bind(callback, me, ['cancel'])
+               }]
+            });
+            Ext.Viewport.add(me._actions);
+         }
+         me._actions.show();
+
+         /*
+          Ext.device.Notification.show(
+          {
+          title : me.getRedeemPopupTitle(),
+          message : message,
+          ignoreOnHide : true,
+          buttons : [
+          {
+          text : 'Enter Phone Number',
+          itemId : 'manual'
+          },
+          {
+          text : 'Cancel',
+          itemId : 'cancel'
+          }],
+          callback : callback
+          });
+          */
          if (Genesis.fn.isNative())
          {
             task = me.getLocalID(function(idx)
@@ -262,16 +294,17 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
                }, true);
             }, function()
             {
+               me._actions.hide();
                me.onDoneTap();
             }, Ext.bind(me.onRedeemItem, me, arguments));
             viewport.setActiveController(me);
          }
          /*
-         else
-         {
-            me.redeemItemFn(params, false);
-         }
-         */
+          else
+          {
+          me.redeemItemFn(params, false);
+          }
+          */
       }
    },
    onRedeemItemTap : function(b, e, eOpts, eInfo)

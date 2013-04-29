@@ -119,27 +119,36 @@ Ext.define('KickBak.view.widgets.PopupItem',
    alias : 'widget.popupitem',
    config :
    {
-      // Backgrond Image
-      tag : 'popupItem',
-      layout : 'fit',
-      photoTemplate : Ext.create('Ext.XTemplate',
-      // @formatter:off
-      '<div class="photoVCenterHelper"></div>',
-      '<div class="photoVCenterContent"><img {[this.getPhoto(values)]} /></div>',
-      // @formatter:on
+      iconType : null
+   },
+   constructor : function(config)
+   {
+      var me = this;
+      Ext.merge(config,
       {
-         getPhoto : function(values)
+         // Backgrond Image
+         tag : 'popupItem',
+         photoTemplate : Ext.create('Ext.XTemplate',
+         // @formatter:off
+         '<div class="photoVCenterHelper"></div>',
+         '<div class="photoVCenterContent"><img {[this.getPhoto(values)]} /></div>',
+         // @formatter:on
          {
-            var photo = KickBak.view.widgets.PopupItem.getPhoto(values['type']);
-            return 'src="' + photo + '"';
-         }
-      })
+            getPhoto : function(values)
+            {
+               var photo = me.self.getPhoto(values['type'], me.getIconType());
+               return 'src="' + photo + '"';
+            }
+         })
+      });
+
+      me.callParent(arguments);
    },
    inheritableStatics :
    {
-      getPhoto : function(type)
+      getPhoto : function(type, iconType)
       {
-         var photo_url = KickBak.constants.getIconPath('prizewon', type.value);
+         var photo_url = KickBak.constants.getIconPath(iconType, type.value);
          return photo_url;
       }
    }

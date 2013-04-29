@@ -81,10 +81,11 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
 
       Ext.merge(config,
       {
-         preItemsConfig : preItemsConfig,
-         postItemsConfig : postItemsConfig,
          items : [
          {
+            preItemsConfig : preItemsConfig,
+            postItemsConfig : postItemsConfig,
+            iconType : config['iconType'],
             flex : 1,
             xtype : 'popupitem',
             data : Ext.create('Genesis.model.CustomerReward',
@@ -92,7 +93,7 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
                'title' : config['title'],
                'type' :
                {
-                  value : 'phoneInHand'
+                  value : config['icon']
                }
                //'photo' : photoUrl
             })
@@ -108,6 +109,8 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
             items : buttons
          }]
       });
+      delete config['iconType'];
+      delete config['icon'];
 
       me.callParent(arguments);
    }

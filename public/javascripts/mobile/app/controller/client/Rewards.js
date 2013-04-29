@@ -571,6 +571,8 @@ Ext.define('Genesis.controller.client.Rewards',
             {
                me._actions = Ext.create('Genesis.view.widgets.PopupItemDetail',
                {
+                  iconType : 'prizewon',
+                  icon : 'phoneInHand',
                   title : me.showToServerMsg(),
                   buttons : [
                   {
