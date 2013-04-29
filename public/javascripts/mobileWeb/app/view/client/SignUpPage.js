@@ -29,7 +29,8 @@ Ext.define('KickBak.view.client.SignUpPage',
       {
          items : [Ext.apply(KickBak.view.ViewBase.generateTitleBarConfig(),
          {
-            title : 'KickBak SignUp'
+            //title : 'KickBak SignUp',
+            cls : 'navigationBarTop kbTitle'
             /*,
              items : [
              {
@@ -220,6 +221,7 @@ Ext.define('KickBak.view.client.SignUpPage',
       {
          me._actions = Ext.create('KickBak.view.widgets.PopupItemDetail',
          {
+            cls : 'viewport',
             title : 'Congratulations!' + KickBak.constants.addCRLF() + 'You have registered with KICKBAK',
             /*
              preItemsConfig : [

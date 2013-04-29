@@ -1,9 +1,9 @@
 //------------------------------------------------------------------------------
-// Prizes Page
+// Form CSS
 //------------------------------------------------------------------------------
-.prizesMain {
-   @extend .redemptionsMain;
-   .prizesList {
-      @extend .redemptionsList;
-   }
+//
+// Transparent colors to make texture background show up on all screens
+//
+.x-form .x-scroll-container {
+   background : transparent;
 }

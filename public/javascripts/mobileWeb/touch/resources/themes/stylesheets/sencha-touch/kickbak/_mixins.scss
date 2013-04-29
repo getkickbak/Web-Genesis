@@ -1,0 +1,90 @@
+/**
+ * Add a background radial gradient to a selector.
+ *
+ *     .my-element {
+ *       @include background-gradient(green, 'recessed')
+ *     }
+ *
+ * @param {start-color} The start color of the gradient.
+ * @param {end-color} The end color of the gradient.
+ * @param {position} The position to go with the gradient/image.
+ * @param {image} The image to go with the gradient.
+ */
+@mixin custom-radial-gradient($start-color, $end-color, $position, $image : false) {
+  background-color: $end-color;
+  @if $image {
+     @include background-image($image, radial-gradient($position, color_stops($start-color, $end-color)));
+  } @else {
+     @include background-image(radial-gradient($position, color_stops($start-color, $end-color)));    
+  }
+}
+
+/**
+ * Add a background radial gradient to a selector.
+ *
+ *     .my-element {
+ *       @include background-gradient(green, 'recessed')
+ *     }
+ *
+ * @param {start-color} The start color of the gradient.
+ * @param {end-color} The end color of the gradient.
+ * @param {position} The position to go with the gradient/image.
+ * @param {image} The image to go with the gradient.
+ */
+@mixin custom-linear-gradient($start-color, $end-color, $position, $image : false) {
+  background-color: $end-color;
+  @if $image {
+     @include background-image($image, linear-gradient($position, color_stops($start-color, $end-color)));
+  } @else {
+     @include background-image(linear-gradient($position, color_stops($start-color, $end-color)));    
+  }
+}
+
+/**
+ * Add a background radial gradient to a selector.
+ *
+ *     .my-element {
+ *       @include background-gradient(green, 'recessed')
+ *     }
+ *
+ * @param {bg-color} The start bg color of the gradient.
+ * @param {position} The position to go with the gradient/image.
+ * @param {image} The image to go with the gradient.
+ * @param {type} predefined custom style settings.
+ */
+@mixin custom-background-gradient($bg-color, $position : 'top', $image : false, $type : 'smooth') {
+  background-color: darken($bg-color, 15%);
+  @if $image {
+     @if $type == smooth {
+        @include background-image($image, linear-gradient($position, color_stops($bg-color 30%, darken($bg-color, 20%))));
+     } @else if $type == recessed {
+        @include background-image($image, linear-gradient($position, color_stops(darken($bg-color, 10%), darken($bg-color, 5%) 10%, $bg-color 65%, lighten($bg-color, .5%))));
+     }
+     @else
+     {
+        @include background-gradient($bg-color, $type, $position, $contrast: 1);
+     }
+  } @else {
+     @if $type == smooth {
+        @include background-image(linear-gradient($position, color_stops($bg-color 30%, darken($bg-color, 20%))));    
+     } @else if $type == recessed {
+        @include background-image(linear-gradient($position, color_stops(darken($bg-color, 10%), darken($bg-color, 5%) 10%, $bg-color 65%, lighten($bg-color, .5%))));
+     }
+     @else
+     {
+        @include background-gradient($bg-color, $type, $position, $contrast: 1);
+     }
+  }
+}
+
+//------------------------------------------------------------------------------
+// Unit Conversion
+//------------------------------------------------------------------------------
+@function calc-em($target, $context) {
+  @return ($target / $context) * 1em;
+}
+
+@function calc-px-em($target-px, $target-em, $fontsize) {
+  @return (($target-px/$defaultFontSize/$fontsize*1em) + ($target-em/$fontsize*1em));
+}
+ 
