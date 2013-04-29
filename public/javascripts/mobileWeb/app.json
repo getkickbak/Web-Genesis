@@ -103,7 +103,7 @@
 		/**
 		* List of items in the CACHE MANIFEST section
 		*/
-		"cache": ["index.html", "https://connect.facebook.net/en_US/all.js"],
+		"cache": ["index.html", "channel.html", "https://connect.facebook.net/en_US/all.js"],
 		/**
 		* List of items in the NETWORK section
 		*/
@@ -117,7 +117,7 @@
 	/**
 	* Extra resources to be copied along when build
 	*/
-	"resources": ["resources/images", "resources/audio", "resources/icons", "resources/startup", "term_of_service.htm", "privacy.htm", "program_rules.htm"],
+	"resources": ["resources/images", "resources/audio", "resources/icons", "resources/startup", "channel.html", "term_of_service.htm", "privacy.htm", "program_rules.htm"],
 
 	/**
 	* File / directory name matchers to ignore when copying to the builds, must be valid regular expressions
