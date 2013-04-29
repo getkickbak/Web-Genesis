@@ -373,6 +373,7 @@ Ext.define('KickBak.controller.client.SignUp',
             },
             params :
             {
+               version : KickBak.constants.clientVersion,
                device_pixel_ratio : window.devicePixelRatio,
                user : Ext.encode(params),
                device : Ext.encode(
