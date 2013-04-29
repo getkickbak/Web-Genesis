@@ -616,6 +616,7 @@ Ext.define('Genesis.controller.client.MainPage',
             },
             params :
             {
+               version : Genesis.constants.clientVersion,
                device_pixel_ratio : window.devicePixelRatio,
                user : Ext.encode(params),
                device : Ext.encode(Genesis.constants.device)
