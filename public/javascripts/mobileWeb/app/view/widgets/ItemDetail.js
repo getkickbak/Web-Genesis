@@ -48,6 +48,7 @@ Ext.define('KickBak.view.widgets.PopupItemDetail',
          {
             preItemsConfig : preItemsConfig,
             postItemsConfig : postItemsConfig,
+            iconType : config['iconType'],
             flex : 1,
             xtype : 'popupitem',
             data : Ext.create('KickBak.model.CustomerReward',
@@ -55,7 +56,7 @@ Ext.define('KickBak.view.widgets.PopupItemDetail',
                'title' : config['title'],
                'type' :
                {
-                  value : 'giftcertificate'
+                  value : config['icon']
                }
                //'photo' : photoUrl
             })
@@ -71,6 +72,8 @@ Ext.define('KickBak.view.widgets.PopupItemDetail',
             items : buttons
          }]
       });
+      delete config['iconType'];
+      delete config['icon'];
 
       me.callParent(arguments);
    }

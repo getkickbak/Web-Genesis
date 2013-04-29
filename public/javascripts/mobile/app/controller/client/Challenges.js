@@ -931,6 +931,8 @@ Ext.define('Genesis.controller.client.Challenges',
                      {
                         me._actions = Ext.create('Genesis.view.widgets.PopupItemDetail',
                         {
+                           iconType : 'prizewon',
+                           icon : 'phoneInHand',
                            title : me.showToServerMsg(),
                            buttons : [
                            {
@@ -1537,6 +1539,8 @@ Ext.define('Genesis.controller.client.Challenges',
             {
                me._referralActions = Ext.create('Genesis.view.widgets.PopupItemDetail',
                {
+                  iconType : 'prizewon',
+                  icon : 'phoneInHand',
                   title : me.confirmRecvReferralsMsg,
                   buttons : [
                   {

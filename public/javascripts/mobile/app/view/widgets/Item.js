@@ -119,41 +119,12 @@ Ext.define('Genesis.view.widgets.RedeemItem',
    alias : 'widget.redeemitem',
    config :
    {
+      iconType : 'prizewon',
       hideMerchant : false,
       cls : 'item redeemItem',
       // Backgrond Image
       tag : 'redeemItem',
       layout : 'fit',
-      photoTemplate : Ext.create('Ext.XTemplate',
-      // @formatter:off
-      '<div class="photoVCenterHelper"></div>',
-      '<div class="photoVCenterContent"><img {[this.getPhoto(values)]} /></div>',
-      '<div class="itemPoints {[this.isVisible(values)]}">{[this.getPoints(values)]}</div>',
-      // @formatter:on
-      {
-         getPhoto : function(values)
-         {
-            var prefix = Genesis.constants._thumbnailAttribPrefix + 'large';
-            var photo = Genesis.view.widgets.RedeemItem.getPhoto(values['type']) || values['photo'][prefix];
-            if (Ext.isString(photo))
-            {
-               return 'src="' + photo + '"';
-            }
-            else
-            {
-               return 'src="' + photo.url + '" ' + //
-               ((photo.width) ? 'style="width:' + Genesis.fn.addUnit(photo.width) + ';height:' + Genesis.fn.addUnit(photo.height) + ';"' : '');
-            }
-         },
-         isVisible : function(values)
-         {
-            return ((values['merchant']) ? '' : 'x-item-hidden');
-         },
-         getPoints : function(values)
-         {
-            return ((values['points'] > 0) ? values['points'] + '  Pts' : ' ');
-         }
-      }),
       postItemsConfig : [
       {
          docked : 'bottom',
@@ -214,6 +185,45 @@ Ext.define('Genesis.view.widgets.RedeemItem',
          })
       }]
    },
+   constructor : function(config)
+   {
+      var me = this;
+      config = Ext.merge(
+      {
+         photoTemplate : Ext.create('Ext.XTemplate',
+         // @formatter:off
+         '<div class="photoVCenterHelper"></div>',
+         '<div class="photoVCenterContent"><img {[this.getPhoto(values)]} /></div>',
+         '<div class="itemPoints {[this.isVisible(values)]}">{[this.getPoints(values)]}</div>',
+         // @formatter:on
+         {
+            getPhoto : function(values)
+            {
+               var prefix = Genesis.constants._thumbnailAttribPrefix + 'large';
+               var photo = me.self.getPhoto(values['type'], me.getIconType()) || values['photo'][prefix];
+               if (Ext.isString(photo))
+               {
+                  return 'src="' + photo + '"';
+               }
+               else
+               {
+                  return 'src="' + photo.url + '" ' + //
+                  ((photo.width) ? 'style="width:' + Genesis.fn.addUnit(photo.width) + ';height:' + Genesis.fn.addUnit(photo.height) + ';"' : '');
+               }
+            },
+            isVisible : function(values)
+            {
+               return ((values['merchant']) ? '' : 'x-item-hidden');
+            },
+            getPoints : function(values)
+            {
+               return ((values['points'] > 0) ? values['points'] + '  Pts' : ' ');
+            }
+         }),
+      }, config);
+
+      this.callParent(arguments);
+   },
    updateItem : function(data)
    {
       var me = this;
@@ -244,7 +254,7 @@ Ext.define('Genesis.view.widgets.RedeemItem',
    },
    inheritableStatics :
    {
-      getPhoto : function(type)
+      getPhoto : function(type, iconType)
       {
          var photo_url = null;
          switch (type.value)
@@ -255,7 +265,7 @@ Ext.define('Genesis.view.widgets.RedeemItem',
                break;
             }
             default :
-               photo_url = Genesis.constants.getIconPath('prizewon', type.value);
+               photo_url = Genesis.constants.getIconPath(iconType, type.value);
                //console.debug("Icon Path [" + photo_url + "]");
                break;
          }
@@ -272,27 +282,36 @@ Ext.define('Genesis.view.widgets.PopupItem',
    alias : 'widget.popupitem',
    config :
    {
-      // Backgrond Image
-      tag : 'popupItem',
-      layout : 'fit',
-      photoTemplate : Ext.create('Ext.XTemplate',
-      // @formatter:off
-      '<div class="photoVCenterHelper"></div>',
-      '<div class="photoVCenterContent"><img {[this.getPhoto(values)]} /></div>',
-      // @formatter:on
+      iconType : null
+   },
+   constructor : function(config)
+   {
+      var me = this;
+      Ext.merge(config,
       {
-         getPhoto : function(values)
+         // Backgrond Image
+         tag : 'popupItem',
+         photoTemplate : Ext.create('Ext.XTemplate',
+         // @formatter:off
+         '<div class="photoVCenterHelper"></div>',
+         '<div class="photoVCenterContent"><img {[this.getPhoto(values)]} /></div>',
+         // @formatter:on
          {
-            var photo = Genesis.view.widgets.PopupItem.getPhoto(values['type']);
-            return 'src="' + photo + '"';
-         }
-      })
+            getPhoto : function(values)
+            {
+               var photo = me.self.getPhoto(values['type'], me.getIconType());
+               return 'src="' + photo + '"';
+            }
+         })
+      });
+
+      me.callParent(arguments);
    },
    inheritableStatics :
    {
-      getPhoto : function(type)
+      getPhoto : function(type, iconType)
       {
-         var photo_url = Genesis.constants.getIconPath('prizewon', type.value);
+         var photo_url = Genesis.constants.getIconPath(iconType, type.value);
          return photo_url;
       }
    }
