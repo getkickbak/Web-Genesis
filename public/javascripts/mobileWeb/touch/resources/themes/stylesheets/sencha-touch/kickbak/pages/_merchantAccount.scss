@@ -1,0 +1,214 @@
+//------------------------------------------------------------------------------
+// Merchant Account Page and Merchant Prize Page
+//------------------------------------------------------------------------------
+$itemDescHeightNorm : calc-px-em($icon-size*$icon-multiplier, 0em, $normalFontSize) - 1em - 1em + ($panelTopGap/$normalFontSize*1em);
+$itemDescHeightSmall : calc-px-em($icon-size*$icon-multiplier,0em, $smallFontSize) - (1em*$normalFontSize/$smallFontSize) - (2*1.1em) + ($panelTopGap/$smallFontSize*1em);
+@debug "$itemDescHeightNorm is:[" $itemDescHeightNorm "] $itemDescHeightSmall is:[" $itemDescHeightSmall "]";
+.merchantMain {
+   .tbPanel {
+      background-position: center;
+      @include background-size(cover);
+      .container {
+        background: rgba(0,0,0,0.3) center center no-repeat;
+        color: white;
+        border-color : white;
+        padding : $panelTopGap $panelGap;
+      }
+   }
+   .prizesWonPanel, .badgeProgressPanel {
+      @if $include-border-radius { @include border-radius($panelBorderRadius); }
+      @if $include-highlights {
+         @include box-shadow(0.2em 0.2em 0em rgba(80,81,82,0.6));
+      }
+      //border:1px solid $GreyNoEntry;
+      position:relative;
+      margin: $panelTopGap $panelGap 0 $panelGap;
+      min-height : $icon-size*$icon-multiplier;
+      .x-innerhtml {
+         @extend .pointsphotobase;
+         @if $include-border-radius { @include border-radius($panelBorderRadius); }
+         background-color: $Grey;
+         margin :0 !important;
+         padding:$panelTopGap $panelGap;
+         font-size:1em;
+         &:before {
+            @if $include-border-radius { @include border-left-radius($panelBorderRadius); }
+            @include custom-linear-gradient($BlueStart 10%, $BlueEnd 85%, top);
+            width:calc-px-em($icon-size*$icon-multiplier, 2*$panelGap, 1em);
+            height:calc-px-em($icon-size*$icon-multiplier, 2*$panelTopGap, 1em);
+            max-height:calc-px-em($icon-size*$icon-multiplier, 2*$panelTopGap, 1em);
+            font-size:1em;
+         }
+      }
+      .x-list-disclosure {
+        position : absolute;
+        top : 0;
+        margin-top : calc-px-em($icon-size*$icon-multiplier/2, $panelTopGap - (0.5*$list-disclosure-size), 1em);
+        right : 0;
+      }
+      .prizeswonphoto, .badgephoto {
+         @extend .pointsphotobase;
+         text-align:left;
+         background-color: transparent;
+         padding-left:calc-px-em($icon-size*$icon-multiplier, 2*$panelGap, 1em);
+         font-size:1em;
+         line-height:$normalFontSize;
+         &:before {
+           @include custom-linear-gradient($BlueStart 10%, $BlueEnd 85%, top, url($theme-path-rel + "/miscicons/" + "prizeswon" + ".png"));
+         }
+         .itemTitle {
+            font-weight:bold;
+            font-size:$normalFontSize !important;
+         }
+         .itemDesc {
+            font-style:italic;
+            font-size:$normalFontSize !important;
+            padding:(($itemDescHeightNorm/2) - 0.7em) 0 ($itemDescHeightNorm/2 - ($panelTopGap/$normalFontSize*1em)) 0;
+         }
+      }
+      .badgephoto {
+         position:static;
+         &:before {
+           background:none !important;
+         }
+         .badgehighlight {
+            color: $OrangeStart;
+         }
+         .itemPhoto {
+            position:absolute;
+            top: $panelTopGap;
+            left: $panelGap;
+            display:inline;
+            z-index:10000;
+            width:$icon-size*$icon-multiplier;
+         }
+         .itemDesc {
+            font-size:$smallFontSize !important;
+         }
+      }
+   }
+   .feedPanelHdr {
+      @extend .panelHdr;
+      @include custom-linear-gradient($GreyHdrStart 10%, $GreyHdrEnd 85%, top);
+   }
+   .descPanelHdr {
+      @extend .panelHdr;
+   }
+   .descPanel, .feedPanel {
+      margin:0 $panelGap $panelTopGap $panelGap;
+      & > .x-dock-vertical > .x-dock-body {
+         background:$GreyStart;
+         @if $include-border-radius { @include border-bottom-radius($panelBorderRadius); }
+         @if $include-highlights {
+            //@include box-shadow(inset 0 0 0.3em rgba(0,0,0,.6));
+         }
+     }
+   }
+   .descPanel > .x-dock-vertical > .x-dock-body {
+      .x-dataview-item { 
+         padding:calc-em($panelTopGap,$normalFontSize) calc-em($panelGap,$normalFontSize);
+         font-size : $normalFontSize;
+         text-align:justify;
+         line-height : $normalFontSize + 1.0em;
+         &:first-letter, p:first-letter {
+            font-size:400%;
+            font-weight:bold;
+            line-height : $largeFontSize;
+         }
+      }
+   }
+   .feedPanel > .x-dock-vertical > .x-dock-body {
+      .x-dataview-item {
+         padding:$panelTopGap $panelGap;
+         border-top: 1px solid #CBCBCF;
+      }
+      .x-dataview-item:first-child {
+         border:none;
+      }
+      .itemWrapper {
+         position:relative;
+         min-height:$icon-size*$icon-multiplier;
+         .photo {
+            position:absolute;
+            top:0;
+            left:0;
+            height:$icon-size*$icon-multiplier;
+            img {
+               width : $icon-size*$icon-multiplier;
+               max-height : $icon-size*$icon-multiplier;
+            }
+         }
+         .itemTitle {
+            padding-left:calc-px-em($icon-size*$icon-multiplier, $panelGap, $largeFontSize);
+            font-weight:bold;
+            font-size:$largeFontSize !important;
+            padding-top:0.3em;
+            color : $BlueEnd;
+            margin-bottom:$panelTopGap/2;
+         }
+         .date {
+            padding-left:calc-px-em($icon-size*$icon-multiplier, $panelGap, $normalFontSize);
+            font-weight:bold;
+            color : $GreyEnd;
+            font-size:$normalFontSize !important;
+         }
+         .itemDesc {
+            padding-top:calc-px-em($icon-size*$icon-multiplier*0.375, 0em, $normalFontSize);
+            //padding-left:calc-px-em($icon-size*$icon-multiplier, $panelGap, $normalFontSize);
+            font-size:$largeFontSize !important;
+            //line-height:1em;
+         } 
+         .promoImageAnchor {
+            width:100%;
+            margin:$panelTopGap*2 0;
+         }
+         .promoImage {
+            position:relative;
+            img {
+               position:absolute;
+               top :$panelTopGap;
+               left : -1*$panelGap*1.5;
+               z-index:1;
+            }
+            .x-loading-spinner-outer {
+               height:6em;
+            }
+         }  
+      }
+   }
+}
+
+.prizeicon {
+   background-color : transparent !important;
+   @include background-size($tabs-bottom-icon-size);
+}
+
+//------------------------------------------------------------------------------
+// iOS
+//------------------------------------------------------------------------------
+.x-ios {
+   .merchantMain {
+      .prizesWonPanel, .badgeProgressPanel {
+         .badgephoto {
+            .itemDesc {
+               padding:(($itemDescHeightSmall/2) - 0.7em) 0 ($itemDescHeightSmall/2 - ($panelTopGap/$smallFontSize*1em)) 0;
+            }
+         }
+      }
+   }
+}
+
+//------------------------------------------------------------------------------
+// Android
+//------------------------------------------------------------------------------
+.x-android {
+   .merchantMain {
+      .prizesWonPanel, .badgeProgressPanel {
+         .badgephoto {
+            .itemDesc {
+               padding:(($itemDescHeightSmall/2) - 0.7em - 0.2em) 0 ($itemDescHeightSmall/2 - ($panelTopGap/$smallFontSize*1em) - 0.2em) 0;
+            }
+         }
+      }
+   }
+}

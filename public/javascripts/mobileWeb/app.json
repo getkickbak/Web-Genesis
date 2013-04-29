@@ -80,7 +80,7 @@
 	"css": [
 		{
 			"path": "resources/css/app.css",
-			"platform" : ["chrome", "safari", "ios", "android", "firefox"],
+			"platform" : ["chrome", "safari", "ios", "android", "firefox", "desktop"],
 			"theme" : "Default",
 			"update": "delta"
 		}, {
@@ -103,7 +103,7 @@
 		/**
 		* List of items in the CACHE MANIFEST section
 		*/
-		"cache": ["index.html"],
+		"cache": ["index.html", "https://connect.facebook.net/en_US/all.js"],
 		/**
 		* List of items in the NETWORK section
 		*/
@@ -117,14 +117,14 @@
 	/**
 	* Extra resources to be copied along when build
 	*/
-	"resources": ["resources/images", "resources/audio", "resources/icons", "resources/startup"],
+	"resources": ["resources/images", "resources/audio", "resources/icons", "resources/startup", "term_of_service.htm", "privacy.htm", "program_rules.htm"],
 
 	/**
 	* File / directory name matchers to ignore when copying to the builds, must be valid regular expressions
 	*/
 	"ignore": ["\.svn$", "\.git$"],
 
-	/**
+     /**
 	* Directory path to store all previous production builds. Note that the content generated inside this directory
 	* must be kept intact for proper generation of deltas between updates
 	*/

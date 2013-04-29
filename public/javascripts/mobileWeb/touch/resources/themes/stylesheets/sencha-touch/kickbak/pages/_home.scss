@@ -1,0 +1,41 @@
+//------------------------------------------------------------------------------
+// Icon Select CSS (MainPage Page)
+//------------------------------------------------------------------------------
+.mainMenuSelections {
+   padding:$panelGap;
+   .x-hasbadge .x-badge {
+      font-size:$largeFontSize;
+      @include opacity(.9);
+      right:2.7em;
+   }
+   .x-item-selected .photoName {
+      background-color:#C3C3C4;
+   }
+   .x-innerhtml {
+      font-size:$normalFontSize*1.25;
+      color:$BlackStart;
+      .itemWrapper {
+         width:50%;
+         height:calc-px-em((1.25*$icon-size*$icon-multiplier), (($panelTopGap*2)+($normalFontSize*1.25*1)), ($normalFontSize*1.25));
+         padding:$panelTopGap/2 $panelGap/2;
+         text-align:center;
+         float:left;
+         position:relative;
+         .photo {
+            height : $icon-size*$icon-multiplier*1.25;
+            img {
+               width : $icon-size*$icon-multiplier*1.25;
+               max-height : $icon-size*$icon-multiplier*1.25;
+            }
+         }
+         .photoName {
+            font-weight:bold;
+            padding:$panelTopGap/2 $panelGap/2;
+            @if $include-border-radius { @include border-radius($panelBorderRadius); }
+         }
+      }
+      & > div:nth-child(2n+1) {
+         clear:both;
+      }
+   }
+}

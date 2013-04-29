@@ -1,0 +1,24 @@
+.title, .subtitle {
+   @extend .shadows;
+   font-size:$xlargeFontSize * 0.9;
+   font-weight:bold;
+   height : 3.8em;
+   text-align:center;
+   color : $BlueStart;
+   background-color : $Grey;
+}
+
+.itemTitle {
+   //background-image: -webkit-gradient(linear,left top,right top, color-stop(80%, rgba(0, 0, 0, 1)), to($list-bg-color));
+   //-webkit-background-clip: text;
+   //-webkit-text-fill-color: transparent;
+   overflow:hidden;
+   //white-space:nowrap;
+   word-wrap:break-word;
+   margin-bottom:$panelTopGap;
+}
+
+.itemDesc {
+   @include ellipsis;
+   white-space:normal;         
+}

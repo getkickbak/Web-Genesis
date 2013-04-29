@@ -1,0 +1,10 @@
+//------------------------------------------------------------------------------
+// Accounts Page
+//------------------------------------------------------------------------------
+.jackpotWinnersMain {
+   .jackpotWinnersList {
+      .x-list-emptytext {
+         background: theme_image($theme-path-iphone5,  "noprizes" + ".png") center no-repeat;
+      }
+   }
+}

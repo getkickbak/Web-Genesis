@@ -1,8 +1,11 @@
 __initFb__ = function()
 {
-   KickBak.fb =
+   Ext.define('KickBak.fb',
    {
+      mixins : ['Ext.mixin.Observable'],
+      singleton : true,
       appId : null,
+      fbTimeout : 10 * 1000,
       titleMsg : 'Facebook Connect',
       fbScope : ['email', 'user_birthday', 'publish_stream', 'read_friendlists', 'publish_actions'],
       fbConnectErrorMsg : 'Cannot retrive Facebook account information!',
@@ -23,11 +26,143 @@ __initFb__ = function()
       * One set for production domain, another for developement domain
       */
       // **************************************************************************
-      initFb : function()
+      initialize : function()
       {
          var me = this;
 
          me.appId = (debugMode) ? 477780595628080 : 197968780267830;
+
+         window.fbAsyncInit = Ext.bind(me.onFacebookInit, me);
+
+         // Load the SDK asynchronously
+         ( function(d, s, id)
+            {
+               var js, fjs = d.getElementsByTagName(s)[0];
+               if (d.getElementById(id))
+               {
+                  return;
+               }
+               js = d.createElement(s);
+               js.id = id;
+               js.src = "//connect.facebook.net/en_US/all.js";
+               fjs.parentNode.insertBefore(js, fjs);
+            }(document, 'script', 'facebook-jssdk'));
+      },
+      /**
+       * This fucntion is run when the Facebook JS SDK has been successfully laoded onto the page.
+       */
+      onFacebookInit : function()
+      {
+         var me = this;
+
+         me.hasCheckedStatus = false;
+         // init the FB JS SDK
+         if (debugMode)
+         {
+            console.debug("Facebook init Debug");
+            FB.init(
+            {
+               cookie : true,
+               frictionlessRequests : true,
+               appId : '477780595628080', // App ID from the app dashboard
+               status : true, // Check Facebook Login status
+               xfbml : true // Look for social plugins on the page
+            });
+         }
+         else
+         {
+            console.debug("Facebook init Production");
+            FB.init(
+            {
+               cookie : true,
+               frictionlessRequests : true,
+               appId : '197968780267830', // App ID from the app dashboard
+               channelUrl : '//' + serverHost + '/channel.html', // Channel file for x-domain comms
+               status : true, // Check Facebook Login status
+               xfbml : true // Look for social plugins on the page
+            });
+         }
+         FB.Event.subscribe('auth.logout', function()
+         {
+            // This event can be fired as soon as the page loads which may cause undesired behaviour, so we wait
+            // until after we've specifically checked the login status.
+            if (me.hasCheckedStatus)
+            {
+               //
+               // Logout
+               //
+               me.fireEvent('logout');
+            }
+         });
+
+         // Get the user login status from Facebook.
+         FB.getLoginStatus(function(response)
+         {
+            me.fireEvent('loginStatus');
+
+            clearTimeout(me.fbLoginTimeout);
+            delete me.fbLoginTimeout;
+            me.hasCheckedStatus = true;
+
+            var db = KickBak.db.getLocalDB();
+
+            //
+            // Make action only if we got a reply from Login Attempt
+            //
+            if (db['fbLoginInProgress'])
+            {
+               KickBak.db.removeLocalDBAttrib('fbLoginInProgress');
+               me.facebook_loginCallback(response);
+            }
+         });
+
+         // We set a timeout in case there is no response from the Facebook `init` method. This often happens if the
+         // Facebook application is incorrectly configured (for example if the browser URL does not match the one
+         // configured on the Facebook app.)
+         me.fbLoginTimeout = setTimeout(function()
+         {
+            me.fireEvent('loginStatus');
+            me.fireEvent('exception',
+            {
+               type : 'timeout',
+               msg : 'The request to Facebook timed out.'
+            }, null);
+         }, me.fbTimeout);
+      },
+      /**
+       * Returns the app location. If we're inside an iFrame, return the top level path
+       */
+      currentLocation : function()
+      {
+         if (window.top.location.host)
+         {
+            return window.top.location.protocol + "//" + window.top.location.host + window.top.location.pathname
+         }
+         else
+         {
+            return window.location.protocol + "//" + window.location.host + window.location.pathname
+         }
+      },
+      /**
+       * The Facebook authentication URL.
+       */
+      redirectUrl : function()
+      {
+         var redirectUrl = Ext.Object.toQueryString(
+         {
+            redirect_uri : this.currentLocation(),
+            client_id : this.appId,
+            scope : this.fbScope.toString()
+         });
+
+         if (!Ext.os.is('Android') && !Ext.os.is('iOS') && /Windows|Linux|MacOS/.test(Ext.os.name))
+         {
+            return "https://www.facebook.com/dialog/oauth?" + redirectUrl;
+         }
+         else
+         {
+            return "https://m.facebook.com/dialog/oauth?" + redirectUrl;
+         }
       },
       createFbResponse : function(response)
       {
@@ -48,125 +183,62 @@ __initFb__ = function()
 
          return params;
       },
-      facebook_onLogin : function(callback, supress, message)
+      facebook_onLogin : function(supress, message)
       {
          var me = this, refreshConn = true;
-         var fbConnect = function()
-         {
-            Ext.defer(function()
-            {
-               Ext.Viewport.setMasked(null);
-               Ext.Viewport.setMasked(
-               {
-                  xtype : 'loadmask',
-                  message : me.connectingToFBMsg(),
-                  listeners :
-                  {
-                     'tap' : function()
-                     {
-                        Ext.Viewport.setMasked(null);
-                        callback();
-                     }
-                  }
-               });
-               FB.login(Ext.bind(me.facebook_loginCallback, me),
-               {
-                  scope : me.fbScope.toString()
-               });
-               /*
-                FB.login(
-                {
-                permissions : me.fbScope,
-                appId : "" + me.appId
-                }, Ext.bind(me.facebook_loginCallback, me));
-                */
-            }, 1);
-         };
 
          me.cb =
          {
-            callback : (callback) ? Ext.bind(function(params, operation, cb)
-            {
-               //
-               // Even if the UpdateFbLogin failed (!operation.wasSuccessful()),
-               // we should still allow them to do Facebook related activities ...
-               //
-               if ((operation && !operation.wasSuccessful()))
-               {
-                  //
-                  // Reconnect with Facebook
-                  //
-                  me.facebook_onLogout(null, false);
-                  Ext.defer(function()
-                  {
-                     me.facebook_onLogin(cb, false, message);
-                  }, 1, me);
-                  /*
-                   if (!me.cb['supress'])
-                   {
-                   Ext.device.Notification.show(
-                   {
-                   title : me.titleMsg,
-                   message : me.fbConnectFailMsg,
-                   buttons : ['Dismiss']
-                   });
-                   }
-                   */
-               }
-               else
-               {
-                  cb(params, operation);
-               }
-            }, null, [callback], true) : Ext.emptyFn,
             supress : supress,
+            messsage : message,
             iter : 0
-         }
+         };
 
+         Ext.Viewport.setMasked(null);
+         Ext.Viewport.setMasked(
+         {
+            xtype : 'loadmask',
+            message : me.connectingToFBMsg(),
+            listeners :
+            {
+               'tap' : function()
+               {
+                  Ext.Viewport.setMasked(null);
+                  me.facebook_loginCallback(null);
+               }
+            }
+         });
+         // Get the user login status from Facebook.
          FB.getLoginStatus(function(response)
          {
-            if (response.status === 'connected')
-            {
-               // connected
-               FB.login(Ext.bind(me.facebook_loginCallback, me),
-               {
-                  scope : me.fbScope.toString()
-               });
+            me.fireEvent('loginStatus');
 
+            clearTimeout(me.fbLoginTimeout);
+            delete me.fbLoginTimeout;
+            if (response.status == 'connected')
+            {
+               KickBak.db.removeLocalDBAttrib('fbLoginInProgress');
+               me.facebook_loginCallback(response);
             }
             else
             {
-               var buttons = ['Confirm', 'Cancel'];
-               message = message || me.fbConnectReconnectMsg;
-
-               Ext.device.Notification.show(
-               {
-                  title : me.titleMsg,
-                  message : message,
-                  buttons : buttons,
-                  callback : function(btn)
-                  {
-                     if (btn.toLowerCase() == buttons[0].toLowerCase())
-                     {
-                        fbConnect();
-                     }
-                     else
-                     {
-                        me.cb['callback'](null, null);
-                     }
-                  }
-               });
+               KickBak.db.setLocalDBAttrib('fbLoginInProgress', true);
+               window.top.location = me.redirectUrl();
             }
-            /*
-             else if (response.status === 'not_authorized')
-             {
-             // not_authorized
-             }
-             else
-             {
-             // not_logged_in
-             }
-             */
          });
+
+         // We set a timeout in case there is no response from the Facebook `init` method. This often happens if the
+         // Facebook application is incorrectly configured (for example if the browser URL does not match the one
+         // configured on the Facebook app.)
+         me.fbLoginTimeout = setTimeout(function()
+         {
+            me.fireEvent('loginStatus');
+            me.fireEvent('exception',
+            {
+               type : 'timeout',
+               msg : 'The request to Facebook timed out.'
+            }, null);
+         }, me.fbTimeout);
       },
       facebook_loginCallback : function(res)
       {
@@ -176,7 +248,7 @@ __initFb__ = function()
          if (!res || res.cancelled || res.error || (res.status != 'connected'))
          {
             console.debug("FacebookConnect.login:failedWithError:" + ((res) ? res.message : 'None'));
-            if (!me.cb['supress'])
+            if (!me.cb || !me.cb['supress'])
             {
                Ext.device.Notification.show(
                {
@@ -189,23 +261,14 @@ __initFb__ = function()
                      {
                         Ext.defer(function()
                         {
-                           FB.login(Ext.bind(me.facebook_loginCallback, me),
-                           {
-                              scope : me.fbScope.toString()
-                           });
-                           /*
-                            FB.login(
-                            {
-                            permissions : me.fbScope,
-                            appId : "" + me.appId
-                            }, Ext.bind(me.facebook_loginCallback, me));
-                            */
+                           me.facebook_onLogin(false, me.cb['message']);
                         }, 1, me);
+                        delete me.cb;
                      }
                      else
                      {
                         Ext.Viewport.setMasked(null);
-                        me.cb['callback'](null, null);
+                        me.facebook_loginCallback(res);
                         delete me.cb;
                      }
                   }
@@ -214,7 +277,7 @@ __initFb__ = function()
             else if (!res || res.cancelled || me.cb['iter'] >= 3)
             {
                Ext.Viewport.setMasked(null);
-               me.cb['callback'](null, null);
+               me.facebook_loginCallback(null);
                delete me.cb;
             }
             else if (me.cb['iter'] < 3)
@@ -222,17 +285,8 @@ __initFb__ = function()
                me.cb['iter']++;
                Ext.defer(function()
                {
-                  FB.login(Ext.bind(me.facebook_loginCallback, me),
-                  {
-                     scope : me.fbScope.toString()
-                  });
-                  /*
-                   FB.login(
-                   {
-                   permissions : me.fbScope,
-                   appId : "" + me.appId
-                   }, Ext.bind(me.facebook_loginCallback, me));
-                   */
+                  me.facebook_onLogin(false, me.cb['message']);
+
                }, 2 * me.cb['iter'] * 1000, me);
             }
          }
@@ -256,13 +310,13 @@ __initFb__ = function()
                      'ID(' + facebook_id + ')' + '\n');
                      //me.getFriendsList();
 
-                     me.cb['callback'](rc, null);
+                     me.fireEvent('connected', rc, null);
                      delete me.cb;
                   }
                   else
                   {
                      Ext.Viewport.setMasked(null);
-                     me.cb['callback'](null, null);
+                     me.fireEvent('unauthorized', null, null);
                      me.facebook_onLogout(null, false);
                      delete me.cb;
                   }
@@ -303,5 +357,7 @@ __initFb__ = function()
             cb();
          }
       }
-   }
+   });
+   KickBak.fb.initialize();
+
 }

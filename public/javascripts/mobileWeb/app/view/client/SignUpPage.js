@@ -2,7 +2,8 @@ Ext.define('KickBak.view.client.SignUpPage',
 {
    extend : 'Ext.form.Panel',
    requires : ['Ext.dataview.List', 'Ext.XTemplate', 'KickBak.view.widgets.ListField', 'KickBak.view.ViewBase', //
-   'Ext.field.Text', 'Ext.field.DatePicker', 'Ext.field.Toggle', 'Ext.form.FieldSet', 'KickBak.view.widgets.ListField', 'KickBak.model.frontend.Account'],
+   'Ext.field.Text', 'Ext.field.DatePicker', 'Ext.field.Toggle', 'Ext.form.FieldSet', 'KickBak.view.widgets.ListField', //
+   'KickBak.model.frontend.Account', 'KickBak.view.widgets.Item', 'KickBak.view.widgets.ItemDetail'],
    alias : 'widget.clientsignuppageview',
    fbConnectRequestMsg : 'By connecting to Facebook, you will receive additional Reward Pts everytime we update your KICKBAK activity to your Facebook account!',
    config :
@@ -105,7 +106,7 @@ Ext.define('KickBak.view.client.SignUpPage',
             }, Ext.apply(
             {
                labelWidth : '30%',
-               label : 'Phone#',
+               label : 'Phone',
                name : 'phone',
                required : true
             }, KickBak.view.ViewBase.phoneField()),
@@ -135,7 +136,7 @@ Ext.define('KickBak.view.client.SignUpPage',
              }*/]
          },
          {
-            tag : 'accountUpdate',
+            tag : 'signUp',
             xtype : 'button',
             //ui : 'orange-large',
             ui : 'confirm',
@@ -210,5 +211,52 @@ Ext.define('KickBak.view.client.SignUpPage',
    showView : function()
    {
       return KickBak.view.ViewBase.prototype.showView.apply(this, arguments);
+   },
+   signUpSuccessPopup : function()
+   {
+      var me = this;
+
+      if (!me._actions)
+      {
+         me._actions = Ext.create('KickBak.view.widgets.PopupItemDetail',
+         {
+            title : 'Congratulations!' + KickBak.constants.addCRLF() + 'You have registered with KICKBAK',
+            /*
+             preItemsConfig : [
+             {
+             cls : 'title',
+             defaultUnit : 'em',
+             xtype : 'component',
+             html : 'You have successfully Signed Up to KICKBAK',
+             margin : '0 0 1.0 0'
+             }],
+             */
+            buttons : [
+            {
+               margin : '0 0 0.5 0',
+               text : 'Download Mobile App Now!',
+               ui : 'action',
+               height : '3em',
+               handler : function()
+               {
+                  //me._actions.hide();
+                  if (Ext.os.is('iOS'))
+                  {
+                     location.href = 'http://itunes.apple.com/us/app/kickbak-inc/id537476722?ls=1&mt=8'
+                  }
+                  else if (Ext.os.is('Android'))
+                  {
+                     location.href = 'https://play.google.com/store/apps/details?id=com.getkickbak.kickbak';
+                  }
+                  else
+                  {
+                     location.href = 'http://itunes.apple.com/us/app/kickbak-inc/id537476722?ls=1&mt=8'
+                  }
+               }
+            }]
+         });
+         Ext.Viewport.add(me._actions);
+      }
+      me._actions.show();
    }
 });

@@ -1,0 +1,52 @@
+//------------------------------------------------------------------------------
+// Accounts Transfer Page
+//------------------------------------------------------------------------------
+.accountsTransferMain {
+   .transferPanel {
+      @extend .listNoScrollWrapper;
+      .listItemDetailsWrapper {
+         padding: $panelTopGap*2 $panelGap !important;
+         background:$Grey;
+         border-bottom: 1px solid darken($list-bg-color, 15%);
+         .itemTitle {
+            font-weight:bold;
+            text-align:center;
+            font-size:$xlargeFontSize*1.25 !important;
+            line-height:$xlargeFontSize*1.25 !important;
+         }
+         .itemDesc {
+            text-align:center;
+         }
+      }
+   }
+   .accountsMainCalculator {
+      @extend .calculator;
+      .x-field {
+         background : black;
+      }
+   }
+}
+
+//------------------------------------------------------------------------------
+// iOS
+//------------------------------------------------------------------------------
+.x-ios, .x-desktop {
+   .accountsTransferMain {
+      .transferPanel {
+         .listItemDetailsWrapper {
+            .itemTitle {
+               &.emailsender:before {
+                  content : " ";
+                  width :$xlargeFontSize*1.25;
+                  height :$xlargeFontSize*1.25;
+                  position:absolute;
+                  -webkit-mask-image: theme_image($theme-path + "/toolbar", "mail" + ".png");
+                  -webkit-mask-size: $xlargeFontSize*1.25 $xlargeFontSize*1.25;
+                  background-color:$BlueEnd;
+                  top : $panelTopGap*1.25;
+               }
+            }
+         }
+      }
+   }
+}

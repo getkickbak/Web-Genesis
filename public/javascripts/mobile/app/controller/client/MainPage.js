@@ -478,6 +478,7 @@ Ext.define('Genesis.controller.client.MainPage',
                },
                params : Ext.apply(
                {
+                  version : Genesis.constants.clientVersion,
                   device_pixel_ratio : window.devicePixelRatio,
                   device : Ext.encode(Genesis.constants.device)
                }, params),
@@ -589,7 +590,7 @@ Ext.define('Genesis.controller.client.MainPage',
          console.debug("Creating Account ...");
          var params =
          {
-         	version : Genesis.constants.clientVersion,
+            version : Genesis.constants.clientVersion,
             name : values.name,
             email : values.username,
             password : values.password,

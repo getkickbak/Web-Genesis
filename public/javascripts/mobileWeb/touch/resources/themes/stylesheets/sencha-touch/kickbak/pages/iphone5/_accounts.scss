@@ -1,0 +1,10 @@
+//------------------------------------------------------------------------------
+// Accounts Page
+//------------------------------------------------------------------------------
+.accountsMain {
+   .accountsList {
+      .x-list-emptytext {
+         background: theme_image($theme-path-iphone5,  "noaccounts" + ".png") center no-repeat;
+      }
+   }
+}

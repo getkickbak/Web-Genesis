@@ -17,21 +17,25 @@ Ext.define('Genesis.view.widgets.Item',
       config = config ||
       {
       };
-      me.config['beforeItemsConfig'] = me.config['beforeItemsConfig'] || [];
-      me.config['afterItemsConfig'] = me.config['afterItemsConfig'] || [];
+      me.config['preItemsConfig'] = me.config['preItemsConfig'] || [];
+      me.config['postItemsConfig'] = me.config['postItemsConfig'] || [];
       me.config['photoTemplate'] = me.config['photoTemplate'] || null;
 
-      var beforeItemsConfig = config['beforeItemsConfig'] || [];
-      var afterItemsConfig = config['afterItemsConfig'] || [];
+      var preItemsConfig = config['preItemsConfig'] || [];
+      var postItemsConfig = config['postItemsConfig'] || [];
       var photoTemplate = config['photoTemplate'] || me.config['photoTemplate'];
 
-      me.config['beforeItemsConfig'] = Ext.merge(me.config['beforeItemsConfig'], beforeItemsConfig);
-      me.config['afterItemsConfig'] = Ext.merge(me.config['afterItemsConfig'], afterItemsConfig);
+      Ext.merge(preItemsConfig, me.config['preItemsConfig']);
+      Ext.merge(postItemsConfig, me.config['postItemsConfig']);
+      //
+      delete config['preItemsConfig'];
+      delete config['postItemsConfig'];
+      delete config['photoTemplate'];
 
       Ext.merge(config,
       {
          // Backgrond Image
-         items : me.config['beforeItemsConfig'].concat([
+         items : [
          {
             docked : 'top',
             xtype : 'component',
@@ -45,7 +49,7 @@ Ext.define('Genesis.view.widgets.Item',
                   return values['title'];
                }
             })
-         },
+         }].concat(preItemsConfig, [
          {
             xtype : 'component',
             tag : 'itemPhoto',
@@ -70,7 +74,7 @@ Ext.define('Genesis.view.widgets.Item',
                   }
                }
             })
-         }]).concat(me.config['afterItemsConfig'])
+         }], postItemsConfig)
       });
 
       this.callParent(arguments);
@@ -150,7 +154,7 @@ Ext.define('Genesis.view.widgets.RedeemItem',
             return ((values['points'] > 0) ? values['points'] + '  Pts' : ' ');
          }
       }),
-      afterItemsConfig : [
+      postItemsConfig : [
       {
          docked : 'bottom',
          xtype : 'component',

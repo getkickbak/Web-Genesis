@@ -1,0 +1,118 @@
+//------------------------------------------------------------------------------
+// RedeemItem Page
+//------------------------------------------------------------------------------
+.redeemItem {
+   @extend .item;
+   .itemPoints {
+      position:absolute;
+      bottom:$panelTopGap;
+      right:$panelGap;
+      font-size:$xlargeFontSize;
+   }
+   .info {
+      position:relative;
+      padding:$panelTopGap $panelGap;
+      .photo {
+         position:absolute;
+         right:0.8em;
+         img {
+            width:$icon-size*$icon-multiplier;
+            max-height:$icon-size*$icon-multiplier;
+         }
+      }
+      .infoWrapper {
+         font-size:1em;
+         padding-right:calc-px-em($icon-size*$icon-multiplier, $panelGap, 1em);
+         width:16em;
+         min-height:$icon-size*$icon-multiplier;
+         .name {
+            font-size:$normalFontSize;
+            font-weight:bold;
+            @include ellipsis;
+            padding-bottom : $panelTopGap;
+         }
+         .disclaimer {
+            font-size:$smallFontSize;
+         }
+         .date {
+            font-size:$normalFontSize;
+            font-weight:bold;
+         }
+      }
+   }
+}
+
+//------------------------------------------------------------------------------
+// Redemptions Page
+//------------------------------------------------------------------------------
+.redemptionsMain {
+   .ptsEarnPanelHdr {
+      @extend .panelHdr;
+      @if $include-highlights {
+         //@include box-shadow(0.2em 0em 0em rgba(80,81,82,0.6));
+      }
+   }
+   .ptsEarnPanel {
+      padding:$panelTopGap*0.5 $panelGap*0.5;
+      margin:$panelTopGap*0.5 $panelGap*0.5 0 $panelGap*0.5;
+      border: 0px solid $GreyHdrEnd;
+      border-width: $panelTopGap*0.5 $panelGap*0.5 $panelTopGap*0.5 $panelGap*0.5;
+      @include custom-linear-gradient($PinkStart 0%, $PinkEnd 100%, top);
+      @if $include-border-radius { @include border-radius($panelBorderRadius); }
+      @if $include-highlights {
+         //@include box-shadow(0.2em 0.2em 0em rgba(80,81,82,0.6));
+      }
+      .x-inner {
+        padding:0 !important;
+        height:$icon-size*$icon-multiplier;
+      }
+      .pointsphotobase {
+         font-size:$xlargeFontSize*1.25;
+         color : $OrangeStart;
+         text-align:center;
+         .x-innerhtml {
+            font-size:$xlargeFontSize;
+            font-weight:bold;
+            line-height:$icon-size*$icon-multiplier;
+         }
+      }
+   }
+
+   .x-scroll-scroller {
+      //position:static;
+   }
+   .redemptionsList {
+      min-height:5em;
+      margin:$panelTopGap $panelGap;
+      @extend .listScrollIndexWrapper;
+      // Hide Scrollbar
+      .x-scroll-bar-grid-wrapper {
+         display:none;
+      }
+      .x-list-item {
+         .photo {
+            &.x-hasbadge .x-badge {
+               background-color : $OrangeStart;
+               border-color : darken($OrangeStart,5%);
+            }
+         }
+         .listItemDetailsWrapper {
+            display:table;
+            width:100%;
+            height : $icon-size*$icon-multiplier;
+            .itemTitle {
+               display:table-cell;
+               vertical-align:middle;
+               text-align:center;
+               font-weight:bold;
+               //font-size:$largeFontSize !important;
+               //white-space: nowrap;
+               //line-height : $icon-size;
+            }
+            .itemDesc {
+               //font-size:$largeFontSize !important;
+            }
+         }
+      }
+   }
+}

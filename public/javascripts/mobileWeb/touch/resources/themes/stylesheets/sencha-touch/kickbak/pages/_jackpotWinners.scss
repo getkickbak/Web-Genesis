@@ -1,0 +1,63 @@
+//------------------------------------------------------------------------------
+// Accounts Page
+//------------------------------------------------------------------------------
+.jackpotWinnersMain {
+   .jackpotWinnersList {
+      @extend .listScrollWrapper;
+      .listItemDetailsWrapper {
+         min-height:$icon-size*$icon-multiplier/2 !important;
+         .itemTitle {
+            font-weight: bold;
+            line-height: 1em;
+            font-size: $normalFontSize;
+            margin-bottom:$panelTopGap;
+         }
+      }
+      .photo {
+         height : $icon-size*$icon-multiplier/2 !important;
+         img {
+            width : $icon-size*$icon-multiplier/2 !important;
+         }
+      }
+      .x-list-emptytext {
+         position:absolute;
+         top:0;
+         bottom:0;
+         right:0;
+         width:100%;
+         @extend .emptyPage;
+         background: theme_image($theme-path,  "noprizes" + ".png") center no-repeat;
+         &:before {
+            content:"Be our first Jackpot Winner this month!";
+         }
+      }
+   }
+}
+
+.x-android {
+   .jackpotWinnersList {
+      .listItemDetailsWrapper {
+         min-height:$icon-size*$icon-multiplier !important;
+      }
+      .photo {
+         height : $icon-size*$icon-multiplier !important;
+         img {
+            width : $icon-size*$icon-multiplier !important;
+         }
+      }
+   }
+}
+
+.x-ios {
+   .jackpotWinnersList {
+      .listItemDetailsWrapper {
+         min-height:$icon-size*$icon-multiplier*0.75 !important;
+      }
+      .photo {
+         height : $icon-size*$icon-multiplier*0.75 !important;
+         img {
+            width : $icon-size*$icon-multiplier*0.75 !important;
+         }
+      }
+   }
+}
