@@ -348,7 +348,7 @@ Ext.define('KickBak.controller.client.SignUp',
          console.debug("Creating Account ...");
          var params =
          {
-            version : Genesis.constants.clientVersion,
+            version : KickBak.constants.clientVersion,
             name : values.name,
             email : values.username,
             password : values.password,
