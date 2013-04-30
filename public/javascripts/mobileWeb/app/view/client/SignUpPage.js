@@ -7,7 +7,7 @@ Ext.define('KickBak.view.client.SignUpPage',
    'KickBak.model.frontend.Account', 'KickBak.view.widgets.Item', 'KickBak.view.widgets.ItemDetail'],
    alias : 'widget.clientsignuppageview',
    fbConnectRequestMsg : 'By connecting to Facebook, you will receive additional Reward Pts everytime we update your KICKBAK activity to your Facebook account!',
-   unsupportedDeviceMsg : 'Sorry, this mobile device is not support at this time. Visit our website with your desktop to Sign In!',
+   unsupportedDeviceMsg : 'Sorry, this mobile device is not supported at this time. Visit our website with your desktop browser to Sign In!',
    config :
    {
       preRender : null,
