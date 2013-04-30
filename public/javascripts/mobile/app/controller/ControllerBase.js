@@ -63,6 +63,7 @@ Ext.define('Genesis.controller.ControllerBase',
    getMerchantInfoMsg : 'Retrieving Merchant Information ...',
    getVenueInfoMsg : 'Retrieving Venue Information ...',
    prepareToSendMerchantDeviceMsg : 'Prepare to send data across to Merchant Device ...',
+   mobilePhoneInputMsg : 'Enter Mobile Number',
    lookingForMerchantDeviceMsg : function()//Send
    {
       return 'Tap your Phone against the ' + Genesis.constants.addCRLF() + 'Merchant Device'

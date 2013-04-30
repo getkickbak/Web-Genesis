@@ -1,1 +1,0 @@
-["/*956a1e7f457570775c1c0bdaa5ec76eb63da0842*/__init__=function(){",55,253,"null",467,716,"a.defaultFontSize=(function(){var b=1.14;if(Ext.os.is(\"Tablet\")){b=(window.innerHeight>640)?2*b:1.5*b}return Math.floor(((16*b",416,43,"b)))})()",1182,21652,"};"]

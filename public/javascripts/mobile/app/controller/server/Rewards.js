@@ -309,7 +309,7 @@ Ext.define('Genesis.controller.server.Rewards',
             buttons : [
             {
                margin : '0 0 0.5 0',
-               text : 'Enter Phone Number',
+               text : me.mobilePhoneInputMsg,
                ui : 'action',
                height : '3em',
                handler : Ext.bind(callback, me, ['manual'])
@@ -333,7 +333,7 @@ Ext.define('Genesis.controller.server.Rewards',
        ignoreOnHide : true,
        buttons : [
        {
-       text : 'Enter Phone Number',
+       text : me.mobilePhoneInputMsg,
        itemId : 'manual'
        },
        {

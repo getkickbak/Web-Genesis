@@ -63,6 +63,7 @@ Ext.define('KickBak.controller.ControllerBase',
    getMerchantInfoMsg : 'Retrieving Merchant Information ...',
    getVenueInfoMsg : 'Retrieving Venue Information ...',
    prepareToSendMerchantDeviceMsg : 'Prepare to send data across to Merchant Device ...',
+   mobilePhoneInputMsg : 'Enter Mobile Number',
    lookingForMerchantDeviceMsg : function()//Send
    {
       return 'Tap your Phone against the ' + KickBak.constants.addCRLF() + 'Merchant Device'
@@ -76,14 +77,12 @@ Ext.define('KickBak.controller.ControllerBase',
    lookingForMobileDeviceMsg : function()//Send
    {
       return 'Please Swipe TAG or' + KickBak.constants.addCRLF() + //
-      'Tap Mobile Device or' + KickBak.constants.addCRLF() + //
-      'Enter Phone Number';
+      'Tap Mobile Device';
    },
    detectMobileDeviceMsg : function()//Recv
    {
       return 'Please Swipe TAG or' + KickBak.constants.addCRLF() + //
-      'Tap Mobile Device or' + KickBak.constants.addCRLF() + //
-      'Enter Phone Number';
+      'Tap Mobile Device';
    },
    //
    //

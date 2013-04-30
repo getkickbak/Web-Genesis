@@ -30,18 +30,7 @@ Ext.define('KickBak.view.client.SignUpPage',
       {
          items : [Ext.apply(KickBak.view.ViewBase.generateTitleBarConfig(),
          {
-            //title : 'KickBak SignUp',
             cls : 'navigationBarTop kbTitle'
-            /*,
-             items : [
-             {
-             align : 'left',
-             tag : 'back',
-             //ui : 'back',
-             ui : 'normal',
-             text : 'Back'
-             }]
-             */
          }),
          {
             xtype : 'fieldset',
@@ -80,16 +69,6 @@ Ext.define('KickBak.view.client.SignUpPage',
                labelWidth : '50%'
             },
             items : [
-            /*
-             {
-             xtype : 'textfield',
-             name : 'tagid',
-             clearIcon : false,
-             label : "Mobile Tag ID",
-             value : ' ',
-             readOnly : true
-             },
-             */
             {
                xtype : 'textfield',
                labelWidth : '30%',
@@ -108,7 +87,7 @@ Ext.define('KickBak.view.client.SignUpPage',
             }, Ext.apply(
             {
                labelWidth : '30%',
-               label : 'Phone',
+               label : 'Mobile #',
                name : 'phone',
                required : true
             }, KickBak.view.ViewBase.phoneField()),
@@ -128,14 +107,7 @@ Ext.define('KickBak.view.client.SignUpPage',
                   }
                },
                value : 0
-            }
-            /*
-             ,{
-             xtype : 'listfield',
-             name : 'changepassword',
-             label : 'Change Password',
-             value : ' '
-             }*/]
+            }]
          },
          {
             tag : 'signUp',
@@ -155,15 +127,6 @@ Ext.define('KickBak.view.client.SignUpPage',
             },
             //instructions : 'Tell us all about yourself',
             items : [
-            /*
-             {
-             xtype : 'textfield',
-             label : 'Version',
-             value : KickBak.constants.clientVersion,
-             clearIcon : false,
-             readOnly : true
-             },
-             */
             {
                xtype : 'listfield',
                name : 'terms',
@@ -222,8 +185,8 @@ Ext.define('KickBak.view.client.SignUpPage',
       {
          me._actions = Ext.create('KickBak.view.widgets.PopupItemDetail',
          {
-         	iconType : 'prizewon',
-         	icon : 'giftcertificate',
+            iconType : 'prizewon',
+            icon : 'giftcertificate',
             cls : 'viewport',
             title : 'Congratulations!' + KickBak.constants.addCRLF() + 'You have registered with KICKBAK',
             /*
