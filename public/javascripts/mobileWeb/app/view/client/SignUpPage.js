@@ -87,8 +87,8 @@ Ext.define('KickBak.view.client.SignUpPage',
             {
                xtype : 'passwordfield',
                name : 'password',
-               label : "Password",
-               placeHolder : 'Min 6 alphanumeric chars',
+               label : "Passwd",
+               placeHolder : 'Min 6 chars',
                minLength : 6,
                required : true
             }, Ext.apply(
