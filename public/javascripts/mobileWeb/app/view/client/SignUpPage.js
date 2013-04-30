@@ -2,7 +2,7 @@ Ext.define('KickBak.view.client.SignUpPage',
 {
    extend : 'Ext.form.Panel',
    requires : ['Ext.dataview.List', 'Ext.XTemplate', 'KickBak.view.widgets.ListField', 'KickBak.view.ViewBase', //
-   'Ext.field.Text', 'Ext.field.DatePicker', 'Ext.field.Toggle', 'Ext.form.FieldSet', 'KickBak.view.widgets.ListField', //
+   'Ext.field.Email', 'Ext.field.Password', 'Ext.field.DatePicker', 'Ext.field.Toggle', 'Ext.form.FieldSet', 'KickBak.view.widgets.ListField', //
    'KickBak.model.frontend.Account', 'KickBak.view.widgets.Item', 'KickBak.view.widgets.ItemDetail'],
    alias : 'widget.clientsignuppageview',
    fbConnectRequestMsg : 'By connecting to Facebook, you will receive additional Reward Pts everytime we update your KICKBAK activity to your Facebook account!',
@@ -66,34 +66,38 @@ Ext.define('KickBak.view.client.SignUpPage',
             //instructions : 'Tell us all about yourself',
             defaults :
             {
-               labelWidth : '50%'
+               labelWidth : '30%'
             },
             items : [
             {
                xtype : 'textfield',
-               labelWidth : '30%',
-               name : 'user',
+               name : 'name',
                label : "Name",
                placeHolder : 'John Smith',
                required : true
             },
             {
-               xtype : 'textfield',
-               labelWidth : '30%',
-               name : 'email',
+               xtype : 'emailfield',
+               name : 'username',
                label : "Email",
                placeHolder : 'john.smith@example.com',
                required : true
+            },
+            {
+               xtype : 'passwordfield',
+               name : 'password',
+               label : "Password",
+               placeHolder : 'Min 6 alphanumeric chars',
+               minLength : 6,
+               required : true
             }, Ext.apply(
             {
-               labelWidth : '30%',
                label : 'Mobile #',
                name : 'phone',
                required : true
             }, KickBak.view.ViewBase.phoneField()),
             {
                xtype : 'datepickerfield',
-               labelWidth : '30%',
                label : 'Birthday',
                name : 'birthday',
                dateFormat : 'M j, Y',
