@@ -135,15 +135,11 @@ Ext.define('KickBak.controller.client.SignUp',
                {
                   field.setReadOnly(false);
                },
-               field : form.query('textfield[name=user]')[0],
-               fn : function(field, response)
-               {
-                  return  db['account']['name'];
-               },
+               field : form.query('textfield[name=name]')[0],
                fbFn : function(field, response)
                {
                   field.setReadOnly(true);
-                  return response['name'];
+                  return field.getValue();
                }
             },
             'email' :
@@ -152,15 +148,23 @@ Ext.define('KickBak.controller.client.SignUp',
                {
                   field.setReadOnly(false);
                },
-               field : form.query('textfield[name=email]')[0],
-               fn : function(field, response)
-               {
-                  return db['account']['email'];
-               },
+               field : form.query('textfield[name=username]')[0],
                fbFn : function(field, response)
                {
                   field.setReadOnly(true);
-                  return response['email'];
+                  return field.getValue();
+               }
+            },
+            'password' :
+            {
+               preLoadFn : function(field, response)
+               {
+                  field.setReadOnly(false);
+               },
+               field : form.query('textfield[name=password]')[0],
+               fbFn : function(field, response)
+               {
+                  return field.getValue();
                }
             },
             'birthday' :
@@ -170,11 +174,6 @@ Ext.define('KickBak.controller.client.SignUp',
                   field.setReadOnly(false);
                },
                field : form.query('datepickerfield[name=birthday]')[0],
-               fn : function(field, response)
-               {
-                  var birthday = new Date.parse(db['account']['birthday']);
-                  return (!birthday || !( birthday instanceof Date)) ? ' ' : birthday;
-               },
                fbFn : function(field, response)
                {
                   var birthday = new Date.parse(response['birthday']);
@@ -258,13 +257,6 @@ Ext.define('KickBak.controller.client.SignUp',
       {
          f = fields[i];
          f.preLoadFn(f.field);
-         /*
-         if (db['account'] && db['account'][i])
-         {
-         f[i] = f.fn(f.field);
-         }
-         */
-         //else if (db['fbResponse'])
          if (response)
          {
             f[i] = f.fbFn(f.field, response);
@@ -285,8 +277,9 @@ Ext.define('KickBak.controller.client.SignUp',
       {
          form.setValues(
          {
-            user : fields['user'].user,
+            name : fields['name'].name,
             email : fields['email'].email,
+            password : fields['password'].password,
             birthday : fields['birthday'].birthday,
             phone : fields['phone'].phone,
             //tagid : db['account'].virtual_tag_id || 'None',
@@ -294,18 +287,7 @@ Ext.define('KickBak.controller.client.SignUp',
             //twitter : (db['enableTwitter']) ? 1 : 0
          });
       }
-      else
-      {
-         form.setValues(
-         {
-            birthday : fields['birthday'].birthday,
-            phone : fields['phone'].phone,
-            //tagid : db['account'].virtual_tag_id || 'None',
-            facebook : (response) ? 1 : 0
-            //twitter : (db['enableTwitter']) ? 1 : 0
-         });
-      }
-      //form.query('textfield[name=user]')[0].setLabel(db['account'].name + '<br/>' + '<label>' + db['account'].email + "</label>");
+
       me.initializing = false;
    },
    // --------------------------------------------------------------------------
@@ -360,7 +342,8 @@ Ext.define('KickBak.controller.client.SignUp',
             name : values.name,
             email : values.username,
             password : values.password,
-            phone : values.phone.replace(/-/g, '')
+            phone : values.phone.replace(/-/g, ''),
+            birthday : values.birthday,
          };
 
          if (response)
@@ -411,7 +394,7 @@ Ext.define('KickBak.controller.client.SignUp',
    // --------------------------------------------------------------------------
    onToggleFB : function(toggle, slider, thumb, newValue, oldValue, eOpts)
    {
-      var me = this, db = KickBak.db.getLocalDB();
+      var me = this;
 
       if (newValue == 1)
       {
