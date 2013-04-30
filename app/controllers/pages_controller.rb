@@ -66,10 +66,6 @@ class PagesController < ApplicationController
       end
     end
   end
-
-  def channel
-     render :layout => false
-  end
   
   def coming_soon
       
