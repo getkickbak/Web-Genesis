@@ -103,7 +103,7 @@ Genesis::Application.routes.draw do
       root :to => redirect("/merchants")
     end
   end
-
+  
   constraints Domain do
     devise_for :users, :path => "", :controllers => {
       :sessions => "user_devise/sessions",
@@ -163,6 +163,7 @@ Genesis::Application.routes.draw do
     constraints :user_agent => /iPhone/ do
       match "/download" => redirect {|params, req| "http://itunes.apple.com/us/app/kickbak-inc/id537476722?ls=1&mt=8" }
       match "/d" => redirect {|params, req| "http://itunes.apple.com/us/app/kickbak-inc/id537476722?ls=1&mt=8" }
+      root :to => redirect {|params, req| "http://m.dev1getkickbak.com" } 
     end
     #constraints :user_agent => /Android/ do
     #  match "/download" => redirect {|params, req| "https://play.google.com/store/apps/details?id=com.kickbak.android" }
@@ -170,10 +171,12 @@ Genesis::Application.routes.draw do
     constraints :user_agent => /Android/ do
       match "/download" => redirect {|params, req| "https://play.google.com/store/apps/details?id=com.getkickbak.kickbak" }
       match "/d" => redirect {|params, req| "https://play.google.com/store/apps/details?id=com.getkickbak.kickbak" }
+      root :to => redirect {|params, req| "http://m.dev1getkickbak.com" } 
     end
     constraints :user_agent => /BlackBerry|Windows/ do
       match "/download" => redirect {|params, req| "http://www.getkickbak.com/" }
       match "/d" => redirect {|params, req| "http://www.getkickbak.com/" }
+      root :to => redirect {|params, req| "http://m.dev1getkickbak.com" } 
     end
     
     match "/dashboard" => 'dashboard#index', :as => :dashboard
@@ -205,7 +208,6 @@ Genesis::Application.routes.draw do
     match "/add_business/create" => 'pages#add_business_create', :via => :post, :as => :create_merchant_contact
     match "/d", :to => 'pages#index'
     match "/download", :to => 'pages#index'
-    match "/channel" => 'pages#channel'
     
     #match '/users/:id/account' => 'users#edit'
     #match '/users/:user_id/coupons' => 'orders#index', :via => :get , :as => :user_coupons

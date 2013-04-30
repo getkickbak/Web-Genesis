@@ -833,10 +833,17 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         if !signed_in? && @current_user.status == :pending
           if @first_time
             sms_message_type = SmsMessageType::REGISTRATION
+            options = { :name => @venue.name, :points => @reward_info[:points], :prize_points => @reward_info[:prize_points] }.to_json
           else
-            sms_message_type = SmsMessageType::REGISTRATION_REMINDER
+            if eligible_for_reward || eligible_for_prize
+              sms_message_type = SmsMessageType::REGISTRATION_REMINDER_REWARD
+              reward_name = eligible_for_reward ? eligible_reward.title : eligible_prize.title
+              options = { :name => @venue.name, :reward_name => reward_name }.to_json
+            else
+              sms_message_type = SmsMessageType::REGISTRATION_REMINDER
+              options = { :name => @venue.name, :points => @reward_info[:points], :prize_points => @reward_info[:prize_points] }.to_json
+            end
           end
-          options = { :name => @venue.name, :points => @reward_info[:points], :prize_points => @reward_info[:prize_points] }.to_json
           Resque.enqueue(SendSms, sms_message_type, @current_user.id, nil, options)
         end
         if !signed_in? && @current_user.status != :pending && @current_user.subscription.email_notif

@@ -2,5 +2,5 @@ class SmsMessageType
 
    REGISTRATION = "registration"
    REGISTRATION_REMINDER = "registration_reminder"
-   REGULAR = "regular"
+   REGISTRATION_REMINDER_REWARD = "registration_reminder_reward"
 end
