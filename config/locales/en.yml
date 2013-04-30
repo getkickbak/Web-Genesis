@@ -374,3 +374,7 @@ en:
       registration_2: "To get your bonus sign up points, please go to www.getkickbak.com to complete your registration."
       registration_reminder_1: "Thank you for coming to %s! You have earned %s points and %s prize points during this visit."
       registration_reminder_2: "Don't forget to signup for your KICKBAK Rewards Program. Go to www.getkickbak.com to complete your registration."
+      registration_reminder_reward_1: "Thank you for coming to %s! You have earned %s!"
+      registration_reminder_reward_2: "Don't forget to signup for your KICKBAK Rewards Program. Go to www.getkickbak.com to complete your registration."
+      merchant_promotion_1: "%s"
+      merchant_promotion_2: "Don't forget to signup for your KICKBAK Rewards Program. Go to www.getkickbak.com to complete your registration."

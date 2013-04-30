@@ -5,6 +5,7 @@ module PointsSummary
   end
 
   def self.perform()
+=begin    
     if Rails.env == 'production'
       earned_points_sql = "SELECT merchant_id, customer_id, DATE(created_ts) AS created_date
               FROM earn_reward_record
@@ -17,7 +18,7 @@ module PointsSummary
               WHERE user_id = ? AND (julianday(strftime('%Y-%m-%d',?)) - julianday(strftime('%Y-%m-%d',created_ts))) / 30 = 1 AND deleted_ts IS NULL"
     end
     now = Time.now
-    logger.info("Points Expiration Reminders started at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
+    logger.info("Points Summary started at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
 
     begin
       count = User.count
@@ -31,16 +32,22 @@ module PointsSummary
       for i in 0..n-1
         logger.info("Sending iteration #{i+1}")
         start = i*max
-        users = User.all(:fields => [:user_id], :offset => start, :limit => max)
+        users = User.all(:status => :active, :offset => start, :limit => max)
         users.each do |user|
           earned_points_records = DataMapper.repository(:default).adapter.select(
             earned_points_sql, user.id, now, now
           )
-          UserMailer.points_summary_email(user, records).deliver
+          UserMailer.points_summary_email(user, earned_points_records).deliver
         end
       end
+    rescue StandardError => e
+      now = Time.now
+      logger.error("Exception: " + e.message)
+      logger.info("Points Summary failed at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
+      return  
     end
     now = Time.now
-    logger.info("Points Expiration Reminders completed successfully at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
+    logger.info("Points Summary completed successfully at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
+=end    
   end
 end

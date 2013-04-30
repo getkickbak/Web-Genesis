@@ -22,6 +22,7 @@ module CreatePromotion
         n = count/max + 1
       end  
       message = "#{promotion.merchant.name} - #{promotion.message}".truncate(116, :separator => ' ')
+      sms_message = "#{promotion.merchant.name} - #{promotion.message}".truncate(160, :separator => ' ')
       logger.info("Promotion(#{promotion.id}) requires #{n} iterations")
       for i in 0..n-1
         logger.info("Sending iteration #{i+1}")
@@ -66,13 +67,15 @@ module CreatePromotion
             user_id_to_subscription[subscription.user_id] = subscription
           end
           email_users.each do |user|
-            if user.role != "anonymous"
+            if user.status != :pending
               if user_id_to_subscription[user.id]
                 UserMailer.promotion_email(user, promotion).deliver if user_id_to_subscription[user.id].email_notif
               else
                 Subscription.create(user)
                 UserMailer.promotion_email(user, promotion).deliver
-              end  
+              end
+            else              
+              Resque.enqueue(SendSms, SmsMessageType::MERCHANT_PROMOTION, user.id, sms_message, nil)    
             end
           end
           logger.info("Sending emails - complete for iteration #{i+1}")
