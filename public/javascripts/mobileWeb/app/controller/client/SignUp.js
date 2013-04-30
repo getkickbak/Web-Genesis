@@ -343,7 +343,7 @@ Ext.define('KickBak.controller.client.SignUp',
             email : values.username,
             password : values.password,
             phone : values.phone.replace(/-/g, ''),
-            birthday : values.birthday,
+            birthday : values.birthday
          };
 
          if (response)
@@ -367,9 +367,7 @@ Ext.define('KickBak.controller.client.SignUp',
                version : KickBak.constants.clientVersion,
                device_pixel_ratio : window.devicePixelRatio,
                user : Ext.encode(params),
-               device : Ext.encode(
-               {
-               }),
+               device : null,
                web_signup : true
             },
             callback : function(record, operation)
