@@ -2,11 +2,12 @@ Ext.define('KickBak.view.client.SignUpPage',
 {
    extend : 'Ext.form.Panel',
    requires : ['Ext.dataview.List', 'Ext.XTemplate', 'KickBak.view.widgets.ListField', 'KickBak.view.ViewBase', //
-   'Ext.field.Email', 'Ext.field.Password', 'Ext.field.DatePicker', 'Ext.field.Toggle', 'Ext.form.FieldSet', 'KickBak.view.widgets.ListField', //
+   'Ext.field.Email', 'Ext.field.Password', 'Ext.field.DatePicker', 'Ext.field.Toggle', 'Ext.form.FieldSet', 'KickBak.view.widgets.ListField',
+   // //
    'KickBak.model.frontend.Account', 'KickBak.view.widgets.Item', 'KickBak.view.widgets.ItemDetail'],
    alias : 'widget.clientsignuppageview',
    fbConnectRequestMsg : 'By connecting to Facebook, you will receive additional Reward Pts everytime we update your KICKBAK activity to your Facebook account!',
-   unsupportedDeviceMsg : 'Sorry, this mobile device is not support at this time. Visit our website with your desktop to SignIn!',
+   unsupportedDeviceMsg : 'Sorry, this mobile device is not support at this time. Visit our website with your desktop to Sign In!',
    config :
    {
       preRender : null,
@@ -187,6 +188,7 @@ Ext.define('KickBak.view.client.SignUpPage',
 
       if (!me._actions)
       {
+         var downloadAppFn = Ext.bind(me.downloadAppTap, me);
          me._actions = Ext.create('KickBak.view.widgets.PopupItemDetail',
          {
             iconType : 'prizewon',
@@ -203,37 +205,47 @@ Ext.define('KickBak.view.client.SignUpPage',
              margin : '0 0 1.0 0'
              }],
              */
+            listeners : [
+            {
+               element : 'element',
+               delegate : "div.itemPhoto",
+               event : "tap",
+               fn : downloadAppFn
+            }],
             buttons : [
             {
                margin : '0 0 0.5 0',
                text : 'Download Mobile App Now!',
                ui : 'action',
                height : '3em',
-               handler : function()
-               {
-                  //me._actions.hide();
-                  if (Ext.os.is('iOS'))
-                  {
-                     location.href = 'http://itunes.apple.com/us/app/kickbak-inc/id537476722?ls=1&mt=8'
-                  }
-                  else if (Ext.os.is('Android'))
-                  {
-                     location.href = 'https://play.google.com/store/apps/details?id=com.getkickbak.kickbak';
-                  }
-                  else
-                  {
-                     Ext.device.Notification.show(
-                     {
-                        title : 'KICKBAK',
-                        message : me.unsupportedDeviceMsg,
-                        buttons : ['Dismiss']
-                     });
-                  }
-               }
+               handler : downloadAppFn
             }]
          });
          Ext.Viewport.add(me._actions);
       }
       me._actions.show();
+   },
+   downloadAppTap : function()
+   {
+      var me = this;
+      
+      //me._actions.hide();
+      if (Ext.os.is('iOS'))
+      {
+         location.href = 'http://itunes.apple.com/us/app/kickbak-inc/id537476722?ls=1&mt=8'
+      }
+      else if (Ext.os.is('Android'))
+      {
+         location.href = 'https://play.google.com/store/apps/details?id=com.getkickbak.kickbak';
+      }
+      else
+      {
+         Ext.device.Notification.show(
+         {
+            title : 'KICKBAK',
+            message : me.unsupportedDeviceMsg,
+            buttons : ['Dismiss']
+         });
+      }
    }
 });
