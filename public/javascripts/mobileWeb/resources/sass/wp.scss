@@ -34,6 +34,11 @@ $form-field-height: 2.5em !default;
 //$form-dark: #FFF;
 //$form-light: $BlueEnd ;
 //$form-field-bg-color : $Grey;
+/**
+ * @var {measurement} $form-spacing
+ * Default spacing for form fields, used for padding, etc.
+ */
+$form-spacing: .6em !default;
 
 // Lists
 //$list-bg-color: $Grey;
@@ -67,6 +72,7 @@ $largeFontSize : 0.8em;
 $xlargeFontSize : 1.2em;
 
 // Theme Path
+$resource-path : 'http://files.getkicbak.com/mobileWeb/resources/images';
 $theme-path : '../../../../resources/images/ios';
 $theme-path-rel : '../images/ios';
 
@@ -75,6 +81,18 @@ $theme-path-rel : '../images/ios';
 //$badgePoints-bg-gradient: $base-gradient;
 
 @import 'sencha-touch/windows';
-@import 'sencha-touch/windows/all';
+
+@import 'sencha-touch/windows/src/Class';
+@import 'sencha-touch/windows/src/Button';
+@import 'sencha-touch/windows/src/MessageBox';
+@import 'sencha-touch/windows/src/Toolbar';
+@import 'sencha-touch/windows/src/Sheet';
+@import 'sencha-touch/windows/src/Panel';
+@import 'sencha-touch/windows/src/field/Field';
+@import 'sencha-touch/windows/src/form/Panel';
+@import 'sencha-touch/windows/src/form/FieldSet';
+@import 'sencha-touch/windows/src/slider/Slider';
+@import 'sencha-touch/windows/src/slider/Toggle';
+@import 'sencha-touch/windows/src/tab/Panel';
 
 @import 'sencha-touch/kickbak/all';

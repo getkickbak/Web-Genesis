@@ -33,6 +33,11 @@ $global-row-height: 2.6em !default;
 //$form-dark: #FFF;
 //$form-light: $BlueEnd ;
 //$form-field-bg-color : $Grey;
+/**
+ * @var {measurement} $form-spacing
+ * Default spacing for form fields, used for padding, etc.
+ */
+$form-spacing: .6em !default;
 
 // Lists
 //$list-bg-color: $Grey;
@@ -67,6 +72,7 @@ $largeFontSize : 0.8em;
 $xlargeFontSize : 1.2em;
 
 // Theme Path
+$resource-path : 'http://files.getkicbak.com/mobileWeb/resources/images';
 $theme-path : '../../../../resources/images/ios';
 $theme-path-rel : '../images/ios';
 
@@ -74,7 +80,22 @@ $theme-path-rel : '../images/ios';
 //$badgePoints-bg-color: darken($GreenEnd, 10%);
 //$badgePoints-bg-gradient: $base-gradient;
 
+// Variables
+// Mixins
 @import 'sencha-touch/bb10';
-@import 'sencha-touch/bb10/all';
+
+// Component SASS
+@import 'sencha-touch/bb10/src/Class';
+@import 'sencha-touch/bb10/src/Button';
+@import 'sencha-touch/bb10/src/MessageBox';
+@import 'sencha-touch/bb10/src/Panel';
+@import 'sencha-touch/bb10/src/Sheet';
+@import 'sencha-touch/bb10/src/Toolbar';
+@import 'sencha-touch/bb10/src/form/Panel';
+@import 'sencha-touch/bb10/src/form/FieldSet';
+@import 'sencha-touch/bb10/src/field/Field';
+@import 'sencha-touch/bb10/src/picker/Picker';
+@import 'sencha-touch/bb10/src/tab/Panel';
+
 
 @import 'sencha-touch/kickbak/all';

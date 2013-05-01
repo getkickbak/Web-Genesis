@@ -1,0 +1,13 @@
+//------------------------------------------------------------------------------
+// List CSS
+//------------------------------------------------------------------------------
+.x-list {
+   background:transparent;
+   .x-list-disclosure {
+      background: theme_image($theme-path + "/miscicons", "disclose" + ".png");
+      @include background-size(2em);
+      background-position:center center;
+      background-repeat:no-repeat;
+      margin: ($panelTopGap*2) $panelGap 0 0;
+   }
+}
