@@ -129,7 +129,7 @@ Ext.define('KickBak.controller.client.SignUp',
       var me = this, form = me.getSignUpPage();
       return (
          {
-            'user' :
+            'name' :
             {
                preLoadFn : function(field, response)
                {
@@ -139,7 +139,7 @@ Ext.define('KickBak.controller.client.SignUp',
                fbFn : function(field, response)
                {
                   field.setReadOnly(true);
-                  return field.getValue();
+                  return response['name'];
                }
             },
             'email' :
@@ -152,7 +152,7 @@ Ext.define('KickBak.controller.client.SignUp',
                fbFn : function(field, response)
                {
                   field.setReadOnly(true);
-                  return field.getValue();
+                  return response['username'];
                }
             },
             'password' :
@@ -164,7 +164,7 @@ Ext.define('KickBak.controller.client.SignUp',
                field : form.query('textfield[name=password]')[0],
                fbFn : function(field, response)
                {
-                  return field.getValue();
+                  return response['password'];
                }
             },
             'birthday' :
@@ -192,11 +192,6 @@ Ext.define('KickBak.controller.client.SignUp',
             {
                preLoadFn : Ext.emptyFn,
                field : form.query('textfield[name=phone]')[0],
-               fn : function(field, response)
-               {
-                  var phone = db['account']['phone'].match(Account.phoneRegex);
-                  return (phone[1] + '-' + phone[2] + '-' + phone[3]);
-               },
                fbFn : Ext.emptyFn
             }
          });
