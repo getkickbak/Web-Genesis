@@ -1,9 +1,33 @@
 //------------------------------------------------------------------------------
 // Form CSS
 //------------------------------------------------------------------------------
+
+// Ext.field.Select
+.x-field-list .x-field-input {
+    .x-clear-icon {
+        background-image: theme_image($theme-path + "/miscicons", "disclose" + ".png");
+    }
+}
+
+.x-ios, .x-android {
+   .x-field-list .x-field-input {
+      .x-clear-icon {
+           background-size: 75% 75%;
+       }
+   }  
+}
+
+.x-blackberry {
+   .x-field-list .x-field-input {
+      .x-clear-icon {
+           background-size: 100% 100%;
+       }
+   }  
+}
 //
 // Transparent colors to make texture background show up on all screens
 //
 .x-form .x-scroll-container {
    background : transparent;
 }
+

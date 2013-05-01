@@ -47,13 +47,13 @@
 			"update": "delta"
 		}, {
 			"path": "../lib/core/date.js",
-			"update": "delta"
+			"update": "full"
 		}, {
 			"path": "lib/core/FacebookConnect.js",
 			"update": "delta"
 		}, {
 			"path": "../lib/gibberish-aes.min.js",
-			"update": "delta"
+			"update": "full"
 		}, {
 			"path": "app.js",
 			"bundle": true,  /* Indicates that all class dependencies are concatenated into this file when build */
@@ -117,7 +117,7 @@
 	/**
 	* Extra resources to be copied along when build
 	*/
-	"resources": ["resources/images", "resources/audio", "resources/icons", "resources/startup", "channel.html", "term_of_service.htm", "privacy.htm", "program_rules.htm"],
+	"resources": ["resources/images", "resources/icons", "resources/startup", "channel.html", "term_of_service.htm", "privacy.htm", "program_rules.htm"],
 
 	/**
 	* File / directory name matchers to ignore when copying to the builds, must be valid regular expressions

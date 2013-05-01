@@ -25,7 +25,7 @@ __init__ = function()
          return this._iconSize;
       },
       site : 'www.getkickbak.com',
-      photoSite : 'http://files.getkickbak.com',
+      resourceSite : 'http://files.getkickbak.com/mobileWeb/build/KickBak/production/resources/',
       debugVPrivKey : 'oSG8JclEHvRy5ngkb6ehWbb6TTRFXd8t',
       debugRPrivKey : 'oSG8JclEHvRy5ngkb6ehWbb6TTRFXd8t',
       debugVenuePrivKey : 'Debug Venue',
@@ -60,7 +60,7 @@ __init__ = function()
          })();
          if (Ext.os.is('iOS'))
          {
-            me._iconPath = '/ios';
+            me._iconPath = 'ios';
             me._thumbnailAttribPrefix = 'thumbnail_ios_';
             me._iconSize = 57;
 
@@ -86,13 +86,13 @@ __init__ = function()
             if ((window.devicePixelRatio == 1) || (window.devicePixelRatio >= 2))
             {
                me._iconSize = 48 * ((Ext.os.is('Tablet')) ? 3.0 : 1.2);
-               me._iconPath = '/android/mxhdpi';
+               me._iconPath = 'android/mxhdpi';
                me._thumbnailAttribPrefix = 'thumbnail_android_mxhdpi_';
             }
             else
             {
                me._iconSize = 36 * ((Ext.os.is('Tablet')) ? 3.0 : 1.5);
-               me._iconPath = '/android/lhdpi';
+               me._iconPath = 'android/lhdpi';
                me._thumbnailAttribPrefix = 'thumbnail_android_lhdpi_';
             }
 
@@ -117,7 +117,7 @@ __init__ = function()
          }
          else
          {
-            me._iconPath = '/ios';
+            me._iconPath = 'ios';
             me._thumbnailAttribPrefix = 'thumbnail_ios_';
             me._iconSize = 57;
 
@@ -136,8 +136,8 @@ __init__ = function()
       getIconPath : function(type, name, remote)
       {
          return ((!remote) ? //
-         'resources/images' + this._iconPath : //
-         this.photoSite + this._iconPath + '/' + 'icons') + '/' + type + '/' + name + '.png';
+         'resources/' : //
+         this.resourceSite) + 'images/' + this._iconPath + '/' + type + '/' + name + '.png';
       }
    }
 

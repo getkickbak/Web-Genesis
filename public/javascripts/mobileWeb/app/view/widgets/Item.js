@@ -148,7 +148,7 @@ Ext.define('KickBak.view.widgets.PopupItem',
    {
       getPhoto : function(type, iconType)
       {
-         var photo_url = KickBak.constants.getIconPath(iconType, type.value);
+         var photo_url = KickBak.constants.getIconPath(iconType, type.value, true);
          return photo_url;
       }
    }

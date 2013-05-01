@@ -18,8 +18,8 @@ Ext.define('KickBak.view.Document',
             items : [
             {
                align : 'left',
-               //ui : 'back',
-               ui : 'normal',
+               ui : 'back',
+               //ui : 'normal',
                tag : 'back',
                text : 'Back'
             }]
@@ -77,8 +77,8 @@ Ext.define('KickBak.view.MultipartDocument',
             items : [
             {
                align : 'left',
-               //ui : 'back',
-               ui : 'normal',
+               ui : 'back',
+               //ui : 'normal',
                tag : 'back',
                text : 'Back'
             }]

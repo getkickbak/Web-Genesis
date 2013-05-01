@@ -95,6 +95,19 @@ __initFb__ = function()
             }
          });
 
+         // We set a timeout in case there is no response from the Facebook `init` method. This often happens if the
+         // Facebook application is incorrectly configured (for example if the browser URL does not match the one
+         // configured on the Facebook app.)
+         me.fbLoginTimeout = setTimeout(function()
+         {
+            me.fireEvent('loginStatus');
+            me.fireEvent('exception',
+            {
+               type : 'timeout',
+               msg : 'The request to Facebook timed out.'
+            }, null);
+         }, me.fbTimeout);
+
          // Get the user login status from Facebook.
          FB.getLoginStatus(function(response)
          {
@@ -115,19 +128,6 @@ __initFb__ = function()
                me.facebook_loginCallback(response);
             }
          });
-
-         // We set a timeout in case there is no response from the Facebook `init` method. This often happens if the
-         // Facebook application is incorrectly configured (for example if the browser URL does not match the one
-         // configured on the Facebook app.)
-         me.fbLoginTimeout = setTimeout(function()
-         {
-            me.fireEvent('loginStatus');
-            me.fireEvent('exception',
-            {
-               type : 'timeout',
-               msg : 'The request to Facebook timed out.'
-            }, null);
-         }, me.fbTimeout);
       },
       /**
        * Returns the app location. If we're inside an iFrame, return the top level path
@@ -208,6 +208,20 @@ __initFb__ = function()
                }
             }
          });
+
+         // We set a timeout in case there is no response from the Facebook `init` method. This often happens if the
+         // Facebook application is incorrectly configured (for example if the browser URL does not match the one
+         // configured on the Facebook app.)
+         me.fbLoginTimeout = setTimeout(function()
+         {
+            me.fireEvent('loginStatus');
+            me.fireEvent('exception',
+            {
+               type : 'timeout',
+               msg : 'The request to Facebook timed out.'
+            }, null);
+         }, me.fbTimeout);
+
          // Get the user login status from Facebook.
          FB.getLoginStatus(function(response)
          {
@@ -226,19 +240,6 @@ __initFb__ = function()
                window.top.location = me.redirectUrl();
             }
          });
-
-         // We set a timeout in case there is no response from the Facebook `init` method. This often happens if the
-         // Facebook application is incorrectly configured (for example if the browser URL does not match the one
-         // configured on the Facebook app.)
-         me.fbLoginTimeout = setTimeout(function()
-         {
-            me.fireEvent('loginStatus');
-            me.fireEvent('exception',
-            {
-               type : 'timeout',
-               msg : 'The request to Facebook timed out.'
-            }, null);
-         }, me.fbTimeout);
       },
       facebook_loginCallback : function(res)
       {
@@ -268,8 +269,9 @@ __initFb__ = function()
                      else
                      {
                         Ext.Viewport.setMasked(null);
-                        me.facebook_loginCallback(res);
                         delete me.cb;
+
+                        me.fireEvent('unauthorized', null, null);
                      }
                   }
                });

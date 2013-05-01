@@ -68,6 +68,7 @@ $largeFontSize : 0.8em;
 $xlargeFontSize : 1.2em;
 
 // Theme Path
+$resource-path : 'http://files.getkicbak.com/mobileWeb/build/KickBak/production/resources/images';
 $theme-path : '../../../../resources/images/ios';
 $theme-path-rel : '../images/ios';
 
@@ -75,9 +76,38 @@ $theme-path-rel : '../images/ios';
 //$badgePoints-bg-color: darken($GreenEnd, 10%);
 //$badgePoints-bg-gradient: $base-gradient;
 
-@import 'sencha-touch/default';
-@import 'sencha-touch/default/all';
 
+// Variables
+@import 'sencha-touch/default';
+
+// Source
+@import 'sencha-touch/default/src/Class';
+@import 'sencha-touch/default/src/Button';
+@import 'sencha-touch/default/src/Panel';
+@import 'sencha-touch/default/src/Sheet';
+@import 'sencha-touch/default/src/MessageBox';
+@import 'sencha-touch/default/src/Toolbar';
+//@import 'sencha-touch/default/src/carousel/Carousel';
+@import 'sencha-touch/default/src/form/Panel';
+@import 'sencha-touch/default/src/form/FieldSet';
+@import 'sencha-touch/default/src/field/Field';
+//@import 'sencha-touch/default/src/field/Checkbox';
+//@import 'sencha-touch/default/src/field/Radio';
+//@import 'sencha-touch/default/src/field/Search';
+//@import 'sencha-touch/default/src/field/Select';
+@import 'sencha-touch/default/src/field/Slider';
+//@import 'sencha-touch/default/src/field/Spinner';
+//@import 'sencha-touch/default/src/field/TextArea';
+//@import 'sencha-touch/default/src/dataview/IndexBar';
+//@import 'sencha-touch/default/src/dataview/List';
+@import 'sencha-touch/default/src/picker/Picker';
+//@import 'sencha-touch/default/src/plugin/ListPaging';
+//@import 'sencha-touch/default/src/plugin/PullRefresh';
+@import 'sencha-touch/default/src/slider/Slider';
+@import 'sencha-touch/default/src/slider/Toggle';
+@import 'sencha-touch/default/src/tab/Panel';
+
+// KickBak Theme
 @import 'sencha-touch/kickbak/all';
 
 // Custom code goes here..
