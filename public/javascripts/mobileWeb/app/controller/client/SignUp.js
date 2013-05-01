@@ -227,6 +227,12 @@ Ext.define('KickBak.controller.client.SignUp',
       {
          if (!page.isHidden() && toggle)
          {
+            Ext.device.Notification.show(
+            {
+               title : 'Facebook Connect',
+               message : KickBak.fb.fbConnectFailMsg,
+               buttons : ['Dismiss']
+            });
             toggle.toggle();
          }
       }
