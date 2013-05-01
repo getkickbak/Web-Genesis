@@ -85,6 +85,7 @@ $theme-path-rel : '../images/ios';
 @import 'sencha-touch/bb10';
 
 // Component SASS
+
 @import 'sencha-touch/bb10/src/Class';
 @import 'sencha-touch/bb10/src/Button';
 @import 'sencha-touch/bb10/src/MessageBox';
@@ -95,6 +96,7 @@ $theme-path-rel : '../images/ios';
 @import 'sencha-touch/bb10/src/form/FieldSet';
 @import 'sencha-touch/bb10/src/field/Field';
 @import 'sencha-touch/bb10/src/picker/Picker';
+@import 'sencha-touch/bb10/src/slider/Slider';
 @import 'sencha-touch/bb10/src/tab/Panel';
 
 
