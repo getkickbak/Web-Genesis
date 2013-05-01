@@ -152,7 +152,7 @@ Ext.define('KickBak.controller.client.SignUp',
                fbFn : function(field, response)
                {
                   field.setReadOnly(true);
-                  return response['username'];
+                  return response['email'];
                }
             },
             'password' :
