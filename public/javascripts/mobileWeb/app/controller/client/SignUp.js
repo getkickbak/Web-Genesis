@@ -106,7 +106,7 @@ Ext.define('KickBak.controller.client.SignUp',
          'toggleFB' :
          {
             fn : 'onToggleFB',
-            buffer : 3 * 1000
+            buffer : 2 * 1000
          },
          'toggleTwitter' :
          {
