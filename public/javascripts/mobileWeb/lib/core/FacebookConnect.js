@@ -268,8 +268,9 @@ __initFb__ = function()
                      else
                      {
                         Ext.Viewport.setMasked(null);
-                        me.facebook_loginCallback(res);
                         delete me.cb;
+                        
+                        me.fireEvent('unauthorized', null, null);
                      }
                   }
                });
