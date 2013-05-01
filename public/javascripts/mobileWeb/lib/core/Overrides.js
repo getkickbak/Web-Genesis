@@ -25,7 +25,7 @@ __init__ = function()
          return this._iconSize;
       },
       site : 'www.getkickbak.com',
-      photoSite : 'http://files.getkickbak.com',
+      resourceSite : 'http://files.getkickbak.com/mobileWeb/build/KickBak/production/',
       debugVPrivKey : 'oSG8JclEHvRy5ngkb6ehWbb6TTRFXd8t',
       debugRPrivKey : 'oSG8JclEHvRy5ngkb6ehWbb6TTRFXd8t',
       debugVenuePrivKey : 'Debug Venue',
@@ -137,7 +137,7 @@ __init__ = function()
       {
          return ((!remote) ? //
          'resources/images' + this._iconPath : //
-         this.photoSite + this._iconPath + '/' + 'icons') + '/' + type + '/' + name + '.png';
+         this.resourceSite + this._iconPath + 'icons') + '/' + type + '/' + name + '.png';
       }
    }
 

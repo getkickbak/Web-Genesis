@@ -614,7 +614,7 @@ Ext.define('KickBak.controller.ViewportBase',
             {
                case 'FX' :
                {
-                  LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + ext, function()
+                  LowLatencyAudio['preload'+type](sound_file, KickBak.constants.resourceSite + 'resources/audio/' + sound_file + ext, function()
                   {
                      console.debug("loaded " + sound_file);
                   }, function(err)
@@ -640,7 +640,7 @@ Ext.define('KickBak.controller.ViewportBase',
          {
             case 'Media' :
             {
-               sound_file = new Media((Ext.os.is('Android') ? '/android_asset/www/' : '') + 'resources/audio/' + sound_file + ext, function()
+               sound_file = new Media((Ext.os.is('Android') ? '/android_asset/www/' : KickBak.constants.resourceSite) + 'resources/audio/' + sound_file + ext, function()
                {
                   //console.log("loaded " + me.sound_files[tag].name);
                   me.sound_files[tag].successCallback();

@@ -674,7 +674,7 @@ Ext.define('KickBak.controller.ControllerBase',
                   width : '100%',
                   flex : 1,
                   style : 'text-align:center;display:inline-table;color:white;font-size:1.1em;',
-                  html : me.fbConnectRequestMsg + '<img width="160" style="margin:0.7em 0;" src="resources/themes/images/facebook_icon.png"/>'
+                  html : me.fbConnectRequestMsg + '<img width="160" style="margin:0.7em 0;" src=' + KickBak.constants.resourceSite + '"resources/themes/images/facebook_icon.png"/>'
                },
                {
                   docked : 'bottom',
