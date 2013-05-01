@@ -279,7 +279,7 @@ Ext.define('KickBak.controller.client.SignUp',
          form.setValues(
          {
             name : fields['name'].name,
-            email : fields['email'].email,
+            username : fields['email'].email,
             password : fields['password'].password,
             birthday : fields['birthday'].birthday,
             phone : fields['phone'].phone,
