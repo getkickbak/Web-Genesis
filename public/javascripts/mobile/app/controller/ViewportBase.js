@@ -66,7 +66,7 @@ Ext.define('Genesis.controller.ViewportBase',
          //
          // First Visit!
          //
-         if (info['visits'] == 1)
+         if (info && (info['visits'] == 1))
          {
             console.debug("Adding New Customer Record ...");
 
@@ -252,9 +252,9 @@ Ext.define('Genesis.controller.ViewportBase',
             // No Venue Checked-In from previous session
             if (!db['last_check_in'])
             {
-            	//
-            	// Trigger Facebook Login reminder
-            	//
+               //
+               // Trigger Facebook Login reminder
+               //
                if ((db['enableFB'] && (db['currFbId'] > 0)) || db['disableFBReminderMsg'] || !Genesis.fn.isNative())
                {
                   me.redirectTo('checkin');

@@ -35,30 +35,37 @@ Ext.define('Genesis.view.client.Prizes',
    _createView : function(store, renderStore, activeItemIndex)
    {
       var me = this;
+      var customer = _application.getController(((merchantMode) ? 'server' : 'client') + '.Viewport').getCustomer();
 
       me.callParent(arguments);
       // ------------------------------------------------------------------------
       // Redeem Points Earned Panel
       // ------------------------------------------------------------------------
-      me.setPreRender([
+      if (Customer.isValid(customer.getId()))
       {
-         //docked : 'top',
-         cls : 'ptsEarnPanel',
-         tag : 'ptsEarnPanel',
-         xtype : 'dataview',
-         useComponents : true,
-         scrollable : undefined,
-         defaultType : me.getDefaultItemType(),
-         store : renderStore
-      }].concat(me.getPreRender()));
+         me.setPreRender([
+         {
+            //docked : 'top',
+            cls : 'ptsEarnPanel',
+            tag : 'ptsEarnPanel',
+            xtype : 'dataview',
+            useComponents : true,
+            scrollable : undefined,
+            defaultType : me.getDefaultItemType(),
+            store : renderStore
+         }].concat(me.getPreRender()));
+      }
    },
    createView : function(activeItemIndex)
    {
-      if (!this.callParent(arguments))
+      var me = this;
+      if (!me.callParent(arguments))
       {
+         var customer = _application.getController(((merchantMode) ? 'server' : 'client') + '.Viewport').getCustomer();
+         me.query('dataview[tag=ptsEarnPanel]')[0](Customer.isValid(customer.getId()) ? 'show' : 'hide')();
          return;
       }
-      this._createView('PrizeStore', 'PrizeRenderCStore', activeItemIndex);
+      me._createView('PrizeStore', 'PrizeRenderCStore', activeItemIndex);
    },
    inheritableStatics :
    {
