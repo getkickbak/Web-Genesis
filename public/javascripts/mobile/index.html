@@ -22,8 +22,9 @@
       <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
       <title>KickBak</title>
-      <link rel="stylesheet" href="resources/css/iphone.css" type="text/css">
+      <link media="screen and (max-device-height: 568px)" rel="stylesheet" href="resources/css/iphone.css" type="text/css">
       <link media="screen and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" rel="stylesheet" href="resources/css/iphone5.css" type="text/css">
+      <link media="screen and (device-height: 1024px)" rel="stylesheet" href="resources/css/ipad.css" type="text/css">
       <!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www
       directory and include it here -->
       <!--
@@ -90,13 +91,14 @@
 
          var offlineDialogShown = false;
          var phoneGapAvailable = true;
-         var debugMode = true;
+         var debugMode = false;
          var serverHost;
-         serverHost = 'http://192.168.0.46:3000';
+         //serverHost = 'http://192.168.0.52:3000';
+         //serverHost = 'http://192.168.0.46:3000';
 		 //serverHost = 'http://76.10.173.153';
 		 //serverHost = 'http://www.dev1getkickbak.com';
 		 //serverHost = 'http://www.devgetkickbak.com';
-		 //serverHost = 'http://www.getkickbak.com';
+		 serverHost = 'http://www.getkickbak.com';
          var merchantMode = false;
          var appName = 'GetKickBak';
          var _appPath = "app", _extPath = 'lib/touch-2.1.1/src';

@@ -6,6 +6,8 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       animationMode : null
    },
+   scanTaskWait : false,
+   scanTask : null,
    establishConnectionMsg : 'Connecting to Server ...',
    loginMsg : 'Logging in ...',
    checkinMsg : 'Checking in ...',
@@ -738,14 +740,16 @@ Ext.define('Genesis.controller.ControllerBase',
    getLocalID : function(success, fail, retryFn)
    {
       var me = this, c = Genesis.constants, viewport = me.getViewPortCntlr();
-      var task, taskWait = false;
 
+      me.scanTaskWait = false;
+      me.scanTask = null;
       var scan = function()
       {
-         taskWait = false;
+         me.scanTaskWait = false;
          window.plugins.proximityID.scan(function(result)
          {
-            clearInterval(task);
+            clearInterval(me.scanTask);
+            me.scanTask = null;
             window.plugins.proximityID.stop();
             var identifiers = Genesis.fn.processRecvLocalID(result);
             if (identifiers['message'])
@@ -755,7 +759,8 @@ Ext.define('Genesis.controller.ControllerBase',
             }
          }, function(error)
          {
-            clearInterval(task);
+            clearInterval(me.scanTask);
+            me.scanTask = null;
             window.plugins.proximityID.stop();
             Ext.device.Notification.show(
             {
@@ -769,11 +774,11 @@ Ext.define('Genesis.controller.ControllerBase',
          }, c.numSamples, c.conseqMissThreshold, c.magThreshold, c.sigOverlapRatio);
       }
       //create the delayed task instance with our callback
-      task = setInterval(function()
+      me.scanTask = setInterval(function()
       {
-         if (!taskWait)
+         if (!me.scanTaskWait)
          {
-            taskWait = true;
+            me.scanTaskWait = true;
             me.self.playSoundFile(viewport.sound_files['nfcError']);
             window.plugins.proximityID.stop();
             Ext.device.Notification.show(
@@ -785,7 +790,8 @@ Ext.define('Genesis.controller.ControllerBase',
                {
                   if (btn.toLowerCase() != 'try again')
                   {
-                     clearInterval(task);
+                     clearInterval(me.scanTask);
+                     me.scanTask = null;
                      fail();
                   }
                   else
@@ -798,16 +804,15 @@ Ext.define('Genesis.controller.ControllerBase',
       }, c.proximityRxTimeout);
       scan();
 
-      return task;
+      return me.scanTask;
    },
    broadcastLocalID : function(success, fail)
    {
-      var me = this, c = Genesis.constants;
+      var me = this, c = Genesis.constants, task;
       me.send_vol = -1;
       success = success || Ext.emptyFn;
       fail = fail || Ext.emptyFn;
 
-      var task, atask;
       var cancel = function()
       {
          Ext.Ajax.abort();
@@ -816,49 +821,14 @@ Ext.define('Genesis.controller.ControllerBase',
             window.plugins.proximityID.setVolume(-1);
          }
          window.plugins.proximityID.stop();
-         //clearInterval(atask);
          if (task)
          {
             clearInterval(task);
          }
-      }
-      //create the delayed task instance with our callback
-      /*
-       atask = window.setInterval(function()
-       {
-       me.accelerometerHandler(me.send_vol, function(v)
-       {
-       //console.debug('Accelerometer vol=' + vol + ' new_vol=' + v);
-       me.send_vol = v;
-       });
-       }, 400);
-       */
+      };
+      
       window.plugins.proximityID.send(function(result)
       {
-         /*
-          task = window.setInterval(function()
-          {
-          cancel();
-          window.plugins.proximityID.preLoadSend();
-          Ext.device.Notification.show(
-          {
-          title : 'Local Identity',
-          message : me.noPeerDiscoveredMsg,
-          buttons : ['Try Again', 'Cancel'],
-          callback : function(btn)
-          {
-          if (btn.toLowerCase() != 'try again')
-          {
-          fail();
-          }
-          else
-          {
-          Ext.defer(me.broadcastLocalID, 1, me, [success, fail]);
-          }
-          }
-          });
-          }, c.proximityTxTimeout);
-          */
          console.log("ProximityID : Broacasting Local Identity ...");
          success(Genesis.fn.processSendLocalID(result, cancel));
       }, function(error)

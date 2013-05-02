@@ -107,10 +107,6 @@ $badgePoints-bg-gradient: $base-gradient;
       //background-image : url(/resources/startup/640x920.png) no-repeat;
       background-size : contain;
    }
-   
-   body.x-tablet {
-      font-size : 228%;  
-   }
 }
 
 @media only screen and (-webkit-min-device-pixel-ratio: 2)
@@ -119,9 +115,5 @@ $badgePoints-bg-gradient: $base-gradient;
       font-size : 114%;
       //background-image : url(/resources/startup/640x920.png) no-repeat;
       background-size : contain;
-   }
-   
-   body.x-tablet {
-      font-size : 228%;  
    }
 }

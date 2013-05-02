@@ -160,19 +160,19 @@ Ext.define('Genesis.controller.server.Rewards',
    },
    onRewardItem : function(automatic)
    {
-      var me = this, task = null, identifiers = null, viewport = me.getViewPortCntlr(), dismissDialog = false;
+      var me = this, identifiers = null, viewport = me.getViewPortCntlr(), dismissDialog = false;
       var amount = me.getAmount().getValue(), proxy = PurchaseReward.getProxy();
 
       me.rewardItemFn = function(params, closeDialog)
       {
          dismissDialog = closeDialog;
-         me._actions.hide();
          Ext.Viewport.setMasked(
          {
             xtype : 'loadmask',
             message : me.establishConnectionMsg
          });
          //Ext.device.Notification.dismiss();
+         callback();
 
          params = Ext.merge(params,
          {
@@ -274,9 +274,10 @@ Ext.define('Genesis.controller.server.Rewards',
       {
          me._actions.hide();
          viewport.setActiveController(null);
-         if (task)
+         if (me.scanTask)
          {
-            clearInterval(task);
+            clearInterval(me.scanTask);
+            me.scanTask = null;
          }
          //
          // Stop receiving ProximityID
@@ -345,10 +346,9 @@ Ext.define('Genesis.controller.server.Rewards',
        */
       if (Genesis.fn.isNative())
       {
-         task = me.getLocalID(function(ids)
+         me.getLocalID(function(ids)
          {
             identifiers = ids;
-            task = null;
             me.rewardItemFn(
             {
                data :

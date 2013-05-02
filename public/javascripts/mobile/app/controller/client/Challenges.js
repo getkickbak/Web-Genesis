@@ -1066,7 +1066,7 @@ Ext.define('Genesis.controller.client.Challenges',
    },
    completeChallenge : function(qrcode, position, eOpts, eInfo)
    {
-      var me = this, task, viewport = me.getViewPortCntlr(), identifiers = null, id, type, params;
+      var me = this, viewport = me.getViewPortCntlr(), identifiers = null, id, type, params;
       var db = Genesis.db.getLocalDB(), venue = viewport.getVenue(), venueId = venue.getId();
       var customerId = viewport.getCustomer().getId();
 
