@@ -34,6 +34,7 @@ class User
   property :authentication_token, String
   property :role, String, :required => true, :default => "anonymous"
   property :status, Enum[:active, :pending, :suspended, :deleted], :required => true, :default => :active
+  property :registration_reminder_count, Integer, :default => 0
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime

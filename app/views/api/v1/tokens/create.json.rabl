@@ -2,7 +2,7 @@ object false
 node :success do 
 	true
 end
-if !params[:web_signup].to_bool
+if !@web_signup
 	node :data do
 		@results[:items].map do |r|
 			partial('api/v1/customers/base_min', :object => r) 

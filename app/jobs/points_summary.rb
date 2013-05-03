@@ -21,7 +21,7 @@ module PointsSummary
     logger.info("Points Summary started at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
 
     begin
-      count = User.count
+      count = User.count(:status => :active)
       max = 500
       n = 1
       if count == max
