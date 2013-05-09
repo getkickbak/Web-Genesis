@@ -283,13 +283,27 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
                       @current_user.register_tag(tag, tag.status)
                       @first_time = true
                     end
-                  else
+                  elsif params[:version] && params[:version] >= "2.1.2"
                     respond_to do |format|
                       #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
                       format.json { render :json => { :success => false, :metaData => { :rescode => "unregistered_account" } } }
                     end
                     normal_exit = true
                     raise 
+                  else
+                    user_info = {}
+                    rand_name = String.random_alphanumeric(16)
+                    user_info[:name] = "#{rand_name}"
+                    user_info[:email] = "#{rand_name}@getkickbak.com"
+                    user_info[:role] = "anonymous"
+                    user_info[:status] = :pending
+                    password = String.random_alphanumeric(8)
+                    user_info[:password] = password
+                    user_info[:password_confirmation] = password
+                    @current_user = User.create(user_info)
+                    tag.uid = @decrypted_data[:uid] if tag.uid.empty?
+                    @current_user.register_tag(tag, tag.status)
+                    @first_time = true
                   end
                 else
                   if user_to_tag
