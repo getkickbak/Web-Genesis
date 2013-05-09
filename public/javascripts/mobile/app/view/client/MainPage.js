@@ -115,7 +115,7 @@ Ext.define('Genesis.view.client.MainPage',
 
       if (Ext.os.is('iOS'))
       {
-         if (Ext.os.is.iPhone5 || Ext.os.is.iPod5)
+         if (Ext.os.is('iPhone5') || Ext.os.is('iPod5'))
          {
             me.setItemPerPage(8);
          }

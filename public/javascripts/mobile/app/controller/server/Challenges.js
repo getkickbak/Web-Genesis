@@ -54,10 +54,10 @@ Ext.define('Genesis.controller.server.Challenges',
 
       //oldActiveItem.removeAll(true);
       viewport.setActiveController(null);
-      if (me.task)
+      if (me.scanTask)
       {
-         clearInterval(me.task);
-         delete me.task;
+         clearInterval(me.scanTask);
+         me.scanTask = null;
       }
    },
    /*
@@ -214,10 +214,9 @@ Ext.define('Genesis.controller.server.Challenges',
 
       if (Genesis.fn.isNative())
       {
-         me.task = me.getLocalID(function(ids)
+         me.getLocalID(function(ids)
          {
             identifiers = ids;
-            me.task = null;
             me.challengeItemFn(
             {
                data :

@@ -24,7 +24,8 @@ Genesis.constants =
    {
       var ratio = 1.14;
 
-      if (Ext.os.is('Tablet'))
+      if (Ext.os.is('Tablet') && //
+      (Ext.os.is('Android') || (Ext.os.is('iOS') && merchantMode)))
       {
          ratio = (window.innerHeight > 640) ? 2 * ratio : 1.5 * ratio;
       }

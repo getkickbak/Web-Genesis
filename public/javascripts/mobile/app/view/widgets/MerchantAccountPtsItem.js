@@ -256,6 +256,8 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
 
       //var crecord = cstore.getById(data.Merchant['merchant_id']);
       var bg = this.query('container[tag=background]')[0];
+      var points = this.query('component[tag=points]')[0];
+      var prizepoints = this.query('component[tag=prizepoints]')[0];
 
       // Update Background Photo
       bg.setStyle(
@@ -267,18 +269,24 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
       //
       // Hide Points if we are not a customer of the Merchant
       //
+      bg.getItems().items[0].show();
       if (Customer.isValid(customerId) && Ext.StoreMgr.get('CustomerStore').getById(customerId))
       {
-         bg.getItems().items[0].show();
          //Update Points
-         var points = this.query('component[tag=points]')[0];
          points.setData(customer.getData());
-         var prizepoints = this.query('component[tag=prizepoints]')[0];
          prizepoints.setData(customer.getData());
       }
       else
       {
-         bg.getItems().items[0].hide();
+         //Update Points
+         points.setData(
+         {
+            "points" : "---"
+         });
+         prizepoints.setData(
+         {
+            "prize_points" : "---"
+         });
       }
    },
    applyWinnersCount : function(config)

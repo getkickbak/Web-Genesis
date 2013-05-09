@@ -457,7 +457,7 @@ Ext.define('Genesis.controller.client.MainPage',
       //
       // Forced to Login to Facebook
       //
-      if (Ext.Viewport.getMasked() || me._loggingOut || me._logginIn)
+      if (Ext.Viewport.getMasked() || me._loggingOut || me._loggingIn)
       {
          failCallback();
          return;
@@ -507,6 +507,7 @@ Ext.define('Genesis.controller.client.MainPage',
          }
          else
          {
+            me._loggingIn = false;
             failCallback();
          }
       }, true);

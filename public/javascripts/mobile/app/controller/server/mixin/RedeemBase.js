@@ -139,7 +139,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
    },
    onRedeemItem : function(btn, venue, view)
    {
-      var me = this, identifiers = null, task = null, dismissDialog = false;
+      var me = this, identifiers = null, dismissDialog = false;
       var viewport = me.getViewPortCntlr(), item = view.query("container[tag=redeemItemContainer]")[0].getInnerItems()[0];
       var venueId = (venue) ? venue.getId() : 0;
       var storeName = me.getRedeemStore(), store = Ext.StoreMgr.get(storeName);
@@ -153,13 +153,13 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
       me.redeemItemFn = function(p, closeDialog)
       {
          dismissDialog = closeDialog;
-         me._actions.hide();
          Ext.Viewport.setMasked(
          {
             xtype : 'loadmask',
             message : me.establishConnectionMsg
          });
          //Ext.device.Notification.dismiss();
+         callback();
          //
          // Update Server
          //
@@ -218,9 +218,10 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
          {
             me._actions.hide();
             viewport.setActiveController(null);
-            if (task)
+            if (me.scanTask)
             {
-               clearInterval(task);
+               clearInterval(me.scanTask);
+               me.scanTask = null;
             }
             //
             // Stop receiving ProximityID
@@ -290,10 +291,9 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
           */
          if (Genesis.fn.isNative())
          {
-            task = me.getLocalID(function(idx)
+            me.getLocalID(function(idx)
             {
                identifiers = idx;
-               task = null;
                me.redeemItemFn(
                {
                   data : me.self.encryptFromParams(
