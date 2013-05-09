@@ -1,0 +1,14 @@
+<%= simple_form_for [@merchant, @invoice], :html => { :class => 'form-horizontal' } do |f| %>
+<fieldset>
+	<%= f.simple_fields_for :items do |builder| %>
+		<%= render "item_fields", :f => builder %>
+	<% end %>
+	<%= link_to_add_fields "Add Item", f, :items %>
+   <br />
+   <div class="form-actions">
+      <%= f.button :submit , "Create", :class => 'btn btn-primary' %>
+      <%= link_to("Cancel", merchant_invoices_path(@merchant), :class => 'btn') %>
+   </div>
+   <!-- /form-actions -->
+</fieldset>
+<% end %>

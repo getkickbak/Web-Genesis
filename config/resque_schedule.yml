@@ -2,10 +2,10 @@ merchant_summary:
   cron: 0 0 * * Mon
   class: MerchantSummary
   description: Merchant Summary
-merchant_payment_plans:
+merchant_payments:
   cron: 0 0 1 * *
-  class: MerchantPaymentPlans
-  description: Merchant Payment Plans
+  class: MerchantPayments
+  description: Merchant Payments
 registration_reminders:
   cron: 0 8 * * *
   class: RegistrationReminders

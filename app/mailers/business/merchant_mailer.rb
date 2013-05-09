@@ -18,13 +18,14 @@ module Business
       mail(:to => to_email, :subject => (I18n.t("business.mailer.email_subject_summary") % [@merchant.name]))
     end
     
-    def invoice_email(invoice, mode = "merchant")
+    def invoice_email(invoice, paid, mode = "merchant")
       @invoice = invoice
+      @paid = paid
       to_email = invoice.merchant.email
       if merchant.role == "test" || mode == "system"
         to_email = "paul.chan@getkickbak.com"
       end
-      mail(:to => to_email, :subject => (I18n.t("business.mailer.email_subject_invoice") % [@invoice.invoice_id]))
+      mail(:to => to_email, :subject => I18n.t("business.mailer.email_subject_invoice"))
     end
   end
 end 

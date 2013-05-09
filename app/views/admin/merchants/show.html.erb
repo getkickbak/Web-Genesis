@@ -95,6 +95,9 @@
                									<%= link_to 'List Devices', merchant_devices_path(@merchant), :class=>"btn btn-small" %>
             								</div>
             								<div style="margin: 10px 0;">
+               									<%= link_to 'List Invoices', merchant_invoices_path(@merchant), :class=>"btn btn-small" %>
+            								</div>
+            								<div style="margin: 10px 0;">
                									<%= link_to 'Login', merchant_session_url(:subdomain => "merchant", :auth_token => @merchant.authentication_token, :sid => @current_staff.id), :class=>"btn btn-small", :target => "_blank" %>
             								</div>
 											<%= link_to 'Edit', edit_merchant_path(@merchant) %> |

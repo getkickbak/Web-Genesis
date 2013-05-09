@@ -42,17 +42,19 @@
 			</ul>
 			<% end %>
 			<div class="row">
+				<div class="span3">
+					<div class="widget">
+						<div class="widget-content">
+							<%= render :partial => '/business/merchants/menu' %>
+						</div>
+					</div>
+				</div>
 				<div class="span9">
 					<div class="widget ">
-						<div class="widget-header">
-							<i class="icon-credit-card"></i>
-							<h3>Billing Info</h3>
-						</div>
-						<!-- /widget-header -->
 						<div class="widget-content">
 							<% if @credit_cards.length > 0 %>
-							<div class="payment">
-								<h4>Payment Methods</h4>
+							<h3>Payment Methods</h3>
+							<div style="margin:20px 0 10px 0;">
 								<% @credit_cards.each_with_index do |credit_card, i| %>
 								<div class="credit-card">
 									<% card_type = credit_card.type %>
@@ -89,8 +91,8 @@
 								<% end %>
 							</div>
 							<% end %>
-							<div class="payment">
-								<h4>Add a New Card</h4>
+							<h3>Add a New Card</h3>
+							<div style="margin:20px 0 10px 0;">
 								<%= simple_form_for @credit_card, :url => create_credit_card_path, :html => { :class => 'form-horizontal' } do |f| %>
 								<fieldset>
 									<%= f.input :name, :input_html=>{:class => "input-large"} %>
@@ -113,7 +115,6 @@
 						</div>
 					</div>
 				</div>
-				<!--<%= render 'plan' %>-->
 			</div>
 		</div>
 	</div>
