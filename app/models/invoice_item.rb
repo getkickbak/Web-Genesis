@@ -6,6 +6,7 @@ class InvoiceItem
   property :id, Serial
   property :description, String, :required => true, :default => ""
   property :quantity, Integer, :required => true, :min => 1, :default => 0
+  property :price, Decimal, :scale => 2, :required => true, :default => 0.00
   property :amount, Decimal, :scale => 2, :required => true, :default => 0.00
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME

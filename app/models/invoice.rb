@@ -27,7 +27,7 @@ class Invoice
   
   belongs_to :merchant
 
-  accepts_nested_attributes_for :items, :allow_destroy => true, :reject_if => lambda { |t| t[:description].blank? || t[:quantity].blank? || t[:amount].blank? }
+  accepts_nested_attributes_for :items, :allow_destroy => true, :reject_if => lambda { |t| t[:description].blank? || t[:quantity].blank? || (t[:price].blank? && t[:amount].blank?) }
 
   validates_with_method :validate_min_items
 

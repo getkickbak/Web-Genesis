@@ -48,8 +48,10 @@ module Admin
             charges = 0
             invoice[:type] = :one_time
             invoice[:items_attributes].each do |item|
-              if !item[1][:amount].blank? && !item[1][:quantity].blank?
-                charges += item[1][:amount].to_f * item[1][:quantity].to_i
+              if !item[1][:price].blank? && !item[1][:quantity].blank?
+                charges += item[1][:price].to_f * item[1][:quantity].to_i
+              elsif !item[1][:amount].blank?
+                charges += item[1][:amount]
               end  
             end
             invoice[:charges] = charges

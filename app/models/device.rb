@@ -3,9 +3,11 @@ require 'util/constant'
 class Device
   include DataMapper::Resource
   
+  Type = [:wifi, :internet]
   Statuses = [:ready, :activated, :in_repair, :deactivated]
   
   property :id, Serial
+  property :type, Enum[:wifi, :internet], :required => true, :default => :wifi
   property :device_id, String, :required => true, :default => ""
   property :status, Enum[:ready, :activated, :in_repair, :deactivated], :required => true, :default => :ready
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
@@ -14,7 +16,7 @@ class Device
   #property :deleted, ParanoidBoolean, :default => false
   
   attr_accessor :venue_id
-  attr_accessible :venue_id, :device_id, :status
+  attr_accessible :venue_id, :type, :device_id, :status
    
   belongs_to :merchant
   belongs_to :merchant_venue, 'Venue'
@@ -27,6 +29,7 @@ class Device
     device_id = device_info[:device_id]
     device = Device.new(
       :venue_id => venue ? venue.id : nil,
+      :type => device_info[:type],
       :device_id => device_info[:device_id].strip,
       :status => device_info[:status]
     )
@@ -41,6 +44,7 @@ class Device
   def update_all(venue, device_info)
     now = Time.now
     self.venue_id = venue ? venue.id : nil
+    self.type = device_info[:type]
     self.device_id = device_info[:device_id].strip
     self.status = device_info[:status]
     self.update_ts = now

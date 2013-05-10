@@ -1,0 +1,11 @@
+<%= simple_form_for [@merchant, @venue], :html => { :class => 'form-horizontal' } do |f| %>
+<fieldset>
+	<%= f.input :device_type, :collection => Venue::DeviceType, :input_html => { :class => 'input-medium' } %>
+   <br />
+   <div class="form-actions">
+      <%= f.button :submit , "Update", :class => 'btn btn-primary' %>
+      <%= link_to("Cancel", merchant_venues_path(@merchant), :class => 'btn') %>
+   </div>
+   <!-- /form-actions -->
+</fieldset>
+<% end %>

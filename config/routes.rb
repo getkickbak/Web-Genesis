@@ -83,6 +83,7 @@ Genesis::Application.routes.draw do
       end
       resources :staffs
       resources :merchants do
+        resources :venues, :only => [:index, :edit, :update]
         resources :devices
         resources :invoices do
           post "pay", :on => :member, :as => :pay

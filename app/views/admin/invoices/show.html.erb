@@ -52,6 +52,9 @@
 										<a href="<%= merchant_invoices_path(@merchant) %>">Invoices</a>
 									</li>
 									<li>
+										<a href="<%= merchant_venues_path(@merchant) %>">Venues</a>
+									</li>
+									<li>
 										<a href="<%= merchant_devices_path(@merchant) %>">Devices</a>
 									</li>
 								</ul>
@@ -139,7 +142,11 @@
 													<tr>
 														<td><%= item.description %></td>
 														<td class="td-actions"><%= item.quantity %></td>
+														<% if item.amount > 0.00 %>
 														<td class="td-actions">$<%= "%0.2f" % item.amount %></td>
+														<% else %>
+														<td class="td-actions">$<%= "%0.2f" % (item.price * item.quantity) %></td>
+														<% end %>
 													</tr>
 													<% end %>
 												</tbody>

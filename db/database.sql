@@ -147,3 +147,5 @@ INSERT INTO badge_type_images VALUES (11,'boss.png');
 INSERT INTO reward_model_types VALUES (1,'amount_spent');
 INSERT INTO reward_model_types VALUES (2,'items_purchased');
 INSERT INTO reward_model_types VALUES (3,'visits');
+
+INSERT INTO device_payment_plans VALUES ('Device Rental', 40.00, 55.00)

@@ -8,6 +8,7 @@ module MerchantPayments
   def self.perform(auto)
     logger.info("Merchant Payments started at #{Time.now.strftime("%a %m/%d/%y %H:%M %Z")}")
     merchants = Merchant.all(:status => :active, :role => "merchant")
+    device_payment_plan = DevicePaymentPlan.first
     merchants.each do |merchant|
       next if merchant.payment_account_id.empty?
       next if merchant.payment_subscription.nil?
@@ -32,9 +33,20 @@ module MerchantPayments
       customer_count = Customers.count(:merchant => merchant, :created_ts.lte => end_of_previous_month)
       avg_customer_count = customer_count / merchant.venues.length
       payment_plan = PaymentPlan.first(:avg_member_count.lte => avg_customer_count, :order => [:avg_member_count.desc])
-      plan_price = (subscription.plan_type == :wifi) ? payment_plan.price_wifi : payment_plan.price_internet
-      amount = plan_price * merchant.venues.length
-      proration = 0
+      amount = 0.00
+      plan_fees = 0.00
+      device_fees = 0.00
+      merchant.venues.each do |venue|
+        plan_fees += (venue.device_type == :wifi) ? payment_plan.price_wifi : payment_plan.price_internet
+        device_fees -= (venue.device_type == :wifi) ? device_payment_plan.price_wifi : device_payment_plan.price_internet
+      end
+      devices = Device.all(:merchant => merchant)
+      merchant.each do |device|
+        device_fees += (device.type == :wifi) ? device_payment_plan.price_wifi : device_payment_plan.price_internet
+      end
+      amount += (plan_fees + device_fees)
+      amount -= (amount * subscription.discount_rate / 100)
+      proration = 0.00
       if first_month && (subscription.start_date.day != 1)
         proration = -(amount / Time.days_in_month(beginning_of_previous_month.mon, beginning_of_previous_month.year) * (subscription.start_date.day - 1))
       end
@@ -51,7 +63,10 @@ module MerchantPayments
             :amount => total_amount,
             :start_date => beginning_of_previous_month,
             :end_date => end_of_previous_month,
-            :items_attributes => [ { :description => payment_plan.name, :quantity => merchant.venues.length, :price => plan_price } ]
+            :items_attributes => [ 
+              { :description => payment_plan.name, :quantity => merchant.venues.length, :price => 0.00, :amount => plan_fees },
+              { :description => device_payment_plan.name, :quantity => devices.length, :price => 0.00, :amount => device_fees }
+            ]
           }
           invoice = Invoice.create(merchant, invoice_info)
         end

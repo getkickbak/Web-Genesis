@@ -3,11 +3,9 @@ require 'util/constant'
 class MerchantPaymentSubscription
   include DataMapper::Resource
   
-  PlanType = [:wifi, :internet]
-  
   property :id, Serial
-  property :plan_type, Enum[:wifi, :internet], :default => :wifi
   property :plan_id, Integer, :default => 1
+  property :discount_rate, Integer, :default => 0
   property :balance, Decimal, :scale => 2, :default => 0.00
   property :start_date, Date, :default => ::Constant::MIN_DATE
   property :end_date, Date, :default => ::Constant::MAX_DATE
@@ -18,7 +16,7 @@ class MerchantPaymentSubscription
   #property :deleted, ParanoidBoolean, :default => false
   
   attr_accessor :start_date_str, :end_date_str
-  attr_accessible :type, :plan_id, :amount, :balance, :start_date, :end_date, :paid_through_date
+  attr_accessible :plan_id, :discount_rate, :balance, :start_date, :end_date, :paid_through_date
   
   validates_with_method :start_date, :method => :validate_start_date
   validates_with_method :end_date, :method => :validate_end_date
@@ -37,8 +35,8 @@ class MerchantPaymentSubscription
   
   def update(subscription_info)
     now = Time.now
-    self.plan_type = subscription_info[:plan_type] if subscription_info.include? :plan_type
     self.plan_id = subscription_info[:plan_id] if subscription_info.include? :plan_id
+    self.discount_rate = subscription_info[:discount_rate] if subscription.include? :discount_rate
     self.balance = subscription_info[:balance] if subscription_info.include? :balance
     self.start_date_str = subscription_info[:start_date] if subscription_info.include? :start_date
     self.end_date_str = subscription_info[:end_date] if subscription_info.include? :end_date

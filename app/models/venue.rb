@@ -3,7 +3,10 @@ require 'util/constant'
 class Venue
   include DataMapper::Resource
 
+  DeviceType = [:wifi, :internet]
+  
   property :id, Serial
+  property :device_type, Enum[:wifi, :internet], :required => true, :default => :wifi
   property :name, String, :length => 24, :required => true, :default => ""
   property :description, String, :length => 512, :required => true, :default => ""
   property :address, String, :required => true, :default => ""
@@ -29,7 +32,7 @@ class Venue
   
   attr_accessor :type_id, :distance, :eager_load_type
   
-  attr_accessible :type_id, :name, :description, :address, :city, :state, :zipcode, :country, :time_zone, :phone, :website, :facebook_page_id, :latitude, :longitude, :auth_code
+  attr_accessible :type_id, :device_type, :name, :description, :address, :city, :state, :zipcode, :country, :time_zone, :phone, :website, :facebook_page_id, :latitude, :longitude, :auth_code
   
   belongs_to :merchant
   has 1, :venue_to_type, :constraint => :destroy

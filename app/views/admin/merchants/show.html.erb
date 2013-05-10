@@ -41,6 +41,9 @@
 										<a href="<%= merchant_invoices_path(@merchant) %>">Invoices</a>
 									</li>
 									<li>
+										<a href="<%= merchant_venues_path(@merchant) %>">Venues</a>
+									</li>
+									<li>
 										<a href="<%= merchant_devices_path(@merchant) %>">Devices</a>
 									</li>
 								</ul>
@@ -101,12 +104,6 @@
 												</div>
 											</div>
 											<% if @merchant.payment_subscription %>
-											<div class="control-group">
-												<label class="control-label"> Plan Type: </label>
-												<div class="controls">
-													<%= @merchant.payment_subscription.plan_type %>
-												</div>
-											</div>
 											<div class="control-group">
 												<label class="control-label"> Plan: </label>
 												<div class="controls">
