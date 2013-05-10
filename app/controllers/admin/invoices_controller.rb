@@ -81,11 +81,11 @@ module Admin
               :description => ""
             )
           end
+          #MerchantMailer.invoice_email(@invoice).deliver
           respond_to do |format|
             format.html { redirect_to(merchant_invoice_path(@merchant, @invoice), :notice => t("admin.invoices.create_success")) }
             #format.xml  { render :xml => @merchant, :status => :created, :location => @merchant }
           end
-          #MerchantMailer.invoice_email(@invoice, result.success?).deliver
         end
       rescue Stripe::CardError => e
         # Since it's a decline, Stripe::CardError will be caught
@@ -137,6 +137,92 @@ module Admin
         respond_to do |format|
           format.html { render :action => "new" }
           #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
+        end
+      end
+    end
+  
+    def pay
+      @merchant = Merchant.get(params[:merchant_id]) || not_found
+      @invoice = Invoice.get(params[:id]) || not_found
+      authorize! :update, @invoice
+      
+      begin
+        Invoice.transaction do
+          if not @invoice.paid
+            result = Stripe::Charge.create(
+              :amount => (@invoice.amount * 100).to_i,
+              :currency => "cad",
+              :customer => @merchant.payment_account_id,
+              :description => ""
+            )
+            @merchant.payment_subscription.paid_through_date = @invoice.end_date
+            @merchant.payment_subscription.save
+            @invoice.paid = true
+            @invoice.update_ts = Time.now
+            @invoice.save
+            #MerchantMailer.invoice_email(@invoice).deliver
+            respond_to do |format|
+              format.html { redirect_to(merchant_invoice_path(@merchant, @invoice), :notice => t("admin.invoices.pay_success")) }
+              #format.xml  { render :xml => @merchant, :status => :created, :location => @merchant }
+            end
+          else
+            flash[:error] = t("admin.invoices.already_paid")
+            respond_to do |format|
+              format.html { redirect_to(merchant_invoice_path(@merchant, @invoice)) }
+              #format.xml  { render :xml => @merchant, :status => :created, :location => @merchant }
+            end  
+          end
+        end
+      rescue Stripe::CardError => e
+        # Since it's a decline, Stripe::CardError will be caught
+        flash[:error] = "#{e.json_body[:error][:message]}"  
+        respond_to do |format|
+          format.html { redirect_to(merchant_invoice_path(@merchant, @invoice)) }
+          #format.xml  { render :xml => @merchant, :status => :created, :location => @merchant }
+        end
+      rescue Stripe::InvalidRequestError => e
+        # Invalid parameters were supplied to Stripe's API
+        flash[:error] = "#{e.json_body[:error][:message]}"
+        respond_to do |format|
+          format.html { redirect_to(merchant_invoice_path(@merchant, @invoice)) }
+          #format.xml  { render :xml => @merchant, :status => :created, :location => @merchant }
+        end
+      rescue Stripe::AuthenticationError => e
+        # Authentication with Stripe's API failed
+        # (maybe you changed API keys recently)
+        flash[:error] = "#{e.json_body[:error][:message]}"
+        respond_to do |format|
+          format.html { redirect_to(merchant_invoice_path(@merchant, @invoice)) }
+          #format.xml  { render :xml => @merchant, :status => :created, :location => @merchant }
+        end
+      rescue Stripe::APIConnectionError => e
+        # Network communication with Stripe failed
+        flash[:error] = "#{e.json_body[:error][:message]}"
+        respond_to do |format|
+          format.html { redirect_to(merchant_invoice_path(@merchant, @invoice)) }
+          #format.xml  { render :xml => @merchant, :status => :created, :location => @merchant }
+        end
+      rescue Stripe::StripeError => e
+        # Display a very generic error to the user, and maybe send
+        # yourself an email 
+        flash[:error] = "#{e.json_body[:error][:message]}"
+        respond_to do |format|
+          format.html { redirect_to(merchant_invoice_path(@merchant, @invoice)) }
+          #format.xml  { render :xml => @merchant, :status => :created, :location => @merchant }
+        end 
+      rescue DataMapper::SaveFailureError => e
+        logger.error("Exception: " + e.resource.errors.inspect)
+        flash[:error] = t("admin.invoices.payment_subscription_update_failure")
+        respond_to do |format|
+          format.html { redirect_to(merchant_invoice_path(@merchant, @invoice)) }
+          #format.xml  { render :xml => @merchant, :status => :created, :location => @merchant }
+        end
+      rescue StandardError => e
+        logger.error("Exception: " + e.message)
+        flash[:error] = t("admin.invoices.payment_subscription_update_failure")
+        respond_to do |format|
+          format.html { redirect_to(merchant_invoice_path(@merchant, @invoice)) }
+          #format.xml  { render :xml => @merchant, :status => :created, :location => @merchant }
         end
       end
     end

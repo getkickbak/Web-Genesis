@@ -1,21 +1,15 @@
 <% content_for :link do %>
+<link rel="stylesheet" href="/javascripts/desktop/lib/jquery-ui-1.8.20.custom/css/ui-lightness/jquery-ui-1.8.20.custom.css"/>
 <% end %>
 <% content_for :script do %>
-<script type="text/javascript">
-	$(document).ready($(function() {
-	var error_msg=$("#error").html();
-	if(error_msg) {
-	Genesis.showErrMsg(error_msg,null,true);
-	}
-	}));
-</script>
-<script type="text/javascript" src="/javascripts/desktop/src/base.js"></script>
-<script type="text/javascript" src="/javascripts/desktop/src/business/challenge.js"></script>
+<script type="text/javascript" src="/javascripts/desktop/lib/jquery-ui-1.8.20.custom/js/jquery-ui-1.8.20.custom.min.js"/>
+	<script type="text/javascript" src="/javascripts/desktop/src/base.js"></script>
+<script type="text/javascript" src="/javascripts/desktop/src/admin/subscription.js"></script>
 <% end %>
-<% if flash[:error] %>
-<div style="display:none;" id="error">
+<% if flash[:notice] %>
+<div style="display:none;" id="notice">
 	<p>
-		<%= flash[:error] %>
+		<%= flash[:notice] %>
 	</p>
 </div>
 <% end %>
@@ -27,7 +21,7 @@
 				<div class="span10">
 					<div class="widget ">
 						<div class="widget-header">
-							<i class="icon-cogs"></i>
+							<i class="icon-money"></i>
 							<h3>Merchant</h3>
 						</div>
 						<!-- /widget-header -->
@@ -37,10 +31,10 @@
 									<li>
 										<a href="<%= merchant_path(@merchant) %>">Info</a>
 									</li>
-									<li>
+									<li class="active">
 										<a href="<%= payment_subscription_merchant_path(@merchant) %>">Payment Subscription</a>
 									</li>
-									<li class="active">
+									<li>
 										<a href="<%= merchant_invoices_path(@merchant) %>">Invoices</a>
 									</li>
 									<li>
@@ -49,8 +43,8 @@
 								</ul>
 								<br>
 								<div class="tab-content">
-									<div class="tab-pane active" id="profile">
-										<%= render 'form' %>
+									<div class="tab-pane active" id="subscription">
+										<%= render 'payment_subscription_form' %>
 									</div>
 								</div>
 							</div>
@@ -66,3 +60,7 @@
 	</div>
 	<!-- /main-inner -->
 </div>
+<!-- /main -->
+<!--
+<%= link_to 'Back', account_path %>
+-->

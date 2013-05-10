@@ -3,46 +3,59 @@
 <% end %>
 <% content_for :script do %>
 <script type="text/javascript" src="/javascripts/desktop/lib/jquery-ui-1.8.20.custom/js/jquery-ui-1.8.20.custom.min.js"/>
-<script type="text/javascript" src="/javascripts/desktop/src/base.js"></script>
+	<script type="text/javascript" src="/javascripts/desktop/src/base.js"></script>
 <% end %>
 <% if flash[:notice] %>
 <div style="display:none;" id="notice">
-   <p><%= flash[:notice] %></p>
+	<p>
+		<%= flash[:notice] %>
+	</p>
 </div>
 <% end %>
 <div id="main" class="main">
-   <div class="main-inner">
-      <div class="container">
-         <div class="row">
-         	<div class="span1"></div>
-            <div class="span10">
-               <div class="widget ">
-                  <div class="widget-header">
-                     <i class="icon-cogs"></i>
-                     <h3>Device</h3>
-                  </div>
-                  <!-- /widget-header -->
-                  <div class="widget-content">
-                     <div class="tabbable">
-                        <ul class="nav nav-tabs">
-                           <li class="active"><a href="#profile" data-toggle="tab">Info</a></li>
-                        </ul>
-                        <br>
-                        <div class="tab-content">
-                           <div class="tab-pane active" id="profile">
-                              <%= render 'form' %>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-                  <!-- /widget-content -->
-               </div>
-               <!-- /widget -->
-            </div>
-         </div>
-         <!-- /row -->
-      </div>
-      <!-- /container -->
-   </div>
-   <!-- /main-inner -->
+	<div class="main-inner">
+		<div class="container">
+			<div class="row">
+				<div class="span1"></div>
+				<div class="span10">
+					<div class="widget ">
+						<div class="widget-header">
+							<i class="icon-cogs"></i>
+							<h3>Device</h3>
+						</div>
+						<!-- /widget-header -->
+						<div class="widget-content">
+							<div class="tabbable">
+								<ul class="nav nav-tabs">
+									<li>
+										<a href="<%= merchant_path(@merchant) %>">Info</a>
+									</li>
+									<li>
+										<a href="<%= payment_subscription_merchant_path(@merchant) %>">Payment Subscription</a>
+									</li>
+									<li>
+										<a href="<%= merchant_invoices_path(@merchant) %>">Invoices</a>
+									</li>
+									<li class="active">
+										<a href="<%= merchant_devices_path(@merchant) %>">Devices</a>
+									</li>
+								</ul>
+								<br>
+								<div class="tab-content">
+									<div class="tab-pane active" id="profile">
+										<%= render 'form' %>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- /widget-content -->
+					</div>
+					<!-- /widget -->
+				</div>
+			</div>
+			<!-- /row -->
+		</div>
+		<!-- /container -->
+	</div>
+	<!-- /main-inner -->
 </div>

@@ -25,20 +25,34 @@
 					<div class="widget ">
 						<div class="widget-header">
 							<i class="icon-money"></i>
-							<h3>Invoice</h3>
+							<h3>Merchant</h3>
 						</div>
 						<!-- /widget-header -->
 						<div class="widget-content">
 							<div class="tabbable">
 								<ul class="nav nav-tabs">
+									<li>
+										<a href="<%= merchant_path(@merchant) %>">Info</a>
+									</li>
+									<li>
+										<a href="<%= payment_subscription_merchant_path(@merchant) %>">Payment Subscription</a>
+									</li>
 									<li class="active">
-										<a href="#invoice" data-toggle="tab">Details</a>
+										<a href="<%= merchant_invoices_path(@merchant) %>">Invoices</a>
+									</li>
+									<li>
+										<a href="<%= merchant_devices_path(@merchant) %>">Devices</a>
 									</li>
 								</ul>
 								<br>
 								<div class="tab-content">
 									<div class="tab-pane active" id="invoice">
 										<div class="not-edit form-horizontal">
+											<% if not @invoice.paid %>
+											<div style="margin: 0 0 10px 0;">
+												<%= link_to 'Pay', pay_merchant_invoice_path(@merchant,@invoice), :method => :post, :class=>"btn btn-small" %>
+											</div>
+											<% end %>
 											<div class="control-group">
 												<label class="control-label"> Billing Date: </label>
 												<div class="controls">
@@ -65,6 +79,14 @@
 													$<%= "%0.2f" % @invoice.charges %>
 												</div>
 											</div>
+											<% if @invoice.proration > 0.00 %>
+											<div class="control-group">
+												<label class="control-label"> Praration: </label>
+												<div class="controls">
+													$<%= "%0.2f" % @invoice.proration %>
+												</div>
+											</div>
+											<% end %>
 											<div class="control-group">
 												<label class="control-label"> Tax: </label>
 												<div class="controls">
@@ -75,6 +97,12 @@
 												<label class="control-label"> Amount: </label>
 												<div class="controls">
 													$<%= "%0.2f" % @invoice.amount %>
+												</div>
+											</div>
+											<div class="control-group">
+												<label class="control-label"> Amount Due: </label>
+												<div class="controls">
+													$<%= "%0.2f" % (!@invoice.paid ? @invoice.amount : 0.00) %>
 												</div>
 											</div>
 											<br>

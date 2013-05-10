@@ -29,6 +29,7 @@
 	<% end %>
 	<%= f.input :points, :input_html=>{:class => "input-medium"} %>
 	<!-- <%= f.input :photo, :as => :file, :required => false %> -->
+	<!-- <%= f.hidden_field :photo_cache %> -->
 	<%= f.input :quantity_limited, :as => :boolean %>
 	<% if @customer_reward.quantity_limited %>
 	<%= f.input :quantity, :input_html=>{:class => "input-medium"}, :wrapper_html => { :id => 'customer_reward_quantity_wrap' }%>

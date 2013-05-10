@@ -84,7 +84,11 @@ Genesis::Application.routes.draw do
       resources :staffs
       resources :merchants do
         resources :devices
-        resources :invoices
+        resources :invoices do
+          post "pay", :on => :member, :as => :pay
+        end
+        get "payment_subscription", :on => :member, :as => :payment_subscription
+        put "update_payment_subscription", :on => :member, :as => :update_payment_subscription
       end
       
       match "/marketing" => 'marketing#index', :as => :marketing

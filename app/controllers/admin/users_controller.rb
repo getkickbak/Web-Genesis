@@ -71,10 +71,12 @@ module Admin
         User.transaction do
           previous_status = @user.status
           @user.update_all(params[:user])
-          if @user.status != previous_status && previous_status == :active
-            new_password = String.random_alphanumeric(8)
-            @user.reset_password!(new_password, new_password)
-            @user.reset_authentication_token!
+          if @user.status != previous_status
+            if previous_status == :active
+              new_password = String.random_alphanumeric(8)
+              @user.reset_password!(new_password, new_password)
+              @user.reset_authentication_token!
+            end
             DataMapper.repository(:default).adapter.execute(
               "UPDATE customers SET status = ?, update_ts = ? WHERE user_id = ? ", User::Statuses.index(@user.status)+1, Time.now, @user.id
             )

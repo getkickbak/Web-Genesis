@@ -45,7 +45,7 @@ class Merchant
   property :role, String, :required => true, :default => "merchant"
   property :status, Enum[:active, :pending, :suspended, :deleted], :required => true, :default => :pending
   property :will_terminate, Boolean, :required => true, :default => false
-  property :termination_date, Date, :default => ::Constant::MIN_DATE
+  property :termination_date, Date, :default => ::Constant::MAX_DATE
   property :custom_badges, Boolean, :required => true,  :default => false
   property :reward_terms, String, :required => true, :default => ""
   property :auth_code, String, :required => true, :default => ""
@@ -101,8 +101,6 @@ class Merchant
       facebook_page_id = merchant_info[:facebook_page_id].strip
       role = merchant_info[:role]
       status = merchant_info[:status]
-      will_terminate = merchant_info[:will_terminate]
-      terminate_date = merchant_info[:terminate_date]
       custom_badges = merchant_info[:custom_badges]
       reward_terms = merchant_info[:reward_terms]
     else
@@ -120,8 +118,6 @@ class Merchant
       facebook_page_id = merchant_info.facebook_page_id
       role = merchant_info.role
       status = merchant_info.status
-      will_terminate = merchant_info.will_terminate
-      terminate_date = merchant_info.terminate_date
       custom_badges = merchant_info.custom_badges
       reward_terms = merchant_info.reward_terms
     end
@@ -141,13 +137,10 @@ class Merchant
       :facebook_page_id => facebook_page_id,
       :role => role,
       :status => status,
-      :will_terminate => will_terminate,
-      :termination_date => now.to_date,
       :custom_badges => custom_badges,
       :reward_terms => reward_terms,
       :auth_code => String.random_alphanumeric(32)
     )
-    merchant.termination_date_str = will_terminate ? terminate_date : ""
     merchant[:created_ts] = now
     merchant[:update_ts] = now
     merchant.type = type

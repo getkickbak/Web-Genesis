@@ -41,6 +41,14 @@
 											$<%= "%0.2f" % @invoice.charges %>
 										</div>
 									</div>
+									<% if @invoice.proration > 0.00 %>
+									<div class="control-group">
+										<label class="control-label"> Praration: </label>
+										<div class="controls">
+											$<%= "%0.2f" % @invoice.proration %>
+										</div>
+									</div>
+									<% end %>
 									<div class="control-group">
 										<label class="control-label"> Tax: </label>
 										<div class="controls">
@@ -51,6 +59,12 @@
 										<label class="control-label"> Amount: </label>
 										<div class="controls">
 											$<%= "%0.2f" % @invoice.amount %>
+										</div>
+									</div>
+									<div class="control-group">
+										<label class="control-label"> Amount Due: </label>
+										<div class="controls">
+											$<%= "%0.2f" % (!@invoice.paid ? @invoice.amount : 0.00) %>
 										</div>
 									</div>
 									<br>

@@ -260,13 +260,18 @@ en:
       merchants:
         create_success: "Merchant was successfully created."
         update_success: "Merchant was successfully updated."
+        min_end_date: "End date must be greater than start date."
         min_termination_date: "Termination date must be greater than or equal to today."
+        update_payment_subscription_success: "Merchant payment subscription was successfully updated."
       devices:
         create_success: "Device was successfully created."
         update_success: "Device was successfully updated."  
       invoices:
         create_success: "Invoice was successfully created."  
         min_items: "You need to have at least one invoice item."
+        pay_success: "Invoice was successfully paid."
+        already_paid: "Invoice has already been paid."
+        payment_subscription_update_failure: "Failed to update payment subscription and invoice, but invoice was paid."
       staffs:
         create_success: "Staff was successfully created."
         update_success: "Staff was successfully updated."

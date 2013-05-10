@@ -15,12 +15,13 @@ class Invoice
   property :amount, Decimal, :scale => 2, :required => true, :default => 0.00
   property :start_date, Date, :required => true, :default => ::Constant::MIN_DATE
   property :end_date, Date, :default => ::Constant::MIN_DATE
+  property :paid, Boolean, :default => false
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
   
-  attr_accessible :invoice_id, :balance, :charges, :proration, :tax, :amount, :start_date, :end_date, :items_attributes
+  attr_accessible :type, :invoice_id, :balance, :charges, :proration, :tax, :amount, :start_date, :end_date, :items_attributes
   
   has n, :items, 'InvoiceItem', :constraint => :destroy
   

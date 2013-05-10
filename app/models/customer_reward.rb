@@ -12,7 +12,7 @@ class CustomerReward
   property :quantity, Integer, :default => 0
   property :quantity_count, Integer, :default => 0
   property :time_limited, Boolean, :required => true, :default => false
-  property :expiry_date, Date, :default => ::Constant::MIN_DATE
+  property :expiry_date, Date, :default => ::Constant::MAX_DATE
   property :photo, String, :auto_validation => false
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
@@ -22,7 +22,7 @@ class CustomerReward
   attr_accessor :type_id, :venue_ids, :eager_load_type, :expiry_date_str
   attr_accessor :crop_x, :crop_y, :crop_w, :crop_h
 
-  attr_accessible :type_id, :title, :price, :points, :mode, :quantity_limited, :quantity, :time_limited, :expiry_date, :photo
+  attr_accessible :type_id, :title, :price, :points, :mode, :quantity_limited, :quantity, :time_limited, :expiry_date, :photo, :photo_cache
 
   belongs_to :merchant
   has 1, :customer_reward_to_subtype, :constraint => :destroy
@@ -48,7 +48,8 @@ class CustomerReward
       :quantity => reward_info[:quantity_limited] ? reward_info[:quantity] : 0,
       :time_limited => reward_info[:time_limited],
       :expiry_date => now.to_date,
-      :photo => reward_info[:photo]
+      :photo => reward_info[:photo],
+      :photo_cache => reward_info[:photo_cache]
     )
     reward.expiry_date_str = reward_info[:time_limited] ? reward_info[:expiry_date] : ""
     reward[:created_ts] = now
@@ -73,6 +74,7 @@ class CustomerReward
     self.expiry_date_str = reward_info[:time_limited] ? reward_info[:expiry_date] : ""
     if reward_info[:photo]
       self.photo = reward_info[:photo]
+      self.photo_cache = reward_info[:photo_cache]
     end
     self.update_ts = now
     self.type = type
