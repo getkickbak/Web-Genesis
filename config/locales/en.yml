@@ -267,12 +267,12 @@ en:
         create_success: "Device was successfully created."
         update_success: "Device was successfully updated."  
       invoices:
-        create_success: "Invoice was successfully created. (Note: Invoice is not paid if amount is less than $0.50)"  
+        create_success: "Invoice was successfully created. (Note: Merchant is not charged if amount is less than $0.50)"  
         create_failure: "Failed to create invoice.  (Note: Merchant might have been charged)"
         min_items: "You need to have at least one invoice item."
         pay_success: "Invoice was successfully paid."
         already_paid: "Invoice has already been paid."
-        payment_subscription_update_failure: "Failed to update payment subscription and invoice, but invoice was paid."
+        payment_subscription_update_failure: "Failed to update payment subscription and invoice, but merchant was charged."
       staffs:
         create_success: "Staff was successfully created."
         update_success: "Staff was successfully updated."

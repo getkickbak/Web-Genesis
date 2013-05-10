@@ -1,8 +1,8 @@
 <% if @invoice.paid %>
-Dear <%= @merchant.name %>,
+Dear <%= @invoice.merchant.name %>,
 <br>
 <br>
-Thank you for your payment of $<%= @invoice.amount %> CAD that was processed on <%= Date.today.strptime('%m/%d/%Y') %>.  Your can view your invoice <a rel="nofollow" target="_blank" href="merchant.getkickbak.com/invoices">here</a>.
+Thank you for your payment of $<%= @invoice.amount %> CAD that was processed on <%= Date.today.strftime('%m/%d/%Y') %>.  Your can view your invoice <a rel="nofollow" target="_blank" href="merchant.getkickbak.com/invoices">here</a>.
 <br>
 <br>
 We appreciate your business!
@@ -16,10 +16,10 @@ Best Regards,
 <br>
 KICKBAK Billing Department
 <% else %>
-Dear <%= @merchant.name %>,
+Dear <%= @invoice.merchant.name %>,
 <br>
 <br>
-We failed to process your payment of $<%= @invoice.amount %> CAD on <%= Date.today.strptime('%m/%d/%Y') %>.  Your can view your invoice <a rel="nofollow" target="_blank" href="merchant.getkickbak.com/invoices">here</a>.
+We failed to process your payment of $<%= @invoice.amount %> CAD on <%= Date.today.strftime('%m/%d/%Y') %>.  Your can view your invoice <a rel="nofollow" target="_blank" href="merchant.getkickbak.com/invoices">here</a>.
 <br>
 <br>
 We will re-attempt within the next 5 business days.
