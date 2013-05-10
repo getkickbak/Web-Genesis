@@ -267,7 +267,8 @@ en:
         create_success: "Device was successfully created."
         update_success: "Device was successfully updated."  
       invoices:
-        create_success: "Invoice was successfully created."  
+        create_success: "Invoice was successfully created. (Note: Invoice is not paid if amount is less than $0.50)"  
+        create_failure: "Failed to create invoice.  (Note: Merchant might have been charged)"
         min_items: "You need to have at least one invoice item."
         pay_success: "Invoice was successfully paid."
         already_paid: "Invoice has already been paid."
@@ -339,7 +340,7 @@ en:
         destroy_failure: "Failed to delete venue.  Please check to make sure no challenges or rewards are associated with this venue."
       mailer:
         email_subject_summary: "Weekly Summary - %s"
-        email_subject_invoice: "KICKBAK Billing Statement Available"  
+        email_subject_invoice: "KICKBAK Billing Invoice Available"  
         email_subject_reset_password: "Reset password instructions"      
   mailer:
       email_subject_referral_challenge: "Check out %s"

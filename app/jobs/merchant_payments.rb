@@ -136,7 +136,7 @@ module MerchantPayments
         logger.error("Exception: " + e.resource.message)  
         logger.info("Failed to update subscription for Merchant(#{merchant.id} at #{Time.now.strftime("%a %m/%d/%y %H:%M %Z")})")
       end
-      MerchantMailer.invoice_email(invoice, paid).deliver
+      MerchantMailer.invoice_email(invoice).deliver
     end
     logger.info("Merchant Payments completed successfully at #{Time.now.strftime("%a %m/%d/%y %H:%M %Z")}")
   end

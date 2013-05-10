@@ -1,7 +1,8 @@
+<% if @invoice.paid %>
 Dear <%= @merchant.name %>,
 <br>
 <br>
-Thank you for your payment of $<%= @invoice.amount %> CAD that was processed on <%= Date.today.strptime('%m/%d/%Y') %>.  Your invoice is attached for your records.
+Thank you for your payment of $<%= @invoice.amount %> CAD that was processed on <%= Date.today.strptime('%m/%d/%Y') %>.  Your can view your invoice <a rel="nofollow" target="_blank" href="merchant.getkickbak.com/invoices">here</a>.
 <br>
 <br>
 We appreciate your business!
@@ -14,4 +15,21 @@ Best Regards,
 <br>
 <br>
 KICKBAK Billing Department
-866-518-9273
+<% else %>
+Dear <%= @merchant.name %>,
+<br>
+<br>
+We failed to process your payment of $<%= @invoice.amount %> CAD on <%= Date.today.strptime('%m/%d/%Y') %>.  Your can view your invoice <a rel="nofollow" target="_blank" href="merchant.getkickbak.com/invoices">here</a>.
+<br>
+<br>
+We will re-attempt within the next 5 business days.
+<br>
+<br>
+If you have any questions regarding your invoice, please contact billing@getkickbak.com.
+<br>
+<br>
+Best Regards,
+<br>
+<br>
+KICKBAK Billing Department
+<% end %>

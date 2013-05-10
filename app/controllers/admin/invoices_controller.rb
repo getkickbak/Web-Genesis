@@ -81,7 +81,10 @@ module Admin
               :description => ""
             )
           end
-          #MerchantMailer.invoice_email(@invoice).deliver
+          @invoice.paid = true
+          @invoice.update_ts = Time.now
+          @invoice.save
+          Business::MerchantMailer.invoice_email(@invoice, "system").deliver
           respond_to do |format|
             format.html { redirect_to(merchant_invoice_path(@merchant, @invoice), :notice => t("admin.invoices.create_success")) }
             #format.xml  { render :xml => @merchant, :status => :created, :location => @merchant }
@@ -138,6 +141,13 @@ module Admin
           format.html { render :action => "new" }
           #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
         end
+      rescue StandardError => e
+        logger.error("Exception: " + e.message)
+        flash[:error] = t("admin.invoices.create_failure")
+        respond_to do |format|
+          format.html { render :action => "new" }
+          #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
+        end  
       end
     end
   
@@ -160,7 +170,7 @@ module Admin
             @invoice.paid = true
             @invoice.update_ts = Time.now
             @invoice.save
-            #MerchantMailer.invoice_email(@invoice).deliver
+            Business::MerchantMailer.invoice_email(@invoice, "system").deliver
             respond_to do |format|
               format.html { redirect_to(merchant_invoice_path(@merchant, @invoice), :notice => t("admin.invoices.pay_success")) }
               #format.xml  { render :xml => @merchant, :status => :created, :location => @merchant }
