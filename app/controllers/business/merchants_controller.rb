@@ -21,6 +21,7 @@ module Business
           params[:merchant][:custom_badges] = @merchant.custom_badges
           old_name = @merchant.name
           @merchant.update_all(@merchant.type, @merchant.visit_frequency, params[:merchant])
+=begin          
           if (not current_merchant.payment_account_id.empty?) && (old_name != @merchant.name)
             result = Braintree::Customer.update(
               current_merchant.payment_account_id, # id of customer to update
@@ -29,7 +30,8 @@ module Business
             if !result.success?
               raise "Error updatding payment info"
             end
-          end  
+          end 
+=end           
           respond_to do |format|
             format.html { redirect_to({:action => "edit"}, {:notice => t("business.merchants.update_success")}) }
             #format.xml  { head :ok }
