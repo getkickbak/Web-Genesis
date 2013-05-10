@@ -24,7 +24,7 @@ module Business
       if invoice.merchant.role == "test" || mode == "system"
         to_email = "paul.chan@getkickbak.com"
       end
-      mail(:to => to_email, :subject => I18n.t("business.mailer.email_subject_invoice"))
+      mail(:from => "KICKBAK <billing@getkickbak.com>", :to => to_email, :subject => I18n.t("business.mailer.email_subject_invoice"))
     end
   end
 end 

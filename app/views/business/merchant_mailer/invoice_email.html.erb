@@ -19,7 +19,7 @@ KICKBAK Billing Department
 Dear <%= @invoice.merchant.name %>,
 <br>
 <br>
-We failed to process your payment of $<%= @invoice.amount %> CAD on <%= Date.today.strftime('%m/%d/%Y') %>.  Your can view your invoice <a rel="nofollow" target="_blank" href="merchant.getkickbak.com/invoices">here</a>.
+We were unable to process your payment of $<%= @invoice.amount %> CAD on <%= Date.today.strftime('%m/%d/%Y') %>.  Your can view your invoice <a rel="nofollow" target="_blank" href="merchant.getkickbak.com/invoices">here</a>.
 <br>
 <br>
 We will re-attempt within the next 5 business days.
