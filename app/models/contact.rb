@@ -46,6 +46,4 @@ class Contact
   def persisted?
     false
   end
-  
-  
 end

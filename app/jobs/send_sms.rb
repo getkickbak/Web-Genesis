@@ -5,10 +5,9 @@ module SendSms
     @logger ||= Logger.new("#{Rails.root}/log/send_sms.log")
   end
 
-  def self.perform(sms_message_type, user_id, message, options)
+  def self.perform(provider, sms_message_type, user_id, message, options)
     begin
       now = Time.now
-      p = Plivo::RestAPI.new(APP_PROP["PLIVO_AUTH_ID"], APP_PROP["PLIVO_AUTH_TOKEN"])
       user = User.get(user_id)
       opts = JSON.parse(options, { :symbolize_names => true })
       texts = []
@@ -29,18 +28,33 @@ module SendSms
       end
       # Send SMS
       delivered = true
-      texts.each do |text|
-        params = {
-          'src' => APP_PROP["PLIVO_NUMBER"],
-          'dst' => "1#{user.phone}",
-          'text' => text,
-          'type' => 'sms',
-        }
-        response = p.send_message(params)
-        if response[0].nil?
-          delivered = false
-          logger.info("Send Sms Type(#{sms_message_type}) failed for User(#{user_id}), Response(#{response}) at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
-          break
+      if provider == SmsProvider::PLIVO
+        p = Plivo::RestAPI.new(APP_PROP["PLIVO_AUTH_ID"], APP_PROP["PLIVO_AUTH_TOKEN"])
+        texts.each do |text|
+          params = {
+            'src' => APP_PROP["PLIVO_NUMBER"],
+            'dst' => "1#{user.phone}",
+            'text' => text,
+            'type' => 'sms',
+          }
+          response = p.send_message(params)
+          if response[0].nil?
+            delivered = false
+            logger.info("Send Sms Type(#{sms_message_type}) failed for User(#{user_id}), Response(#{response}) at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
+            break
+          end
+        end
+      elsif provider == SmsProvider::TWILIO
+        client = Twilio::REST::Client.new(APP_PROP["TWILIO_ACCOUNT_ID"], APP_PROP["TWILIO_AUTH_TOKEN"])
+        account = client.account
+        texts.each do |text|
+          account.sms.messages.create(
+            {
+              :from => APP_PROP["TWILIO_NUMBER"], 
+              :to => "1#{user.phone}", 
+              :body => text
+            }
+          )
         end
       end
       if delivered && sms_message_type == SmsMessageType::REGISTRATION_REMINDER

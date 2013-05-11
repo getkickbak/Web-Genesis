@@ -75,7 +75,7 @@ module CreatePromotion
                 UserMailer.promotion_email(user, promotion).deliver
               end
             else              
-              Resque.enqueue(SendSms, SmsMessageType::MERCHANT_PROMOTION, user.id, sms_message, nil)    
+              Resque.enqueue(SendSms, SmsProvider.get_current, SmsMessageType::MERCHANT_PROMOTION, user.id, sms_message, nil)    
             end
           end
           logger.info("Sending emails - complete for iteration #{i+1}")

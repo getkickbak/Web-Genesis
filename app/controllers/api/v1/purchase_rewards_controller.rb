@@ -858,7 +858,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
               options = { :name => @venue.name, :points => @reward_info[:points], :prize_points => @reward_info[:prize_points] }.to_json
             end
           end
-          Resque.enqueue(SendSms, sms_message_type, @current_user.id, nil, options)
+          Resque.enqueue(SendSms, SmsProvider.get_current, sms_message_type, @current_user.id, nil, options)
         end
         if !signed_in? && @current_user.status != :pending && @current_user.subscription.email_notif
           if @reward_info[:birthday_points] > 0 || @reward_info[:badge_points] > 0 || @reward_info[:prize_points] > 1

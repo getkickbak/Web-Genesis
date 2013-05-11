@@ -44,6 +44,4 @@ class MerchantContact
   def persisted?
     false
   end
-  
-  
 end

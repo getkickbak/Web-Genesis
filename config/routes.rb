@@ -92,6 +92,8 @@ Genesis::Application.routes.draw do
         put "update_payment_subscription", :on => :member, :as => :update_payment_subscription
       end
       
+      match "/configuration" => 'configuration#index', :as => :configuration
+      match "/configuration/update" => "configuration#update", :as => :update_configuration
       match "/marketing" => 'marketing#index', :as => :marketing
       match "/marketing/update_poster" => 'marekting#update_poster_image', :as => :update_poster_image
       match "/marketing/update_table_topper" => 'marketing#update_checkin_image', :as => :update_checkin_image

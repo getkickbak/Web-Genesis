@@ -75,6 +75,7 @@ gem "braintree", "~> 2.22.0"
 gem "resque_mailer"
 #gem "faraday", "~> 0.8.6"
 gem "plivo"
+gem "twilio-ruby"
 gem 'stripe', :git => 'https://github.com/stripe/stripe-ruby'
 
 group(:development, :test) do

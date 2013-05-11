@@ -1,0 +1,57 @@
+<% content_for :link do %>
+<% end %>
+<% content_for :script do %>
+<!---->
+<script type="text/javascript">
+   $(document).ready($(function()
+   {
+      var msg = $("#notice").html();
+      if (msg)
+      {
+         Genesis.showWarningMsg(msg, null, true);
+      }
+   })); 
+</script>
+<script type="text/javascript" src="/javascripts/desktop/src/base.js"></script>
+<% end %>
+<% if flash[:notice] %>
+<div style="display:none;" id="notice">
+   <p><%= flash[:notice] %></p>
+</div>
+<% end %>
+<div id="main" class="main">
+   <div class="main-inner">
+      <div class="container">
+         <div class="row">
+         	<div class="span1"></div>
+            <div class="span10">
+               <div class="widget">
+                  <div class="widget-header">
+                     <i class="icon-globe"></i>
+                     <h3>Configuration</h3>
+                  </div>
+                  <!-- /widget-header -->
+                  <div class="widget-content">
+                     <div class="tabbable">
+                        <div class="tab-content">
+                           <div class="tab-pane active">
+                              <%= simple_form_for @configuration, :url => update_configuration_path, :html => { :class => 'form-vertical' } do |f| %>
+                              <fieldset>
+                                 <%= f.input :sms_provider, :collection => [['Twilio', SmsProvider::TWILIO],['Plivo', SmsProvider::PLIVO]], :as => :radio_buttons %>
+                              </fieldset>
+                              <br />
+                              <div class="form-actions">
+                                 <%= f.button :submit, 'Update', :class =>"btn btn-primary" %>
+                              </div>
+                              <!-- /form-actions -->
+                              <% end %>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>

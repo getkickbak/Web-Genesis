@@ -254,6 +254,8 @@ en:
       devices:
         get_encryption_key_failure: "Trouble with device initialization.\nPlease contact support."  
   admin:
+      configuration:
+        update_success: "Configuration successfully updated."
       marketing:
         update_poster_image_success: "Poster successfully updated."
         update_checkin_image_success: "Table topper successfully updated."
