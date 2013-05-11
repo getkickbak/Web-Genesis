@@ -86,7 +86,7 @@ module Admin
           @invoice.paid = true
           @invoice.update_ts = Time.now
           @invoice.save
-          Business::MerchantMailer.invoice_email(@invoice, "system").deliver
+          Business::MerchantMailer.invoice_email(@invoice).deliver
           respond_to do |format|
             format.html { redirect_to(merchant_invoice_path(@merchant, @invoice), :notice => t("admin.invoices.create_success")) }
             #format.xml  { render :xml => @merchant, :status => :created, :location => @merchant }
@@ -197,7 +197,7 @@ module Admin
             @invoice.paid = true
             @invoice.update_ts = Time.now
             @invoice.save
-            Business::MerchantMailer.invoice_email(@invoice, "system").deliver
+            Business::MerchantMailer.invoice_email(@invoice).deliver
             respond_to do |format|
               format.html { redirect_to(merchant_invoice_path(@merchant, @invoice), :notice => t("admin.invoices.pay_success")) }
               #format.xml  { render :xml => @merchant, :status => :created, :location => @merchant }

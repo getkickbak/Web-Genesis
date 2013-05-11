@@ -15,7 +15,7 @@ class Merchant
 
   property :id, Serial
   property :name, String, :length => 24, :required => true, :default => ""
-  property :description, String, :length => 512, :required => true, :default => ""
+  property :description, String, :length => 1024, :required => true, :default => ""
   ## Database authenticatable
   property :email, String, :unique_index => true, :required => true,
             :format => :email_address, :default => ""
