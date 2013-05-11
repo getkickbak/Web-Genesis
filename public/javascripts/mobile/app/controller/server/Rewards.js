@@ -162,6 +162,34 @@ Ext.define('Genesis.controller.server.Rewards',
    {
       var me = this, identifiers = null, viewport = me.getViewPortCntlr(), dismissDialog = false;
       var amount = me.getAmount().getValue(), proxy = PurchaseReward.getProxy();
+      var callback = function(b)
+      {
+         me._actions.hide();
+         viewport.setActiveController(null);
+         if (me.scanTask)
+         {
+            clearInterval(me.scanTask);
+            me.scanTask = null;
+         }
+         //
+         // Stop receiving ProximityID
+         //
+         if (Genesis.fn.isNative())
+         {
+            window.plugins.proximityID.stop();
+         }
+
+         if (b && (b.toLowerCase() == 'manual'))
+         {
+            Ext.Viewport.setMasked(null);
+            me.onEnterPhoneNum();
+         }
+         else if (!dismissDialog)
+         {
+            Ext.Viewport.setMasked(null);
+            me.onDoneTap();
+         }
+      };
 
       me.rewardItemFn = function(params, closeDialog)
       {
@@ -271,34 +299,6 @@ Ext.define('Genesis.controller.server.Rewards',
       {
          return;
       }
-      var callback = function(b)
-      {
-         me._actions.hide();
-         viewport.setActiveController(null);
-         if (me.scanTask)
-         {
-            clearInterval(me.scanTask);
-            me.scanTask = null;
-         }
-         //
-         // Stop receiving ProximityID
-         //
-         if (Genesis.fn.isNative())
-         {
-            window.plugins.proximityID.stop();
-         }
-
-         if (b && (b.toLowerCase() == 'manual'))
-         {
-            Ext.Viewport.setMasked(null);
-            me.onEnterPhoneNum();
-         }
-         else if (!dismissDialog)
-         {
-            Ext.Viewport.setMasked(null);
-            me.onDoneTap();
-         }
-      };
 
       if (!me._actions)
       {
