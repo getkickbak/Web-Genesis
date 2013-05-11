@@ -178,7 +178,7 @@ __initFb__ = function()
             gender : (response.gender == "male") ? "m" : "f",
             birthday : birthday,
             photoURL : 'http://graph.facebook.com/' + response.id + '/picture?type=square',
-            accessToken : response.accessToken
+            accessToken : FB.getAuthResponse()['accessToken']
          }
          console.log("FbResponse - [" + Ext.encode(params) + "]");
 
