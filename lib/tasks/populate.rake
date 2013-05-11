@@ -672,6 +672,12 @@ namespace :db do
         :avg_member_count => 50000, 
         :price_wifi => 3500.00
       )
+      dpp = DevicePaymentPlan.create(
+        :name => 'Device Rental',
+        :description => "Device Rental",
+        :price_wifi => 40.00,
+        :price_internet => 55.00
+      )
       puts "Complete Merchant creation"
     rescue DataMapper::SaveFailureError => e  
       puts("Exception: " + e.resource.errors.inspect)
