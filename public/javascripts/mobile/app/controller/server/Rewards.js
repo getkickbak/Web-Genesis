@@ -270,6 +270,10 @@ Ext.define('Genesis.controller.server.Rewards',
                                  {
                                     me.onEnterPhoneNum();
                                  }
+                                 else
+                                 {
+                                    me.onDoneTap();
+                                 }
                               }
                            });
                            return;
