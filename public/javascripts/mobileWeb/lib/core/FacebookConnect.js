@@ -64,7 +64,7 @@ __initFb__ = function()
             {
                cookie : true,
                frictionlessRequests : true,
-               appId : '477780595628080', // App ID from the app dashboard
+               appId : me.appId + "", // App ID from the app dashboard
                status : true, // Check Facebook Login status
                xfbml : true // Look for social plugins on the page
             });
@@ -76,7 +76,7 @@ __initFb__ = function()
             {
                cookie : true,
                frictionlessRequests : true,
-               appId : '197968780267830', // App ID from the app dashboard
+               appId : me.appId + "", // App ID from the app dashboard
                channelUrl : '//' + serverHost + '/channel.html', // Channel file for x-domain comms
                status : true, // Check Facebook Login status
                xfbml : true // Look for social plugins on the page
@@ -180,6 +180,7 @@ __initFb__ = function()
             photoURL : 'http://graph.facebook.com/' + response.id + '/picture?type=square',
             accessToken : response.accessToken
          }
+         console.log("FbResponse - [" + Ext.encode(params) + "]");
 
          return params;
       },
