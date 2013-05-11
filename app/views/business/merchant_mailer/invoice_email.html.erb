@@ -1,29 +1,35 @@
-Invoice #<%= @invoice.invoice_id %>
-<br>
-Receipt Date: <%= Time.now.strftime("%m/%d/%Y") %>
-<br>
-Order Total: $ <%= @invoice.amount %>
+<% if @invoice.paid %>
+Dear <%= @invoice.merchant.name %>,
 <br>
 <br>
-Billed To: <%= @invoice.merchant.name %>
+Thank you for your payment of $<%= @invoice.amount %> CAD that was processed on <%= Date.today.strftime('%m/%d/%Y') %>.  Your can view your invoice <a rel="nofollow" target="_blank" href="merchant.getkickbak.com/invoices">here</a>.
 <br>
 <br>
-Monthly Fee: $ <%= @invoice.monthly_fee %>
-<br>
-# of Transactions: <%= @invoice.transactions %>
-<br>
-Transactions Fee: $ <%= @invoice.trans_fee %>
-<br>
-Total Amount Billed: $ <%= @invoice.amount %>
+We appreciate your business!
 <br>
 <br>
-Your credit card has been charged.
+If you have any questions regarding your invoice, please contact billing@getkickbak.com.
 <br>
 <br>
-You can view your receipt online at https://merchant.getkickbak.com/invoices/<%= @invoice.invoice_id %>
+Best Regards,
 <br>
 <br>
-If you have any questions please contact us at billing@getkickbak.com or 1-866-518-9271.
+KICKBAK Billing Department
+<% else %>
+Dear <%= @invoice.merchant.name %>,
 <br>
 <br>
-KICKBAK, Inc
+We were unable to process your payment of $<%= @invoice.amount %> CAD on <%= Date.today.strftime('%m/%d/%Y') %>.  Your can view your invoice <a rel="nofollow" target="_blank" href="merchant.getkickbak.com/invoices">here</a>.
+<br>
+<br>
+We will re-attempt within the next 5 business days.
+<br>
+<br>
+If you have any questions regarding your invoice, please contact billing@getkickbak.com.
+<br>
+<br>
+Best Regards,
+<br>
+<br>
+KICKBAK Billing Department
+<% end %>

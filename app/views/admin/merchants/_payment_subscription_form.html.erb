@@ -1,0 +1,14 @@
+<%= simple_form_for @payment_subscription, :url => update_payment_subscription_merchant_path(@merchant), :html => { :class => 'form-horizontal' } do |f| %>
+<fieldset>
+	<%= f.input :discount_rate, :input_html => { :class => 'medium' } %>
+	<%= f.input :start_date, :as => :date_picker, :input_html => { :class => 'input-medium' } %>
+	<% if @merchant.will_terminate %>
+	<%= f.input :end_date, :as => :date_picker, :input_html => { :class => 'input-medium' } %>
+	<% end %>
+	<br />
+	<div class="form-actions">
+		<%= f.button :submit , 'Update', :class => 'btn btn-primary' %>
+		<%= link_to("Cancel", merchant_path(@merchant), :class => 'btn') %>
+	</div>
+</fieldset>
+<% end %> 

@@ -84,6 +84,15 @@
 									</div>
 								</div>
 								<% end %>
+								
+								<% if not @merchant.facebook_page_id.empty? %>
+								<div class="control-group">
+									<label class="control-label">Facebook Page ID:</label>
+									<div class="controls">
+										<%= @merchant.facebook_page_id %>
+									</div>
+								</div>
+								<% end %>
 								<%= link_to 'Edit', edit_account_path %>
 							</div>
 						</div>

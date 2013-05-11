@@ -58,6 +58,7 @@ Genesis::Application.configure do
     :enable_starttls_auto => true
     #:openssl_verify_mode  => 'none'
   }
+  
   PDFKit.configure do |config|
     config.wkhtmltopdf = '/data/JustForMyFriends/shared/bundled_gems/ruby/1.9.1/bin/wkhtmltopdf'
     config.default_options = {
@@ -70,6 +71,7 @@ Genesis::Application.configure do
       :disable_smart_shrinking=>false
     }
   end
+  
   Rails.application.routes.default_url_options[:host] = 'getkickbak.com'
 =begin
   ActiveMerchant::Billing::Base.mode = :production
@@ -80,5 +82,5 @@ Genesis::Application.configure do
     :secure_profile_api_key => 'A5B59392C6304f7288b2d7793742a6a6',
     :recurring_api_key => 'A5B59392C6304f7288b2d7793742a6a6'
   )
-=end  
+=end
 end

@@ -38,7 +38,7 @@ module Admin
       authorize! :update, @merchant
       
       @merchant.type_id = @merchant.type.id
-      if @merchant.will_terminate && @customer_reward.termination_date < Date.today
+      if @merchant.will_terminate && @merchant.termination_date == Constant::MAX_DATE
         @customer_reward.termination_date = Date.today
       end
     end
@@ -94,13 +94,14 @@ module Admin
         Merchant.transaction do
           previous_status = @merchant.status
           params[:merchant][:custom_badges] = false
-          type = MerchantType.id_to_type[params[:merchant][:type_id].to_i]
-          @merchant.update_all(type, @merchant.visit_frequency, params[:merchant])
-          if @merchant.status != previous_status && previous_status == :active
+          @merchant.update_all(@merchant.type, @merchant.visit_frequency, params[:merchant])
+          if @merchant.status != previous_status
             now = Time.now
-            new_password = String.random_alphanumeric(8)
-            @merchant.reset_password!(new_password, new_password)
-            @merchant.reset_authentication_token!
+            if previous_status == :active
+              new_password = String.random_alphanumeric(8)
+              @merchant.reset_password!(new_password, new_password)
+              @merchant.reset_authentication_token!
+            end
             DataMapper.repository(:default).adapter.execute(
               "UPDATE venues SET status = ?, update_ts = ? WHERE merchant_id = ?", Merchant::Statuses.index(@merchant.status)+1, now,  @merchant.id
             )
@@ -123,7 +124,45 @@ module Admin
         end
       end    
     end
+    
+    def payment_subscription
+      @merchant = Merchant.get(params[:id]) || not_found
+      authorize! :update, @merchant
+      
+      @payment_subscription = @merchant.payment_subscription
+      if @payment_subscription.nil?
+        MerchantPaymentSubscription.create(@merchant)
+      end
+      if @payment_subscription.start_date == Constant::MIN_DATE
+        @payment_subscription.start_date = Date.today
+      end
+      if @merchant.will_terminate && @payment_subscription.end_date == Constant::MAX_DATE
+        @payment_subscription.end_date = @merhant.termination_date
+      end
+    end
 
+    def update_payment_subscription
+      @merchant = Merchant.get(params[:id]) || not_found
+      authorize! :update, @merchant
+
+      begin
+        MerchantPaymentSubscription.transaction do
+          @merchant.payment_subscription.update(params[:merchant_payment_subscription])
+          respond_to do |format|
+            format.html { redirect_to(merchant_path(@merchant), :notice => t("admin.merchants.update_payment_subscription_success")) }
+          #format.xml  { head :ok }
+          end
+        end
+      rescue DataMapper::SaveFailureError => e
+        logger.error("Exception: " + e.resource.errors.inspect)
+        @payment_subscription = e.resource
+        respond_to do |format|
+          format.html { render :action => "payment_subscription" }
+        #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
+        end
+      end
+    end
+    
     def destroy
       @merchant = Merchant.get(params[:id]) || not_found
       authorize! :destroy, @merchant

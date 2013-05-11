@@ -2,11 +2,10 @@ module Business
   class InvoicesController < Business::BaseApplicationController
     before_filter :authenticate_merchant!
     before_filter :check_status
-    before_filter :check_is_admin
     
     def index
       authorize! :read, Invoice
-      @invoices = Invoice.all(:merchant => current_merchant)
+       @invoices = Invoice.all(:merchant => current_merchant, :order => [:created_ts.desc]).paginate(:page => params[:page])
 
       respond_to do |format|
         format.html # index.html.erb
@@ -15,7 +14,7 @@ module Business
     end
     
     def show
-      @invoice = Invoice.first(:invoice_id => params[:id]) || not_found
+      @invoice = Invoice.get(params[:id]) || not_found
       authorize! :read, @invoice
 
       respond_to do |format|

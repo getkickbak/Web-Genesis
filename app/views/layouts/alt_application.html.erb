@@ -86,6 +86,17 @@
 								</li>
 							</ul>
 						</div>
+						<% elsif not devise_controller? %>
+						<ul class="nav pull-right">
+							<li>
+								<a href="/sign_in">Sign In</a>
+							</li>
+						</ul>
+						<ul class="nav pull-right">
+							<li>
+								<a href="/business">For Businesses</a>
+							</li>
+						</ul>	
 						<% end %>
 					</div>
 				</div>
@@ -101,7 +112,6 @@
 			<%= yield %>
 		</div>
 		<!-- Footer  -->
-		<% if signed_in? %>
 		<div id="footer" class="navbar navbar-fixed-bottom">
 			<div class="navbar-inner">
 				<div class="container">
@@ -124,7 +134,6 @@
 				</div>
 			</div>
 		</div>
-		<% end %>
 		<div class="modal fade" id="modalPopup">
 			<div class="modal-header">
 				<a class="close" data-dismiss="modal">&times;</a>

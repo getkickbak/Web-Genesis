@@ -8,7 +8,7 @@ class Challenge
   property :description, String, :required => true, :default => ""
   property :require_verif, Boolean, :required => true, :default => false
   property :data, Object
-  property :reward_amount, Decimal, :required => true, :scale => 2, :min => 1.00
+  property :reward_amount, Decimal, :scale => 2
   property :points, Integer, :required => true, :min => 1
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
@@ -35,12 +35,14 @@ class Challenge
   def self.create(merchant, type, challenge_info, venues)
     now = Time.now
     challenge = Challenge.new(
-      :type_id => type ? type.id : nil,
-      :name => challenge_info[:name].squeeze(' ').strip,
-      :description => challenge_info[:description].strip,
-      :require_verif => challenge_info[:require_verif],
-      :reward_amount => challenge_info[:reward_amount],
-      :points => challenge_info[:points]
+      {
+        :type_id => type ? type.id : nil,
+        :name => challenge_info[:name].squeeze(' ').strip,
+        :description => challenge_info[:description].strip,
+        :require_verif => challenge_info[:require_verif],
+        :reward_amount => challenge_info[:reward_amount],
+        :points => challenge_info[:points]
+      }.delete_if { |k,v| v.nil? }
     )
     if challenge_info.include? :data
       challenge[:data] = challenge_info[:data]
@@ -59,7 +61,7 @@ class Challenge
     self.type_id = type ? type.id : nil
     self.name = challenge_info[:name].squeeze(' ').strip
     self.description = challenge_info[:description].strip
-    self.reward_amount = challenge_info[:reward_amount]
+    self.reward_amount = challenge_info[:reward_amount] if challenge_info[:reward_amount]
     self.points = challenge_info[:points]   
     self.require_verif = challenge_info[:require_verif]
     if challenge_info.include? :data
@@ -77,7 +79,7 @@ class Challenge
     self.type = nil
     self.name = challenge_info[:name]
     self.description = challenge_info[:description]
-    self.reward_amount = challenge_info[:reward_amount]
+    self.reward_amount = challenge_info[:reward_amount] if challenge_info[:reward_amount]
     self.points = challenge_info[:points]
     self.require_verif = challenge_info[:require_verif]
     if challenge_info.include? :data

@@ -5,12 +5,8 @@ merchant_summary:
 merchant_payments:
   cron: 0 0 1 * *
   class: MerchantPayments
-  description: Merchant Payments  
-expire_user_points:
-  cron: 0 0 1 * *
-  class: ExpireUserPoints
-  description: Expire User Points
-points_expiration_reminders:  
-  cron: 0 0 1 * *
-  class: PointsExpirationReminders
-  description: Points Expiration Reminders
+  description: Merchant Payments
+registration_reminders:
+  cron: 0 8 * * *
+  class: RegistrationReminders
+  description: Registration Reminders

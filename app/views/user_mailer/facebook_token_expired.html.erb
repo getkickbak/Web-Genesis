@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+	</head>
+	<body>
+		<div>
+			<table cellspacing="0" cellpadding="0" width="480" border="0" align="center" bgcolor="#ffffff" style="font-size:12px;color:#444;font-family:arial,sans-serif">
+				<tbody>
+					<tr>
+						<td align="left">
+						<div style="background:#0A78BE;padding: 20px 15px;border-radius:0.6em;">
+							<a href="http://www.getkickbak.com" target="_blank"> <img src="http://files.getkickbak.com/v1/logo.png" width="100" border="0" alt="KICKBAK"> </a>
+						</div></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td height="10"></td><td></td>
+					</tr>
+					<tr>
+						<td style="border-top:1px solid #ccc;padding:10px 15px">
+						<table width="100%" border="0" cellspacing="0" cellpadding="0">
+							<tbody>
+								<tr valign="middle">
+									<td>
+									<br>
+									<br>
+									<b>Hi <%= @user.name.split(' ')[0] %>,</b>
+									<br>
+									<br>
+									Your Facebook offline access has expired.  Please 
+									<a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= new_user_session_url %>">login</a> using Facebook to renew access.
+									<br>
+									<br>
+									Remember, you get bonus reward points for connecting with Facebook!
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						<table width="100%" border="0" cellpadding="0" cellspacing="0" style="border-top:1px solid #ccc">
+							<tbody>
+								<tr>
+									<td align="center">
+									<br>
+										Questions or comments? Email us at <a rel="nofollow" ymailto="mailto:help@getkickbak.com" target="_blank" style="text-decoration: none;" href="mailto:help@getkickbak.com">help@getkickbak.com</a>
+									<br>
+									<br>
+										Thanks from the <a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= root_url %>">KICKBAK</a> team.
+									<br>
+									<br>
+									</td>
+								</tr>
+							</tbody>
+						</table></td>
+						<td style="vertical-align:top;padding-left:7px"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</body>
+</html>

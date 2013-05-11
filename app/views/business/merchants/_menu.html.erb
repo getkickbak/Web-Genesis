@@ -5,5 +5,13 @@
 	<li>
 		<%= link_to 'Update Password', account_password_path %>
 	</li>
+	<% if session[:is_admin] %>
+	<li>
+		<%= link_to 'Payment Info', credit_cards_path %>
+	</li>
+	<% end %>
+	<li>
+		<%= link_to 'Invoices', invoices_path %>
+	</li>
 </ul>
 

@@ -14,11 +14,13 @@ class ApplicationController < ActionController::Base
     if !Domain.matches?(request)
       if request.subdomain == 'merchant'
         "business/application"
-      else
+      elsif request.subdomain == "manage"
         "admin/application"
+      else
+        "application"  
       end
     else
-      if (devise_controller? || signed_in?) && !request.fullpath.match(/terms|privacy/)
+      if (devise_controller? || signed_in?) && !request.fullpath.match(/terms|privacy/) || request.fullpath.match(/business\/.$/)
         "alt_application"
       else  
         "application"
@@ -64,7 +66,7 @@ class ApplicationController < ActionController::Base
 
   def secure_with_ssl
     if Rails.env.production?
-      if (request.subdomain == 'manage'  || request.subdomain == 'merchant' || request.fullpath.match(/mobileWeb/i)) && request.protocol != 'https://'
+      if (request.subdomain == 'manage'  || request.subdomain == 'merchant') && request.protocol != 'https://'
         redirect_to :protocol => 'https'
       end
    end

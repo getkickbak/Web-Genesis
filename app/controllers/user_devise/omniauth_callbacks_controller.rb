@@ -22,4 +22,9 @@ class UserDevise::OmniauthCallbacksController < Devise::OmniauthCallbacksControl
   def passthru
     raise ActionController::RoutingError.new('Not Found')
   end
+  
+  def failure
+    response = Rack::Utils.parse_nested_query(request.env["QUERY_STRING"])
+    redirect_to response["origin"]
+  end
 end

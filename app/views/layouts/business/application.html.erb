@@ -72,9 +72,12 @@
 										</li>
 										<% if session[:is_admin] %>
 										<li>
-											<a href="<%= credit_cards_path %>">Billing Info</a>
+											<a href="<%= credit_cards_path %>">Payment Info</a>
 										</li>
 										<% end %>
+										<li>
+											<a href="<%= invoices_path %>">Invoices</a>
+										</li>
 									</ul>
 								</li>
 								<li class="">

@@ -1,0 +1,71 @@
+<% content_for :link do %>
+<% end %>
+<% content_for :script do %>
+<script type="text/javascript">
+	$(document).ready($(function() {
+	var error_msg=$("#error").html();
+	if(error_msg) {
+	Genesis.showErrMsg(error_msg,null,true);
+	}
+	}));
+</script>
+<script type="text/javascript" src="/javascripts/desktop/src/base.js"></script>
+<script type="text/javascript" src="/javascripts/desktop/src/business/challenge.js"></script>
+<% end %>
+<% if flash[:error] %>
+<div style="display:none;" id="error">
+	<p>
+		<%= flash[:error] %>
+	</p>
+</div>
+<% end %>
+<div id="main" class="main">
+	<div class="main-inner">
+		<div class="container">
+			<div class="row">
+				<div class="span1"></div>
+				<div class="span10">
+					<div class="widget ">
+						<div class="widget-header">
+							<i class="icon-cogs"></i>
+							<h3>Merchant</h3>
+						</div>
+						<!-- /widget-header -->
+						<div class="widget-content">
+							<div class="tabbable">
+								<ul class="nav nav-tabs">
+									<li>
+										<a href="<%= merchant_path(@merchant) %>">Info</a>
+									</li>
+									<li>
+										<a href="<%= payment_subscription_merchant_path(@merchant) %>">Payment Subscription</a>
+									</li>
+									<li class="active">
+										<a href="<%= merchant_invoices_path(@merchant) %>">Invoices</a>
+									</li>
+									<li>
+										<a href="<%= merchant_venues_path(@merchant) %>">Venues</a>
+									</li>
+									<li>
+										<a href="<%= merchant_devices_path(@merchant) %>">Devices</a>
+									</li>
+								</ul>
+								<br>
+								<div class="tab-content">
+									<div class="tab-pane active" id="profile">
+										<%= render 'form' %>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- /widget-content -->
+					</div>
+					<!-- /widget -->
+				</div>
+			</div>
+			<!-- /row -->
+		</div>
+		<!-- /container -->
+	</div>
+	<!-- /main-inner -->
+</div>

@@ -39,12 +39,13 @@ class Merchant
   property :account_first_name, String, :required => true, :default => ""
   property :account_last_name, String, :required => true, :default => ""
   property :phone, String, :required => true, :default => ""
-  property :website, String, :default => "", :format => :url
+  property :website, String, :default => "", :format => :url 
+  property :facebook_page_id, String, :default => ""
   property :payment_account_id, String, :default => ""
   property :role, String, :required => true, :default => "merchant"
   property :status, Enum[:active, :pending, :suspended, :deleted], :required => true, :default => :pending
   property :will_terminate, Boolean, :required => true, :default => false
-  property :termination_date, Date, :default => ::Constant::MIN_DATE
+  property :termination_date, Date, :default => ::Constant::MAX_DATE
   property :custom_badges, Boolean, :required => true,  :default => false
   property :reward_terms, String, :required => true, :default => ""
   property :auth_code, String, :required => true, :default => ""
@@ -57,7 +58,7 @@ class Merchant
   attr_accessor :type_id, :visit_frequency_id, :current_password, :eager_load_type, :termination_date_str
   attr_accessor :crop_x, :crop_y, :crop_w, :crop_h
 
-  attr_accessible :type_id, :visit_frequency_id, :name, :description, :email, :account_first_name, :account_last_name, :phone, :website,
+  attr_accessible :type_id, :visit_frequency_id, :name, :description, :email, :account_first_name, :account_last_name, :phone, :website, :facebook_page_id,
                   :photo, :alt_photo, :role, :status, :will_terminate, :termination_date, :reward_terms, :auth_code, :current_password, :password, 
                   :password_confirmation, :badges_attributes
 
@@ -67,6 +68,7 @@ class Merchant
   has 1, :reward_model, :constraint => :destroy
   has 1, :merchant_to_visit_frequency_type, :constraint => :destroy
   has 1, :visit_frequency, 'VisitFrequencyType', :through => :merchant_to_visit_frequency_type, :via => :visit_frequency_type
+  has 1, :payment_subscription, 'MerchantPaymentSubscription', :destroy
   has n, :merchant_to_badge, :constraint => :destroy
   has n, :badges, :through => :merchant_to_badge, :via => :badge
   has n, :merchant_credit_cards, :child_key => [ :merchant_id ], :constraint => :destroy
@@ -96,10 +98,9 @@ class Merchant
       account_last_name = merchant_info[:account_last_name].strip
       phone = merchant_info[:phone].strip
       website = merchant_info[:website].strip
+      facebook_page_id = merchant_info[:facebook_page_id].strip
       role = merchant_info[:role]
       status = merchant_info[:status]
-      will_terminate = merchant_info[:will_terminate]
-      terminate_date = merchant_info[:terminate_date]
       custom_badges = merchant_info[:custom_badges]
       reward_terms = merchant_info[:reward_terms]
     else
@@ -114,10 +115,9 @@ class Merchant
       account_last_name = merchant_info.account_last_name
       phone = merchant_info.phone
       website = merchant_info.website
+      facebook_page_id = merchant_info.facebook_page_id
       role = merchant_info.role
       status = merchant_info.status
-      will_terminate = merchant_info.will_terminate
-      terminate_date = merchant_info.terminate_date
       custom_badges = merchant_info.custom_badges
       reward_terms = merchant_info.reward_terms
     end
@@ -134,19 +134,20 @@ class Merchant
       :account_last_name => account_last_name,
       :phone => phone,
       :website => website,
+      :facebook_page_id => facebook_page_id,
       :role => role,
       :status => status,
-      :will_terminate => will_terminate,
-      :termination_date => now.to_date,
       :custom_badges => custom_badges,
       :reward_terms => reward_terms,
       :auth_code => String.random_alphanumeric(32)
     )
-    merchant.termination_date_str = will_terminate ? terminate_date : ""
     merchant[:created_ts] = now
     merchant[:update_ts] = now
     merchant.type = type
     merchant.visit_frequency = visit_frequency
+    merchant.payment_subscription = MerchantPaymentSubscription.new
+    merchant.payment_subscription[:created_ts] = now
+    merchant.payment_subscription[:update_ts] = now
     merchant.save
     return merchant
   end
@@ -235,6 +236,7 @@ class Merchant
     self.account_last_name = merchant_info[:account_last_name].strip
     self.phone = merchant_info[:phone].strip
     self.website = merchant_info[:website].strip
+    self.facebook_page_id = merchant_info[:facebook_page_id].strip
     self.role = merchant_info[:role]
     self.status = merchant_info[:status]
     self.will_terminate = merchant_info[:will_terminate]

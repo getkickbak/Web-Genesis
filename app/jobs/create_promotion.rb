@@ -22,6 +22,7 @@ module CreatePromotion
         n = count/max + 1
       end  
       message = "#{promotion.merchant.name} - #{promotion.message}".truncate(116, :separator => ' ')
+      sms_message = "#{promotion.merchant.name} - #{promotion.message}".truncate(160, :separator => ' ')
       logger.info("Promotion(#{promotion.id}) requires #{n} iterations")
       for i in 0..n-1
         logger.info("Sending iteration #{i+1}")
@@ -57,7 +58,7 @@ module CreatePromotion
           logger.info("No mobile notifications to send for iteration #{i+1}")  
         end
         logger.info("Sending emails")
-        email_user_list = user_list - device_user_list
+        email_user_list = user_list
         if email_user_list.length > 0
           email_users = User.all(:fields => [:id, :email], :id => email_user_list)
           subscriptions = Subscription.all(:fields => [:user_id, :email_notif], :user_id => email_user_list)
@@ -66,13 +67,15 @@ module CreatePromotion
             user_id_to_subscription[subscription.user_id] = subscription
           end
           email_users.each do |user|
-            if user.role != "anonymous"
+            if user.status != :pending
               if user_id_to_subscription[user.id]
                 UserMailer.promotion_email(user, promotion).deliver if user_id_to_subscription[user.id].email_notif
               else
                 Subscription.create(user)
                 UserMailer.promotion_email(user, promotion).deliver
-              end  
+              end
+            else              
+              Resque.enqueue(SendSms, SmsMessageType::MERCHANT_PROMOTION, user.id, sms_message, nil)    
             end
           end
           logger.info("Sending emails - complete for iteration #{i+1}")

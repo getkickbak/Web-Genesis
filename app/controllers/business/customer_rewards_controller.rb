@@ -95,7 +95,7 @@ module Business
       authorize! :update, @customer_reward
       
       @customer_reward.type_id = @customer_reward.type.id
-      if @customer_reward.time_limited && @customer_reward.expiry_date < Date.today
+      if @customer_reward.time_limited && @customer_reward.expiry_date == Constant::MAX_DATE
         @customer_reward.expiry_date = Date.today
       end
       @venue_ids = []
@@ -128,7 +128,7 @@ module Business
         logger.error("Exception: " + e.resource.errors.inspect)
         @customer_reward = e.resource
         @customer_reward.type_id = params[:customer_reward][:type_id]
-        if @customer_reward.time_limited && @customer_reward.expiry_date < Date.today
+        if @customer_reward.time_limited && @customer_reward.expiry_date == Constant::MAX_DATE
           @customer_reward.expiry_date = Date.today
         end
         @venue_ids = []

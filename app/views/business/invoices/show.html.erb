@@ -1,22 +1,117 @@
-<% content_for :link do %>
-<!--[if lt IE 9]>
-<link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
-<![endif]-->
-<% end %>
-<div class="content row">
-   Invoice #<%= @invoice.invoice_id %>
-   <br>
-   Receipt Date: <%= Time.now.strftime("%m/%d/%Y") %>
-   <br>
-   Order Total: $ <%= @invoice.amount %>
-   <br>
-   <br>
-   Monthly Fee: $ <%= @invoice.monthly_fee %>
-   <br>
-   # of Transactions: <%= @invoice.transactions %>
-   <br>
-   Transactions Fee: $ <%= @invoice.trans_fee %>
-   <br>
-   Total Amount Billed: $ <%= @invoice.amount %>
+<div id="main" class="main">
+	<div class="main-inner">
+		<div class="container">
+			<div class="row">
+				<div class="span3">
+					<div class="widget">
+						<div class="widget-content">
+							<%= render :partial => '/business/merchants/menu' %>
+						</div>
+					</div>
+				</div>
+				<div class="span9">
+					<div class="widget ">
+						<div class="widget-content">
+							<h3>Invoice Details</h3>
+							<div style="margin:20px 0 10px 0;">
+								<div class="not-edit form-horizontal">
+									<div class="control-group">
+										<label class="control-label"> Billing Date: </label>
+										<div class="controls">
+											<%= @invoice.start_date.strftime("%b %d, %Y") %>
+										</div>
+									</div>
+									<div class="control-group">
+										<label class="control-label"> Invoice #: </label>
+										<div class="controls">
+											<%= @invoice.invoice_id %>
+										</div>
+									</div>
+									<% if @invoice.type == :recurring %>
+									<div class="control-group">
+										<label class="control-label"> Balance Forward: </label>
+										<div class="controls">
+											$<%= "%0.2f" % @invoice.balance %>
+										</div>
+									</div>
+									<% end %>
+									<div class="control-group">
+										<label class="control-label"> Charges: </label>
+										<div class="controls">
+											$<%= "%0.2f" % @invoice.charges %>
+										</div>
+									</div>
+									<% if @invoice.proration > 0.00 %>
+									<div class="control-group">
+										<label class="control-label"> Praration: </label>
+										<div class="controls">
+											$<%= "%0.2f" % @invoice.proration %>
+										</div>
+									</div>
+									<% end %>
+									<div class="control-group">
+										<label class="control-label"> Tax: </label>
+										<div class="controls">
+											$<%= "%0.2f" % @invoice.tax %>
+										</div>
+									</div>
+									<div class="control-group">
+										<label class="control-label"> Amount: </label>
+										<div class="controls">
+											$<%= "%0.2f" % @invoice.amount %>
+										</div>
+									</div>
+									<div class="control-group">
+										<label class="control-label"> Amount Due: </label>
+										<div class="controls">
+											$<%= "%0.2f" % (!@invoice.paid ? @invoice.amount : 0.00) %>
+										</div>
+									</div>
+									<br>
+									<h4>Summary</h4>
+									<br>
+									<table class="table">
+										<thead>
+											<tr>
+												<th>Description</th>
+												<th class="td-actions">Quantity</th>
+												<th class="td-actions">Amount</th>
+											</tr>
+										</thead>
+										<tfoot>
+											<tr>
+												<th></th>
+												<th>Subtotal:</th>
+												<th>$<%= "%0.2f" % @invoice.charges %></th>
+											</tr>
+										</tfoot>
+										<tbody>
+											<% @invoice.items.each do |item| %>
+											<tr>
+												<td><%= item.description %></td>
+												<td class="td-actions"><%= item.quantity %></td>
+												<% if item.amount > 0.00 %>
+												<td class="td-actions">$<%= "%0.2f" % item.amount %></td>
+												<% else %>
+												<td class="td-actions">$<%= "%0.2f" % (item.price * item.quantity) %></td>
+												<% end %>
+											</tr>
+											<% end %>
+										</tbody>
+									</table>
+									<%= link_to 'Back', invoices_path %>
+								</div>
+							</div>
+						</div>
+						<!-- /widget-content -->
+					</div>
+					<!-- /widget -->
+				</div>
+			</div>
+			<!-- /row -->
+		</div>
+		<!-- /container -->
+	</div>
+	<!-- /main-inner -->
 </div>
-<%= link_to 'Back', invoices_path %>
+<!-- /main -->

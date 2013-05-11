@@ -1,9 +1,30 @@
 <div class="span3">
-	<div class="widget ">
-		<div class="widget-content">
+	<div class="widget">
+		<div class="widget-content facebook-connect-promo">
 			<p>
-				<%= link_to "Sign in with Facebook", user_omniauth_authorize_path(:facebook) %>
+				<i class="icon-star"></i><span class="bonus-points">Want bonus reward points?</span>
 			</p>
+			<% if current_user.facebook_auth.nil? %>
+			<p>
+				<%= link_to "Connect with Facebook", user_omniauth_authorize_path(:facebook), :id => 'facebookButton' %>
+			</p>
+			<% else %>
+			<% if !@has_permission %>
+			<p class="facebook-connect-details">
+				You have to grant us permission to post on Facebook.
+			</p>
+			<p>
+				<%= link_to "Grant Permission to Post", user_omniauth_authorize_path(:facebook), :id => 'facebookButton' %>
+			</p>
+			<% elsif !@visible_to_friends %>
+			<p class="facebook-connect-details">
+				You must allow us to post to your friends on Facebook.
+			</p>
+			<p>
+				<%= link_to "Share with Friends", "https://www.facebook.com/appcenter/my", :target => "_blank", :id => 'facebookButton' %>
+			</p>
+			<% end %>
+			<% end %>
 		</div>
 	</div>
 </div>

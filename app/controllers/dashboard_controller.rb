@@ -2,10 +2,61 @@ class DashboardController < ApplicationController
   before_filter :authenticate_user!
   
   def index
-    authorize! :read, current_user
+    @user = current_user
+    authorize! :read, @user
     
     @user_tag = UserTag.new
+    if session["devise.facebook_data"]
+      begin
+        User.transaction do
+          data = session["devise.facebook_data"] && session["devise.facebook_data"].extra.raw_info
+          @user.update_facebook_auth({:provider => "facebook", :uid => data.id, :token => session["devise.facebook_data"].credentials.token})
+          gender = (data.gender == "male" ? :m : :f) if data.gender
+          birthday = Date.strptime(data.birthday, '%m/%d/%Y') if data.birthday
+          profile_info = {
+            :gender => gender || :u,
+            :birthday => birthday || ::Constant::MIN_DATE
+          }
+          @user.profile.update(profile_info)
+          @user.save
+          session.delete "devise.facebook_data"
+          flash[:notice] = t("users.facebook_connect_success")
+        end    
+      rescue DataMapper::SaveFailureError => e
+        logger.error("Exception: " + e.resource.errors.inspect)
+        flash[:error] = t("users.update_facebook_info_failure")
+      end
+    end
     get_customers_info
+    if @user.facebook_auth
+      begin
+        oauth = Koala::Facebook::OAuth.new(APP_PROP["FACEBOOK_APP_ID"], APP_PROP["FACEBOOK_APP_SECRET"])
+        graph = Koala::Facebook::API.new(oauth.get_app_access_token)
+        @has_permission = false
+        @visible_to_friends = false
+        permissions = graph.get_connections(@user.facebook_auth.uid, "permissions")
+        if permissions.length > 0
+          if permissions[0]["publish_actions"]
+            @has_permission = true
+          end
+          user_graph = Koala::Facebook::API.new(@user.facebook_auth.token)
+          privacy = user_graph.fql_query("SELECT value FROM privacy_setting WHERE name = 'default_stream_privacy'")
+          if privacy[0]["value"] != "SELF" && privacy[0]["value"] != "NO_FRIENDS"
+            @visible_to_friends = true
+          end
+        else
+          error_info = {
+            "type" => "OAuthException", 
+            "code" => "190", 
+            "error_subcode" => "458", 
+            "message" => "Internal Raised Exception"
+          }
+          raise Koala::Facebook::APIError.new(400, nil, error_info)
+        end
+      rescue StandardError => e
+        logger.error("Exception: " + e.message)
+      end
+    end
     respond_to do |format|
       format.html # index.html.erb
     #format.xml  { render :xml => @users }
@@ -27,7 +78,7 @@ class DashboardController < ApplicationController
         end
         if @tag.status == :active
           @user_tag = UserTag.new(:tag_id => tag_id)
-          @user_tag.errors.add(:tag_id, t("users.tag_already_in_use_failure"))
+          @user_tag.errors.add(:tag_id, t("errors.messages.tag_already_in_use"))
           raise DataMapper::SaveFailureError.new("", @user_tag)
         end
         user_to_tag = UserToTag.first(:user_tag => @tag)
@@ -70,7 +121,7 @@ class DashboardController < ApplicationController
               merge_customers = customers.all(:merchant_id => current_merchant_ids)
               merge_customers.each do |merge_customer|
                 customer = merchant_id_to_current_customer[customer_id_to_merchant[merge_customer.id].id]
-                signup_points = customer_id_to_merchant[merge_customer.id].reward_model.signup_points
+                signup_points = customer_id_to_merchant[merge_customer.id].reward_model.signup_points  
                 customer.points += (merge_customer.points - signup_points)
                 customer.prize_points += merge_customer.prize_points
                 customer.visits += merge_customer.visits
@@ -137,7 +188,7 @@ class DashboardController < ApplicationController
             user.destroy
           else
             @user_tag = UserTag.new(:tag_id => tag_id)
-            @user_tag.errors.add(:tag_id, t("users.tag_already_in_use_failure"))
+            @user_tag.errors.add(:tag_id, t("errors.messages.tag_already_in_use"))
             raise DataMapper::SaveFailureError.new("", @user_tag)
           end
         end

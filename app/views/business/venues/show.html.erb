@@ -122,6 +122,14 @@
 												</div>
 											</div>
 											<% end %>
+											<% if not @venue.facebook_page_id.empty? %>
+											<div class="control-group">
+												<label class="control-label"> Facebook Page ID: </label>
+												<div class="controls">
+													<%= @venue.facebook_page_id %>
+												</div>
+											</div>
+											<% end %>
 											<% if session[:is_admin] %>
 											<div class="control-group">
 												<label class="control-label"> Longitude: </label>

@@ -1,0 +1,108 @@
+<% content_for :script do %>
+<script type="text/javascript">
+	$(document).ready($(function() {
+	var notice_msg=$("#notice").html();
+	if(notice_msg) {
+	Genesis.showWarningMsg(notice_msg,null,true);
+	}
+	}));
+</script>
+<script type="text/javascript" src="/javascripts/desktop/src/base.js"></script>
+<% end %>
+<% if flash[:notice] %>
+<div style="display:none;" id="notice">
+	<p>
+		<%= flash[:notice] %>
+	</p>
+</div>
+<% end %>
+<div id="main" class="main">
+	<div class="main-inner">
+		<div class="container">
+			<div class="row">
+				<div class="span1"></div>
+				<div class="span10">
+					<div class="widget ">
+						<div class="widget-header">
+							<i class="icon-money"></i>
+							<h3>Merchant</h3>
+						</div>
+						<!-- /widget-header -->
+						<div class="widget-content">
+							<div class="tabbable">
+								<ul class="nav nav-tabs">
+									<li>
+										<a href="<%= merchant_path(@merchant) %>">Info</a>
+									</li>
+									<li>
+										<a href="<%= payment_subscription_merchant_path(@merchant) %>">Payment Subscription</a>
+									</li>
+									<li>
+										<a href="<%= merchant_invoices_path(@merchant) %>">Invoices</a>
+									</li>
+									<li class="active">
+										<a href="<%= merchant_venues_path(@merchant) %>">Venues</a>
+									</li>
+									<li>
+										<a href="<%= merchant_devices_path(@merchant) %>">Devices</a>
+									</li>
+								</ul>
+								<br>
+								<div class="tab-content">
+									<div class="tab-pane active" id="subscription">
+										<div class="widget widget-table action-table">
+											<div class="widget-header">
+												<i class="icon-map-marker"></i>
+												<h3>Venues Listing</h3>
+											</div>
+											<div class="widget-content">
+												<div class="paginate">
+													<%= will_paginate @venues %>
+												</div>
+												<table class="table table-striped table-bordered">
+													<thead>
+														<tr>
+															<th class="td-actions">Venue</th>
+															<th class="td-actions">Device Type</th>
+															<th class="td-actions">Actions</th>
+														</tr>
+													</thead>
+													<tbody>
+														<% @venues.each do |venue| %>
+														<tr>
+															<td class="td-actions"><%= venue.name %></td>
+															<td class="td-actions"><%= venue.device_type %></td>
+															<td class="td-actions"><!-- --> <%= link_to(edit_merchant_venue_path(@merchant, venue), :class=>"btn btn-small btn-warning", :title=>"edit") do %> <!-- --><i class="btn-icon-only icon-edit"></i><!-- --> <% end %> </td>
+														</tr>
+														<% end %>
+														<% if @venues.length == 0 %>
+														<tr>
+															<td colspan="5" class="no-data">No venues at the moment.</td>
+														</tr>
+														<% end %>
+													</tbody>
+												</table>
+												<div class="paginate">
+													<%= will_paginate @venues %>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- /widget-content -->
+					</div>
+					<!-- /widget -->
+				</div>
+			</div>
+			<!-- /row -->
+		</div>
+		<!-- /container -->
+	</div>
+	<!-- /main-inner -->
+</div>
+<!-- /main -->
+<!--
+<%= link_to 'Back', account_path %>
+-->

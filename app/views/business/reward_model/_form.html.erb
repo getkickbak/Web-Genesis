@@ -1,20 +1,20 @@
 <%= simple_form_for @reward_model, :url => update_reward_model_path, :html => { :class => 'form-horizontal' } do |f| %>
 <fieldset>
    <%= f.input :type_id, :collection => RewardModelType.values[I18n.locale], :include_blank => false, :input_html => { :class => 'input-medium' } %>
-   <% if @reward_model.type.value == "amount_spend" %>
+   <% if @reward_model.type.value == "amount_spent" %>
    <%= f.input :rebate_rate, :hint => "% of every dollar spent", :input_html=>{:class => "input-medium"} %>
    <% end %>
-   <% if @reward_model.type.value == "amount_spend" %>
+   <% if @reward_model.type.value == "amount_spent" %>
    <%= f.input :badge_rebate_rate, :hint => "% of every dollar spent", :input_html=>{ :disabled => 'disabled', :class => "input-medium"} %>
    <%= f.input :prize_rebate_rate, :hint => "% of every dollar spent", :input_html=>{:class => "input-medium"} %>
    <% else %>
    <%= f.input :badge_rebate_rate, :hint => "Visit(s) for every point", :input_html=>{:class => "input-medium"} %>
    <% end %>
-   <% if @reward_model.type.value == "amount_spend" %>
+   <% if @reward_model.type.value == "amount_spent" %>
    <%= f.input :signup_amount, :input_html=>{:class => "input-medium"}%>
    <% end %>
    <%= f.input :signup_points, :input_html=>{:class => "input-medium"} %>
-   <% if @reward_model.type.value == "amount_spend" %>
+   <% if @reward_model.type.value == "amount_spent" %>
    <%= f.input :price_per_point, :input_html => { :disabled => 'disabled', :class => 'input-medium' } %>
    <%= f.input :price_per_prize_point, :input_html => { :disabled => 'disabled', :class => 'input-medium' } %>
    <%= f.input :expected_avg_spend, :input_html=>{:class => "input-medium"}%>

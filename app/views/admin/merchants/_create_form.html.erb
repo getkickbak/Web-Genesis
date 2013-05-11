@@ -12,6 +12,7 @@
 	<%= f.input :role, :collection => Merchant::Roles, :input_html => { :class => 'input-medium' } %>
 	<%= f.input :phone, :input_html=>{:class => "input-medium"} %>
 	<%= f.input :website, :input_html=>{:class => "input-xxlarge"}, :required => false %>
+	<%= f.input :facebook_page_id, :input_html=>{:class => "input-xxlarge"}, :required => false %>
 	<br />
 	<div class="form-actions">
 		<%= f.button :submit , 'Create', :class => 'btn btn-primary' %>

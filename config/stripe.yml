@@ -1,0 +1,8 @@
+development:
+  API_KEY: sk_test_bFVAIGSNcHqxkGJPO2Nx4Yde
+  
+test:
+  API_KEY: sk_test_bFVAIGSNcHqxkGJPO2Nx4Yde
+
+production:
+  API_KEY: sk_live_eZejUtGPNRXfz8vT5ls9Naej

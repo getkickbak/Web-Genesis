@@ -18,11 +18,11 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           data = params[:data]  
         end  
         if params[:frequency]
-          frequency = JSON.parse(params[:frequency])
+          frequency = JSON.parse(params[:frequency], { :symbolize_names => true })
         else
           cipher = Gibberish::AES.new(form_authenticity_token)
           decrypted = cipher.dec(data)
-          frequency = JSON.parse(decrypted)["frequency"]
+          frequency = JSON.parse(decrypted, { :symbolize_names => true })[:frequency]
         end
         request_info = {
           :type => RequestType::EARN_POINTS,
@@ -81,15 +81,15 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       cipher = Gibberish::AES.new(@venue.auth_code)
       decrypted = cipher.dec(data)
       #logger.debug("decrypted text: #{decrypted}")
-      @decrypted_data = JSON.parse(decrypted) 
-      expiry_ts_secs = @decrypted_data["expiry_ts"]/1000
+      @decrypted_data = JSON.parse(decrypted, { :symbolize_names => true }) 
+      expiry_ts_secs = @decrypted_data[:expiry_ts]/1000
       data_expiry_ts = Time.at(expiry_ts_secs)  
-      if @decrypted_data["type"] == EncryptedDataType::EARN_POINTS
+      if @decrypted_data[:type] == EncryptedDataType::EARN_POINTS
         # Cache expires in 12 hrs
         if (data_expiry_ts >= Time.now) && EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => data_expiry_ts, :data => data).nil?
           reward_model_type = @venue.merchant.reward_model.type
-          if reward_model_type.value == "amount_spend"
-            amount = @decrypted_data["amount"].to_f
+          if reward_model_type.value == "amount_spent"
+            amount = @decrypted_data[:amount].to_f
             if amount < 1.00
               raise "Amount must be >= 1.00"  
             end
@@ -99,7 +99,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
               :venue_id => @venue.id
             }.to_json
           else
-            points = @decrypted_data["points"]
+            points = @decrypted_data[:points]
             if points == 0
               raise "Points must be >= 1"
             end
@@ -109,11 +109,11 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
               :venue_id => @venue.id
             }.to_json
           end  
-          if params[:frequency] || @decrypted_data["frequency"]
+          if params[:frequency] || @decrypted_data[:frequency]
             if params[:frequency]
-              frequency = JSON.parse(params[:frequency])
+              frequency = JSON.parse(params[:frequency], { :symbolize_names => true })
             else
-              frequency = @decrypted_data["frequency"]
+              frequency = @decrypted_data[:frequency]
             end
             channel_group = Channel.get_group(params[:venue_id])
             request_info = {
@@ -145,7 +145,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       return
     end
     
-    if params[:frequency] || @decrypted_data["frequency"]
+    if params[:frequency] || @decrypted_data[:frequency]
       # Performance Test
       start_time = Time.now
       logger.info("Merchant Earn Request Wait Starts at #{start_time.strftime("%a %m/%d/%y %H:%M:%S:%L %Z")}")
@@ -191,7 +191,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       data = String.random_alphanumeric(32)
       data_expiry_ts = Time.now
       reward_model_type = @venue.merchant.reward_model.type
-      if reward_model_type.value == "amount_spend"
+      if reward_model_type.value == "amount_spent"
         amount = Random.rand(100)+1
       else
         amount = 0.00
@@ -202,11 +202,11 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       begin
         User.transaction do
           if signed_in?
-            @decrypted_data = JSON.parse(@request.data)
-            data = @decrypted_data["data"]
-            @venue = Venue.get(@decrypted_data["venue_id"])
+            @decrypted_data = JSON.parse(@request.data, { :symbolize_names => true })
+            data = @decrypted_data[:data]
+            @venue = Venue.get(@decrypted_data[:venue_id])
             if @venue.nil?
-              raise "No such venue: #{@decrypted_data["venue_id"]}"
+              raise "No such venue: #{@decrypted_data[:venue_id]}"
             end
             reward_model_type = @venue.merchant.reward_model.type 
           else
@@ -214,11 +214,11 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
             reward_model_type = @venue.merchant.reward_model.type
           end
           
-          if reward_model_type.value == "amount_spend"
-            amount = @decrypted_data["amount"].to_f
+          if reward_model_type.value == "amount_spent"
+            amount = @decrypted_data[:amount].to_f
           else
             amount = 0.00
-            points = @decrypted_data["points"].to_f
+            points = @decrypted_data[:points].to_i
           end
 
           encrypted_data = data.split('$')
@@ -240,8 +240,9 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           data = encrypted_data[1]
 
           if not signed_in?
-            if @decrypted_data["tag_id"]
-              tag = UserTag.first(:tag_id => @decrypted_data["tag_id"])
+            @first_time = false
+            if @decrypted_data[:tag_id]
+              tag = UserTag.first(:tag_id => @decrypted_data[:tag_id])
               if tag
                 if tag.status == :suspended || tag.status == :deleted
                   logger.info("Tag: #{tag.tag_id} is suspended or deleted ")
@@ -254,19 +255,56 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
                 end
                 user_to_tag = UserToTag.first(:fields => [:user_id], :user_tag_id => tag.id)
                 if user_to_tag.nil? && tag.status == :pending
-                  user_info = {}
-                  rand_name = String.random_alphanumeric(16)
-                  user_info[:name] = "#{rand_name}"
-                  user_info[:email] = "#{rand_name}@getkickbak.com"
-                  user_info[:phone] = ""
-                  user_info[:role] = "anonymous"
-                  user_info[:status] = :pending
-                  password = String.random_alphanumeric(8)
-                  user_info[:password] = password
-                  user_info[:password_confirmation] = password
-                  @current_user = User.create(user_info)
-                  tag.uid = @decrypted_data["uid"] if tag.uid.empty?
-                  @current_user.register_tag(tag, tag.status)
+                  if @decrypted_data[:phone_id]
+                    if (@current_user = User.first(:phone => @decrypted_data[:phone_id]))
+                      if @current_user.status == :pending
+                        @current_user.register_tag(tag, tag.status)
+                      else
+                        respond_to do |format|
+                          #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+                          format.json { render :json => { :success => false, :message => I18n.t('errors.taken', :attribute => User.human_attribute_name(:phone_number)).split(/\n/) } }
+                        end
+                        normal_exit = true
+                        raise
+                      end
+                    else  
+                      user_info = {}
+                      rand_name = String.random_alphanumeric(16)
+                      user_info[:name] = "#{rand_name}"
+                      user_info[:email] = "#{rand_name}@getkickbak.com"
+                      user_info[:phone] = @decrypted_data[:phone_id]
+                      user_info[:role] = "anonymous"
+                      user_info[:status] = :pending
+                      password = String.random_alphanumeric(8)
+                      user_info[:password] = password
+                      user_info[:password_confirmation] = password
+                      @current_user = User.create(user_info)
+                      tag.uid = @decrypted_data[:uid] if tag.uid.empty?
+                      @current_user.register_tag(tag, tag.status)
+                      @first_time = true
+                    end
+                  elsif params[:version] && params[:version] >= "2.1.2"
+                    respond_to do |format|
+                      #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+                      format.json { render :json => { :success => false, :metaData => { :rescode => "unregistered_account" } } }
+                    end
+                    normal_exit = true
+                    raise 
+                  else
+                    user_info = {}
+                    rand_name = String.random_alphanumeric(16)
+                    user_info[:name] = "#{rand_name}"
+                    user_info[:email] = "#{rand_name}@getkickbak.com"
+                    user_info[:role] = "anonymous"
+                    user_info[:status] = :pending
+                    password = String.random_alphanumeric(8)
+                    user_info[:password] = password
+                    user_info[:password_confirmation] = password
+                    @current_user = User.create(user_info)
+                    tag.uid = @decrypted_data[:uid] if tag.uid.empty?
+                    @current_user.register_tag(tag, tag.status)
+                    @first_time = true
+                  end
                 else
                   if user_to_tag
                     @current_user = User.get(user_to_tag.user_id)
@@ -290,7 +328,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
                   end  
                 end
               else
-                logger.error("No such tag_id: #{@decrypted_data["tag_id"]}")
+                logger.error("No such tag_id: #{@decrypted_data[:tag_id]}")
                 respond_to do |format|
                   #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
                   format.json { render :json => { :success => false, :message => t("api.invalid_tag").split(/\n/) } }
@@ -298,16 +336,21 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
                 normal_exit = true
                 raise
               end
-            elsif @decrypted_data["phone_id"]
-              @current_user = User.first(:phone => @decrypted_data["phone_id"])
+            elsif @decrypted_data[:phone_id]
+              @current_user = User.first(:phone => @decrypted_data[:phone_id])
               if @current_user.nil?
-                logger.error("No such phone number: #{@decrypted_data["phone_id"]}")
-                respond_to do |format|
-                  #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-                  format.json { render :json => { :success => false, :message => t("api.invalid_phone").split(/\n/) } }
-                end
-                normal_exit = true
-                raise 
+                 user_info = {}
+                 rand_name = String.random_alphanumeric(16)
+                 user_info[:name] = "#{rand_name}"
+                 user_info[:email] = "#{rand_name}@getkickbak.com"
+                 user_info[:phone] = @decrypted_data[:phone_id]
+                 user_info[:role] = "anonymous"
+                 user_info[:status] = :pending
+                 password = String.random_alphanumeric(8)
+                 user_info[:password] = password
+                 user_info[:password_confirmation] = password
+                 @current_user = User.create(user_info)
+                 @first_time = true
               end 
             else 
               logger.error("Missing user identification info")
@@ -566,7 +609,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         
         # Performance Test
         start_time2_2 = Time.now
-        if reward_model_type.value == "amount_spend"
+        if reward_model_type.value == "amount_spent"
           points = (amount / reward_model.price_per_point).to_i
         end  
         record = EarnRewardRecord.new(
@@ -624,12 +667,13 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           @customer.badge, @customer.next_badge_visits = Common.find_badge(@badges.to_a, @customer.visits)
           @customer.badge_reset_ts = now
         end
+        previous_badge = @customer.badge
         next_badge = Common.find_next_badge(@badges.to_a, @customer.badge)
         if (@customer.next_badge_visits >= next_badge.visits) && (@customer.badge.id != next_badge.id)
           #logger.debug("expected average spend: #{reward_model.expected_avg_spend}")
           #logger.debug("next badge visits: #{next_badge.visits}")
           #logger.debug("price per point: #{reward_model.price_per_point}")
-          if reward_model_type.value == "amount_spend"
+          if reward_model_type.value == "amount_spent"
             badge_points =  (reward_model.expected_avg_spend * reward_model.badge_rebate_rate / 100  * next_badge.visits / reward_model.price_per_point).to_i
           else
             badge_points = (1 / reward_model.badge_rebate_rate * next_badge.visits).to_i
@@ -769,18 +813,52 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           @prizes = prizes
         end
         Request.set_status(@request, :complete)
-=begin      
-        post = 
+        if @current_user.facebook_auth
+          posts = [ 
             FacebookPost.new(
-              :type => "checkin",
-              :link => @venue.website,
-              :latitude => @venue.latitude,
-              :longitude => @venue.longitude
+              :type => "earn_points",
+              :message => (t("facebook_post.message.earn_points") % [@venue.name]),
+              :page_id => @venue.facebook_page_id
             )
-        Resque.enqueue(ShareOnFacebook, @current_user.id, post.to_json)
-=end      
+          ]
+          if @customer.badge.id != previous_badge.id && (session[:version].nil? || session[:version] && session[:version] >= "2.1.2")
+            if reward_model_type.value == "amount_spent"
+              message = t("facebook_post.description.amount_spent")
+            elsif reward_model_type.value == "items_purchased"
+              message = t("facebook_post.description.items_purchased") % [rewards.first.title]
+            elsif reward_model_type.value == "visits"  
+              message = t("facebook_post.description.visits") % [rewards.first.title]
+            end
+            posts << FacebookPost.new(
+              :type => "badge_promotion",
+              :message => (t("facebook_post.message.badge_promotion") % [@customer.badge.type.value.capitalize, @venue.name]),
+              :picture => (@customer.badge.custom ? @customer.badge.custom_type.thumbnail_large_url : @customer.badge.type.thumbnail_large_url),
+              :link_name => @venue.name,
+              :link => business_profile_url(@venue.merchant),
+              :caption => "www.getkickbak.com",
+              :description => "#{message}\n#{t("facebook_post.description.text")}"
+            )
+          end
+          Resque.enqueue(ShareOnFacebook, @current_user.id, @venue.id, ShareOnFacebook::EARN_POINTS, posts.to_json)
+        end
         if @current_user.subscription.nil?
           Subscription.create(@current_user)
+        end
+        if !signed_in? && @current_user.status == :pending
+          if @first_time
+            sms_message_type = SmsMessageType::MERCHANT_REGISTRATION
+            options = { :name => @venue.name, :points => @reward_info[:points], :prize_points => @reward_info[:prize_points] }.to_json
+          else
+            if eligible_for_reward || eligible_for_prize
+              sms_message_type = SmsMessageType::MERCHANT_REGISTRATION_REMINDER_REWARD
+              reward_name = eligible_for_reward ? eligible_reward.title : eligible_prize.title
+              options = { :name => @venue.name, :reward_name => reward_name }.to_json
+            else
+              sms_message_type = SmsMessageType::MERCHANT_REGISTRATION_REMINDER
+              options = { :name => @venue.name, :points => @reward_info[:points], :prize_points => @reward_info[:prize_points] }.to_json
+            end
+          end
+          Resque.enqueue(SendSms, sms_message_type, @current_user.id, nil, options)
         end
         if !signed_in? && @current_user.status != :pending && @current_user.subscription.email_notif
           if @reward_info[:birthday_points] > 0 || @reward_info[:badge_points] > 0 || @reward_info[:prize_points] > 1

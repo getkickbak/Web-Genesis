@@ -20,58 +20,94 @@
 	<div class="main-inner">
 		<div class="container">
 			<div class="row">
-				<div class="span12">
-					<div class="widget widget-table action-table">
+				<div class="span1"></div>
+				<div class="span10">
+					<div class="widget ">
 						<div class="widget-header">
-							<i class="icon-cogs"></i>
-							<h3>Devices Listing (<%= link_to("New Device", new_merchant_device_path(@merchant)) %>)</h3>
+							<i class="icon-money"></i>
+							<h3>Merchant</h3>
 						</div>
+						<!-- /widget-header -->
 						<div class="widget-content">
-							<div class="paginate">
-								<%= will_paginate @devices %>
-							</div>
-							<table class="table table-striped table-bordered">
-								<thead>
-									<tr>
-										<th>Serial#</th>
-										<th class="td-actions">Venue</th>
-										<th class="td-actions">Status</th>
-										<th class="td-actions">Actions</th>
-									</tr>
-								</thead>
-								<tbody>
-									<% @devices.each do |device| %>
-									<tr>
-										<td><%= link_to device.device_id, merchant_device_path(@merchant, device) %></td>
-										<td class="td-actions"><%= device.merchant_venue.name %></td>
-										<td class="td-actions"><%= device.status %></td>
-										<td class="td-actions"><!-- --> 
-											<%= link_to(edit_merchant_device_path(@merchant, device), :class=>"btn btn-small btn-warning", :title=>"edit") do %> 
-											<!-- -->
-											<i class="btn-icon-only icon-edit"></i><!-- --> 
-											<% end %>
-											<%= link_to merchant_device_path(@merchant, device), :data => { :confirm => 'Do you want to delete this device' }, :method => :delete, :class=>"btn btn-small", :title=>"delete" do %>
-                              				<!-- -->
-                              				<i class="btn-icon-only icon-remove"></i>
-                              				<!-- -->
-                              				<% end %>
-                              			</td>
-									</tr>
-									<% end %>
-									<% if @devices.length == 0 %>
-									<tr>
-										<td colspan="4" class="no-data">No devices at the moment.</td>
-									</tr>
-									<% end %>
-								</tbody>
-							</table>
-							<div class="paginate">
-								<%= will_paginate @devices %>
+							<div class="tabbable">
+								<ul class="nav nav-tabs">
+									<li>
+										<a href="<%= merchant_path(@merchant) %>">Info</a>
+									</li>
+									<li>
+										<a href="<%= payment_subscription_merchant_path(@merchant) %>">Payment Subscription</a>
+									</li>
+									<li>
+										<a href="<%= merchant_invoices_path(@merchant) %>">Invoices</a>
+									</li>
+									<li>
+										<a href="<%= merchant_venues_path(@merchant) %>">Venues</a>
+									</li>
+									<li class="active">
+										<a href="<%= merchant_devices_path(@merchant) %>">Devices</a>
+									</li>
+								</ul>
+								<br>
+								<div class="tab-content">
+									<div class="tab-pane active" id="subscription">
+										<div class="widget widget-table action-table">
+											<div class="widget-header">
+												<i class="icon-cogs"></i>
+												<h3>Devices Listing (<%= link_to("New Device", new_merchant_device_path(@merchant)) %>)</h3>
+											</div>
+											<div class="widget-content">
+												<div class="paginate">
+													<%= will_paginate @devices %>
+												</div>
+												<table class="table table-striped table-bordered">
+													<thead>
+														<tr>
+															<th>Serial#</th>
+															<th class="td-actions">Venue</th>
+															<th class="td-actions">Type</th>
+															<th class="td-actions">Status</th>
+															<th class="td-actions">Actions</th>
+														</tr>
+													</thead>
+													<tbody>
+														<% @devices.each do |device| %>
+														<tr>
+															<td><%= link_to device.device_id, merchant_device_path(@merchant, device) %></td>
+															<td class="td-actions"><%= device.merchant_venue.name %></td>
+															<td class="td-actions"><%= device.type %></td>
+															<td class="td-actions"><%= device.status %></td>
+															<td class="td-actions"><!-- --> <%= link_to(edit_merchant_device_path(@merchant, device), :class=>"btn btn-small btn-warning", :title=>"edit") do %> <!-- --><i class="btn-icon-only icon-edit"></i><!-- --> <% end %>
+															<%= link_to merchant_device_path(@merchant, device), :data => { :confirm => 'Do you want to delete this device' }, :method => :delete, :class=>"btn btn-small", :title=>"delete" do %> <!-- --><i class="btn-icon-only icon-remove"></i><!-- --> <% end %> </td>
+														</tr>
+														<% end %>
+														<% if @devices.length == 0 %>
+														<tr>
+															<td colspan="5" class="no-data">No devices at the moment.</td>
+														</tr>
+														<% end %>
+													</tbody>
+												</table>
+												<div class="paginate">
+													<%= will_paginate @devices %>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
 							</div>
 						</div>
+						<!-- /widget-content -->
 					</div>
+					<!-- /widget -->
 				</div>
 			</div>
+			<!-- /row -->
 		</div>
+		<!-- /container -->
 	</div>
+	<!-- /main-inner -->
 </div>
+<!-- /main -->
+<!--
+<%= link_to 'Back', account_path %>
+-->

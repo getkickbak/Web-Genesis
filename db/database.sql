@@ -61,12 +61,14 @@ INSERT INTO challenge_types VALUES (2,'menu');
 INSERT INTO challenge_types VALUES (3,'photo');
 INSERT INTO challenge_types VALUES (4,'referral');
 INSERT INTO challenge_types VALUES (5,'custom');
+INSERT INTO challenge_types VALUES (6,'facebook');
 
 INSERT INTO merchant_challenge_types VALUES (1,1);
 INSERT INTO merchant_challenge_types VALUES (1,2);
 INSERT INTO merchant_challenge_types VALUES (1,3);
 INSERT INTO merchant_challenge_types VALUES (1,4);
 INSERT INTO merchant_challenge_types VALUES (1,5);
+INSERT INTO merchant_challenge_types VALUES (1,6);
 
 INSERT INTO badge_types VALUES (1,1,'newbie',1);
 INSERT INTO badge_types VALUES (2,1,'enthusiast',10);
@@ -142,6 +144,8 @@ INSERT INTO badge_type_images VALUES (9,'addict.png');
 INSERT INTO badge_type_images VALUES (10,'lifer.png');
 INSERT INTO badge_type_images VALUES (11,'boss.png');
 
-INSERT INTO reward_model_types VALUES (1,'amount_spend');
+INSERT INTO reward_model_types VALUES (1,'amount_spent');
 INSERT INTO reward_model_types VALUES (2,'items_purchased');
 INSERT INTO reward_model_types VALUES (3,'visits');
+
+INSERT INTO device_payment_plans VALUES ('Device Rental', 40.00, 55.00)

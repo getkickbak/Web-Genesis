@@ -20,12 +20,14 @@
          <p>Please provide the following info:</p>
          <%= f.input :name, :placeholder => "Full Name" %>
          <%= f.input :email, :placeholder => "Email Address" %>
-         <% if @user.errors.any? && @user.errors[:phone].length > 0 %>
+         <% if session[:phone_number].nil? || (@user.errors.any? && @user.errors[:phone].length > 0) %>
          <%= f.input :phone, :placeholder => "Phone Number" %>
          <% else %>
          <%= f.input :phone, :as => :hidden, :placeholder => "Phone Number", :input_html => { :value => session[:phone_number] } %>
          <% end %>
-         <%= f.input :tag_id, :placeholder => "Tag ID" %>
+         <% if !session[:has_tag] %>
+         <%= f.input :tag_id, :required => false, :placeholder => "Tag ID (If you have one)" %>
+         <% end %>
          <%= f.input :password, :placeholder => "Password" %>
       </div>
       <div class="login-actions" style="margin-top:10px;clear:both;">

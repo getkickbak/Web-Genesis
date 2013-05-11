@@ -34,6 +34,7 @@ class User
   property :authentication_token, String
   property :role, String, :required => true, :default => "anonymous"
   property :status, Enum[:active, :pending, :suspended, :deleted], :required => true, :default => :active
+  property :registration_reminder_count, Integer, :default => 0
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime
@@ -47,6 +48,7 @@ class User
   has 1, :subscription, :constraint => :destroy
   has 1, :user_to_facebook_auth, :constraint => :destroy
   has 1, :facebook_auth, 'ThirdPartyAuth', :through => :user_to_facebook_auth, :via => :third_party_auth
+  has 1, :facebook_share_settings, :constraint => :destroy
   has n, :user_to_tags, :constraint => :destroy
   has n, :tags, 'UserTag', :through => :user_to_tags, :via => :user_tag
   has n, :friendships, :child_key => [ :source_id ], :constraint => :destroy
@@ -59,7 +61,7 @@ class User
   has n, :credit_cards, :through => :user_credit_cards, :via => :credit_card
     
   validates_presence_of :phone, :if => lambda { |t| t.new? && t.status == :active }
-  validates_uniqueness_of :phone, :if => lambda { |t| t.new? && t.status == :active }
+  validates_uniqueness_of :phone, :if => lambda { |t| t.new? && t.status == :active && !t.phone.empty? }
   validates_with_method :phone, :method => :validate_phone  
   validates_with_method :tag_id, :method => :validate_tag_id
     
@@ -82,7 +84,7 @@ class User
     if (user_info.is_a? Hash) || (user_info.is_a? ActiveSupport::HashWithIndifferentAccess)
       name = user_info[:name].squeeze(' ').strip
       email = user_info[:email].strip
-      phone = user_info[:phone].strip
+      phone = user_info[:phone].strip if user_info.include? :phone
       password = user_info[:password].strip
       provider = user_info[:provider]
       uid = user_info[:uid]
@@ -104,17 +106,39 @@ class User
       tag_id = user_info.tag_id.strip
     end  
     
-    validate_user = false
-    user_tag = nil
-    if tag_id
+    validate_user = true
+    user = nil
+    if phone && !phone.empty?
+      if (user = User.first(:phone => phone))
+        if user.status == :pending
+          user.name = name
+          user.email = email
+          user.phone = phone
+          user.current_password = password
+          user.password = password
+          user.password_confirmation = password
+          user.role = role
+          user.status = status
+          user.tag_id = tag_id
+          user.update_ts = now
+          if tag_id.nil? || tag_id.empty?  
+            user_tag = user.tags.first 
+            if user_tag
+              user_tag.status = :active
+              user_tag.update_ts = now
+              user_tag.save
+            end
+          end   
+          validate_user = false
+        end
+      end
+    end
+    
+    if user.nil? && tag_id && !tag_id.empty?
       user_tag = UserTag.first(:tag_id => tag_id)
-      if user_tag.nil?
-        validate_user = true
-      else
+      if user_tag
         user_to_tag = UserToTag.first(:user_tag_id => user_tag.id)
-        if user_to_tag.nil?
-          validate_user = true
-        else
+        if user_to_tag
           if user_to_tag.user_tag.status == :pending
             user = user_to_tag.user
             user.name = name
@@ -125,19 +149,19 @@ class User
             user.password_confirmation = password
             user.role = role
             user.status = status
+            user.tag_id = tag_id
             user.update_ts = now
             user_tag = user_to_tag.user_tag
             user_tag.status = :active
             user_tag.update_ts = now
             user_tag.save
-          else
-            validate_user = true
+            validate_user = false
           end   
         end  
       end  
     end
     
-    if validate_user || tag_id.nil?
+    if user.nil? || validate_user
       user =  User.new(
         {
           :name => name,
@@ -170,6 +194,10 @@ class User
       )
     end
     if user.new?
+      user.facebook_share_settings = FacebookShareSettings.new
+      user.facebook_share_settings[:created_ts] = now
+      user.facebook_share_settings[:update_ts] = now
+    
       user.subscription = Subscription.new
       user.subscription[:created_ts] = now
       user.subscription[:update_ts] = now
@@ -260,15 +288,6 @@ class User
       self.facebook_auth.token = facebook_auth_info[:token] || ""
     end
     save
-  end 
-    
-  def update_subscription(subscription_info)
-    if self.subscription.nil?
-      Subscription.create(self)
-      return true
-    end
-    self.subscription.email_notif = subscription_info[:email_notif] if subscription_info[:email_notif]
-    save
   end
   
   def register_tag(tag, status = :active)
@@ -320,18 +339,28 @@ class User
   private
   
   def validate_tag_id
-    if self.tag_id && self.new?
-      return [false, I18n.t('errors.messages.invalid_tag')] if (user_tag = UserTag.first(:tag_id => self.tag_id)).nil?
-      return [false, I18n.t('errors.messages.invalid_tag')] if user_tag.status != :pending
+    if self.tag_id && !self.tag_id.empty?
+      user_tag = UserTag.first(:tag_id => self.tag_id)
+      if self.new?
+        return [false, I18n.t('errors.messages.invalid_tag')] if user_tag.nil?
+        return [false, I18n.t('errors.messages.tag_already_in_use')] if user_tag.status != :pending
+      else
+        user_to_tag = UserToTag.first(:fields => [:user_id], :user_tag_id => user_tag.id)
+        if user_to_tag && user_to_tag.user_id != self.id
+          return [false, I18n.t('errors.messages.tag_already_in_use')]
+        end
+      end  
     end
     return true
   end
   
   def validate_phone
-    if not self.phone.empty?
+    if self.phone && !self.phone.empty?
       self.phone.gsub!(/\-/, "")
       if !self.phone.match(/^[\d]+$/) || self.phone.length != 10
-        return [false, I18n.t('errors.messages.phone_format', :attribute => I18n.t('activemodel.attributes.contact.phone')) % [10]]  
+        return [false, I18n.t('errors.messages.phone_format', :attribute => User.human_attribute_name(:phone)) % [10]]  
+      elsif !self.new? && !(user = User.first(:phone => self.phone)).nil? && self.id != user.id
+        return [false, I18n.t('errors.taken', :attribute => User.human_attribute_name(:phone))]
       end
     end
     return true

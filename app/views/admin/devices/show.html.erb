@@ -25,14 +25,26 @@
 					<div class="widget ">
 						<div class="widget-header">
 							<i class="icon-money"></i>
-							<h3>Device</h3>
+							<h3>Merchant</h3>
 						</div>
 						<!-- /widget-header -->
 						<div class="widget-content">
 							<div class="tabbable">
 								<ul class="nav nav-tabs">
+									<li>
+										<a href="<%= merchant_path(@merchant) %>">Info</a>
+									</li>
+									<li>
+										<a href="<%= payment_subscription_merchant_path(@merchant) %>">Payment Subscription</a>
+									</li>
+									<li>
+										<a href="<%= merchant_invoices_path(@merchant) %>">Invoices</a>
+									</li>
+									<li>
+										<a href="<%= merchant_venues_path(@merchant) %>">Venues</a>
+									</li>
 									<li class="active">
-										<a href="#device" data-toggle="tab">Info</a>
+										<a href="<%= merchant_devices_path(@merchant) %>">Devices</a>
 									</li>
 								</ul>
 								<br>
@@ -58,7 +70,7 @@
 												</div>
 											</div>
 											<%= link_to 'Edit', edit_merchant_device_path(@merchant, @device) %> |
-        									<%= link_to 'Back', merchant_devices_path %>
+        									<%= link_to 'Back', merchant_devices_path(@merchant) %>
 										</div>
 									</div>
 								</div>

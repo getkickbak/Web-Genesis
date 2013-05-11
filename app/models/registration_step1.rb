@@ -30,8 +30,8 @@ class RegistrationStep1
       phone = phone_number.gsub(/\-/, "")
       if !phone.match(/^[\d]+$/) || phone.length != 10
         errors.add(:phone_number, I18n.t('errors.messages.phone_format', :attribute => I18n.t('activemodel.attributes.contact.phone')) % [10])
-      elsif User.first(:phone => phone)
-        errors.add(:phone_number, I18n.t('errors.taken', :attribute => self.class.human_attribute_name(:phone_number)))
+      elsif (user = User.first(:phone => phone)) && user.status == :active
+        errors.add(:phone_number, I18n.t('errors.taken', :attribute => User.human_attribute_name(:phone_number)))
       end
     end
   end

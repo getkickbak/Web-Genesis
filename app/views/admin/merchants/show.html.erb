@@ -32,12 +32,24 @@
 							<div class="tabbable">
 								<ul class="nav nav-tabs">
 									<li class="active">
-										<a href="#merchant" data-toggle="tab">Info</a>
+										<a href="<%= merchant_path(@merchant) %>">Info</a>
+									</li>
+									<li>
+										<a href="<%= payment_subscription_merchant_path(@merchant) %>">Payment Subscription</a>
+									</li>
+									<li>
+										<a href="<%= merchant_invoices_path(@merchant) %>">Invoices</a>
+									</li>
+									<li>
+										<a href="<%= merchant_venues_path(@merchant) %>">Venues</a>
+									</li>
+									<li>
+										<a href="<%= merchant_devices_path(@merchant) %>">Devices</a>
 									</li>
 								</ul>
 								<br>
 								<div class="tab-content">
-									<div class="tab-pane active" id="merchant">
+									<div class="tab-pane active" id="info">
 										<div class="not-edit form-horizontal">
 											<div class="control-group">
 												<label class="control-label"> Name: </label>
@@ -77,20 +89,56 @@
 												</div>
 											</div>
 											<% end %>
+											<% if not @merchant.facebook_page_id.empty? %>
+											<div class="control-group">
+												<label class="control-label"> Facebook Page ID: </label>
+												<div class="controls">
+													<%= @merchant.facebook_page_id %>
+												</div>
+											</div>
+											<% end %>
 											<div class="control-group">
 												<label class="control-label"> Status: </label>
 												<div class="controls">
 													<%= @merchant.status %>
 												</div>
 											</div>
-											<div>
-               									<%= link_to 'List Devices', merchant_devices_path(@merchant), :class=>"btn btn-small" %>
-            								</div>
-            								<div style="margin: 10px 0;">
-               									<%= link_to 'Login', merchant_session_url(:subdomain => "merchant", :auth_token => @merchant.authentication_token, :sid => @current_staff.id), :class=>"btn btn-small", :target => "_blank" %>
-            								</div>
-											<%= link_to 'Edit', edit_merchant_path(@merchant) %> |
-        									<%= link_to 'Back', merchants_path %>
+											<% if @merchant.payment_subscription %>
+											<div class="control-group">
+												<label class="control-label"> Plan: </label>
+												<div class="controls">
+													<%= PaymentPlan.id_to_plan[@merchant.payment_subscription.plan_id].name %>
+												</div>
+											</div>
+											<% if @merchant.payment_subscription.start_date != Constant::MIN_DATE %>
+											<div class="control-group">
+												<label class="control-label"> Start Date: </label>
+												<div class="controls">
+													<%= @merchant.payment_subscription.start_date.strftime("%b %d, %Y") %>
+												</div>
+											</div>
+											<% end %>
+											<% if @merchant.payment_subscription.end_date != Constant::MAX_DATE %>
+											<div class="control-group">
+												<label class="control-label"> End Date: </label>
+												<div class="controls">
+													<%= @merchant.payment_subscription.end_date.strftime("%b %d, %Y") %>
+												</div>
+											</div>
+											<% end %>
+											<% end %>
+											<% if @merchant.will_terminate %>
+											<div class="control-group">
+												<label class="control-label"> Termination Date: </label>
+												<div class="controls">
+													<%= @merchant.termination_date.strftime("%b %d, %Y") %>
+												</div>
+											</div>
+											<% end %>
+											<div style="margin: 10px 0;">
+												<%= link_to 'Login', merchant_session_url(:subdomain => "merchant", :auth_token => @merchant.authentication_token, :sid => @current_staff.id), :class=>"btn btn-small", :target => "_blank" %>
+											</div>
+											<%= link_to 'Edit', edit_merchant_path(@merchant) %>
 										</div>
 									</div>
 								</div>

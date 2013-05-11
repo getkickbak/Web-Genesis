@@ -135,6 +135,23 @@ class Common
     return rewards
   end
 
+  def self.get_challenges_by_merchant(merchant)
+    challenge_ids = []
+    challenges = Challenge.all(:merchant => merchant)
+    challenges.each do |challenge|
+      challenge_ids << challenge.id
+    end
+    challenge_id_to_type_id = {}
+    challenge_to_types = ChallengeToType.all(:fields => [:challenge_id, :challenge_type_id], :challenge_id => challenge_ids)
+    challenge_to_types.each do |challenge_to_type|
+      challenge_id_to_type_id[challenge_to_type.challenge_id] = challenge_to_type.challenge_type_id
+    end
+    challenges.each do |challenge|
+      challenge.eager_load_type = ChallengeType.id_to_type[challenge_id_to_type_id[challenge.id]]
+    end  
+    return challenges
+  end
+  
   def self.find_next_badge(badges, badge)
     idx = badges.bsearch_upper_boundary {|x| x.rank <=> badge.rank}
     idx = (idx > (badges.length - 1) ? badges.length - 1 : idx)
@@ -256,14 +273,66 @@ class Common
     return newsfeed
   end
 
-  def connect_to_facebook(user, posts)
-    @graph = Koala::Facebook::API.new(user.token)
-    @graph.batch do |batch_api|
-      posts.each do |post|
-        #batch_api.put_connections("me", "namespace:action", :object => object_url) if post.type == "checkin"
-        batch_api.put_wall_post(post.message, {:picture => post.picture, :name => post.link_name, :link => post.link, :caption => post.caption, :description => post.description}) if post.type == "share"
-      end 
+  def self.connect_to_facebook(user, posts)
+    success_posts = 0
+    if (user.facebook_share_settings.checkins || user.facebook_share_settings.badge_promotions || user.facebook_share_settings.rewards) && user.facebook_auth
+      oauth = Koala::Facebook::OAuth.new(APP_PROP["FACEBOOK_APP_ID"], APP_PROP["FACEBOOK_APP_SECRET"])
+      graph = Koala::Facebook::API.new(oauth.get_app_access_token)
+      has_permission = false
+      visible_to_friends = false
+      permissions = graph.get_connections(user.facebook_auth.uid, "permissions")
+      if permissions.length == 0
+        error_info = {
+          "type" => "OAuthException", 
+          "code" => "190", 
+          "error_subcode" => "458", 
+          "message" => "Internal Raised Exception"
+        }
+        raise Koala::Facebook::APIError.new(400, nil, error_info)
+      end
+      if permissions[0]["publish_actions"]
+        has_permission = true
+      end
+      user_graph = Koala::Facebook::API.new(user.facebook_auth.token)
+      privacy = user_graph.fql_query("SELECT value FROM privacy_setting WHERE name = 'default_stream_privacy'")
+      if privacy[0]["value"] != "SELF" && privacy[0]["value"] != "NO_FRIENDS"
+        visible_to_friends = true
+      end
+      Rails.logger.info("Privacy Setting: #{privacy}")
+      Rails.logger.info("has_permission: #{has_permission}, visible_to_friends: #{visible_to_friends}")
+      if has_permission && visible_to_friends
+        results = graph.batch do |batch_api|
+          for i in 0..posts.length-1
+            post = posts[i]
+            if post[:type] == "earn_points" && user.facebook_share_settings.checkins
+              batch_api.put_wall_post(
+                post[:message], 
+                {
+                  :place => post[:page_id]
+                },
+                user.facebook_auth.uid
+              )
+            elsif (post[:type] == "redeem" && user.facebook_share_settings.rewards) || (post[:type] == "badge_promotion" && user.facebook_share_settings.badge_promotions)
+              batch_api.put_wall_post(
+                post[:message], 
+                {
+                  :picture => post[:picture], :name => post[:link_name], :link => post[:link], :caption => post[:caption], :description => post[:description]
+                },
+                user.facebook_auth.uid
+              )
+            end
+          end
+        end
+        for x in 0..results.length-1
+          if results[x].is_a? Koala::Facebook::ClientError
+            Rails.logger.error("Facebook post type(#{posts[x][:type]}), error: #{results[x].message}")
+          else
+            success_posts += 1  
+          end
+        end
+      end
     end
+    return success_posts
   end 
     
   private

@@ -48,11 +48,11 @@ class Api::V1::UsersController < Api::V1::BaseApplicationController
           existing_user = facebook_auth ? facebook_auth.user : existing_user
         end
         if existing_user.nil? || (existing_user.id == current_user.id)
-          @user.update_facebook_auth({:provider => "facebook", :uid => facebook_id, :token => params[:accessToken]})
-          if params[:gender] && params[:birthday]
+          @user.update_facebook_auth({:provider => "facebook", :uid => facebook_id, :token => user_info[:accessToken]})
+          if user_info[:gender] && user_info[:birthday]
             profile_info = {
-              :gender => params[:gender],
-              :birthday => params[:birthday]
+              :gender => user_info[:gender],
+              :birthday => user_info[:birthday]
             }
             @user.profile.update(profile_info)
             @user.save

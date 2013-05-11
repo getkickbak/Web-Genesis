@@ -18,10 +18,10 @@ class Api::V1::CheckInsController < Api::V1::BaseApplicationController
           end
           cipher = Gibberish::AES.new(venue.auth_code)
           decrypted = cipher.dec(encrypted_data[1])
-          decrypted_data = JSON.parse(decrypted)
-          checkInCode = CheckInCode.first(:auth_code => decrypted_data["auth_code"])
+          decrypted_data = JSON.parse(decrypted, { :symbolize_names => true })
+          checkInCode = CheckInCode.first(:auth_code => decrypted_data[:auth_code])
           if checkInCode.nil?
-            raise "Incorrect check-in code: #{decrypted_data["auth_code"]}"
+            raise "Incorrect check-in code: #{decrypted_data[:auth_code]}"
           end
           @venue = checkInCode.venue
         rescue StandardError => e

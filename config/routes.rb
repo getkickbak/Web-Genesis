@@ -83,7 +83,13 @@ Genesis::Application.routes.draw do
       end
       resources :staffs
       resources :merchants do
+        resources :venues, :only => [:index, :edit, :update]
         resources :devices
+        resources :invoices do
+          post "pay", :on => :member, :as => :pay
+        end
+        get "payment_subscription", :on => :member, :as => :payment_subscription
+        put "update_payment_subscription", :on => :member, :as => :update_payment_subscription
       end
       
       match "/marketing" => 'marketing#index', :as => :marketing
@@ -103,7 +109,7 @@ Genesis::Application.routes.draw do
       root :to => redirect("/merchants")
     end
   end
-
+  
   constraints Domain do
     devise_for :users, :path => "", :controllers => {
       :sessions => "user_devise/sessions",
@@ -112,7 +118,7 @@ Genesis::Application.routes.draw do
       :omniauth_callbacks => "user_devise/omniauth_callbacks"
     } do
       match "/facebook_sign_in" => 'user_devise/sessions#create_from_facebook'
-      get '/users/auth/:provider' => 'user_devise/omniauth_callbacks#passthru'
+      get "/auth/failure" => "user_devise/omniauth_callbacks#failure"
     end
     
     namespace :api do
@@ -163,6 +169,7 @@ Genesis::Application.routes.draw do
     constraints :user_agent => /iPhone/ do
       match "/download" => redirect {|params, req| "http://itunes.apple.com/us/app/kickbak-inc/id537476722?ls=1&mt=8" }
       match "/d" => redirect {|params, req| "http://itunes.apple.com/us/app/kickbak-inc/id537476722?ls=1&mt=8" }
+      root :to => redirect {|params, req| "http://m.dev1getkickbak.com" } 
     end
     #constraints :user_agent => /Android/ do
     #  match "/download" => redirect {|params, req| "https://play.google.com/store/apps/details?id=com.kickbak.android" }
@@ -170,10 +177,12 @@ Genesis::Application.routes.draw do
     constraints :user_agent => /Android/ do
       match "/download" => redirect {|params, req| "https://play.google.com/store/apps/details?id=com.getkickbak.kickbak" }
       match "/d" => redirect {|params, req| "https://play.google.com/store/apps/details?id=com.getkickbak.kickbak" }
+      root :to => redirect {|params, req| "http://m.dev1getkickbak.com" } 
     end
     constraints :user_agent => /BlackBerry|Windows/ do
       match "/download" => redirect {|params, req| "http://www.getkickbak.com/" }
       match "/d" => redirect {|params, req| "http://www.getkickbak.com/" }
+      root :to => redirect {|params, req| "http://m.dev1getkickbak.com" } 
     end
     
     match "/dashboard" => 'dashboard#index', :as => :dashboard
@@ -189,6 +198,9 @@ Genesis::Application.routes.draw do
     match "/account/facebook_settings" => 'users#facebook_settings', :as => :facebook_settings
     match "/account/facebook_settings/disconnect" => 'users#facebook_disconnect', :via => :post, :as => :facebook_disconnect
     match "/account/facebook_settings/update" => 'users#update_facebook_settings', :via => :post, :as => :update_facebook_settings
+    match "/account/facebook_settings/update_facebook_checkins" => 'users#update_facebook_checkins', :via => :post, :as => :update_facebook_checkins
+    match "/account/facebook_settings/update_facebook_badge_promotions" => 'users#update_facebook_badge_promotions', :via => :post, :as => :update_facebook_badge_promotions
+    match "/account/facebook_settings/update_facebook_rewards" => 'users#update_facebook_rewards', :via => :post, :as => :update_facebook_rewards
     
     match "/validate_phone" => 'pages#validate_phone', :via => :post, :as => :validate_phone
     #match "/how_it_works" => 'pages#how_it_works'

@@ -197,6 +197,11 @@ if exists
     end
     badge_type_visits[visit_frequency_type.value][badge_type_id_to_type[setting.badge_type_id].value] = setting.visits  
   end
+  payment_plan_id_to_plan = {}
+  payment_plans = PaymentPlan.all
+  payment_plans.each do |plan|
+    payment_plan_id_to_plan[plan.id] = plan
+  end
   MerchantType.values = merchant_type_values
   MerchantType.value_to_name = merchant_type_value_to_name
   MerchantType.id_to_type = merchant_type_id_to_type
@@ -226,4 +231,5 @@ if exists
   VisitFrequencyType.values = visit_frequency_type_values
   VisitFrequencyType.value_to_name = visit_frequency_type_value_to_name
   VisitFrequencyType.id_to_type = visit_frequency_type_id_to_type
+  PaymentPlan.id_to_plan = payment_plan_id_to_plan
 end

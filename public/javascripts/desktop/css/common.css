@@ -178,3 +178,8 @@ form.form-inline span.error { color: #b94a48; }
 	border-radius:3px;
 	text-decoration:none;
 }
+
+.facebook-connect-promo {
+	background-color: #fff9d7;
+	border: 1px solid #e2c822;
+}
