@@ -20,6 +20,8 @@ class Api::V1::RegistrationsController < Api::V1::BaseApplicationController
             return  
           end
           user_info[:provider] = "facebook"
+          user_info[:uid] = user_info[:facebook_id]
+          user_info[:token] = user_info[:accessToken]
         end
         @user = User.create(user_info)
         @results = Customer.find(@user.id, start, max)
