@@ -171,7 +171,7 @@ Genesis::Application.routes.draw do
     constraints :user_agent => /iPhone/ do
       match "/download" => redirect {|params, req| "http://itunes.apple.com/us/app/kickbak-inc/id537476722?ls=1&mt=8" }
       match "/d" => redirect {|params, req| "http://itunes.apple.com/us/app/kickbak-inc/id537476722?ls=1&mt=8" }
-      root :to => redirect {|params, req| "http://m.dev1getkickbak.com" } 
+      root :to => redirect {|params, req| "http://m.getkickbak.com" } 
     end
     #constraints :user_agent => /Android/ do
     #  match "/download" => redirect {|params, req| "https://play.google.com/store/apps/details?id=com.kickbak.android" }
@@ -179,12 +179,12 @@ Genesis::Application.routes.draw do
     constraints :user_agent => /Android/ do
       match "/download" => redirect {|params, req| "https://play.google.com/store/apps/details?id=com.getkickbak.kickbak" }
       match "/d" => redirect {|params, req| "https://play.google.com/store/apps/details?id=com.getkickbak.kickbak" }
-      root :to => redirect {|params, req| "http://m.dev1getkickbak.com" } 
+      root :to => redirect {|params, req| "http://m.getkickbak.com" } 
     end
     constraints :user_agent => /BlackBerry|Windows/ do
       match "/download" => redirect {|params, req| "http://www.getkickbak.com/" }
       match "/d" => redirect {|params, req| "http://www.getkickbak.com/" }
-      root :to => redirect {|params, req| "http://m.dev1getkickbak.com" } 
+      root :to => redirect {|params, req| "http://m.getkickbak.com" } 
     end
     
     match "/dashboard" => 'dashboard#index', :as => :dashboard

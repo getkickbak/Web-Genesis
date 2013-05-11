@@ -258,6 +258,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
                   if @decrypted_data[:phone_id]
                     if (@current_user = User.first(:phone => @decrypted_data[:phone_id]))
                       if @current_user.status == :pending
+                        tag.uid = @decrypted_data[:uid] if tag.uid.empty?
                         @current_user.register_tag(tag, tag.status)
                       else
                         respond_to do |format|
@@ -316,6 +317,11 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
                       end
                       normal_exit = true
                       raise
+                    else
+                      if tag.uid.empty?
+                        tag.uid = @decrypted_data[:uid] 
+                        tag.save   
+                      end
                     end
                   else
                     logger.error("No user is associated with this non-pending tag: #{tag.tag_id}")
