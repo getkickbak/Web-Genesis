@@ -364,12 +364,14 @@ Ext.define('Genesis.controller.server.Rewards',
          }, Ext.bind(me.onRewardItem, me, arguments));
          viewport.setActiveController(me);
       }
-      else
-      {
-         me.rewardItemFn(
-         {
-         }, false);
-      }
+      /*
+       else
+       {
+       me.rewardItemFn(
+       {
+       }, false);
+       }
+       */
    },
    // --------------------------------------------------------------------------
    // Amount Tab
