@@ -317,6 +317,11 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
                       end
                       normal_exit = true
                       raise
+                    else
+                      if tag.uid.empty?
+                        tag.uid = @decrypted_data[:uid] 
+                        tag.save   
+                      end
                     end
                   else
                     logger.error("No user is associated with this non-pending tag: #{tag.tag_id}")
