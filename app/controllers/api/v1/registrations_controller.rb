@@ -19,6 +19,7 @@ class Api::V1::RegistrationsController < Api::V1::BaseApplicationController
             end
             return  
           end
+          user_info[:provider] = "facebook"
         end
         @user = User.create(user_info)
         @results = Customer.find(@user.id, start, max)
