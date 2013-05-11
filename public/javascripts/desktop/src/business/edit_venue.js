@@ -5,8 +5,9 @@ $(document).ready($(function()
    var address = $("#venue_address");
    var city = $("#venue_city");
    var state = $("#venue_state");
+   var zipcode = $("#venue_zipcode");
    var country = $("#venue_country");
-   var realAddress = address.val() + "," + city.val() + "," + state.val() + "," + country.val()
+   var realAddress = address.val() + "," + city.val() + "," + state.val() + "," + zipcode.val() + "," + country.val()
    $gmap.gMap(
    {
       markers : [
@@ -29,8 +30,10 @@ $(document).ready($(function()
          return
       if (state.val().length == 0)
          return
+      if (zipcode.val().length == 0)
+         return
       if (country.val().length == 0)
-         return realAddress = address.val() + "," + city.val() + "," + state.val() + "," + country.val()
+         return realAddress = address.val() + "," + city.val() + "," + state.val() + "," + zipcode.val() + "," + country.val();
       geocoder.geocode(
       {
          'address' : realAddress
@@ -65,5 +68,6 @@ $(document).ready($(function()
    address.focusout(set_coordinates);
    city.focusout(set_coordinates);
    state.focusout(set_coordinates);
+   zipcode.focusout(set_coordinates);
    country.focusout(set_coordinates);
 }));
