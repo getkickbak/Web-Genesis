@@ -145,6 +145,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
       var storeName = me.getRedeemStore(), store = Ext.StoreMgr.get(storeName);
       var params =
       {
+         version : Genesis.constants.serverVersion,
          venue_id : venueId
       }
       var message = me.lookingForMobileDeviceMsg();

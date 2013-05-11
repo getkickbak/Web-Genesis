@@ -176,6 +176,7 @@ Ext.define('Genesis.controller.server.Rewards',
 
          params = Ext.merge(params,
          {
+            version : Genesis.constants.serverVersion,
             'venue_id' : Genesis.fn.getPrivKey('venueId'),
             data :
             {
