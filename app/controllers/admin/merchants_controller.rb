@@ -132,6 +132,7 @@ module Admin
       @payment_subscription = @merchant.payment_subscription
       if @payment_subscription.nil?
         MerchantPaymentSubscription.create(@merchant)
+        @payment_subscription = @merchant.payment_subscription
       end
       if @payment_subscription.start_date == Constant::MIN_DATE
         @payment_subscription.start_date = Date.today
