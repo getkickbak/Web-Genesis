@@ -5,8 +5,9 @@ $(document).ready($(function()
    var address = $("#venue_address");
    var city = $("#venue_city");
    var state = $("#venue_state");
+   var zipcode = $("#venue_zipcode");
    var country = $("#venue_country");
-   var realAddress = address.html() + "," + city.html() + "," + state.html() + "," + country.html()
+   var realAddress = address.html() + "," + city.html() + "," + state.html() + "," + zipcode.html() + "," + country.html();
    $gmap.gMap(
    {
       markers : [
