@@ -8,7 +8,7 @@ class Venue
   property :id, Serial
   property :device_type, Enum[:wifi, :internet], :required => true, :default => :wifi
   property :name, String, :length => 24, :required => true, :default => ""
-  property :description, String, :length => 512, :required => true, :default => ""
+  property :description, String, :length => 1024, :required => true, :default => ""
   property :address, String, :required => true, :default => ""
   property :city, String, :required => true, :default => ""
   property :state, String, :required => true, :default => ""
