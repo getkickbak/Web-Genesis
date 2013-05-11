@@ -84,7 +84,7 @@ class User
     if (user_info.is_a? Hash) || (user_info.is_a? ActiveSupport::HashWithIndifferentAccess)
       name = user_info[:name].squeeze(' ').strip
       email = user_info[:email].strip
-      phone = user_info[:phone].strip
+      phone = user_info[:phone].strip if user_info.include? :phone
       password = user_info[:password].strip
       provider = user_info[:provider]
       uid = user_info[:uid]
@@ -355,7 +355,7 @@ class User
   end
   
   def validate_phone
-    if not self.phone.empty?
+    if self.phone && !self.phone.empty?
       self.phone.gsub!(/\-/, "")
       if !self.phone.match(/^[\d]+$/) || self.phone.length != 10
         return [false, I18n.t('errors.messages.phone_format', :attribute => User.human_attribute_name(:phone)) % [10]]  
