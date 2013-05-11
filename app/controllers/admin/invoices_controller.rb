@@ -45,26 +45,26 @@ module Admin
         Invoice.transaction do
           invoice = params[:invoice]
           if invoice
-            charges = 0
             invoice[:type] = :one_time
-            invoice[:items_attributes].each do |item|
-              if !item[1][:price].blank? && !item[1][:quantity].blank?
-                charges += item[1][:price].to_f * item[1][:quantity].to_i
-              elsif !item[1][:amount].blank?
-                charges += item[1][:amount]
-              end  
-            end
-            invoice[:charges] = charges
-            tax = charges * 0.13
-            invoice[:tax] = tax
-            amount = charges + tax
-            invoice[:amount] = amount
           else
             invoice = Invoice.new
             invoice.errors[:base] << t("admin.invoices.min_items")
             raise DataMapper::SaveFailureError.new("", invoice)
           end
           @invoice = Invoice.create(@merchant, params[:invoice])
+          charges = 0.00
+          @invoice.items.each do |item|
+            if item.price > 0.00 && item.quantity > 0
+              charges += item.price * item.quantity
+            elsif item.amount > 0.00
+              charges += item.amount
+            end
+          end
+          @invoice.charges = charges
+          tax = charges * 0.13
+          @invoice.tax = tax
+          amount = charges + tax
+          @invoice.amount = amount
 =begin          
           result = Braintree::Transaction.sale(
             :amount => @invoice.amount,
@@ -94,6 +94,11 @@ module Admin
         end
       rescue Stripe::CardError => e
         # Since it's a decline, Stripe::CardError will be caught
+        if !@invoice.id.nil?
+          invoice = Invoice.new
+          invoice.items = @invoice.items
+          @invoice = invoice
+        end
         flash[:error] = "#{e.json_body[:error][:message]}"  
         respond_to do |format|
           format.html { render :action => "new" }
@@ -101,6 +106,11 @@ module Admin
         end
       rescue Stripe::InvalidRequestError => e
         # Invalid parameters were supplied to Stripe's API
+        if !@invoice.id.nil?
+          invoice = Invoice.new
+          invoice.items = @invoice.items
+          @invoice = invoice
+        end
         flash[:error] = "#{e.json_body[:error][:message]}"
         respond_to do |format|
           format.html { render :action => "new" }
@@ -109,6 +119,11 @@ module Admin
       rescue Stripe::AuthenticationError => e
         # Authentication with Stripe's API failed
         # (maybe you changed API keys recently)
+        if !@invoice.id.nil?
+          invoice = Invoice.new
+          invoice.items = @invoice.items
+          @invoice = invoice
+        end
         flash[:error] = "#{e.json_body[:error][:message]}"
         respond_to do |format|
           format.html { render :action => "new" }
@@ -116,6 +131,11 @@ module Admin
         end
       rescue Stripe::APIConnectionError => e
         # Network communication with Stripe failed
+        if !@invoice.id.nil?
+          invoice = Invoice.new
+          invoice.items = @invoice.items
+          @invoice = invoice
+        end
         flash[:error] = "#{e.json_body[:error][:message]}"
         respond_to do |format|
           format.html { render :action => "new" }
@@ -124,6 +144,11 @@ module Admin
       rescue Stripe::StripeError => e
         # Display a very generic error to the user, and maybe send
         # yourself an email 
+        if !@invoice.id.nil?
+          invoice = Invoice.new
+          invoice.items = @invoice.items
+          @invoice = invoice
+        end
         flash[:error] = "#{e.json_body[:error][:message]}"
         respond_to do |format|
           format.html { render :action => "new" }
