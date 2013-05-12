@@ -298,8 +298,8 @@ class Common
       if privacy[0]["value"] != "SELF" && privacy[0]["value"] != "NO_FRIENDS"
         visible_to_friends = true
       end
-      Rails.logger.info("Privacy Setting: #{privacy}")
-      Rails.logger.info("has_permission: #{has_permission}, visible_to_friends: #{visible_to_friends}")
+      #Rails.logger.info("Privacy Setting: #{privacy}")
+      #Rails.logger.info("has_permission: #{has_permission}, visible_to_friends: #{visible_to_friends}")
       if has_permission && visible_to_friends
         results = graph.batch do |batch_api|
           for i in 0..posts.length-1
