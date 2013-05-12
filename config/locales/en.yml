@@ -175,6 +175,7 @@ en:
       inactive_tag: "Sorry, this key tag needs to be registered first."
       inactive_user: "User account is not active.\nPlease try again."
       invalid_tag: "This key tag is not valid."
+      uninitialized_tag: "This is a blank key tag."
       invalid_user: "Problem with this user account.\nPlease contact support."
       invalid_phone: "This phone number is not valid."
       missing_user_info: "Missing user identification info."

@@ -29,11 +29,21 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
       decrypted_data = JSON.parse(decrypted, { :symbolize_names => true })
       @tag = UserTag.first(:tag_id => decrypted_data[:tag_id])
       if @tag.nil?
-        raise "No such tag: #{decrypted_data[:tag_id]}"
+        logger.error("No such tag: #{decrypted_data[:tag_id]}")
+        respond_to do |format|
+          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+          format.json { render :json => { :success => false, :message => t("api.invalid_tag").split(/\n/) } }
+        end
+        return
       end
       user_to_tag = UserToTag.first(:fields => [:user_id], :user_tag_id => @tag.id)
       if user_to_tag.nil?
-        raise "No user is associated with this tag: #{decrypted_data[:tag_id]}"
+        logger.error("No user is associated with this tag: #{decrypted_data[:tag_id]}")
+        respond_to do |format|
+          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+          format.json { render :json => { :success => false, :message => t("api.uninitialized_tag").split(/\n/) } }
+        end
+        return
       end
       @user = User.get(user_to_tag.user_id)
       if @user.nil?
