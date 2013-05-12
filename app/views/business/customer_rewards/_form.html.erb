@@ -28,8 +28,10 @@
 	<%= f.input :price, :input_html=>{:class => "input-medium"} %>
 	<% end %>
 	<%= f.input :points, :input_html=>{:class => "input-medium"} %>
-	<!-- <%= f.input :photo, :as => :file, :required => false %> -->
-	<!-- <%= f.hidden_field :photo_cache %> -->
+	<% if session[:is_admin] %>
+	<%= f.input :photo, :as => :file, :required => false %>
+	<%= f.hidden_field :photo_cache %>
+	<% end %>
 	<%= f.input :quantity_limited, :as => :boolean %>
 	<% if @customer_reward.quantity_limited %>
 	<%= f.input :quantity, :input_html=>{:class => "input-medium"}, :wrapper_html => { :id => 'customer_reward_quantity_wrap' }%>
