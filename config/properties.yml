@@ -1,8 +1,6 @@
 development:
-  FILE_HOST: s3.amazonaws.com/files.getkickbak.com
-  PHOTO_HOST : s3.amazonaws.com/photos.getkickbak.com
-  #FILE_HOST: devfiles.getkickbak.com
-  #PHOTO_HOST : devphotos.getkickbak.com
+  FILE_HOST: devfiles.getkickbak.com
+  PHOTO_HOST : devphotos.getkickbak.com
   AMAZON_FILES_BUCKET: devfiles.getkickbak.com
   AMAZON_PHOTOS_BUCKET: devphotos.getkickbak.com
   REDIS_URL: "redis://kickbak:028ab069d968aa7768089e0f7f02c8ac@drum.redistogo.com:9431/"  
@@ -22,10 +20,8 @@ development:
   TWILIO_AUTH_TOKEN: "8f349236bd1d2c4ccd0274a58cef05ec"
   TWILIO_NUMBER: "+16479316204"
 test:
-  FILE_HOST: s3.amazonaws.com/files.getkickbak.com
-  PHOTO_HOST : s3.amazonaws.com/photos.getkickbak.com
-  #FILE_HOST: devfiles.getkickbak.com
-  #PHOTO_HOST : devphotos.getkickbak.com
+  FILE_HOST: devfiles.getkickbak.com
+  PHOTO_HOST : devphotos.getkickbak.com
   AMAZON_FILES_BUCKET: devfiles.getkickbak.com
   AMAZON_PHOTOS_BUCKET: devphotos.getkickbak.com
   REDIS_URL: "redis://kickbak:028ab069d968aa7768089e0f7f02c8ac@drum.redistogo.com:9431/"  
@@ -45,10 +41,8 @@ test:
   TWILIO_AUTH_TOKEN: "8f349236bd1d2c4ccd0274a58cef05ec"
   TWILIO_NUMBER: "+16479316204"
 production:
-  FILE_HOST: s3.amazonaws.com/files.getkickbak.com
-  PHOTO_HOST : s3.amazonaws.com/photos.getkickbak.com
-  #FILE_HOST: files.getkickbak.com
-  #PHOTO_HOST : photos.getkickbak.com
+  FILE_HOST: files.getkickbak.com
+  PHOTO_HOST : photos.getkickbak.com
   AMAZON_FILES_BUCKET: files.getkickbak.com
   AMAZON_PHOTOS_BUCKET: photos.getkickbak.com
   #REDIS_URL: "redis://username:password@127.0.0.1:6379/"
