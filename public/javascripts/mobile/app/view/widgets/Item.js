@@ -200,7 +200,7 @@ Ext.define('Genesis.view.widgets.RedeemItem',
             getPhoto : function(values)
             {
                var prefix = Genesis.constants._thumbnailAttribPrefix + 'large';
-               var photo = me.self.getPhoto(values['type'], me.getIconType()) || values['photo'][prefix];
+               var photo = (values['photo'] && values['photo']['url']) ? values['photo'][prefix] : me.self.getPhoto(values['type'], me.getIconType());
                if (Ext.isString(photo))
                {
                   return 'src="' + photo + '"';

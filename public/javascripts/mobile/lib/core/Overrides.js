@@ -14,7 +14,7 @@ Genesis.constants =
    isNfcEnabled : false,
    userName : 'Eric Chan',
    appMimeType : 'application/kickbak',
-   clientVersion : '2.1.2',
+   clientVersion : '2.1.3',
    serverVersion : '2.1.2',
    themeName : 'v1',
    _thumbnailAttribPrefix : '',
