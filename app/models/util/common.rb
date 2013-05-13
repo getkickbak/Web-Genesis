@@ -342,10 +342,10 @@ class Common
   end
 
   def self.get_photo_host
-    "http://#{APP_PROP["PHOTO_HOST"]}/"
+    "https://#{APP_PROP["PHOTO_HOST"]}/"
   end
 
   def self.get_file_host
-    "http://#{APP_PROP["FILE_HOST"]}/"
+    "https://#{APP_PROP["FILE_HOST"]}/"
   end
 end
