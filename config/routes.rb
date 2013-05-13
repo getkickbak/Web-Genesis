@@ -181,7 +181,7 @@ Genesis::Application.routes.draw do
       match "/d" => redirect {|params, req| "https://play.google.com/store/apps/details?id=com.getkickbak.kickbak" }
       root :to => redirect {|params, req| "http://m.getkickbak.com" } 
     end
-    constraints :user_agent => /BlackBerry|Windows/ do
+    constraints :user_agent => /BlackBerry|Windows Phone/ do
       match "/download" => redirect {|params, req| "http://www.getkickbak.com/" }
       match "/d" => redirect {|params, req| "http://www.getkickbak.com/" }
       root :to => redirect {|params, req| "http://m.getkickbak.com" } 
