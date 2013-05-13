@@ -726,7 +726,7 @@ $(document).ready($(function()
       zoom : 15,
       address : address
    });
-   htmlAddress += '<a target="_blank" href="' + "http://maps.google.com/maps?f=d&daddr=" + address + '">Get Directions</a>';
+   htmlAddress += '<a target="_blank" href="' + "https://maps.google.com/maps?f=d&daddr=" + address + '">Get Directions</a>';
    $("#merchant_address").html(htmlAddress);
 
    // --------------------------------------------------------------------------------
