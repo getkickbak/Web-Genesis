@@ -619,7 +619,10 @@ $(document).ready($(function()
    {
       //$('#page-background').height('auto');
       //$('#page-background')[0].style['bottom'] = 0;
-      $('div.main')[0].style['border-bottom'] = 'none';
+      if ($('div main')[0])
+      {
+         $('div.main')[0].style['border-bottom'] = 'none';
+      }
       /*
        $(window).resize(function()
        {
@@ -696,5 +699,9 @@ $(document).ready($(function()
          }
          return false;
       };
+   }
+   if ($.client.browser == "Explorer")
+   {
+      $('input, textarea').placeholder();
    }
 }));
