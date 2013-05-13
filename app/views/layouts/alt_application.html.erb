@@ -33,7 +33,6 @@
 		<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
 		<!--[if lt IE 9]>
 		<script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-		<script type="text/javascript" src="/javascripts/desktop/lib/Respond/respond.min.js"/>
 		<![endif]-->
 
 		<!--
@@ -169,5 +168,8 @@
 			var clientTime=new Date();
 		</script>
 		<%= yield :script %>
+		<!--[if lt IE 9]>
+		<script type="text/javascript" src="/javascripts/desktop/lib/css3-mediaqueries.js"></script>>
+		<![endif]-->
 	</body>
 </html>
