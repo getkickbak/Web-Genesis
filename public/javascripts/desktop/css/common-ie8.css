@@ -8,10 +8,10 @@
    padding:0px;
    height:25px;
    background:none;
-   -ms-filter : "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='https://files.getkickbak.com/v1/logo.png',sizingMethod='scale');"
+   -ms-filter : "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='https://s3.amazonaws.com/files.getkickbak.com/v1/logo.png',sizingMethod='scale');"
    /*
     background-size : 100px;
-    background : url(https://files.getkickbak.com/v1/logo.png) center center no-repeat;
+    background : url(https://s3.amazonaws.com/files.getkickbak.com/v1/logo.png) center center no-repeat;
     behavior: url(/javascripts/desktop/lib/PIE-2.0.0b/PIE_uncompressed.htc);
     */
 }
