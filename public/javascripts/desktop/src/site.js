@@ -380,7 +380,7 @@ Site = {
    },
    initReferrals : function(name, facebook_id, comment, timestamp)
    {
-      return '<li class="referralsBlock">' + ('<div class="clearfix">' + '<img class="left commentImage" src="http://graph.facebook.com/' + facebook_id + '/picture?type=square&"/>' + '<div class="commentBlock">' + '<div style="padding:5px;margin-bottom:10px;line-height:20px;background:#E1E4F2;border-bottom:1px solid #CCCCCC;">' + '<a class="commentName">' + convertString(name, null, 48) + '</a>' + '<div class="right">' + Genesis.convertDate(Date.parse(timestamp)) + '</div>' + '</div>' + '<div class="postContent">' + comment + '</div>' + '</div>') + '</li>';
+      return '<li class="referralsBlock">' + ('<div class="clearfix">' + '<img class="left commentImage" src="https://graph.facebook.com/' + facebook_id + '/picture?type=square&"/>' + '<div class="commentBlock">' + '<div style="padding:5px;margin-bottom:10px;line-height:20px;background:#E1E4F2;border-bottom:1px solid #CCCCCC;">' + '<a class="commentName">' + convertString(name, null, 48) + '</a>' + '<div class="right">' + Genesis.convertDate(Date.parse(timestamp)) + '</div>' + '</div>' + '<div class="postContent">' + comment + '</div>' + '</div>') + '</li>';
    },
    getReferrals : function(referral_id)
    {
@@ -531,7 +531,7 @@ Site = {
       for(var x = 0; x < Math.ceil(result.length / cols); x++) {
          html += '<li>';
          for(var y = x * cols; (y < (x + 1) * cols) && (y < result.length); y++) {
-            html += '<div class="listItem"><a class="listItemCtn" href="' + dealPath + result[y].refId + '"><img class="left" src="http://graph.facebook.com/' + this.friendsList[y].value + '/picture?type=square&"/>' + '<div class="listContent">' + this.friendsList[y].label + '</div></a>' + '</div>';
+            html += '<div class="listItem"><a class="listItemCtn" href="' + dealPath + result[y].refId + '"><img class="left" src="https://graph.facebook.com/' + this.friendsList[y].value + '/picture?type=square&"/>' + '<div class="listContent">' + this.friendsList[y].label + '</div></a>' + '</div>';
          }
          html += '</li>';
       }
