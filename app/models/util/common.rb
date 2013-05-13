@@ -246,13 +246,9 @@ class Common
         #badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_medium_url = generate_full_merchant_file_path(merchant.id, "#{MerchantBadgeTypeImage.thumbnail_url_path[user_agent][resolution][:medium]}/#{badge_type_image.thumbnail_url}")
         #badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_large_url = generate_full_merchant_file_path(merchant.id, "#{MerchantBadgeTypeImage.thumbnail_url_path[user_agent][resolution][:large]}/#{badge_type_image.thumbnail_url}")
       else
-        small_url = "#{get_file_host}#{BadgeTypeImage.thumbnail_url_path[user_agent][resolution][:small]}/#{badge_type_image.thumbnail_url}"
-        medium_url = "#{get_file_host}#{BadgeTypeImage.thumbnail_url_path[user_agent][resolution][:medium]}/#{badge_type_image.thumbnail_url}"
-        large_url = "#{get_file_host}#{BadgeTypeImage.thumbnail_url_path[user_agent][resolution][:large]}/#{badge_type_image.thumbnail_url}"
-        badge_type_id_to_type[badge_type_image.badge_type_id].url = large_url
-        badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_small_url = small_url
-        badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_medium_url = medium_url
-        badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_large_url = large_url
+        badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_small_url = "#{get_file_host}#{BadgeTypeImage.thumbnail_url_path[user_agent][resolution][:small]}/#{badge_type_image.thumbnail_url}"
+        badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_medium_url = "#{get_file_host}#{BadgeTypeImage.thumbnail_url_path[user_agent][resolution][:medium]}/#{badge_type_image.thumbnail_url}"
+        badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_large_url = "#{get_file_host}#{BadgeTypeImage.thumbnail_url_path[user_agent][resolution][:large]}/#{badge_type_image.thumbnail_url}"
       end
     end
   end
