@@ -59,11 +59,11 @@
 								<div class="credit-card">
 									<% card_type = credit_card.type %>
 									<% if card_type == "Visa" %>
-									<%= image_tag "http://files.getkickbak.com/v1/visa.gif" %>
+									<%= image_tag "https://files.getkickbak.com/v1/visa.gif" %>
 									<% elsif card_type == "American Express" %>
-									<%= image_tag "http://files.getkickbak.com/v1/american_express.gif" %>
+									<%= image_tag "https://files.getkickbak.com/v1/american_express.gif" %>
 									<% else %>
-									<%= image_tag "http://files.getkickbak.com/v1/mastercard.gif" %>	
+									<%= image_tag "https://files.getkickbak.com/v1/mastercard.gif" %>	
 									<% end %>
 									<span class="card-number"><%= "#{credit_card.type} ending in #{credit_card.number}" %></span>
 									<%= link_to 'edit', '#', :id => "credit-card-#{i}", :'card_id' => "#{credit_card.id}", :class => "card-link" %>

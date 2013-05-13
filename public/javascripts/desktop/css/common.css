@@ -63,13 +63,13 @@ body {
 .navbar .brand {
    width : 100px;
    height : 20px;
-   background : url(http://files.getkickbak.com/v1/logo.png) center center no-repeat;
+   background : url(https://files.getkickbak.com/v1/logo.png) center center no-repeat;
    background-size : 100px;
 }
 .navbar-fixed-top .navbar-inner {
    -ms-filter : none;
    filter : none;
-   background : url(http://files.getkickbak.com/v1/header.png) 0 0 repeat-x;
+   background : url(https://files.getkickbak.com/v1/header.png) 0 0 repeat-x;
    background-size : 100% 100%;
 }
 .navbar-fixed-top, .navbar-fixed-bottom {
@@ -78,7 +78,7 @@ body {
 .navbar-fixed-bottom .navbar-inner {
    -ms-filter : none;
    filter : none;
-   background : url(http://files.getkickbak.com/v1/footer.png) repeat-x;
+   background : url(https://files.getkickbak.com/v1/footer.png) repeat-x;
    background-size : 100% 100%;
 }
 
@@ -157,7 +157,7 @@ form.form-inline div.control-group div.controls { display: inline-block; }
 form.form-inline span.error { color: #b94a48; }
 
 #facebookButton {
-	background: url('http://files.getkickbak.com/v1/facebookButtonBg.png') no-repeat top left;
+	background: url('https://files.getkickbak.com/v1/facebookButtonBg.png') no-repeat top left;
 	border-bottom:1px solid #263e72;
 	border-left:1px solid #4462a4;
 	border-right:1px solid #4462a4;

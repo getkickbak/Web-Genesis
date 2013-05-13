@@ -2,9 +2,9 @@ body:after {
    /*
     background:none;
     background-size:1600px 1096px;
-    background : transparent url(http://files.getkickbak.com/v1/contentbg.png) center 0 no-repeat;
+    background : transparent url(https://files.getkickbak.com/v1/contentbg.png) center 0 no-repeat;
     behavior: url(/javascripts/desktop/lib/PIE-1.0.0/PIE.htc);
     -ms-filter :
-    * "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='http://files.getkickbak.com/v1/contentbg.png',sizingMethod='scale');"
+    * "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='https://files.getkickbak.com/v1/contentbg.png',sizingMethod='scale');"
     */
 }

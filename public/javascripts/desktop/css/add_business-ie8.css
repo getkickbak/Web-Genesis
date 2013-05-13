@@ -2,10 +2,10 @@ body:after {
    /*
     background:none;
     -ms-filter :
-    * "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='http://files.getkickbak.com/v1/contentbg.png',sizingMethod='scale');"
-    background : transparent url(http://files.getkickbak.com/v1/contentbg.png) center 0 no-repeat;
+    * "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='https://files.getkickbak.com/v1/contentbg.png',sizingMethod='scale');"
+    background : transparent url(https://files.getkickbak.com/v1/contentbg.png) center 0 no-repeat;
     background-size:1600px 1096px;
-    -pie-background-size:url(http://files.getkickbak.com/v1/contentbg.png) center 0 no-repeat 0 0 / 1600px 1096px transparent;
+    -pie-background-size:url(https://files.getkickbak.com/v1/contentbg.png) center 0 no-repeat 0 0 / 1600px 1096px transparent;
     behavior: url(/javascripts/desktop/lib/PIE-1.0.0/PIE.htc);
     */
 }

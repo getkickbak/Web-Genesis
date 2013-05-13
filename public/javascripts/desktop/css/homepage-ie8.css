@@ -3,25 +3,25 @@
  * *****************************************************************/
 body:before {
    /*
-    background : transparent url(http://files.getkickbak.com/v1/headerimage4.gif) center -400px no-repeat;
+    background : transparent url(https://files.getkickbak.com/v1/headerimage4.gif) center -400px no-repeat;
     background-size:1600px 1440px;
-    -pie-background:url(http://files.getkickbak.com/v1/headerimage4.gif) center -400px no-repeat 0 0 / 1600px 1440px transparent;
+    -pie-background:url(https://files.getkickbak.com/v1/headerimage4.gif) center -400px no-repeat 0 0 / 1600px 1440px transparent;
     behavior: url(/javascripts/desktop/lib/PIE-1.0.0/PIE.htc);
     -ms-filter :
     *
     *
-    * "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='http://files.getkickbak.com/v1/headerimage4.gif',sizingMethod='scale');"
+    * "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='https://files.getkickbak.com/v1/headerimage4.gif',sizingMethod='scale');"
     */
 }
 body:after {
    /*
     background : none;
-    background : transparent url(http://files.getkickbak.com/v1/contentbg.png) center 0 no-repeat;
+    background : transparent url(https://files.getkickbak.com/v1/contentbg.png) center 0 no-repeat;
     background-size : 1600px 828px;
-    -pie-background : url(http://files.getkickbak.com/v1/contentbg.png) center 0 no-repeat 0 0 /1600px 828px transparent;
+    -pie-background : url(https://files.getkickbak.com/v1/contentbg.png) center 0 no-repeat 0 0 /1600px 828px transparent;
     behavior : url(/javascripts/desktop/lib/PIE-1.0.0/PIE.htc);
     -ms-filter :
-    * "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='http://files.getkickbak.com/v1/contentbg.png',sizingMethod='scale');"
+    * "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='https://files.getkickbak.com/v1/contentbg.png',sizingMethod='scale');"
     */
 }
 
