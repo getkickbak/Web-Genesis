@@ -6,7 +6,7 @@ CarrierWave.configure do |config|
     :persistent             => false
   }
   config.fog_directory  = "#{APP_PROP["AMAZON_PHOTOS_BUCKET"]}"                     # required
-  config.asset_host     = "https://#{APP_PROP["PHOTO_HOST"]}"            # optional, defaults to nil
+  config.asset_host     = "http://#{APP_PROP["PHOTO_HOST"]}"            # optional, defaults to nil
 end
 
 module CarrierWave
