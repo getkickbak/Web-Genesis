@@ -66,7 +66,7 @@ class ApplicationController < ActionController::Base
 
   def secure_with_ssl
     if Rails.env.production?
-      if request.subdomain == 'www' && request.subdomain == ''
+      if request.subdomain == 'www' || request.subdomain == ''
         redirect_to :protocol => 'http'
       elsif request.subdomain == 'manage' && request.protocol != 'https://'
         redirect_to :protocol => 'https'
