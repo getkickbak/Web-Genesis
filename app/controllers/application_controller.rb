@@ -66,10 +66,12 @@ class ApplicationController < ActionController::Base
 
   def secure_with_ssl
     if Rails.env.production?
-      if request.subdomain == 'manage' && request.protocol != 'https://'
+      if request.subdomain == 'www' && request.subdomain == ''
+        redirect_to :protocol => 'http'
+      elsif request.subdomain == 'manage' && request.protocol != 'https://'
         redirect_to :protocol => 'https'
       elsif request.subdomain == 'merchant'
-        if request.fullpath == '/sign_in' || request.fullpath.match(/^\/invoices(.)*$/)# && request.protocol != 'https://'
+        if (request.fullpath == '/sign_in' || request.fullpath.match(/^\/invoices(.)*$/)) && request.protocol != 'https://'
           redirect_to :protocol => 'https'
         elsif request.fullpath != '/sign_in' && request.protocol == 'https://'
           redirect_to :protocol => 'http'
