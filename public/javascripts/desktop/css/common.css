@@ -58,6 +58,7 @@ body {
 
 .main {
    min-height : 600px;
+   border-bottom: none;
 }
 
 .navbar .brand {
@@ -80,6 +81,7 @@ body {
    filter : none;
    background : url(https://s3.amazonaws.com/files.getkickbak.com/v1/footer.png) repeat-x;
    background-size : 100% 100%;
+   border-bottom: 1px solid #000;
 }
 
 .navbar .nav > li > a {
