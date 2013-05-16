@@ -77,12 +77,12 @@ module MerchantPayments
         rescue DataMapper::SaveFailureError => e
           now = Time.now
           logger.error("Exception: " + e.resource.errors.inspect)
-          logger.info("Failed to generate invoice for Merchant(#{merchant.id}), Amount(#{total_amount}) at #{Time.now.strftime("%a %m/%d/%y %H:%M %Z")})")
+          logger.info("Failed to generate invoice for Merchant(#{merchant.id}), Amount(#{"%0.2f" % total_amount}) at #{Time.now.strftime("%a %m/%d/%y %H:%M %Z")})")
           next
         rescue StandardError => e
           now = Time.now
           logger.error("Exception: " + e.resource.message)
-          logger.info("Failed to generate invoice for Merchant(#{merchant.id}), Amount(#{total_amount}) at #{Time.now.strftime("%a %m/%d/%y %H:%M %Z")})")
+          logger.info("Failed to generate invoice for Merchant(#{merchant.id}), Amount(#{"%0.2f" % total_amount}) at #{Time.now.strftime("%a %m/%d/%y %H:%M %Z")})")
           next
         end
 =begin
@@ -129,7 +129,7 @@ result = Braintree::Transaction.sale(
         begin
           MerchantPaymentSubscription.transaction do
             if paid
-              logger.info("Successfully billed Merchant(#{merchant.id}), Amount(#{total_amount}) at #{Time.now.strftime("%a %m/%d/%y %H:%M %Z")})")
+              logger.info("Successfully billed Merchant(#{merchant.id}), Amount(#{"%0.2f" % total_amount}) at #{Time.now.strftime("%a %m/%d/%y %H:%M %Z")})")
               invoice.paid = true
               invoice.update_ts = Time.now
               invoice.save
@@ -139,7 +139,7 @@ result = Braintree::Transaction.sale(
                 :paid_through_date => end_of_previous_month
               )
             else
-              logger.info("Failed to bill Merchant(#{merchant.id}), Amount(#{total_amount}) at #{Time.now.strftime("%a %m/%d/%y %H:%M %Z")})")
+              logger.info("Failed to bill Merchant(#{merchant.id}), Amount(#{"%0.2f" % total_amount}) at #{Time.now.strftime("%a %m/%d/%y %H:%M %Z")})")
               subscription.update(
                 :plan_id => payment_plan.id,
                 :balance => total_amount
