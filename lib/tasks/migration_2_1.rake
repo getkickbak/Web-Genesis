@@ -20,7 +20,7 @@ namespace :db do
       :name => "Plan - Small",
       :description => "Up to an average of 100 members/store.",
       :avg_member_count => 100,
-      :price_wifi => 79.00,
+      :price_wifi => 75.00,
       :price_internet => 89.00
     )
     pp2 = PaymentPlan.create(
