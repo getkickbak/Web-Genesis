@@ -320,7 +320,7 @@ namespace :db do
           :copy_acl => true
         )
         DataMapper.repository(:default).adapter.execute(
-        "UPDATE merchants SET photo = ?, alt_photo = ? WHERE id = ?", filename, filename, merchant.id
+          "UPDATE merchants SET photo = ?, alt_photo = ? WHERE id = ?", filename, filename, merchant.id
         )
         type = RewardModelType.value_to_type["amount_spent"]
         RewardModel.create(merchant, type,
