@@ -15,21 +15,25 @@ class Promotion
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
   
-  attr_accessor :start_date_str, :end_date_str
-  attr_accessor :crop_x, :crop_y, :crop_w, :crop_h
+  attr_accessor :customer_segment_id, :start_date_str, :end_date_str
+  attr_accessor :customer_segment_id, :crop_x, :crop_y, :crop_w, :crop_h
 
   attr_accessible :subject, :message, :photo, :photo_cache, :start_date, :end_date
     
+  belongs_to :merchant
+  has 1, :promotion_to_customer_segment, :constraint => :destroy
+  has 1, :customer_segment, :through => :promotion_to_customer_segment, :via => :customer_segment
+  
+  validates_with_method :customer_segment_id, :method => :check_customer_segment_id
   validates_with_method :start_date, :method => :validate_start_date
   validates_with_method :end_date, :method => :validate_end_date
   
   mount_uploader :photo, PromotionPhotoUploader
   
-  belongs_to :merchant
-  
-  def self.create(merchant, promotion_info)
+  def self.create(merchant, customer_segment, promotion_info)
     now = Time.now
     promotion = Promotion.new(
+      :customer_segment_id => customer_segment ? customer_segment.id : nil,
       :subject => promotion_info[:subject].strip,
       :message => promotion_info[:message].strip,
       :photo => promotion_info[:photo],
@@ -43,11 +47,19 @@ class Promotion
     promotion[:created_ts] = now
     promotion[:update_ts] = now
     promotion.merchant = merchant
+    promotion.customer_segment = customer_segment
     promotion.save
     return promotion
   end
   
   private
+  
+  def check_customer_segment_id
+    if self.customer_segment
+      return true  
+    end
+    return [false, ValidationErrors.default_error_message(:blank, :customer_segment_id)]
+  end
   
   def convert_date(field, field_str)
     begin

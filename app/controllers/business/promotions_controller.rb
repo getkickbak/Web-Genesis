@@ -20,6 +20,7 @@ module Business
       today = Date.today
       @promotion.start_date = today
       @promotion.end_date = today
+      @plan_id = current_merchant.payment_subscription.plan_id
       
       respond_to do |format|
         format.html # index.html.erb
@@ -32,7 +33,8 @@ module Business
 
       begin
         Promotion.transaction do
-          promotion = Promotion.create(current_merchant, params[:promotion])
+          customer_segment = CustomerSegment.get(params[:promotion][:customer_segment_id])
+          promotion = Promotion.create(current_merchant, customer_segment, params[:promotion])
           Resque.enqueue(CreatePromotion, promotion.id)
           respond_to do |format|
             format.html { redirect_to({:action => "index"}, {:notice => t("business.promotions.create_success")}) }
@@ -43,6 +45,7 @@ module Business
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
         @promotion = e.resource
+        @plan_id = current_merchant.payment_subscription.plan_id
         respond_to do |format|
           format.html { render :action => "new" }
         #format.xml  { render :xml => @order.errors, :status => :unprocessable_entity }

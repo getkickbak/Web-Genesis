@@ -37,7 +37,7 @@ module RegistrationReminders
                 }
               ) if reminder.nil?
               if diff >= backoff && !reminder.delivered
-                Resque.enqueue(SendSms, SmsMessageType::REGISTRATION_REMINDER, user.id, nil, nil)
+                Resque.enqueue(SendSms, SmsProvider.get_current, SmsMessageType::REGISTRATION_REMINDER, user.id, nil, nil)
               end
             end
           rescue DataMapper::SaveFailureError => e

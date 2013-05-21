@@ -91,7 +91,7 @@ class Api::V1::CheckInsController < Api::V1::BaseApplicationController
         @prize_jackpots = EarnPrizeRecord.count(:merchant => @venue.merchant, :points.gt => 1, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
         @rewards = Common.get_rewards_by_venue(@venue, :reward)
         @prizes = Common.get_rewards_by_venue(@venue, :prize)
-        @newsfeed = Common.get_news(@venue)
+        @newsfeed = Common.get_news(@venue, @customer)
         render :template => '/api/v1/check_ins/create'
       end
     rescue StandardError => e

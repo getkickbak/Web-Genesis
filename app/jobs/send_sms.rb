@@ -9,7 +9,7 @@ module SendSms
     begin
       now = Time.now
       user = User.get(user_id)
-      opts = JSON.parse(options, { :symbolize_names => true })
+      opts = JSON.parse(options, { :symbolize_names => true }) if options
       texts = []
       if sms_message_type == SmsMessageType::MERCHANT_REGISTRATION
         texts << I18n.t("sms.merchant_registration_1") % [opts[:name], opts[:points], opts[:prize_points]]

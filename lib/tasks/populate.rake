@@ -605,7 +605,8 @@ namespace :db do
           customer.save
         end
         10.times do |i|
-          promotion = Promotion.create(merchant,
+          customer_segment = CustomerSegment.get(1)
+          promotion = Promotion.create(merchant, customer_segment,
           {
             :subject => "Hello",
             :message => "This is a test #{i}",
