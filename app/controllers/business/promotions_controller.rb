@@ -38,9 +38,22 @@ module Business
     def create
       authorize! :create, Promotion
 
+      customer_segment = CustomerSegment.get(params[:promotion][:customer_segment_id])
+      @segment_count = Common.get_customer_segment_count(current_merchant, customer_segment.value)
+      if @segment_count == 0
+        flash[:error] = t("business.promotions.no_targeted_customers")
+        @promotion = Promotion.new(params[:promotion])
+        @plan_id = current_merchant.payment_subscription.plan_id
+        respond_to do |format|
+          format.html { render :action => "new" }
+          #format.xml  { render :xml => @order.errors, :status => :unprocessable_entity }
+          #format.json { render :json => { :success => false } }
+        end
+        return
+      end
+        
       begin
         Promotion.transaction do
-          customer_segment = CustomerSegment.get(params[:promotion][:customer_segment_id])
           promotion = Promotion.create(current_merchant, customer_segment, params[:promotion])
           Resque.enqueue(CreatePromotion, promotion.id)
           respond_to do |format|
@@ -53,7 +66,6 @@ module Business
         logger.error("Exception: " + e.resource.errors.inspect)
         @promotion = e.resource
         @plan_id = current_merchant.payment_subscription.plan_id
-        @segment_count = Common.get_customer_segment_count(current_merchant, @promotion.customer_segment.value)
         respond_to do |format|
           format.html { render :action => "new" }
         #format.xml  { render :xml => @order.errors, :status => :unprocessable_entity }

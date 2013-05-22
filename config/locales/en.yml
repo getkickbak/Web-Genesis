@@ -353,6 +353,7 @@ en:
         create_success: "Promotion was successfully created." 
         min_start_date: "Start date must be greater than or equal to today."
         min_end_date: "End date must be greater than start date." 
+        no_targeted_customers: "No targeted customers."
       purchase_rewards:
         create_success: "Reward was successfully created."
         update_success: "Reward was successfully updated."
