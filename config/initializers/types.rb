@@ -205,10 +205,12 @@ if exists
   customer_segments = CustomerSegment.all
   customer_segment_values = {}
   customer_segment_id_to_value = {}
+  customer_segment_id_to_segment = {}
   customer_segment_value_to_id = {}
   customer_segment_value_to_name = {}
   customer_segments.each do |segment|
     customer_segment_id_to_value[segment.id] = segment.value
+    customer_segment_id_to_segment[segment.id] = segment
     customer_segment_value_to_id[segment.value] = segment.id
     customer_segment_value_to_name[segment.value] = {}
     I18n.available_locales.each do |locale|
@@ -263,5 +265,6 @@ if exists
   CustomerSegment.id_to_value = customer_segment_id_to_value
   CustomerSegment.value_to_id = customer_segment_value_to_id
   CustomerSegment.value_to_name = customer_segment_value_to_name
+  CustomerSegment.id_to_segment = customer_segment_id_to_segment
   CustomerSegmentVisitRange.values = customer_segment_visit_range_values
 end

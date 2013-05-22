@@ -191,6 +191,7 @@ en:
       last_visited_30_days: "Last visited in 30 days"
       last_visited_60_days: "Last visited in 60 days"
       last_visited_90_days: "Last visited in 90 days"
+      last_visited_180_days: "Last visited in 180 days"
   api:
       incompatible_merchant_user_role: "Your account is not compatible with selected merchant."
       inactive_merchant: "This merchant is not active.\nPlease try a different one."

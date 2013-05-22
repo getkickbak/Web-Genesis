@@ -15,48 +15,7 @@ module CreatePromotion
       push = Pushwoosh::RemoteApi.new
       customer_segment_visit_range = CustomerSegmentVisitRange.values[promotion.merchant.visit_frequency.value][promotion.customer_segment.value]
       customer_segment = promotion.customer_segment.value
-      case customer_segment
-      when "all"
-        count = Customer.count(:merchant => promotion.merchant)
-      when "newly_joined"
-        count = Customer.count(:merchant => promotion.merchant, :created_ts.gt => 5.day.ago.to_time)
-      when "very_frequent_last_1_month", "very_frequent_last_3_month", "very_frequent_last_6_month"
-        count = DataMapper.repository(:default).adapter.select(
-          "SELECT COUNT(*) FROM
-            (SELECT user_id, COUNT(*) AS visit_count FROM earn_reward_records WHERE merchant_id = ? 
-              AND created_ts > ? AND deleted_ts IS NULL
-              GROUP BY user_id
-              HAVING visit_count >= ?)", promotion.merchant.id, customer_segment_visit_range[:period_in_months].month.ago.to_time, customer_segment_visit_range[:low]
-        )[0]
-      when "somewhat_frequent_last_1_month", "somewhat_frequent_last_3_month", "somewhat_frequent_last_6_month", "not_frequent_last_1_month", "not_frequent_last_3_month", "not_frequent_last_6_month"
-        count = DataMapper.repository(:default).adapter.select(
-          "SELECT COUNT(*) FROM
-            (SELECT user_id, COUNT(*) AS visit_count FROM earn_reward_records WHERE merchant_id = ? 
-              AND created_ts > ? AND deleted_ts IS NULL
-              GROUP BY user_id
-              HAVING visit_count >= ? AND visit_count < ?)", promotion.merchant.id, customer_segment_visit_range[:period_in_months].month.ago.to_time, customer_segment_visit_range[:low], customer_segment_visit_range[:high]
-        )[0]
-      when "top_5_percent"
-        count = (Customer.count(:merchant => promotion.merchant) * 0.05).to_i
-      when "top_10_percent"
-        count = (Customer.count(:merchant => promotion.merchant) * 0.10).to_i
-      when "top_15_percent"
-        count = (Customer.count(:merchant => promotion.merchant) * 0.15).to_i
-      when "top_20_percent"
-        count = (Customer.count(:merchant => promotion.merchant) * 0.20).to_i
-      when "top_25_percent"
-        count = (Customer.count(:merchant => promotion.merchant) * 0.25).to_i
-      when "last_visited_10_days"
-        count = EarnRewardRecord.count(:fields => [:user_id], :merchant => promotion.merchant, :unique => true, :created_ts.gt => 10.day.ago.to_time)
-      when "last_visited_20_days"
-        count = EarnRewardRecord.count(:fields => [:user_id], :merchant => promotion.merchant, :unique => true, :created_ts.gt => 20.day.ago.to_time)
-      when "last_visited_30_days"
-        count = EarnRewardRecord.count(:fields => [:user_id], :merchant => promotion.merchant, :unique => true, :created_ts.gt => 30.day.ago.to_time)
-      when "last_visited_60_days"
-        count = EarnRewardRecord.count(:fields => [:user_id], :merchant => promotion.merchant, :unique => true, :created_ts.gt => 60.day.ago.to_time)
-      when "last_visited_90_days"
-        count = EarnRewardRecord.count(:fields => [:user_id], :merchant => promotion.merchant, :unique => true, :created_ts.gt => 90.day.ago.to_time)
-      end  
+      count = Common.get_customer_segment_count(promotion.merchant, customer_segment)  
       max = 500
       n = 1
       if count == 0
@@ -119,6 +78,8 @@ module CreatePromotion
           customers = EarnRewardRecord.all(:fields => [:customer_id, :user_id], :merchant => promotion.merchant, :unique => true, :created_ts.gt => 60.day.ago.to_time, :offset => start, :limit => max)
         when "last_visited_90_days"
           customers = EarnRewardRecord.all(:fields => [:customer_id, :user_id], :merchant => promotion.merchant, :unique => true, :created_ts.gt => 90.day.ago.to_time, :offset => start, :limit => max)
+        when "last_visited_180_days"
+          customers = EarnRewardRecord.all(:fields => [:customer_id, :user_id], :merchant => promotion.merchant, :unique => true, :created_ts.gt => 180.day.ago.to_time, :offset => start, :limit => max)
         end
         user_list = []
         device_user_list = []

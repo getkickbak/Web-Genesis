@@ -16,12 +16,19 @@ module Business
     def new
       authorize! :create, Promotion
 
+      segment = CustomerSegment.id_to_value[params[:segment_id].to_i]
       @promotion = Promotion.new
       today = Date.today
       @promotion.start_date = today
       @promotion.end_date = today
       @plan_id = current_merchant.payment_subscription.plan_id
-      
+      if segment
+        @promotion.customer_segment_id = params[:segment_id].to_i
+        #@promotion.customer_segment = CustomerSegment.id_to_segment[@promotion.customer_segment_id]
+        @segment_count = Common.get_customer_segment_count(current_merchant, segment)
+      else
+        @segment_count = Common.get_customer_segment_count(current_merchant, "all")  
+      end
       respond_to do |format|
         format.html # index.html.erb
       #format.xml  { render :xml => @merchants }
@@ -46,6 +53,7 @@ module Business
         logger.error("Exception: " + e.resource.errors.inspect)
         @promotion = e.resource
         @plan_id = current_merchant.payment_subscription.plan_id
+        @segment_count = Common.get_customer_segment_count(current_merchant, @promotion.customer_segment.value)
         respond_to do |format|
           format.html { render :action => "new" }
         #format.xml  { render :xml => @order.errors, :status => :unprocessable_entity }

@@ -5,6 +5,7 @@ class CustomerSegment
   @@value_to_id = {}
   @@value_to_name = {}
   @@id_to_value = {}
+  @@id_to_segment = {}
   
   property :id, Serial
   property :value, String, :required => true, :default => ""
@@ -39,6 +40,14 @@ class CustomerSegment
   
   def self.id_to_value=(id_to_value)
     @@id_to_value = id_to_value
+  end
+  
+  def self.id_to_segment
+    @@id_to_segment
+  end
+  
+  def self.id_to_segment=(id_to_segment)
+    @@id_to_segment = id_to_segment
   end
   
   def display_value
