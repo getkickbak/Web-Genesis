@@ -582,6 +582,7 @@ Ext.define('Genesis.controller.client.Rewards',
                      height : '3em',
                      handler : function()
                      {
+                        viewport.popUpInProgress = false;
                         me._actions.hide();
                         //var earnPts = Ext.bind(me.onEarnPtsSC, me);
                         //me.checkReferralPrompt(earnPts, earnPts);
@@ -595,12 +596,14 @@ Ext.define('Genesis.controller.client.Rewards',
                      height : '3em',
                      handler : function()
                      {
+                        viewport.popUpInProgress = false;
                         me._actions.hide();
                      }
                   }]
                });
                Ext.Viewport.add(me._actions);
             }
+            viewport.popUpInProgress = true;
             me._actions.show();
             /*
              Ext.device.Notification.show(

@@ -99,3 +99,52 @@
       -webkit-animation: roulette-table-rotate-back 2.1s infinite linear;     
    }
 }
+
+.receiptList {
+   @extend .listScrollWrapper;
+   .listItemDetailsWrapper {
+      display:table;
+      width:100%;
+      height : $icon-size*$icon-multiplier;
+      .itemTitle {
+         display:table-cell;
+         vertical-align:middle;
+         text-align:center;
+         font-weight:bold;
+      }
+      .itemDistance {
+         right:calc-em(-1*($list-disclosure-size+$panelGap),$normalFontSize*0.75);
+         font-size:$normalFontSize*0.75;
+      }
+   }
+   .photo {
+      font-size:0.75em;
+      font-weight:bold;
+      width : calc-px-em($icon-size*$icon-multiplier, $panelGap/2, 0.75em);
+      line-height : $icon-size*$icon-multiplier;
+      text-align:left;
+      border-right: 1px solid;
+   }
+   .x-list-emptytext {
+      position:absolute;
+      top:0;
+      bottom:0;
+      right:0;
+      width:100%;
+      @extend .emptyPage;
+      background: theme_image($theme-path,  "noprizes" + ".png") center no-repeat;
+      &:before {
+         content:"No Receipts were sent from the POS!";
+      }
+   }
+}
+
+.receiptDetail {
+   @extend .listScrollWrapper;
+   .listItemDetailsWrapper {
+      padding:$panelTopGap $panelGap;
+      .itemReceipt {
+         font-size:$normalFontSize; 
+      }
+   }
+}

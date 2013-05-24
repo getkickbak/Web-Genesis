@@ -378,7 +378,7 @@ Ext.define('Genesis.controller.client.MainPage',
       var me = this, authCode = Genesis.db.getLocalDB()['auth_code'];
       if (authCode)
       {
-         console.log("Logging out ...")
+         console.log("Logging out ...");
          Customer['setLogoutUrl'](authCode);
          Ext.StoreMgr.get('CustomerStore').load(
          {
@@ -387,6 +387,7 @@ Ext.define('Genesis.controller.client.MainPage',
             },
             callback : function(records, operation)
             {
+            	me._loggingIn = false;
                me._loggingOut = false;
                if (operation.wasSuccessful())
                {

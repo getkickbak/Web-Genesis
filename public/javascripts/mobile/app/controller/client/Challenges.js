@@ -942,6 +942,7 @@ Ext.define('Genesis.controller.client.Challenges',
                               height : '3em',
                               handler : function()
                               {
+                                 viewport.popUpInProgress = false;
                                  me._actions.hide();
                                  if (selectedItem.get('type').value == 'photo')
                                  {
@@ -960,12 +961,14 @@ Ext.define('Genesis.controller.client.Challenges',
                               height : '3em',
                               handler : function()
                               {
+                                 viewport.popUpInProgress = false;
                                  me._actions.hide();
                               }
                            }]
                         });
                         Ext.Viewport.add(me._actions);
                      }
+                     viewport.popUpInProgress = true;
                      me._actions.show();
                      /*
                       Ext.device.Notification.show(
