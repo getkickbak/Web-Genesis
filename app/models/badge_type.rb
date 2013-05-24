@@ -11,7 +11,7 @@ class BadgeType
   property :value, String, :required => true, :default => ""
   property :rank, Integer, :required => true, :default => 0
         
-  attr_accessor :thumbnail_small_url, :thumbnail_medium_url, :thumbnail_large_url
+  attr_accessor :url, :thumbnail_small_url, :thumbnail_medium_url, :thumbnail_large_url
         
   def self.values
     @@values

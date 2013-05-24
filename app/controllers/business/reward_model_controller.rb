@@ -16,6 +16,7 @@ module Business
         @reward_model.type = RewardModelType.value_to_type["amount_spent"]  
         @reward_model.type_id = @reward_model.type.id 
       end
+      model_type = RewardModelType.values[I18n.locale]
       respond_to do |format|
         format.html # index.html.erb
         #format.xml  { render :xml => @merchants }

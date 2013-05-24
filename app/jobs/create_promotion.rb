@@ -74,7 +74,7 @@ module CreatePromotion
                 Subscription.create(user)
                 UserMailer.promotion_email(user, promotion).deliver
               end
-            else              
+            elsif !user.phone.empty?              
               Resque.enqueue(SendSms, SmsProvider.get_current, SmsMessageType::MERCHANT_PROMOTION, user.id, sms_message, nil)    
             end
           end

@@ -16,7 +16,7 @@ class PaymentPlan
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
   
-  attr_accessible :name, :description, :avg_member_count, :price
+  attr_accessible :name, :description, :avg_member_count, :price_wifi, :price_internet
     
   def self.create(payment_plan_info)
     now = Time.now

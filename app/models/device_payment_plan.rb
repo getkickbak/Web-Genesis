@@ -13,6 +13,8 @@ class DevicePaymentPlan
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false  
   
+  attr_accessible :name, :description, :price_wifi, :price_internet
+  
   def self.create(payment_plan_info)
     now = Time.now
     payment_plan = DevicePaymentPlan.new(

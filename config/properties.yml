@@ -1,4 +1,6 @@
 development:
+  #FILE_HOST: s3.amazonaws.com/devfiles.getkickbak.com
+  #PHOTO_HOST : s3.amazonaws.com/devphotos.getkickbak.com
   FILE_HOST: devfiles.getkickbak.com
   PHOTO_HOST : devphotos.getkickbak.com
   AMAZON_FILES_BUCKET: devfiles.getkickbak.com
@@ -20,6 +22,8 @@ development:
   TWILIO_AUTH_TOKEN: "8f349236bd1d2c4ccd0274a58cef05ec"
   TWILIO_NUMBER: "+16479316204"
 test:
+  #FILE_HOST: s3.amazonaws.com/devfiles.getkickbak.com
+  #PHOTO_HOST : s3.amazonaws.com/devphotos.getkickbak.com
   FILE_HOST: devfiles.getkickbak.com
   PHOTO_HOST : devphotos.getkickbak.com
   AMAZON_FILES_BUCKET: devfiles.getkickbak.com
@@ -41,6 +45,8 @@ test:
   TWILIO_AUTH_TOKEN: "8f349236bd1d2c4ccd0274a58cef05ec"
   TWILIO_NUMBER: "+16479316204"
 production:
+  #FILE_HOST: s3.amazonaws.com/files.getkickbak.com
+  #PHOTO_HOST : s3.amazonaws.com/photos.getkickbak.com
   FILE_HOST: files.getkickbak.com
   PHOTO_HOST : photos.getkickbak.com
   AMAZON_FILES_BUCKET: files.getkickbak.com

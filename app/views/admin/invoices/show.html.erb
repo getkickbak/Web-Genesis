@@ -93,11 +93,11 @@
 													$<%= "%0.2f" % @invoice.charges %>
 												</div>
 											</div>
-											<% if @invoice.proration > 0.00 %>
+											<% if @invoice.proration < 0.00 %>
 											<div class="control-group">
-												<label class="control-label"> Praration: </label>
+												<label class="control-label"> Proration: </label>
 												<div class="controls">
-													$<%= "%0.2f" % @invoice.proration %>
+													- $<%= "%0.2f" % @invoice.proration.abs %>
 												</div>
 											</div>
 											<% end %>

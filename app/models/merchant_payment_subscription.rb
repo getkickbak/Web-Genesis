@@ -36,7 +36,7 @@ class MerchantPaymentSubscription
   def update(subscription_info)
     now = Time.now
     self.plan_id = subscription_info[:plan_id] if subscription_info.include? :plan_id
-    self.discount_rate = subscription_info[:discount_rate] if subscription.include? :discount_rate
+    self.discount_rate = subscription_info[:discount_rate] if subscription_info.include? :discount_rate
     self.balance = subscription_info[:balance] if subscription_info.include? :balance
     self.start_date_str = subscription_info[:start_date] if subscription_info.include? :start_date
     self.end_date_str = subscription_info[:end_date] if subscription_info.include? :end_date
