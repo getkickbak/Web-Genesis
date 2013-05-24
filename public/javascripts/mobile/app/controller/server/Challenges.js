@@ -85,8 +85,9 @@ Ext.define('Genesis.controller.server.Challenges',
     */
    onGenerateQRCode : function(refresh)
    {
-      var me = this, identifiers = null, viewport = me.getViewPortCntlr(), proxy = Challenge.getProxy(), dismissDialog = false;
-
+      var me = this, identifiers = null, viewport = me.getViewPortCntlr(), proxy = Challenge.getProxy();
+      
+      me.dismissDialog = false;
       if (!refresh)
       {
          /*
@@ -144,7 +145,7 @@ Ext.define('Genesis.controller.server.Challenges',
 
       me.challengeItemFn = function(params, closeDialog)
       {
-         dismissDialog = closeDialog;
+         me.dismissDialog = closeDialog;
          Ext.Viewport.setMasked(
          {
             xtype : 'loadmask',
@@ -166,7 +167,7 @@ Ext.define('Genesis.controller.server.Challenges',
          //
          // Updating Server ...
          //
-         console.log("Updating Server with EarnPoints information ... dismissDialog(" + dismissDialog + ")");
+         console.log("Updating Server with EarnPoints information ... dismissDialog(" + me.dismissDialog + ")");
          Challenge['setCompleteMerchantChallengeURL']();
          Challenge.load(1,
          {

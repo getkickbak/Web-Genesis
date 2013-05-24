@@ -315,6 +315,7 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
                         height : '3em',
                         handler : function()
                         {
+                           viewport.popUpInProgress = false;
                            me._actions.hide();
                            me.fireEvent('redeemitem', btn, venue, view);
                         }
@@ -327,11 +328,13 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
                         handler : function()
                         {
                            me._actions.hide();
+                           viewport.popUpInProgress = false;
                         }
                      }]
                   });
                   Ext.Viewport.add(me._actions);
                }
+               viewport.popUpInProgress = true;
                me._actions.show();
                /*
                 Ext.device.Notification.show(

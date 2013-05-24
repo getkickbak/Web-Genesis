@@ -139,7 +139,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
    },
    onRedeemItem : function(btn, venue, view)
    {
-      var me = this, identifiers = null, dismissDialog = false;
+      var me = this, identifiers = null;
       var viewport = me.getViewPortCntlr(), item = view.query("container[tag=redeemItemContainer]")[0].getInnerItems()[0];
       var venueId = (venue) ? venue.getId() : 0;
       var storeName = me.getRedeemStore(), store = Ext.StoreMgr.get(storeName);
@@ -151,9 +151,10 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
       var message = me.lookingForMobileDeviceMsg();
       var proxy = store.getProxy();
 
+      me.dismissDialog = false;
       me.redeemItemFn = function(p, closeDialog)
       {
-         dismissDialog = closeDialog;
+         me.dismissDialog = closeDialog;
          Ext.Viewport.setMasked(
          {
             xtype : 'loadmask',
@@ -164,7 +165,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
          //
          // Update Server
          //
-         console.log("Updating Server with Redeem information ... dismissDialog(" + dismissDialog + ")");
+         console.log("Updating Server with Redeem information ... dismissDialog(" + me.dismissDialog + ")");
 
          CustomerReward[me.getRedeemPointsFn()](item.getData().getId());
 
@@ -217,6 +218,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
       {
          var callback = function(b)
          {
+            viewport.popUpInProgress = false;
             me._actions.hide();
             viewport.setActiveController(null);
             if (me.scanTask)
@@ -237,7 +239,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
                Ext.Viewport.setMasked(null);
                me.onEnterPhoneNum();
             }
-            else if (!dismissDialog)
+            else if (!me.dismissDialog)
             {
                Ext.Viewport.setMasked(null);
                me.onDoneTap();
@@ -270,6 +272,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
             });
             Ext.Viewport.add(me._actions);
          }
+         viewport.popUpInProgress = true;
          me._actions.show();
 
          /*

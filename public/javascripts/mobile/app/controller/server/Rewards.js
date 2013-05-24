@@ -5,6 +5,7 @@ Ext.define('Genesis.controller.server.Rewards',
    xtype : 'serverRewardsCntlr',
    config :
    {
+      mode : 'Manual', // 'POS_Selection', 'POS_Detail', 'Maunal'
       models : ['PurchaseReward', 'CustomerReward'],
       routes :
       {
@@ -21,7 +22,14 @@ Ext.define('Genesis.controller.server.Rewards',
             autoCreate : true,
             xtype : 'serverrewardsview'
          },
+         calcBtn : 'serverrewardsview button[tag=calculator]',
+         receiptsList : 'serverrewardsview container list',
+         backBB : 'serverrewardsview button[tag=back]',
+         rptCloseBB : 'serverrewardsview button[tag=rptClose]',
+         receiptDetail : 'serverrewardsview dataview[tag=receiptDetail]',
          rewardsContainer : 'serverrewardsview container[tag=rewards]',
+         rewardSelection : 'serverrewardsview container[tag=tbBottomSelection] button[tag=rewardsSC]',
+         rewardDetail : 'serverrewardsview container[tag=tbBottomDetail] button[tag=rewardsSC]',
          amount : 'serverrewardsview calculator[tag=amount] textfield',
          phoneId : 'serverrewardsview calculator[tag=phoneId] textfield',
          //qrcode : 'serverrewardsview component[tag=qrcode]',
@@ -29,6 +37,14 @@ Ext.define('Genesis.controller.server.Rewards',
       },
       control :
       {
+         rptCloseBB :
+         {
+            tap : 'onRptCloseTap'
+         },
+         calcBtn :
+         {
+            tap : 'onCalcBtnOverrideTap'
+         },
          rewards :
          {
             activate : 'onActivate',
@@ -37,6 +53,11 @@ Ext.define('Genesis.controller.server.Rewards',
          rewardsContainer :
          {
             activeitemchange : 'onContainerActivate'
+         },
+         receiptsList :
+         {
+            //select : 'onReceiptSelect',
+            disclose : 'onReceiptDisclose'
          },
          'serverrewardsview calculator[tag=amount] container[tag=dialpad] button' :
          {
@@ -53,6 +74,14 @@ Ext.define('Genesis.controller.server.Rewards',
          'serverrewardsview calculator[tag=phoneId] container[tag=bottomButtons] button[tag=earnTagId]' :
          {
             tap : 'onTagItTap'
+         },
+         rewardSelection :
+         {
+            tap : 'onRewardSelectionTap'
+         },
+         rewardDetail :
+         {
+            tap : 'onRewardDetailTap'
          }
       },
       listeners :
@@ -67,18 +96,25 @@ Ext.define('Genesis.controller.server.Rewards',
    invalidAmountMsg : 'Please enter a valid amount (eg. 5.00), upto $1000',
    earnPtsConfirmMsg : 'Please confirm to submit',
    earnPtsTitle : 'Earn Reward Points',
+   selectRewardMsg : 'Please select your Receipt(s)',
    unRegAccountMsg : function()
    {
       return ('This account is unregistered' + Genesis.constants.addCRLF() + 'Phone Number is required for registration');
    },
    init : function()
    {
-      this.callParent(arguments);
+      var me = this;
+      me.callParent(arguments);
       console.log("Server Rewards Init");
       //
       // Preload Pages
       //
-      this.getRewards();
+      me.getRewards();
+
+      Ext.StoreMgr.get('ReceiptStore').on(
+      {
+         addrecords : 'onReceiptStoreRefresh'
+      });
    },
    getAmountPrecision : function(num)
    {
@@ -110,12 +146,31 @@ Ext.define('Genesis.controller.server.Rewards',
    {
       var me = this;
       var container = me.getRewardsContainer();
+      var store = Ext.StoreMgr.get('ReceiptStore');
+
       if (container)
       {
          me.getAmount().reset();
-         container.setActiveItem(0);
+         me.onReceiptStoreRefresh();
+         container.setActiveItem((store.getCount() > 0) ? 2 : 0);
       }
+      me.getCalcBtn()[(store.getCount() > 0) ? 'show' : 'hide']();
       //activeItem.createView();
+   },
+   onCalcBtnOverrideTap : function(b, e)
+   {
+      var me = this;
+      var container = me.getRewardsContainer();
+
+      if (container)
+      {
+         me.getAmount().reset();
+         animation.setDirection('down');
+         container.setActiveItem(0);
+         me.getRptCloseBB()['hide']();
+         me.getBackBB()['show']();
+         me.getCalcBtn()['hide']();
+      }
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
@@ -136,6 +191,13 @@ Ext.define('Genesis.controller.server.Rewards',
 
       switch (value.config.tag)
       {
+         case 'posSelect' :
+         case 'posDetail' :
+         {
+            console.debug("Rewards ContainerActivate Called. Showing POS Receipts ...");
+            animation.setReverse(true);
+            break;
+         }
          case 'amount' :
          {
             me.getAmount().reset();
@@ -152,6 +214,7 @@ Ext.define('Genesis.controller.server.Rewards',
          }
          case 'qrcodeContainer' :
          {
+            animation.setDirection('down');
             animation.setReverse(false);
             console.debug("Rewards ContainerActivate Called.");
             break;
@@ -160,10 +223,10 @@ Ext.define('Genesis.controller.server.Rewards',
    },
    onRewardItem : function(automatic)
    {
-      var me = this, identifiers = null, viewport = me.getViewPortCntlr(), dismissDialog = false;
-      var amount = me.getAmount().getValue(), proxy = PurchaseReward.getProxy();
+      var me = this, identifiers = null, viewport = me.getViewPortCntlr(), proxy = PurchaseReward.getProxy();
       var callback = function(b)
       {
+         viewport.popUpInProgress = false;
          me._actions.hide();
          viewport.setActiveController(null);
          if (me.scanTask)
@@ -184,16 +247,39 @@ Ext.define('Genesis.controller.server.Rewards',
             Ext.Viewport.setMasked(null);
             me.onEnterPhoneNum();
          }
-         else if (!dismissDialog)
+         else if (!me.dismissDialog)
          {
             Ext.Viewport.setMasked(null);
             me.onDoneTap();
          }
       };
 
+      me.dismissDialog = false;
       me.rewardItemFn = function(params, closeDialog)
       {
-         dismissDialog = closeDialog;
+         var amount = 0;
+         switch (me.getMode())
+         {
+            case 'Manual' :
+            {
+               amount = me.getAmount().getValue();
+               break;
+            }
+            case 'POS_Detail' :
+            case 'POS_Selection' :
+            {
+               for (var i = 0; i < me.receiptSelected.length; i++)
+               {
+                  amount += Number(me.receiptSelected[i].get('subtotal'));
+               }
+               break;
+            }
+            default:
+               break;
+         }
+         console.debug("Amount:$" + amount);
+
+         me.dismissDialog = closeDialog;
          Ext.Viewport.setMasked(
          {
             xtype : 'loadmask',
@@ -218,7 +304,7 @@ Ext.define('Genesis.controller.server.Rewards',
          //
          // Update Server
          //
-         console.log("Updating Server with Reward information ... dismissDialog(" + dismissDialog + ")");
+         console.log("Updating Server with Reward information ... dismissDialog(" + me.dismissDialog + ")");
          PurchaseReward['setMerchantEarnPointsURL']();
          PurchaseReward.load(1,
          {
@@ -241,6 +327,21 @@ Ext.define('Genesis.controller.server.Rewards',
                      buttons : ['OK'],
                      callback : function()
                      {
+                        switch (me.getMode())
+                        {
+                           case 'POS_Selected' :
+                           case 'POS_Detail' :
+                           {
+                              for (var i = 0; i < me.receiptSelected.length; i++)
+                              {
+                                 me.receiptSelected[i].set('earned', true);
+                              }
+                              break;
+                           }
+                           case 'Manual' :
+                           default :
+                              break;
+                        }
                         me.onDoneTap();
                      }
                   });
@@ -330,6 +431,7 @@ Ext.define('Genesis.controller.server.Rewards',
          });
          Ext.Viewport.add(me._actions);
       }
+      viewport.popUpInProgress = true;
       me._actions.show();
       /*
        Ext.device.Notification.show(
@@ -389,6 +491,7 @@ Ext.define('Genesis.controller.server.Rewards',
          return;
       }
 
+      me.getCalcBtn()['hide']();
       container.setActiveItem(1);
    },
    onEarnPtsTap : function(b, e, eOpts, eInfo)
@@ -416,14 +519,43 @@ Ext.define('Genesis.controller.server.Rewards',
        }, 1, me);
        console.debug("Encrypting QRCode with Price:$" + amount);
        */
+      /*
+       me.getTitle().setData(
+       {
+       price : '$' + amount
+       });
+       container.setActiveItem(2);
+       */
 
-      me.getTitle().setData(
-      {
-         price : '$' + amount
-      });
-      container.setActiveItem(2);
-
+      me.setMode('Manual');
       me.fireEvent('rewarditem', b);
+   },
+   onRewardDetailTap : function(b, e, eOpts, eInfo)
+   {
+      var me = this;
+
+      me.setMode('POS_Detail');
+      me.fireEvent('rewarditem', b);
+   },
+   onRewardSelectionTap : function(b, e, eOpts, eInfo)
+   {
+      var me = this, container = me.getRewardsContainer(), receiptsList = me.getReceiptsList(), selection = receiptsList.getSelection();
+
+      if (selection && (selection.length > 0))
+      {
+         me.receiptSelected = selection;
+         me.setMode('POS_Selection');
+         me.fireEvent('rewarditem', b);
+      }
+      else
+      {
+         Ext.device.Notification.show(
+         {
+            title : me.earnPtsTitle,
+            message : me.selectRewardMsg,
+            buttons : ['Cancel']
+         });
+      }
    },
    onCalcBtnTap : function(b, e, eOpts, eInfo)
    {
@@ -559,12 +691,90 @@ Ext.define('Genesis.controller.server.Rewards',
    // --------------------------------------------------------------------------
    // Misc Event Funcs
    // --------------------------------------------------------------------------
+   onRptCloseTap : function(b, e)
+   {
+      var me = this;
+      var container = me.getRewardsContainer();
+      if (container)
+      {
+         container.setActiveItem(2);
+         me.getRptCloseBB()['hide']();
+         me.getBackBB()['show']();
+         me.getCalcBtn()['show']();
+      }
+   },
+   onReceiptDisclose : function(list, record, target, index, e, eOpts, eInfo)
+   {
+      var me = this;
+      var viewport = me.getViewPortCntlr();
+      var container = me.getRewardsContainer();
+
+      me.self.playSoundFile(viewport.sound_files['clickSound']);
+
+      if (container)
+      {
+         animation.setDirection('left');
+         container.setActiveItem(3);
+
+         var store = me.getReceiptDetail().getStore();
+         store.setData(
+         {
+            receipt : Ext.decode(record.get('receipt'))
+         });
+         me.receiptSelected = [record];
+         me.getRptCloseBB()['show']();
+         me.getBackBB()['hide']();
+         me.getCalcBtn()['show']();
+      }
+   },
+   onReceiptStoreRefresh : function(store, records, eOpts)
+   {
+      var me = this;
+      var list = me.getReceiptsList();
+
+      if (list)
+      {
+         var store = list.getStore();
+         console.debug("Refreshing ReceiptStore ...");
+         store.setData(store.getData().all);
+      }
+   },
+   // --------------------------------------------------------------------------
+   // Misc Event Funcs
+   // --------------------------------------------------------------------------
    onDoneTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
       var container = me.getRewardsContainer();
       delete me._params;
-      container.setActiveItem(0);
+      var store = Ext.StoreMgr.get('ReceiptStore');
+
+      if (container)
+      {
+         switch (me.getMode())
+         {
+            case 'Manual' :
+            {
+               me.getAmount().reset();
+               container.setActiveItem((store.getCount() > 0) ? 2 : 0);
+               break;
+            }
+            case 'POS_Detail' :
+            {
+               container.setActiveItem(3);
+               break;
+            }
+            case 'POS_Selection' :
+            {
+               container.setActiveItem(2);
+               break;
+            }
+            default :
+               break;
+         }
+         me.getCalcBtn()[(store.getCount() > 0) ? 'show' : 'hide']();
+      }
+
       console.debug("Rewards onDoneTap Called ...");
    },
    onNfc : function(nfcResult)

@@ -1,7 +1,7 @@
 Ext.define('Genesis.view.server.Rewards',
 {
    extend : 'Genesis.view.ViewBase',
-   requires : ['Ext.Toolbar', 'Ext.field.Text', 'Genesis.view.widgets.Calculator'],
+   requires : ['Ext.Toolbar', 'Ext.field.Text', 'Genesis.view.widgets.Calculator', 'Ext.dataview.List', 'Ext.XTemplate', 'Ext.plugin.ListPaging', 'Ext.plugin.PullRefresh'],
    alias : 'widget.serverrewardsview',
    config :
    {
@@ -19,17 +19,72 @@ Ext.define('Genesis.view.server.Rewards',
             //ui : 'back',
             ui : 'normal',
             text : 'Back'
+         },
+         {
+            align : 'left',
+            tag : 'rptClose',
+            hidden : true,
+            ui : 'normal',
+            text : 'Close'
+         },
+         {
+            hidden : true,
+            align : 'right',
+            ui : 'normal',
+            iconCls : 'order',
+            tag : 'calculator'
          }]
       })]
    },
    createView : function()
    {
-      if (!this.callParent(arguments))
+      var me = this, itemHeight = 1 + Genesis.constants.defaultIconSize() + 2 * Genesis.fn.calcPx(0.65, 1);
+      var toolbarBottom = function(tag)
+      {
+         return (
+            {
+               docked : 'bottom',
+               cls : 'toolbarBottom',
+               tag : tag,
+               xtype : 'container',
+               layout :
+               {
+                  type : 'vbox',
+                  pack : 'center'
+               },
+               items : [
+               {
+                  xtype : 'segmentedbutton',
+                  allowMultiple : false,
+                  defaults :
+                  {
+                     iconMask : true,
+                     ui : 'blue',
+                     flex : 1
+                  },
+                  items : [
+                  {
+                     iconCls : 'rewards',
+                     tag : 'rewardsSC',
+                     text : 'Earn Points'
+                  }],
+                  listeners :
+                  {
+                     toggle : function(container, button, pressed)
+                     {
+                        container.setPressedButtons([]);
+                     }
+                  }
+               }]
+            });
+      };
+      if (!me.callParent(arguments))
       {
          return;
       }
 
-      this.getPreRender().push(Ext.create('Ext.Container',
+      var store = Ext.StoreMgr.get('ReceiptStore');
+      me.getPreRender().push(Ext.create('Ext.Container',
       {
          xtype : 'container',
          tag : 'rewards',
@@ -44,7 +99,11 @@ Ext.define('Genesis.view.server.Rewards',
                direction : 'down'
             }
          },
-         activeItem : 0,
+         defaults :
+         {
+            hidden : true
+         },
+         activeItem : (store.getCount() > 0) ? 2 : 0,
          items : [
          // -------------------------------------------------------------------
          // Reward Calculator
@@ -77,42 +136,105 @@ Ext.define('Genesis.view.server.Rewards',
             }]
          },
          // -------------------------------------------------------------------
-         // Show for QRCode Screen
+         // POS Receipts
          // -------------------------------------------------------------------
          {
             xtype : 'container',
-            tag : 'qrcodeContainer',
-            cls : 'qrcodeContainer',
-            layout : 'fit',
+            tag : 'posSelect',
+            layout : 'hbox',
             items : [
             {
-               docked : 'top',
-               xtype : 'component',
-               tag : 'title',
-               width : '100%',
-               cls : 'title',
-               defaultUnit : 'em',
-               tpl : Ext.create('Ext.XTemplate', '{[this.getPrice(values)]}',
+               xtype : 'list',
+               flex : 1,
+               store : 'ReceiptStore',
+               loadingText : null,
+               //scrollable : 'vertical',
+               plugins : [
+               {
+                  type : 'pullrefresh',
+                  //pullRefreshText: 'Pull down for more new Tweets!',
+                  refreshFn : function(plugin)
+                  {
+                     if (wssocket)
+                     {
+                        wssocket.send("get_receipts");
+                     }
+                  }
+               },
+               {
+                  type : 'listpaging',
+                  autoPaging : true,
+                  loadMoreText : '',
+                  noMoreRecordsText : ''
+               }],
+               mode : 'MULTI',
+               preventSelectionOnDisclose : true,
+               scrollToTopOnRefresh : true,
+               refreshHeightOnUpdate : false,
+               variableHeights : false,
+               itemHeight : itemHeight,
+               deferEmptyText : false,
+               emptyText : ' ',
+               tag : 'receiptList',
+               cls : 'receiptList',
+               // @formatter:off
+               itemTpl : Ext.create('Ext.XTemplate',
+               '<div class="photo">{[this.getPrice(values)]}</div>' +
+               '<div class="listItemDetailsWrapper">' +
+                  '<div class="itemDistance">{[this.getDate(values)]}</div>' +
+                  '<div class="itemTitle">{title}</div>' +
+                  //'<div class="itemDesc">{[this.getDesc(values)]}</div>',
+               '</div>',
+               // @formatter:on
                {
                   getPrice : function(values)
                   {
-                     return values['price'];
+                     return '$' + Number(values['price']).toFixed(2);
+                  },
+                  getDate : function(values)
+                  {
+                     return Genesis.fn.convertDate(new Date(values['id'] * 1000));
+                  }
+               }),
+               onItemDisclosure : Ext.emptyFn
+            }, toolbarBottom('tbBottomSelection')]
+         },
+         // -------------------------------------------------------------------
+         // POS Receipt Detail
+         // -------------------------------------------------------------------
+         {
+            xtype : 'container',
+            tag : 'posDetail',
+            layout : 'hbox',
+            items : [
+            {
+               flex : 1,
+               xtype : 'dataview',
+               tag : 'receiptDetail',
+               cls : 'receiptDetail',
+               store :
+               {
+                  fields : ['receipt']
+               },
+               // @formatter:off
+               itemTpl : Ext.create('Ext.XTemplate',
+               '<div class="listItemDetailsWrapper">' +
+                  '<div class="itemReceipt">{[this.getReceipt(values)]}</div>' +
+               '</div>',
+               // @formatter:on
+               {
+                  getReceipt : function(values)
+                  {
+                     var receipt = '';
+                     for (var i = 0; i < values['receipt'].length; i++)
+                     {
+                        receipt += '<pre>' + values['receipt'][i].replace('\n', '').replace('/r', '') + '</pre>';
+                     }
+
+                     return receipt;
                   }
                })
-            }/*,
-             {
-             xtype : 'component',
-             tag : 'qrcode',
-             cls : 'qrcode'
-             },
-             {
-             docked : 'bottom',
-             xtype : 'button',
-             cls : 'separator done',
-             tag : 'done',
-             text : 'Done',
-             ui : 'orange-large'
-             }*/]
+            }, toolbarBottom('tbBottomDetail')]
          }]
       }));
    },

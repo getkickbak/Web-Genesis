@@ -14,8 +14,8 @@ Genesis.constants =
    isNfcEnabled : false,
    userName : 'Eric Chan',
    appMimeType : 'application/kickbak',
-   clientVersion : '2.1.3',
-   serverVersion : '2.1.2',
+   clientVersion : '2.2.0',
+   serverVersion : '2.2.0',
    themeName : 'v1',
    _thumbnailAttribPrefix : '',
    _iconPath : '',
@@ -36,7 +36,7 @@ Genesis.constants =
       return this._iconSize;
    },
    site : 'www.getkickbak.com',
-   photoSite : 'http://files.getkickbak.com',
+   photoSite : 'https://s3.amazonaws.com/files.getkickbak.com',
    debugVPrivKey : 'oSG8JclEHvRy5ngkb6ehWbb6TTRFXd8t',
    debugRPrivKey : 'oSG8JclEHvRy5ngkb6ehWbb6TTRFXd8t',
    debugVenuePrivKey : 'Debug Venue',
@@ -208,19 +208,19 @@ Genesis.fn =
          if (timeExpiredSec > -10)
          {
             if ((timeExpiredSec) < 2)
-               return [timeExpiredSec, 'a second ago'];
+               return [timeExpiredSec, 'a sec ago'];
             if ((timeExpiredSec) < 60)
                return [timeExpiredSec, parseInt(timeExpiredSec) + ' secs ago'];
             timeExpiredSec = timeExpiredSec / 60;
             if ((timeExpiredSec) < 2)
-               return [timeExpiredSec, 'a minute ago'];
+               return [timeExpiredSec, 'a min ago'];
             if ((timeExpiredSec) < 60)
-               return [timeExpiredSec, parseInt(timeExpiredSec) + ' minutes ago'];
+               return [timeExpiredSec, parseInt(timeExpiredSec) + ' mins ago'];
             timeExpiredSec = timeExpiredSec / 60;
             if ((timeExpiredSec) < 2)
-               return [date, 'an hour ago'];
+               return [date, 'an hr ago'];
             if ((timeExpiredSec) < 24)
-               return [date, parseInt(timeExpiredSec) + ' hours ago'];
+               return [date, parseInt(timeExpiredSec) + ' hrs ago'];
             timeExpiredSec = timeExpiredSec / 24;
             if (((timeExpiredSec) < 2) && ((new Date().getDay() - date.getDay()) == 1))
                return [date, 'Yesterday at ' + date.format('g:i A')];
@@ -228,9 +228,9 @@ Genesis.fn =
                return [date, this.weekday[date.getDay()] + ' at ' + date.format('g:i A')];
             timeExpiredSec = timeExpiredSec / 7;
             if (((timeExpiredSec) < 2) && (timeExpiredSec % 7 == 0))
-               return [date, 'a week ago'];
+               return [date, 'a wk ago'];
             if (((timeExpiredSec) < 5) && (timeExpiredSec % 7 == 0))
-               return [date, parseInt(timeExpiredSec) + ' weeks ago'];
+               return [date, parseInt(timeExpiredSec) + ' wks ago'];
 
             if (timeExpiredSec < 5)
                return [date, parseInt(timeExpiredSec * 7) + ' days ago']
@@ -699,6 +699,34 @@ Genesis.db =
       Ext.data.Model.cache =
       {
       };
+
+      var dropStatement = "DROP TABLE Customer";
+      var createStatement = "CREATE TABLE IF NOT EXISTS Customer (id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT)";
+      var db = openDatabase('KickBak-Customers', 'CustomerStore', "1.0", 5 * 1024 * 1024);
+      
+      db.transaction(function(tx)
+      {
+         //
+         // Create Table
+         //
+         tx.executeSql(createStatement, [], function()
+         {
+            console.debug("Successfully created/retrieved KickBak-Customers Table");
+         }, function(tx, error)
+         {
+            console.debug("Failed to create KickBak-Customers Table : " + error.message);
+         });
+         //
+         // Drop Table
+         //
+         tx.executeSql(dropStatement, [], function()
+         {
+            console.debug("ResetStorage --- Successfully drop KickBak-Customers Table");
+         }, function()
+         {
+            console.debug("Failed to drop KickBak-Customers Table : " + error.message);
+         });
+      });
    }
 }
 
