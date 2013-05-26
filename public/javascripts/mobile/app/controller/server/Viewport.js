@@ -1,5 +1,5 @@
 // add back button listener
-var onBackKeyDown, wssocket, posConnect, posDisconnect, enablePosIntegration;
+var onBackKeyDown, wssocket, posConnect, posDisconnect;
 Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Receipt', 'Ext.device.Connection', 'Genesis.controller.ControllerBase'], function()
 {
    onBackKeyDown = function(e)
@@ -58,10 +58,10 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
    };
 
    wssocket = null;
-   enablePosIntegration = false;
    posConnect = function(i)
    {
-      if (enablePosIntegration)
+      var db = Genesis.db.getLocalDB();
+      if (db['enablePosIntegration'] && db['isPosEnabled'])
       {
          var scheme = 'ws://';
          var host = '192.168.159.1';
@@ -143,9 +143,9 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
          Ext.Viewport.setMasked(null);
       }
    };
-   posDisconnect = function()
+   posDisconnect = function(forced)
    {
-      if (enablePosIntegration)
+      if (Genesis.db.getLocalDB()['enablePosIntegration'] || forced)
       {
          if (wssocket && wssocket.socket)
          {
@@ -272,7 +272,23 @@ Ext.define('Genesis.controller.server.Viewport',
          customer : null,
          metaData : null
       },
-      activeController : null
+      activeController : null,
+      refs :
+      {
+         posMode : 'serversettingspageview togglefield[tag=posMode]',
+         displayMode : 'serversettingspageview selectfield[tag=displayMode]'
+      },
+      control :
+      {
+         posMode :
+         {
+            change : 'onPosModeChange'
+         },
+         displayMode :
+         {
+            change : 'onDisplayModeChange'
+         }
+      }
    },
    mobileTimeout : 1 * 60 * 1000,
    fixedTimeout : 1 * 60 * 1000,
@@ -294,7 +310,7 @@ Ext.define('Genesis.controller.server.Viewport',
    },
    updateMetaDataInfo : function(metaData)
    {
-      var me = this;
+      var me = this, db = Genesis.db.getLocalDB();
       try
       {
          //
@@ -305,6 +321,8 @@ Ext.define('Genesis.controller.server.Viewport',
          // Update Customer Rewards (Prizes Redemptions)
          //
          me.updatePrizes(metaData['prizes']);
+
+         me.posIntegrationHandler(metaData, db['isPOSEnabled']);
       }
       catch(e)
       {
@@ -574,6 +592,27 @@ Ext.define('Genesis.controller.server.Viewport',
       {
          me.callParent(arguments);
       }
+   },
+   onPosModeChange : function(field, newValue, oldValue, eOpts)
+   {
+      var me = this;
+      if (me.getMetaData())
+      {
+         me.posIntegrationHandler(me.getMetaData(), (newValue) ? true : false);
+      }
+      else
+      {
+         //
+         // Revert to original value
+         //
+         field.toggle();
+      }
+   },
+   onDisplayModeChange : function(field, newValue, oldValue, eOpts)
+   {
+      var me = this;
+      Genesis.db.setLocalDBAttrib("displayMode", newValue);
+      me.batteryStatusFn();
    },
    // --------------------------------------------------------------------------
    // Button Handlers
@@ -849,5 +888,26 @@ Ext.define('Genesis.controller.server.Viewport',
       }
       me._syncTask.delay(duration);
       console.debug("syncReceiptDB - Synchronize Database after " + (duration / 1000) + "sec of idle");
+   },
+   posIntegrationHandler : function(metaData, isPosEnabled)
+   {
+      var db = Genesis.db.getLocalDB();
+
+      db['enablePosIntegration'] = metaData['enablePOS'];
+      db['isPosEnabled'] = ((isPosEnabled === undefined) || (isPosEnabled));
+      if (db['enablePosIntegration'] && db['isPosEnabled'])
+      {
+         posConnect();
+      }
+      else
+      {
+         var store = Ext.StoreMgr.get('ReceiptStore');
+         posDisconnect(true);
+         store.removeAll();
+         store.remove(store.getRange());
+         // BUG: We have to remove the filtered items as well
+      }
+      db['enableReceiptUpload'] = metaData['enableReceiptUpload'];
+      Genesis.db.setLocalDB(db);
    }
 });

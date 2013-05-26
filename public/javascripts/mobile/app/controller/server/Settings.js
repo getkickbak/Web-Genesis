@@ -275,14 +275,18 @@ Ext.define('Genesis.controller.server.Settings',
    },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      var me = this, form = me.getSettingsPage(), displayMode = Genesis.db.getLocalDB()["displayMode"] || 'Mobile';
-      
+      var me = this, form = me.getSettingsPage(), db = Genesis.db.getLocalDB();
+
       me.getMerchantDevice().setLabel(Genesis.fn.getPrivKey('venue'));
-      me.getUtilitiesContainer()[me.writeTagEnabled ? 'show' : 'hide']();      
+      me.getUtilitiesContainer()[me.writeTagEnabled ? 'show' : 'hide']();
       form.setValues(
       {
-         displayMode : displayMode
+         posMode : ((db['isPosEnabled'] === undefined) || (db['isPosEnabled'])) ? 1 : 0,
+         displayMode : db["displayMode"] || 'Mobile'
       });
+      var field = form.query('togglefield[tag=posMode]')[0];
+      field.setReadOnly(db['enablePosIntegration'] ? true : false);
+      field[(db['enablePosIntegration']) ? 'enable' : 'disable']();
    },
    onDeactivate : function(activeItem, c, oldActiveItem, eOpts)
    {

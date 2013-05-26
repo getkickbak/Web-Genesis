@@ -1,7 +1,7 @@
 Ext.define('Genesis.view.server.SettingsPage',
 {
    extend : 'Ext.form.Panel',
-   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Genesis.view.widgets.ListField', 'Ext.field.Select', 'Ext.field.Text', 'Ext.form.FieldSet'],
+   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Genesis.view.widgets.ListField', 'Ext.field.Select', 'Ext.field.Text', 'Ext.field.Toggle', 'Ext.form.FieldSet'],
    alias : 'widget.serversettingspageview',
    config :
    {
@@ -43,8 +43,16 @@ Ext.define('Genesis.view.server.SettingsPage',
             readOnly : true
          },
          {
+            xtype : 'togglefield',
+            name : 'posMode',
+            tag : 'posMode',
+            label : 'POS Integration',
+            value : 0
+         },
+         {
             xtype : 'selectfield',
             label : 'Display Mode',
+            tag : 'displayMode',
             name : 'displayMode',
             usePicker : true,
             options : [
@@ -62,14 +70,6 @@ Ext.define('Genesis.view.server.SettingsPage',
                doneButton :
                {
                   ui : 'normal'
-               }
-            },
-            listeners :
-            {
-               "change" : function(field, newValue, oldValue, eOpts)
-               {
-                  Genesis.db.setLocalDBAttrib("displayMode", newValue);
-                  _application.getController('server' + '.Viewport').batteryStatusFn();
                }
             }
          },

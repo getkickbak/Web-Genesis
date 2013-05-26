@@ -349,10 +349,10 @@ Ext.define('Genesis.controller.server.Rewards',
                   //
                   // Store to Receipt Database
                   //
+                  if (db['enableReceiptUpload'] && db['isPosEnabled'])
                   {
                      var x, receipt, txid = 0;
                      var insertStatement = "INSERT INTO Receipt (id, receipts) VALUES (?, ?)";
-                     var dropStatement = "DROP TABLE Receipt";
                      var createStatement = "CREATE TABLE IF NOT EXISTS Receipt (id INTEGER PRIMARY KEY, receipts TEXT)";
                      var db = openDatabase('KickBak', 'ReceiptStore', "1.0", 5 * 1024 * 1024);
                      db.transaction(function(tx)
