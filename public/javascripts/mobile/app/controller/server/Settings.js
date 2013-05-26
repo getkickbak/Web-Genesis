@@ -275,9 +275,14 @@ Ext.define('Genesis.controller.server.Settings',
    },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      var me = this;
+      var me = this, form = me.getSettingsPage(), displayMode = Genesis.db.getLocalDB()["displayMode"] || 'Mobile';
+      
       me.getMerchantDevice().setLabel(Genesis.fn.getPrivKey('venue'));
-      me.getUtilitiesContainer()[me.writeTagEnabled ? 'show' : 'hide']();
+      me.getUtilitiesContainer()[me.writeTagEnabled ? 'show' : 'hide']();      
+      form.setValues(
+      {
+         displayMode : displayMode
+      });
    },
    onDeactivate : function(activeItem, c, oldActiveItem, eOpts)
    {

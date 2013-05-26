@@ -90,7 +90,7 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
                   //
                   Genesis.fn.systemTime = inputStream['systemTime'] * 1000;
                   Genesis.fn.clientTime = new Date().getTime();
-                  
+
                   switch (cmd)
                   {
                      case 'receipt_incoming' :
@@ -214,8 +214,9 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
          }
       }
       //console.debug("WebSocketClient::createReceipt");
-
-      return Ext.create("Genesis.model.frontend.Receipt", receipt);
+      var rc = Ext.create("Genesis.model.frontend.Receipt", receipt);
+      rc['items']().add(receipt['items']);
+      return rc;
    };
    WebSocket.prototype.receiptIncomingHandler = function(receipts, supress)
    {
@@ -258,9 +259,10 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
 Ext.define('Genesis.controller.server.Viewport',
 {
    extend : 'Genesis.controller.ViewportBase',
-   requires : ['Genesis.model.frontend.Receipt', 'Ext.dataview.List', 'Ext.XTemplate'],
+   requires : ['Genesis.model.frontend.Receipt', 'Ext.dataview.List', 'Ext.XTemplate', 'Ext.util.DelayedTask'],
    config :
    {
+      models : ['PurchaseReward'],
       customer : null,
       venue : null,
       metaData : null,
@@ -271,6 +273,13 @@ Ext.define('Genesis.controller.server.Viewport',
          metaData : null
       },
       activeController : null
+   },
+   mobileTimeout : 1 * 60 * 1000,
+   fixedTimeout : 1 * 60 * 1000,
+   _statusInfo :
+   {
+      isPlugged : false,
+      level : 0
    },
    setupInfoMissingMsg : 'Trouble initializing Merchant Device',
    licenseKeyInvalidMsg : 'Missing License Key',
@@ -629,12 +638,216 @@ Ext.define('Genesis.controller.server.Viewport',
          window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
       }
 
-      /*
-       Ext.EventManager.on(window, 'beforeunload', function()
-       {
-       posDisconnect();
-       });
-       */
+      me.initListeners();
 
+   },
+   batteryStatusFn : function(info)
+   {
+      var me = this, displayMode = Genesis.db.getLocalDB["displayMode"];
+
+      info = info || me._statusInfo;
+      console.log("Device is " + ((info.isPlugged) ? "Plugged" : "Unplugged") + ", Battery " + info.level + "%");
+
+      var plugStatusChanged = me._statusInfo.isPlugged !== info.isPlugged;
+
+      if (!info.isPlugged)
+      {
+         if (me._syncTask)
+         {
+            me._syncTask.cancel();
+         }
+      }
+      else
+      {
+         //
+         // Minimum of 3% Battery
+         //
+         if (Ext.device && //
+         (plugStatusChanged || (me._statusInfo === info)) && //
+         (info.level >= 3))
+         {
+            switch (displayMode)
+            {
+               case 'Fixed' :
+               {
+                  me.syncReceiptDB(me.fixedTimeout);
+                  break;
+               }
+               case 'Mobile':
+               default :
+                  me.syncReceiptDB(me.mobileTimeout);
+                  break;
+            }
+         }
+      }
+      me._statusInfo = info;
+   },
+   initListeners : function()
+   {
+      var me = this;
+      window.addEventListener("batterystatus", function(info)
+      {
+         if (!me._hyteresisTask)
+         {
+            me._hyteresisTask = Ext.create('Ext.util.DelayedTask', me.batteryStatusFn);
+         }
+         me._hyteresisTask.delay(30 * 1000, me.batteryStatusFn, me, [info]);
+      }, false);
+      window.addEventListener("batterylow", function(info)
+      {
+         if (Ext.device)
+         {
+            Ext.device.Notification.show(
+            {
+               title : 'Battery Level Low',
+               messsage : 'Battery is at ' + info.level + '%'
+            });
+            Ext.device.Notification.vibrate();
+         }
+      }, false);
+      window.addEventListener("batterycritical", function(info)
+      {
+         if (Ext.device)
+         {
+            Ext.device.Notification.show(
+            {
+               title : 'Battery Level Critical',
+               messsage : 'Battery is at ' + info.level + '%' + '\n' + //
+               'Recharge Soon!'
+            });
+            Ext.device.Notification.vibrate();
+            Ext.device.Notification.beep();
+         }
+      }, false);
+   },
+   uploadReceipts : function(receipts)
+   {
+      var me = this, proxy = PurchaseReward.getProxy();
+      var params =
+      {
+         version : Genesis.constants.serverVersion,
+         'venue_id' : Genesis.fn.getPrivKey('venueId'),
+         data :
+         {
+            "receipts" : receipts,
+            "type" : 'earn_points',
+            'expiry_ts' : new Date().addHours(3).getTime()
+         }
+      };
+      params['data'] = me.self.encryptFromParams(params['data']);
+
+      PurchaseReward['setMerchantReceiptUploadURL']();
+      PurchaseReward.load(1,
+      {
+         addRecords : true, //Append data
+         scope : me,
+         jsonData :
+         {
+         },
+         doNotRetryAttempt : false,
+         params : params,
+         callback : function(record, operation)
+         {
+            Ext.Viewport.setMasked(null);
+            if (operation.wasSuccessful())
+            {
+               var createStatement = "CREATE TABLE IF NOT EXISTS Receipt (id INTEGER PRIMARY KEY, receipts TEXT)";
+               var deleteStatement = "DELETE FROM Receipt WHERE id=?";
+               var db = openDatabase('KickBak', 'ReceiptStore', "1.0", 5 * 1024 * 1024);
+               db.transaction(function(tx)
+               {
+                  //
+                  // Create Table
+                  //
+                  tx.executeSql(createStatement, [], function()
+                  {
+                     console.debug("Successfully created/retrieved KickBak-Receipt Table");
+                  }, function(tx, error)
+                  {
+                     console.debug("Failed to create KickBak-Receipt Table : " + error.message);
+                  });
+                  //
+                  // Retrieve Customers
+                  //
+                  for (var i = 0; i < receipts.length; i++)
+                  {
+                     tx.executeSql(deleteStatement, [receipts[i]['id']], function()
+                     {
+                     }, function(tx, error)
+                     {
+                     });
+                  }
+                  console.debug("uploadReceipts --- Removed " + receipts.length + "Receipts from  KickBak-Receipt Table");
+               });
+            }
+            else
+            {
+               proxy.supressErrorsPopup = true;
+               proxy.quiet = false;
+               //
+               // Try again at next interval
+               //
+               syncReceiptDB();
+            }
+         }
+      });
+   },
+   syncReceiptDB : function(duration)
+   {
+      var me = this;
+      //
+      // Wait for time to expire before Synchronizing Receipt Database with server
+      //
+      if (!me._syncTask)
+      {
+         me._syncTask = Ext.create('Ext.util.DelayedTask', function()
+         {
+            var createStatement = "CREATE TABLE IF NOT EXISTS Receipt (id INTEGER PRIMARY KEY, receipts TEXT)";
+            var selectAllStatement = "SELECT * FROM Receipt";
+            var db = openDatabase('KickBak', 'ReceiptStore', "1.0", 5 * 1024 * 1024);
+            db.transaction(function(tx)
+            {
+               //
+               // Create Table
+               //
+               tx.executeSql(createStatement, [], function()
+               {
+                  console.debug("Successfully created/retrieved KickBak-Receipt Table");
+               }, function(tx, error)
+               {
+                  console.debug("Failed to create KickBak-Receipt Table : " + error.message);
+               });
+               //
+               // Retrieve Customers
+               //
+               tx.executeSql(selectAllStatement, [], function(tx, result)
+               {
+                  var items = [];
+                  var dataset = result.rows;
+                  for ( j = 0, item = null; j < dataset.length; j++)
+                  {
+                     item = dataset.item(j);
+                     console.debug("TxId - " + item['id'])
+                     items.push(
+                     {
+                        id : item['id'],
+                        receipts : Ext.decode(item['receipts'])
+                     });
+                  }
+                  console.debug("syncReceiptDB  --- Found " + items.length + " records in SQL Receipt Database");
+
+                  if (items.length > 0)
+                  {
+                     me.uploadReceipts(items);
+                  }
+               }, function(tx, error)
+               {
+                  console.debug("No Receipt Table found in SQL Database : " + error.message);
+               });
+            });
+         });
+      }
+      me._syncTask.delay(duration);
+      console.debug("syncReceiptDB - Synchronize Database after " + (duration / 1000) + "sec of idle");
    }
 });

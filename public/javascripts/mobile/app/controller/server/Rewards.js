@@ -280,12 +280,6 @@ Ext.define('Genesis.controller.server.Rewards',
          console.debug("Amount:$" + amount);
 
          me.dismissDialog = closeDialog;
-         Ext.Viewport.setMasked(
-         {
-            xtype : 'loadmask',
-            message : me.establishConnectionMsg
-         });
-         //Ext.device.Notification.dismiss();
          callback();
 
          params = Ext.merge(params,
@@ -304,6 +298,13 @@ Ext.define('Genesis.controller.server.Rewards',
          //
          // Update Server
          //
+         Ext.Viewport.setMasked(
+         {
+            xtype : 'loadmask',
+            message : me.establishConnectionMsg
+         });
+         //Ext.device.Notification.dismiss();
+
          console.log("Updating Server with Reward information ... dismissDialog(" + me.dismissDialog + ")");
          PurchaseReward['setMerchantEarnPointsURL']();
          PurchaseReward.load(1,
@@ -345,6 +346,45 @@ Ext.define('Genesis.controller.server.Rewards',
                         me.onDoneTap();
                      }
                   });
+                  //
+                  // Store to Receipt Database
+                  //
+                  {
+                     var x, receipt, txid = 0;
+                     var insertStatement = "INSERT INTO Receipt (id, receipts) VALUES (?, ?)";
+                     var dropStatement = "DROP TABLE Receipt";
+                     var createStatement = "CREATE TABLE IF NOT EXISTS Receipt (id INTEGER PRIMARY KEY, receipts TEXT)";
+                     var db = openDatabase('KickBak', 'ReceiptStore', "1.0", 5 * 1024 * 1024);
+                     db.transaction(function(tx)
+                     {
+                        //
+                        // Create Table
+                        //
+                        tx.executeSql(createStatement, [], function()
+                        {
+                           console.debug("Successfully created/retrieved KickBak-Receipt Table");
+                        }, function(tx, error)
+                        {
+                           console.debug("Failed to create KickBak-Receipt Table : " + error.message);
+                        });
+                        //
+                        // Insert Table
+                        //
+                        for ( x = 0; x < me.receiptSelected.length; x++)
+                        {
+                           receipt = me.receiptSelected[x];
+                           //console.debug("Inserting Customer(" + item.getId() + ") to Database");
+                           tx.executeSql(insertStatement, [txId, Ext.encode(receipt.getData(true))], function()
+                           {
+                              //console.debug("Inserted Customer(" + item.getId() + ") to Database");
+                           }, function(tx, error)
+                           {
+                              console.debug("Failed to insert Customer(" + receipt.getId() + ") to Database : " + error.message);
+                           });
+                        }
+                        console.debug("Receipt Submission  --- Inserted " + items.length + " records in Receipt Database ...");
+                     });
+                  }
                }
                else
                {
