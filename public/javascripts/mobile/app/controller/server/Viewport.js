@@ -1,7 +1,110 @@
 // add back button listener
-var onBackKeyDown, wssocket, posConnect, posDisconnect;
+var onBackKeyDown, wssocket = null, posConnect, posDisconnect;
 Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Receipt', 'Ext.device.Connection', 'Genesis.controller.ControllerBase'], function()
 {
+   var db = Genesis.db.getLocalDB();
+   if (db['receiptFilters'])
+   {
+      WebSocket.prototype.receiptFilters = Ext.clone(db['receiptFilters']);
+      WebSocket.prototype.receiptFilters['grandtotal'] = new RegExp(db['receiptFilters']['grandtotal'], "i");
+      WebSocket.prototype.receiptFilters['subtotal'] = new RegExp(db['receiptFilters']['subtotal'], "i");
+      WebSocket.prototype.receiptFilters['item'] = new RegExp(db['receiptFilters']['item'], "i");
+   }
+   WebSocket.prototype.createReceipt = function(receiptText)
+   {
+      var me = this, i, match, currItemPrice = 0, maxItemPrice = 0, id = receiptText[0];
+
+      receiptText.splice(0, 1);
+      var receipt =
+      {
+         id : id,
+         subtotal : currItemPrice.toFixed(2),
+         price : currItemPrice.toFixed(2),
+         title : '',
+         earned : false,
+         receipt : Ext.encode(receiptText),
+         items : []
+      }
+
+      //console.debug("WebSocketClient::createReceipt[" + Genesis.fn.convertDateFullTime(new Date(receipt['id']*1000)) + "]");
+      for ( i = 0; i < receiptText.length; i++)
+      {
+         var text = receiptText[i];
+         if (text.length > me.receiptFilters['minLineLength'])
+         {
+            match = me.receiptFilters['subtotal'].exec(text);
+            if (match)
+            {
+               receipt['subtotal'] = match[1];
+            }
+
+            match = me.receiptFilters['grandtotal'].exec(text);
+            if (match)
+            {
+               receipt['price'] = match[1];
+            }
+
+            match = me.receiptFilters['item'].exec(text);
+            if (match)
+            {
+               var qty = Number(match[2]);
+               var currItemPrice = (Number(match[3]) / qty);
+               receipt['items'].push(new Ext.create('Genesis.model.frontend.ReceiptItem',
+               {
+                  qty : qty,
+                  price : currItemPrice,
+                  name : match[1].trim()
+               }));
+               if (Math.max(currItemPrice, maxItemPrice) == currItemPrice)
+               {
+                  maxItemPrice = currItemPrice;
+                  receipt['title'] = match[1].trim();
+               }
+            }
+         }
+      }
+      //console.debug("WebSocketClient::createReceipt");
+      var rc = Ext.create("Genesis.model.frontend.Receipt", receipt);
+      rc['items']().add(receipt['items']);
+      return rc;
+   };
+   WebSocket.prototype.receiptIncomingHandler = function(receipts, supress)
+   {
+      var receiptsList = [];
+      //console.debug("WebSocketClient::onmessage - " + event);
+      for (var i = 0; i < receipts.length; i++)
+      {
+         var receipt = receiptsList[i] = this.createReceipt(receipts[i]);
+
+         //console.debug("WebSocketClient::receiptIncomingHandler");
+         if (!supress)
+         {
+            console.debug("WebSocketClient::receiptIncomingHandler - \n" + //
+            "Date: " + Genesis.fn.convertDateFullTime(new Date(receipt.get('id') * 1000)) + '\n' + //
+            "Subtotal: $" + receipt.get('subtotal').toFixed(2) + '\n' + //
+            "Price: $" + receipt.get('price').toFixed(2) + '\n' + //
+            "Earned: " + receipt.get('earned') + '\n' + //
+            "Title: " + receipt.get('title') + '\n' + //
+            "Receipt: [\n" + Ext.decode(receipt.get('receipt')) + "\n]" + //
+            "");
+         }
+      }
+
+      if (!supress)
+      {
+         Ext.StoreMgr.get('ReceiptStore').add(receiptsList);
+      }
+
+      return receiptsList;
+   };
+   WebSocket.prototype.receiptResponseHandler = function(receipts)
+   {
+      var receiptsList = this.receiptIncomingHandler(receipts, true);
+      Ext.StoreMgr.get('ReceiptStore').setData(receiptsList);
+
+      console.debug("WebSocketClient::receiptResponseHandler - Processed " + receiptsList.length + " receipts");
+   };
+
    onBackKeyDown = function(e)
    {
       var viewport = _application.getController('server.Viewport');
@@ -57,7 +160,6 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
       }
    };
 
-   wssocket = null;
    posConnect = function(i)
    {
       var db = Genesis.db.getLocalDB();
@@ -153,106 +255,6 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
             console.debug("WebSocketClient::posDisconnect called");
          }
       }
-   };
-
-   WebSocket.prototype.minLineLength = 10;
-   WebSocket.prototype.grandtotalRegexp = new RegExp("\\s*\\bGrand Total\\b\\s+\\$(\\d+\.\\d{2})\\s*", "i");
-   WebSocket.prototype.subtotalRegexp = new RegExp("\\s*\\bSubtotal\\b\\s+\\$(\\d+\.\\d{2})\\s*", "i");
-   WebSocket.prototype.itemRegexp = new RegExp("([\\s*\\w+]+)\\s+(\\d+)\\s+\\$(\\d+\\.\\d{2})\\s*", "i");
-
-   WebSocket.prototype.createReceipt = function(receiptText)
-   {
-      var i, match, currItemPrice = 0, maxItemPrice = 0, id = receiptText[0];
-
-      receiptText.splice(0, 1);
-      var receipt =
-      {
-         id : id,
-         subtotal : currItemPrice.toFixed(2),
-         price : currItemPrice.toFixed(2),
-         title : '',
-         earned : false,
-         receipt : Ext.encode(receiptText),
-         items : []
-      }
-
-      //console.debug("WebSocketClient::createReceipt[" + Genesis.fn.convertDateFullTime(new Date(receipt['id']*1000)) + "]");
-      for ( i = 0; i < receiptText.length; i++)
-      {
-         var text = receiptText[i];
-         if (text.length > this.minLineLength)
-         {
-            match = this.subtotalRegexp.exec(text);
-            if (match)
-            {
-               receipt['subtotal'] = match[1];
-            }
-
-            match = this.grandtotalRegexp.exec(text);
-            if (match)
-            {
-               receipt['price'] = match[1];
-            }
-
-            match = this.itemRegexp.exec(text);
-            if (match)
-            {
-               var qty = Number(match[2]);
-               var currItemPrice = (Number(match[3]) / qty);
-               receipt['items'].push(new Ext.create('Genesis.model.frontend.ReceiptItem',
-               {
-                  qty : qty,
-                  price : currItemPrice,
-                  name : match[1].trim()
-               }));
-               if (Math.max(currItemPrice, maxItemPrice) == currItemPrice)
-               {
-                  maxItemPrice = currItemPrice;
-                  receipt['title'] = match[1].trim();
-               }
-            }
-         }
-      }
-      //console.debug("WebSocketClient::createReceipt");
-      var rc = Ext.create("Genesis.model.frontend.Receipt", receipt);
-      rc['items']().add(receipt['items']);
-      return rc;
-   };
-   WebSocket.prototype.receiptIncomingHandler = function(receipts, supress)
-   {
-      var receiptsList = [];
-      //console.debug("WebSocketClient::onmessage - " + event);
-      for (var i = 0; i < receipts.length; i++)
-      {
-         var receipt = receiptsList[i] = this.createReceipt(receipts[i]);
-
-         //console.debug("WebSocketClient::receiptIncomingHandler");
-         if (!supress)
-         {
-            console.debug("WebSocketClient::receiptIncomingHandler - \n" + //
-            "Date: " + Genesis.fn.convertDateFullTime(new Date(receipt.get('id') * 1000)) + '\n' + //
-            "Subtotal: $" + receipt.get('subtotal').toFixed(2) + '\n' + //
-            "Price: $" + receipt.get('price').toFixed(2) + '\n' + //
-            "Earned: " + receipt.get('earned') + '\n' + //
-            "Title: " + receipt.get('title') + '\n' + //
-            "Receipt: [\n" + Ext.decode(receipt.get('receipt')) + "\n]" + //
-            "");
-         }
-      }
-
-      if (!supress)
-      {
-         Ext.StoreMgr.get('ReceiptStore').add(receiptsList);
-      }
-
-      return receiptsList;
-   };
-   WebSocket.prototype.receiptResponseHandler = function(receipts)
-   {
-      var receiptsList = this.receiptIncomingHandler(receipts, true);
-      Ext.StoreMgr.get('ReceiptStore').setData(receiptsList);
-
-      console.debug("WebSocketClient::receiptResponseHandler - Processed " + receiptsList.length + " receipts");
    };
 });
 
@@ -897,6 +899,20 @@ Ext.define('Genesis.controller.server.Viewport',
       db['isPosEnabled'] = ((isPosEnabled === undefined) || (isPosEnabled));
       if (db['enablePosIntegration'] && db['isPosEnabled'])
       {
+         var filters = metaData['receiptFilters'] = metaData['receiptFilters'] ||
+         {
+         };
+         db['receiptFilters'] =
+         {
+            minLineLength : filters['minLineLength'] || 10,
+            grandtotal : filters['grandtotal'] || "\\s*\\bGrand Total\\b\\s+\\$(\\d+\.\\d{2})\\s*",
+            subtotal : filters['subtotal'] || "\\s*\\bSubtotal\\b\\s+\\$(\\d+\.\\d{2})\\s*",
+            item : filters['item'] || "([\\s*\\w+]+)\\s+(\\d+)\\s+\\$(\\d+\\.\\d{2})\\s*"
+         }
+         WebSocket.prototype.receiptFilters = Ext.clone(db['receiptFilters']);
+         WebSocket.prototype.receiptFilters['grandtotal'] = new RegExp(db['receiptFilters']['grandtotal'], "i");
+         WebSocket.prototype.receiptFilters['subtotal'] = new RegExp(db['receiptFilters']['subtotal'], "i");
+         WebSocket.prototype.receiptFilters['item'] = new RegExp(db['receiptFilters']['item'], "i");
          posConnect();
       }
       else
@@ -905,6 +921,7 @@ Ext.define('Genesis.controller.server.Viewport',
          posDisconnect(true);
          store.removeAll();
          store.remove(store.getRange());
+         delete WebSocket.prototype.receiptFilters;
          // BUG: We have to remove the filtered items as well
       }
       db['enableReceiptUpload'] = metaData['enableReceiptUpload'];
