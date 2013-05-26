@@ -155,13 +155,13 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
       me.redeemItemFn = function(p, closeDialog)
       {
          me.dismissDialog = closeDialog;
+         callback();
          Ext.Viewport.setMasked(
          {
             xtype : 'loadmask',
             message : me.establishConnectionMsg
          });
          //Ext.device.Notification.dismiss();
-         callback();
          //
          // Update Server
          //

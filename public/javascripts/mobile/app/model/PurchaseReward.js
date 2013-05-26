@@ -65,5 +65,13 @@ Ext.define('Genesis.model.PurchaseReward',
          });
          this.getProxy().setUrl(serverHost + '/api/v1/purchase_rewards/merchant_earn');
       },
+      setMerchantReceiptUploadURL : function()
+      {
+         this.getProxy().setActionMethods(
+         {
+            read : 'POST'
+         });
+         this.getProxy().setUrl(serverHost + '/api/v1/purchase_rewards/merchant_receipts');
+      }
    }
 });

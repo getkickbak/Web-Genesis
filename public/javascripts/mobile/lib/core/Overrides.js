@@ -702,8 +702,8 @@ Genesis.db =
 
       var dropStatement = "DROP TABLE Customer";
       var createStatement = "CREATE TABLE IF NOT EXISTS Customer (id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT)";
-      var db = openDatabase('KickBak-Customers', 'CustomerStore', "1.0", 5 * 1024 * 1024);
-      
+      var db = openDatabase('KickBak', 'CustomerStore', "1.0", 5 * 1024 * 1024);
+
       db.transaction(function(tx)
       {
          //
@@ -999,31 +999,43 @@ Ext.define('Genesis.data.proxy.Server',
       //console.debug("request = [" + Ext.encode(operation.initialConfig) + "]");
       if (response.timedout || ((response.status == 0) && (!request.aborted) && (!operation.initialConfig.doNotRetryAttempt)))
       {
-         Ext.device.Notification.show(
+         if (!me.quiet)
          {
-            title : 'Server Timeout',
-            message : "Error Contacting Server",
-            buttons : ['Try Again', 'Cancel'],
-            callback : function(btn)
+            Ext.device.Notification.show(
             {
-               if (btn.toLowerCase() == 'try again')
+               title : 'Server Timeout',
+               message : "Error Contacting Server",
+               buttons : ['Try Again', 'Cancel'],
+               callback : function(btn)
                {
-                  me.afterRequest(request, success);
-                  //
-                  // Resend request
-                  //
-                  Ext.Ajax.request(response.request.options);
+                  if (btn.toLowerCase() == 'try again')
+                  {
+                     me.afterRequest(request, success);
+                     //
+                     // Resend request
+                     //
+                     Ext.Ajax.request(response.request.options);
+                  }
+                  else
+                  {
+                     response.timedout = false;
+                     request.aborted = true;
+                     success = false;
+                     operation.success = false;
+                     me.processResponse(success, operation, request, response, callback, scope);
+                  }
                }
-               else
-               {
-                  response.timedout = false;
-                  request.aborted = true;
-                  success = false;
-                  operation.success = false;
-                  me.processResponse(success, operation, request, response, callback, scope);
-               }
-            }
-         });
+            });
+         }
+         else
+         {
+            me.quiet = false;
+            response.timedout = false;
+            request.aborted = true;
+            success = false;
+            operation.success = false;
+            me.processResponse(success, operation, request, response, callback, scope);
+         };
 
          return;
       }
@@ -1034,7 +1046,10 @@ Ext.define('Genesis.data.proxy.Server',
          metaData = reader.metaData ||
          {
          };
-         Ext.Viewport.setMasked(null);
+         if (!me.quiet)
+         {
+            Ext.Viewport.setMasked(null);
+         }
 
          //this callback is the one that was passed to the 'read' or 'write' function above
          if ( typeof callback == 'function')
@@ -1044,17 +1059,25 @@ Ext.define('Genesis.data.proxy.Server',
 
          if (me.supressErrorsPopup)
          {
-            me.supressErrorsCallbackFn = function()
+            if (!me.quiet)
+            {
+               me.supressErrorsCallbackFn = function()
+               {
+                  me.supressErrorsPopup = false;
+                  me.errorResponseHandlerFn(metaData, messages, success, operation, request, response, callback, scope);
+                  delete me.supressErrorsCallbackFn;
+               }
+            }
+            else
             {
                me.supressErrorsPopup = false;
-               me.errorResponseHandlerFn(metaData, messages, success, operation, request, response, callback, scope);
-               delete me.supressErrorsCallbackFn;
             }
          }
          else
          {
             me.errorResponseHandlerFn(metaData, messages, success, operation, request, response, callback, scope);
          }
+         me.quiet = false;
       };
 
       if (!response.aborted)

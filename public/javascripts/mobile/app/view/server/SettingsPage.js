@@ -1,7 +1,7 @@
 Ext.define('Genesis.view.server.SettingsPage',
 {
    extend : 'Ext.form.Panel',
-   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Genesis.view.widgets.ListField'],
+   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Genesis.view.widgets.ListField', 'Ext.field.Select', 'Ext.field.Text', 'Ext.form.FieldSet'],
    alias : 'widget.serversettingspageview',
    config :
    {
@@ -41,6 +41,37 @@ Ext.define('Genesis.view.server.SettingsPage',
             label : 'Version ' + Genesis.constants.serverVersion,
             value : ' ',
             readOnly : true
+         },
+         {
+            xtype : 'selectfield',
+            label : 'Display Mode',
+            name : 'displayMode',
+            usePicker : true,
+            options : [
+            {
+               text : 'Mobile',
+               value : 'Mobile'
+            },
+            {
+               text : 'Fixed',
+               value : 'Fixed'
+            }],
+            defaultPhonePickerConfig :
+            {
+               height : '12.5em',
+               doneButton :
+               {
+                  ui : 'normal'
+               }
+            },
+            listeners :
+            {
+               "change" : function(field, newValue, oldValue, eOpts)
+               {
+                  Genesis.db.setLocalDBAttrib("displayMode", newValue);
+                  _application.getController('server' + '.Viewport').batteryStatusFn();
+               }
+            }
          },
          {
             xtype : 'listfield',

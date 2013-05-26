@@ -927,7 +927,7 @@ Ext.define('Genesis.controller.ControllerBase',
                   //
                   if (stores[i][1] == 'CustomerStore')
                   {
-                     var db = openDatabase('KickBak-Customers', stores[i][1], "1.0", 5 * 1024 * 1024);
+                     var db = openDatabase('KickBak', stores[i][1], "1.0", 5 * 1024 * 1024);
                      db.transaction(function(tx)
                      {
                         //
@@ -1012,7 +1012,7 @@ Ext.define('Genesis.controller.ControllerBase',
       //
       if (!storeName || (storeName == stores[0][1]))
       {
-         var db = openDatabase('KickBak-Customers', 'CustomerStore', "1.0", 5 * 1024 * 1024);
+         var db = openDatabase('KickBak', 'CustomerStore', "1.0", 5 * 1024 * 1024);
          var cstore = Ext.StoreMgr.get('CustomerStore');
 
          db.transaction(function(tx)
