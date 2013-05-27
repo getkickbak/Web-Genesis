@@ -562,6 +562,7 @@ Ext.define('Genesis.controller.server.Viewport',
    initializeConsole : function(callback)
    {
       var me = this, viewport = me, info = viewport.getCheckinInfo(), venueId = Genesis.fn.getPrivKey('venueId'), proxy = Venue.getProxy();
+      var db = Genesis.db.getLocalDB();
       var params =
       {
          'venue_id' : venueId
@@ -578,11 +579,16 @@ Ext.define('Genesis.controller.server.Viewport',
          scope : me,
          callback : function(record, operation)
          {
+            if (!db['enablePosIntegration'] || !db['isPosEnabled'])
+            {
+               Ext.Viewport.setMasked(null);
+            }
+
             var metaData = proxy.getReader().metaData;
             if (operation.wasSuccessful() && metaData)
             {
-               metaData['enablePOS'] = true;
-               metaData['enableReceiptUpload'] = true;
+               //metaData['enablePOS'] = true;
+               //metaData['enableReceiptUpload'] = true;
 
                viewport.setVenue(record);
                viewport.setMetaData(metaData);
