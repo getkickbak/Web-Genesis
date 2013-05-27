@@ -285,7 +285,7 @@ Ext.define('Genesis.controller.server.Settings',
          displayMode : db["displayMode"] || 'Mobile'
       });
       var field = form.query('togglefield[tag=posMode]')[0];
-      field.setReadOnly(db['enablePosIntegration'] ? true : false);
+      field.setReadOnly(db['enablePosIntegration'] ? false : true);
       field[(db['enablePosIntegration']) ? 'enable' : 'disable']();
    },
    onDeactivate : function(activeItem, c, oldActiveItem, eOpts)

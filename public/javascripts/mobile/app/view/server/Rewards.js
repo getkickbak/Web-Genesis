@@ -1,7 +1,7 @@
 Ext.define('Genesis.view.server.Rewards',
 {
    extend : 'Genesis.view.ViewBase',
-   requires : ['Ext.Toolbar', 'Ext.field.Text', 'Genesis.view.widgets.Calculator', 'Ext.dataview.List', 'Ext.XTemplate', 'Ext.plugin.ListPaging', 'Ext.plugin.PullRefresh'],
+   requires : ['Ext.Toolbar', 'Ext.field.Select', 'Ext.field.Text', 'Genesis.view.widgets.Calculator', 'Ext.dataview.List', 'Ext.XTemplate', 'Ext.plugin.ListPaging', 'Ext.plugin.PullRefresh'],
    alias : 'widget.serverrewardsview',
    config :
    {
@@ -143,6 +143,27 @@ Ext.define('Genesis.view.server.Rewards',
             tag : 'posSelect',
             layout : 'hbox',
             items : [
+            {
+               docked : 'top',
+               xtype : 'selectfield',
+               labelWidth : '50%',
+               label : 'Receipts by Table',
+               tag : 'tableFilter',
+               name : 'tableFilter',
+               margin : '0 0 0.8em 0',
+               usePicker : true,
+               store : 'TableStore',
+               displayField : 'id',
+               valueField : 'id',
+               defaultPhonePickerConfig :
+               {
+                  height : (12.5 * 1.5) + 'em',
+                  doneButton :
+                  {
+                     ui : 'normal'
+                  }
+               }
+            },
             {
                xtype : 'list',
                flex : 1,

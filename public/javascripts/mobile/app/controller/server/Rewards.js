@@ -24,6 +24,7 @@ Ext.define('Genesis.controller.server.Rewards',
          },
          calcBtn : 'serverrewardsview button[tag=calculator]',
          receiptsList : 'serverrewardsview container list',
+         tableSelectField : 'serverrewardsview selectfield[tag=tableFilter]',
          backBB : 'serverrewardsview button[tag=back]',
          rptCloseBB : 'serverrewardsview button[tag=rptClose]',
          receiptDetail : 'serverrewardsview dataview[tag=receiptDetail]',
@@ -58,6 +59,10 @@ Ext.define('Genesis.controller.server.Rewards',
          {
             //select : 'onReceiptSelect',
             disclose : 'onReceiptDisclose'
+         },
+         tableSelectField :
+         {
+            change : 'onTableSelectFieldChange'
          },
          'serverrewardsview calculator[tag=amount] container[tag=dialpad] button' :
          {
@@ -778,6 +783,14 @@ Ext.define('Genesis.controller.server.Rewards',
          console.debug("Refreshing ReceiptStore ...");
          store.setData(store.getData().all);
       }
+   },
+   onTableSelectFieldChange : function(field, newValue, oldValue, eOpts)
+   {
+      var me = this, viewport = me.getViewPortCntlr();
+
+      viewport.tableFilterId = (newValue != 'All') ? newValue : null;
+      console.debug("Filter by Table[" + viewport.tableFilterId + "] ...");
+      me.onReceiptStoreRefresh();
    },
    // --------------------------------------------------------------------------
    // Misc Event Funcs

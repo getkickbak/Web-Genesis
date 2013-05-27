@@ -27,7 +27,7 @@ Ext.define('Genesis.model.frontend.Receipt',
       {
          name : 'price',
          type : 'float'
-      }, 'title', 'earned', 'receipt'],
+      }, 'title', 'earned', 'table', 'receipt'],
       idProperty : 'id',
       hasMany : [
       {

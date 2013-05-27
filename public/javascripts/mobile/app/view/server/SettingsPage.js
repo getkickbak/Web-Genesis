@@ -47,7 +47,7 @@ Ext.define('Genesis.view.server.SettingsPage',
             name : 'posMode',
             tag : 'posMode',
             label : 'POS Integration',
-            value : 0
+            value : Genesis.db.getLocalDB()['isPosEnabled'] ? 1 : 0
          },
          {
             xtype : 'selectfield',

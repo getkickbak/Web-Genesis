@@ -218,7 +218,7 @@ Genesis.fn =
                return [timeExpiredSec, parseInt(timeExpiredSec) + ' mins ago'];
             timeExpiredSec = timeExpiredSec / 60;
             if ((timeExpiredSec) < 2)
-               return [date, 'an hr ago'];
+               return [date, '1 hr ago'];
             if ((timeExpiredSec) < 24)
                return [date, parseInt(timeExpiredSec) + ' hrs ago'];
             timeExpiredSec = timeExpiredSec / 24;
@@ -228,7 +228,7 @@ Genesis.fn =
                return [date, this.weekday[date.getDay()] + ' at ' + date.format('g:i A')];
             timeExpiredSec = timeExpiredSec / 7;
             if (((timeExpiredSec) < 2) && (timeExpiredSec % 7 == 0))
-               return [date, 'a wk ago'];
+               return [date, '1 wk ago'];
             if (((timeExpiredSec) < 5) && (timeExpiredSec % 7 == 0))
                return [date, parseInt(timeExpiredSec) + ' wks ago'];
 
@@ -673,7 +673,7 @@ Genesis.db =
    //
    resetStorage : function()
    {
-      if (Genesis.fn.isNative())
+      if (Genesis.fn.isNative() && Genesis.fb)
       {
          Genesis.fb.facebook_onLogout(null, false);
       }
