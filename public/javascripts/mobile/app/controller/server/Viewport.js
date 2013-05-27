@@ -268,10 +268,6 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
             console.debug("WebSocketClient::posConnect(" + url + ")");
          }
       }
-      else if (Ext.Viewport)
-      {
-         Ext.Viewport.setMasked(null);
-      }
    };
    posDisconnect = function(forced)
    {

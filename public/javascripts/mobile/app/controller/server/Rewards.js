@@ -164,8 +164,7 @@ Ext.define('Genesis.controller.server.Rewards',
    },
    onCalcBtnOverrideTap : function(b, e)
    {
-      var me = this;
-      var container = me.getRewardsContainer();
+      var me = this, container = me.getRewardsContainer(), animation = container.getLayout().getAnimation();
 
       if (container)
       {
