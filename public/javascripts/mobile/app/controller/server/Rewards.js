@@ -149,9 +149,7 @@ Ext.define('Genesis.controller.server.Rewards',
    // --------------------------------------------------------------------------
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      var me = this;
-      var container = me.getRewardsContainer();
-      var store = Ext.StoreMgr.get('ReceiptStore');
+      var me = this, container = me.getRewardsContainer(), store = Ext.StoreMgr.get('ReceiptStore');
 
       if (container)
       {
@@ -189,17 +187,20 @@ Ext.define('Genesis.controller.server.Rewards',
    },
    onContainerActivate : function(c, value, oldValue, eOpts)
    {
-      var me = this;
-      var container = me.getRewardsContainer();
-      var animation = container.getLayout().getAnimation();
+      var me = this, container = me.getRewardsContainer(), animation = container.getLayout().getAnimation();
 
       switch (value.config.tag)
       {
          case 'posSelect' :
+         {
+            animation.setDirection('left');
+            console.debug("Rewards ContainerActivate Called. Showing POS Receipts ...");
+            break;
+         }
          case 'posDetail' :
          {
-            console.debug("Rewards ContainerActivate Called. Showing POS Receipts ...");
-            animation.setReverse(true);
+            animation.setDirection('right');
+            console.debug("Rewards ContainerActivate Called. Showing POS Receipt Detail ...");
             break;
          }
          case 'amount' :
@@ -749,9 +750,7 @@ Ext.define('Genesis.controller.server.Rewards',
    },
    onReceiptDisclose : function(list, record, target, index, e, eOpts, eInfo)
    {
-      var me = this;
-      var viewport = me.getViewPortCntlr();
-      var container = me.getRewardsContainer();
+      var me = this, viewport = me.getViewPortCntlr(), container = me.getRewardsContainer(), animation = container.getLayout().getAnimation();
 
       me.self.playSoundFile(viewport.sound_files['clickSound']);
 
@@ -796,8 +795,7 @@ Ext.define('Genesis.controller.server.Rewards',
    // --------------------------------------------------------------------------
    onDoneTap : function(b, e, eOpts, eInfo)
    {
-      var me = this;
-      var container = me.getRewardsContainer();
+      var me = this, container = me.getRewardsContainer();
       delete me._params;
       var store = Ext.StoreMgr.get('ReceiptStore');
 
