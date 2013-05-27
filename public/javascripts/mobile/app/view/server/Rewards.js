@@ -38,14 +38,16 @@ Ext.define('Genesis.view.server.Rewards',
    },
    createView : function()
    {
-      var me = this, itemHeight = 1 + Genesis.constants.defaultIconSize() + 2 * Genesis.fn.calcPx(0.65, 1);
-      var toolbarBottom = function(tag)
+      var me = this, itemHeight = 1 + Genesis.constants.defaultIconSize() + 2 * Genesis.fn.calcPx(0.65, 1), store = Ext.StoreMgr.get('ReceiptStore'), db = Genesis.db.getLocalDB();
+      var isPosEnabled = (db['enablePosIntegration'] && db['isPosEnabled']);
+      var toolbarBottom = function(tag, hideTb)
       {
          return (
             {
                docked : 'bottom',
                cls : 'toolbarBottom',
                tag : tag,
+               hidden : hideTb,
                xtype : 'container',
                layout :
                {
@@ -83,7 +85,6 @@ Ext.define('Genesis.view.server.Rewards',
          return;
       }
 
-      var store = Ext.StoreMgr.get('ReceiptStore');
       me.getPreRender().push(Ext.create('Ext.Container',
       {
          xtype : 'container',
@@ -103,7 +104,7 @@ Ext.define('Genesis.view.server.Rewards',
          {
             hidden : true
          },
-         activeItem : (store.getCount() > 0) ? 2 : 0,
+         activeItem : (isPosEnabled) ? 2 : 0,
          items : [
          // -------------------------------------------------------------------
          // Reward Calculator
@@ -145,6 +146,7 @@ Ext.define('Genesis.view.server.Rewards',
             items : [
             {
                docked : 'top',
+               hidden : (store.getCount() <= 0),
                xtype : 'selectfield',
                labelWidth : '50%',
                label : 'Receipts by Table',
@@ -218,7 +220,7 @@ Ext.define('Genesis.view.server.Rewards',
                   }
                }),
                onItemDisclosure : Ext.emptyFn
-            }, toolbarBottom('tbBottomSelection')]
+            }, toolbarBottom('tbBottomSelection', (store.getCount() <= 0))]
          },
          // -------------------------------------------------------------------
          // POS Receipt Detail
@@ -255,7 +257,7 @@ Ext.define('Genesis.view.server.Rewards',
                      return receipt;
                   }
                })
-            }, toolbarBottom('tbBottomDetail')]
+            }, toolbarBottom('tbBottomDetail', false)]
          }]
       }));
    },

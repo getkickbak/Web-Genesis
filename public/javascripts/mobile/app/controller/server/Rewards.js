@@ -29,6 +29,7 @@ Ext.define('Genesis.controller.server.Rewards',
          rptCloseBB : 'serverrewardsview button[tag=rptClose]',
          receiptDetail : 'serverrewardsview dataview[tag=receiptDetail]',
          rewardsContainer : 'serverrewardsview container[tag=rewards]',
+         rewardTBar : 'serverrewardsview container[tag=tbBottomSelection]',
          rewardSelection : 'serverrewardsview container[tag=tbBottomSelection] button[tag=rewardsSC]',
          rewardDetail : 'serverrewardsview container[tag=tbBottomDetail] button[tag=rewardsSC]',
          amount : 'serverrewardsview calculator[tag=amount] textfield',
@@ -118,7 +119,10 @@ Ext.define('Genesis.controller.server.Rewards',
 
       Ext.StoreMgr.get('ReceiptStore').on(
       {
-         addrecords : 'onReceiptStoreRefresh'
+         addrecords : 'onReceiptStoreUpdate',
+         refresh : 'onReceiptStoreUpdate',
+         removerecords : 'onReceiptStoreUpdate',
+         updaterecord : 'onReceiptStoreUpdate'
       });
    },
    getAmountPrecision : function(num)
@@ -149,15 +153,16 @@ Ext.define('Genesis.controller.server.Rewards',
    // --------------------------------------------------------------------------
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      var me = this, container = me.getRewardsContainer(), store = Ext.StoreMgr.get('ReceiptStore');
+      var me = this, container = me.getRewardsContainer(), store = Ext.StoreMgr.get('ReceiptStore'), db = Genesis.db.getLocalDB();
+      var isPosEnabled = (db['enablePosIntegration'] && db['isPosEnabled'])
 
       if (container)
       {
          me.getAmount().reset();
-         me.onReceiptStoreRefresh();
-         container.setActiveItem((store.getCount() > 0) ? 2 : 0);
+         me.onReceiptStoreUpdate(store);
+         container.setActiveItem((isPosEnabled) ? 2 : 0);
       }
-      me.getCalcBtn()[(store.getCount() > 0) ? 'show' : 'hide']();
+      me.getCalcBtn()[(isPosEnabled) ? 'show' : 'hide']();
       //activeItem.createView();
    },
    onCalcBtnOverrideTap : function(b, e)
@@ -770,35 +775,39 @@ Ext.define('Genesis.controller.server.Rewards',
          me.getCalcBtn()['show']();
       }
    },
-   onReceiptStoreRefresh : function(store, records, eOpts)
+   onReceiptStoreUpdate : function(store)
    {
-      var me = this;
-      var list = me.getReceiptsList();
+      var me = this, db = Genesis.db.getLocalDB(), list = me.getReceiptsList(), visible = (store.getCount() > 0) ? 'show' : 'hide';
+      var isPosEnabled = (db['enablePosIntegration'] && db['isPosEnabled']);
 
       if (list)
       {
-         var store = list.getStore();
          console.debug("Refreshing ReceiptStore ...");
          store.setData(store.getData().all);
+
+         if (isPosEnabled && me.getRewardTBar())
+         {
+            me.getRewardTBar()[visible]();
+            me.getTableSelectField()[visible]();
+         }
       }
    },
    onTableSelectFieldChange : function(field, newValue, oldValue, eOpts)
    {
-      var me = this, viewport = me.getViewPortCntlr();
+      var me = this, store = Ext.StoreMgr.get('ReceiptStore');
 
-      viewport.tableFilterId = (newValue != 'All') ? newValue : null;
-      console.debug("Filter by Table[" + viewport.tableFilterId + "] ...");
-      me.onReceiptStoreRefresh();
+      store.tableFilterId = (newValue != 'All') ? newValue : null;
+      console.debug("Filter by Table[" + store.tableFilterId + "] ...");
+      me.onReceiptStoreUpdate(store);
    },
    // --------------------------------------------------------------------------
    // Misc Event Funcs
    // --------------------------------------------------------------------------
    onDoneTap : function(b, e, eOpts, eInfo)
    {
-      var me = this, container = me.getRewardsContainer();
+      var me = this, container = me.getRewardsContainer(), db = Genesis.db.getLocalDB(), store = Ext.StoreMgr.get('ReceiptStore');
+      var isPosEnabled = (db['enablePosIntegration'] && db['isPosEnabled']);
       delete me._params;
-      var store = Ext.StoreMgr.get('ReceiptStore');
-
       if (container)
       {
          switch (me.getMode())
@@ -806,7 +815,7 @@ Ext.define('Genesis.controller.server.Rewards',
             case 'Manual' :
             {
                me.getAmount().reset();
-               container.setActiveItem((store.getCount() > 0) ? 2 : 0);
+               container.setActiveItem((isPosEnabled) ? 2 : 0);
                break;
             }
             case 'POS_Detail' :
@@ -822,7 +831,7 @@ Ext.define('Genesis.controller.server.Rewards',
             default :
                break;
          }
-         me.getCalcBtn()[(store.getCount() > 0) ? 'show' : 'hide']();
+         me.getCalcBtn()[(isPosEnabled) ? 'show' : 'hide']();
       }
 
       console.debug("Rewards onDoneTap Called ...");
