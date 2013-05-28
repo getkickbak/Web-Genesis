@@ -72,12 +72,6 @@ Ext.define('Genesis.view.server.SettingsPage',
                   ui : 'normal'
                }
             }
-         },
-         {
-            xtype : 'listfield',
-            name : 'license',
-            label : 'Refresh License',
-            value : ' '
          }
          /*,
           {
@@ -103,6 +97,10 @@ Ext.define('Genesis.view.server.SettingsPage',
       {
          xtype : 'fieldset',
          title : 'Merchant Device',
+         defaults :
+         {
+            labelWidth : '50%'
+         },
          items : [
          {
             xtype : 'textfield',
@@ -110,6 +108,18 @@ Ext.define('Genesis.view.server.SettingsPage',
             tag : 'merchantDevice',
             clearIcon : false,
             readOnly : true
+         },
+         {
+            xtype : 'listfield',
+            name : 'license',
+            label : 'Refresh License',
+            value : ' '
+         },
+         {
+            xtype : 'listfield',
+            name : 'resetdevice',
+            label : 'Reset Device',
+            value : ' '
          }]
       },
       {

@@ -41,6 +41,10 @@ Ext.define('Genesis.controller.server.Settings',
          //
          // Settings Page
          //
+         'serversettingspageview listfield[name=resetdevice]' :
+         {
+            clearicontap : 'onDeviceResetTap'
+         },
          'serversettingspageview listfield[name=license]' :
          {
             clearicontap : 'onRefreshLicenseTap'
@@ -90,6 +94,7 @@ Ext.define('Genesis.controller.server.Settings',
    tagIdLength : 8,
    writeTagEnabled : false,
    proceedToUpdateLicenseMsg : 'Please confirm to proceed with License Update',
+   proceedToResetDeviceeMsg : 'Please confirm to Reset Device',
    noLicenseKeyScannedMsg : 'No License Key was found!',
    createTagMsg : function()
    {
@@ -128,6 +133,44 @@ Ext.define('Genesis.controller.server.Settings',
    // --------------------------------------------------------------------------
    // Button Handlers
    // --------------------------------------------------------------------------
+   onDeviceResetTap : function(b, e)
+   {
+      var me = this, viewport = me.getViewPortCntlr();
+      var dropStatement = "DROP TABLE Receipt";
+      var db = openDatabase('KickBak', 'ReceiptStore', "1.0", 5 * 1024 * 1024);
+
+      me.self.playSoundFile(viewport.sound_files['clickSound']);
+      Ext.device.Notification.show(
+      {
+         title : 'Device Reset Confirmation',
+         message : me.proceedToResetDeviceeMsg,
+         buttons : ['Restart', 'Cancel'],
+         callback : function(btn)
+         {
+            if (btn.toLowerCase() == 'restart')
+            {
+               db.transaction(function(tx)
+               {
+                  //
+                  // Drop Table
+                  //
+                  tx.executeSql(dropStatement, [], function()
+                  {
+                     console.debug("onDeviceResetTap --- Successfully drop KickBak-Receipt Table");
+                     //
+                     // Restart because we can't continue without Console Setup data
+                     //
+                     navigator.app.exitApp();
+                  }, function()
+                  {
+                     console.debug("Failed to drop KickBak-Receipt Table : " + error.message);
+                     navigator.app.exitApp();
+                  });
+               });
+            }
+         }
+      });
+   },
    onRefreshLicenseTap : function(b, e, eOpts)
    {
       var me = this, viewport = me.getViewPortCntlr();

@@ -338,21 +338,6 @@ Ext.define('Genesis.controller.server.Rewards',
                      buttons : ['OK'],
                      callback : function()
                      {
-                        switch (me.getMode())
-                        {
-                           case 'POS_Selected' :
-                           case 'POS_Detail' :
-                           {
-                              for (var i = 0; i < me.receiptSelected.length; i++)
-                              {
-                                 me.receiptSelected[i].set('earned', true);
-                              }
-                              break;
-                           }
-                           case 'Manual' :
-                           default :
-                              break;
-                        }
                         me.onDoneTap();
                      }
                   });
@@ -361,38 +346,32 @@ Ext.define('Genesis.controller.server.Rewards',
                   //
                   if (db['enableReceiptUpload'] && db['isPosEnabled'])
                   {
-                     var x, receipt, txid = 0;
-                     var insertStatement = "INSERT INTO Receipt (id, receipts) VALUES (?, ?)";
-                     var createStatement = "CREATE TABLE IF NOT EXISTS Receipt (id INTEGER PRIMARY KEY, receipts TEXT)";
-                     var db = openDatabase('KickBak', 'ReceiptStore', "1.0", 5 * 1024 * 1024);
-                     db.transaction(function(tx)
+                     var x, receipt, tnid = 0, estore = Ext.StoreMgr.get('EarnedReceiptStore');
+                     var insertStatement = "INSERT INTO Receipt (id, receipts, sync) VALUES (?, ?, 0)";
+
+                     for (var i = 0; i < me.receiptSelected.length; i++)
                      {
-                        //
-                        // Create Table
-                        //
-                        tx.executeSql(createStatement, [], function()
-                        {
-                           console.debug("Successfully created/retrieved KickBak-Receipt Table");
-                        }, function(tx, error)
-                        {
-                           console.debug("Failed to create KickBak-Receipt Table : " + error.message);
-                        });
-                        //
-                        // Insert Table
-                        //
+                        me.receiptSelected[i].set('tnId', tnId);
+                     }
+                     //
+                     // Add to Earned store
+                     //
+                     estore.add(me.receiptSelected);
+
+                     _application.getController('server' + '.Receipts').db.transaction(function(tx)
+                     {
                         for ( x = 0; x < me.receiptSelected.length; x++)
                         {
                            receipt = me.receiptSelected[x];
-                           //console.debug("Inserting Customer(" + item.getId() + ") to Database");
-                           tx.executeSql(insertStatement, [txId, Ext.encode(receipt.getData(true))], function()
+                           tx.executeSql(insertStatement, [receipt.getId(), Ext.encode(receipt.getData(true))], function()
                            {
-                              //console.debug("Inserted Customer(" + item.getId() + ") to Database");
+                              //console.debug("Inserted Receipt(" + item.getId() + ") to Database");
                            }, function(tx, error)
                            {
-                              console.debug("Failed to insert Customer(" + receipt.getId() + ") to Database : " + error.message);
+                              //console.debug("Failed to insert Customer(" + receipt.getId() + ") to Database : " + error.message);
                            });
                         }
-                        console.debug("Receipt Submission  --- Inserted " + items.length + " records in Receipt Database ...");
+                        console.debug("Receipts submission --- Inserted " + items.length + " records in Receipt Database ...");
                      });
                   }
                }

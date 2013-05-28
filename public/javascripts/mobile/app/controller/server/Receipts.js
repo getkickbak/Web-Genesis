@@ -10,130 +10,132 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
       WebSocket.prototype.receiptFilters['item'] = new RegExp(db['receiptFilters']['item'], "i");
       WebSocket.prototype.receiptFilters['table'] = new RegExp(db['receiptFilters']['table'], "i");
    }
-   WebSocket.prototype.createReceipt = function(receiptText)
+
+   WebSocket._connTask = Ext.create('Ext.util.DelayedTask');
+   Ext.merge(WebSocket.prototype,
    {
-      var me = this, i, match, currItemPrice = 0, maxItemPrice = 0, id = receiptText[0];
-
-      receiptText.splice(0, 1);
-      var receipt =
+      createReceipt : function(receiptText)
       {
-         id : id,
-         subtotal : currItemPrice.toFixed(2),
-         price : currItemPrice.toFixed(2),
-         table : '',
-         title : '',
-         earned : false,
-         receipt : Ext.encode(receiptText),
-         items : []
-      }
+         var me = this, i, match, currItemPrice = 0, maxItemPrice = 0, id = receiptText[0];
 
-      //console.debug("WebSocketClient::createReceipt[" + Genesis.fn.convertDateFullTime(new Date(receipt['id']*1000)) + "]");
-      for ( i = 0; i < receiptText.length; i++)
-      {
-         var text = receiptText[i];
-         if (text.length > me.receiptFilters['minLineLength'])
+         receiptText.splice(0, 1);
+         var receipt =
          {
-            match = me.receiptFilters['subtotal'].exec(text);
-            if (match)
-            {
-               receipt['subtotal'] = match[1];
-            }
+            id : id,
+            subtotal : currItemPrice.toFixed(2),
+            price : currItemPrice.toFixed(2),
+            table : '',
+            title : '',
+            receipt : Ext.encode(receiptText),
+            items : []
+         }
 
-            match = me.receiptFilters['grandtotal'].exec(text);
-            if (match)
+         //console.debug("WebSocketClient::createReceipt[" + Genesis.fn.convertDateFullTime(new Date(receipt['id']*1000)) + "]");
+         for ( i = 0; i < receiptText.length; i++)
+         {
+            var text = receiptText[i];
+            if (text.length > me.receiptFilters['minLineLength'])
             {
-               receipt['price'] = match[1];
-            }
-
-            match = me.receiptFilters['table'].exec(text);
-            if (match)
-            {
-               receipt['table'] = match[1];
-            }
-
-            match = me.receiptFilters['item'].exec(text);
-            if (match)
-            {
-               var qty = Number(match[2]);
-               var currItemPrice = (Number(match[3]) / qty);
-               receipt['items'].push(new Ext.create('Genesis.model.frontend.ReceiptItem',
+               match = me.receiptFilters['subtotal'].exec(text);
+               if (match)
                {
-                  qty : qty,
-                  price : currItemPrice,
-                  name : match[1].trim()
-               }));
-               if (Math.max(currItemPrice, maxItemPrice) == currItemPrice)
+                  receipt['subtotal'] = match[1];
+               }
+
+               match = me.receiptFilters['grandtotal'].exec(text);
+               if (match)
                {
-                  maxItemPrice = currItemPrice;
-                  receipt['title'] = match[1].trim();
+                  receipt['price'] = match[1];
+               }
+
+               match = me.receiptFilters['table'].exec(text);
+               if (match)
+               {
+                  receipt['table'] = match[1];
+               }
+
+               match = me.receiptFilters['item'].exec(text);
+               if (match)
+               {
+                  var qty = Number(match[2]);
+                  var currItemPrice = (Number(match[3]) / qty);
+                  receipt['items'].push(new Ext.create('Genesis.model.frontend.ReceiptItem',
+                  {
+                     qty : qty,
+                     price : currItemPrice,
+                     name : match[1].trim()
+                  }));
+                  if (Math.max(currItemPrice, maxItemPrice) == currItemPrice)
+                  {
+                     maxItemPrice = currItemPrice;
+                     receipt['title'] = match[1].trim();
+                  }
                }
             }
          }
-      }
-      var rc = Ext.create("Genesis.model.frontend.Receipt", receipt);
-      rc['items']().add(receipt['items']);
-      //console.debug("WebSocketClient::createReceipt");
-      return rc;
-   };
-   WebSocket.prototype.receiptIncomingHandler = function(receipts, supress)
-   {
-      var receiptsList = [], tableList = [];
-      //console.debug("WebSocketClient::onmessage - " + event);
-      for (var i = 0, j = 0; i < receipts.length; i++)
+         var rc = Ext.create("Genesis.model.frontend.Receipt", receipt);
+         rc['items']().add(receipt['items']);
+         //console.debug("WebSocketClient::createReceipt");
+         return rc;
+      },
+      receiptIncomingHandler : function(receipts, supress)
       {
-         var receipt = receiptsList[i] = this.createReceipt(receipts[i]);
-         if (receipt.get('table'))
+         var receiptsList = [], tableList = [];
+         //console.debug("WebSocketClient::onmessage - " + event);
+         for (var i = 0, j = 0; i < receipts.length; i++)
          {
-            //console.debug("WebSocketClient::receiptIncomingHandler");
-            tableList[j++] = Ext.create('Genesis.model.frontend.Table',
+            var receipt = receiptsList[i] = this.createReceipt(receipts[i]);
+            if (receipt.get('table'))
             {
-               id : receipt.get('table')
-            });
+               //console.debug("WebSocketClient::receiptIncomingHandler");
+               tableList[j++] = Ext.create('Genesis.model.frontend.Table',
+               {
+                  id : receipt.get('table')
+               });
+            }
+
+            //console.debug("WebSocketClient::receiptIncomingHandler");
+            if (!supress)
+            {
+               console.debug("WebSocketClient::receiptIncomingHandler - \n" + //
+               "Date: " + Genesis.fn.convertDateFullTime(new Date(receipt.get('id') * 1000)) + '\n' + //
+               "Subtotal: $" + receipt.get('subtotal').toFixed(2) + '\n' + //
+               "Price: $" + receipt.get('price').toFixed(2) + '\n' + //
+               "table: " + receipt.get('table') + '\n' + //
+               "Title: " + receipt.get('title') + '\n' + //
+               "Receipt: [\n" + Ext.decode(receipt.get('receipt')) + "\n]" + //
+               "");
+            }
          }
 
-         //console.debug("WebSocketClient::receiptIncomingHandler");
          if (!supress)
          {
-            console.debug("WebSocketClient::receiptIncomingHandler - \n" + //
-            "Date: " + Genesis.fn.convertDateFullTime(new Date(receipt.get('id') * 1000)) + '\n' + //
-            "Subtotal: $" + receipt.get('subtotal').toFixed(2) + '\n' + //
-            "Price: $" + receipt.get('price').toFixed(2) + '\n' + //
-            "table: " + receipt.get('table') + '\n' + //
-            "Earned: " + receipt.get('earned') + '\n' + //
-            "Title: " + receipt.get('title') + '\n' + //
-            "Receipt: [\n" + Ext.decode(receipt.get('receipt')) + "\n]" + //
-            "");
+            Ext.StoreMgr.get('ReceiptStore').add(receiptsList);
+            Ext.StoreMgr.get('TableStore').add(tableList);
          }
-      }
 
-      if (!supress)
+         return [receiptsList, tableList];
+      },
+      receiptResponseHandler : function(receipts)
       {
-         Ext.StoreMgr.get('ReceiptStore').add(receiptsList);
-         Ext.StoreMgr.get('TableStore').add(tableList);
+         var lists = this.receiptIncomingHandler(receipts, true), rstore = Ext.StoreMgr.get('ReceiptStore'), tstore = Ext.StoreMgr.get('TableStore');
+         lists[1].push(Ext.create("Genesis.model.frontend.Table",
+         {
+            id : 'All'
+         }));
+         rstore.setData(lists[0]);
+         rstore.tableFilterId = null;
+         tstore.setData(lists[1]);
+
+         console.debug("WebSocketClient::receiptResponseHandler - Processed " + lists[0].length + " receipts");
+         Ext.Viewport.setMasked(null);
       }
-
-      return [receiptsList, tableList];
-   };
-   WebSocket.prototype.receiptResponseHandler = function(receipts)
-   {
-      var lists = this.receiptIncomingHandler(receipts, true), rstore = Ext.StoreMgr.get('ReceiptStore'), tstore = Ext.StoreMgr.get('TableStore');
-      lists[1].push(Ext.create("Genesis.model.frontend.Table",
-      {
-         id : 'All'
-      }));
-      rstore.setData(lists[0]);
-      rstore.tableFilterId = null;
-      tstore.setData(lists[1]);
-
-      console.debug("WebSocketClient::receiptResponseHandler - Processed " + lists[0].length + " receipts");
-      Ext.Viewport.setMasked(null);
-   };
-   WebSocket._connTask = Ext.create('Ext.util.DelayedTask');
+   });
 
    posConnect = function(i)
    {
       var db = Genesis.db.getLocalDB();
-      if (db['enablePosIntegration'] && db['isPosEnabled'])
+      if (db['enablePosIntegration'] && db['isPosEnabled'] && Ext.Viewport)
       {
          var scheme = 'ws://';
          var host = '192.168.159.1';
@@ -274,7 +276,22 @@ Ext.define('Genesis.controller.server.Receipts',
    _syncTask : null,
    init : function(app)
    {
-      var me = this;
+      var me = this, estore;
+      var createStatement = "CREATE TABLE IF NOT EXISTS Receipt (id INTEGER PRIMARY KEY, receipt TEXT, sync INTEGER)";
+      me.db = openDatabase('KickBak', 'ReceiptStore', "1.0", 5 * 1024 * 1024);
+      me.db.transaction(function(tx)
+      {
+         //
+         // Create Table
+         //
+         tx.executeSql(createStatement, [], function()
+         {
+            console.debug("Successfully created/retrieved KickBak-Receipt Table");
+         }, function(tx, error)
+         {
+            console.debug("Failed to create KickBak-Receipt Table : " + error.message);
+         });
+      });
 
       me.callParent(arguments);
 
@@ -357,6 +374,9 @@ Ext.define('Genesis.controller.server.Receipts',
          }]
       });
 
+      //
+      // Store to cache whatever the server sends back
+      //
       Ext.regStore('ReceiptStore',
       {
          model : 'Genesis.model.frontend.Receipt',
@@ -374,15 +394,42 @@ Ext.define('Genesis.controller.server.Receipts',
          //
          filters : [
          {
+            //
+            // Filter out any "Earned Receipts"
+            //
             filterFn : function(item)
             {
-               return (item.get('earned') == false);
+               return ((estore.find('id', item.getId()) >= 0) ? false : true);
             }
          },
          {
+            //
+            // Filter out based on "Table Number"
+            //
             filterFn : Ext.bind(me.tableFilterFn, me)
          }]
       });
+
+      //
+      // Store containing all the recent receipts earned by the loyalty program
+      //
+      Ext.regStore('EarnedReceiptStore',
+      {
+         model : 'Genesis.model.frontend.Receipt',
+         autoLoad : false,
+         //
+         // Receipts sorted based on time
+         //
+         sorters : [
+         {
+            property : 'id',
+            direction : 'DESC'
+         }]
+      });
+
+      estore = Ext.StoreMgr.get('EarnedReceiptStore');
+
+      me.restoreReceiptDB(estore);
    },
    updateMetaDataInfo : function(metaData)
    {
@@ -486,6 +533,36 @@ Ext.define('Genesis.controller.server.Receipts',
    // --------------------------------------------------------------------------
    // Functions
    // --------------------------------------------------------------------------
+   restoreReceiptDB : function(estore)
+   {
+      var selectAllStatement = "SELECT receipt FROM Receipt";
+      try
+      {
+         this.db.transaction(function(tx)
+         {
+            //
+            // Retrieve Receipts
+            //
+            tx.executeSql(selectAllStatement, [], function(tx, result)
+            {
+               var items = [];
+               var dataset = result.rows;
+               for (var j = 0, item = null; j < dataset.length; j++)
+               {
+                  item = dataset.item(j);
+                  items.push(Ext.decode(item));
+               }
+               estore.setData(items);
+               console.debug("restoreReceiptDB  --- Restored " + items.length + " records in SQL Receipt Database");
+            }, function(tx, error)
+            {
+            });
+         });
+      }
+      catch(e)
+      {
+      }
+   },
    uploadReceipts : function(receipts)
    {
       var me = this, proxy = PurchaseReward.getProxy(), displayMode = Genesis.db.getLocalDB["displayMode"];
@@ -502,6 +579,11 @@ Ext.define('Genesis.controller.server.Receipts',
       };
       params['data'] = me.self.encryptFromParams(params['data']);
 
+      var ids = [];
+      for (var i = 0; i < receipts.length; i++)
+      {
+         ids.push(receipts[i]['tnId']);
+      }
       PurchaseReward['setMerchantReceiptUploadURL']();
       PurchaseReward.load(1,
       {
@@ -517,34 +599,26 @@ Ext.define('Genesis.controller.server.Receipts',
             Ext.Viewport.setMasked(null);
             if (operation.wasSuccessful())
             {
-               var createStatement = "CREATE TABLE IF NOT EXISTS Receipt (id INTEGER PRIMARY KEY, receipts TEXT)";
-               var deleteStatement = "DELETE FROM Receipt WHERE id=?";
-               var db = openDatabase('KickBak', 'ReceiptStore', "1.0", 5 * 1024 * 1024);
-               db.transaction(function(tx)
+               var len = ids.length;
+               var updateStatement = "UPDATE Receipt SET sync=1 WHERE id in (" + ids.toString() + ");";
+               try
                {
-                  //
-                  // Create Table
-                  //
-                  tx.executeSql(createStatement, [], function()
+                  me.db.transaction(function(tx)
                   {
-                     console.debug("Successfully created/retrieved KickBak-Receipt Table");
-                  }, function(tx, error)
-                  {
-                     console.debug("Failed to create KickBak-Receipt Table : " + error.message);
-                  });
-                  //
-                  // Retrieve Customers
-                  //
-                  for (var i = 0; i < receipts.length; i++)
-                  {
-                     tx.executeSql(deleteStatement, [receipts[i]['id']], function()
+                     //
+                     // Update Receipt Database
+                     //
+                     tx.executeSql(updateStatement, [], function()
                      {
+                        console.debug("uploadReceipts --- Updated(synced) " + len + "Receipts from the KickBak-Receipt Database");
                      }, function(tx, error)
                      {
                      });
-                  }
-                  console.debug("uploadReceipts --- Removed " + receipts.length + "Receipts from  KickBak-Receipt Table");
-               });
+                  });
+               }
+               catch(e)
+               {
+               }
             }
             else
             {
@@ -572,60 +646,52 @@ Ext.define('Genesis.controller.server.Receipts',
    syncReceiptDB : function(duration)
    {
       var me = this;
+
       //
-      // Wait for time to expire before Synchronizing Receipt Database with server
+      // Wait for time to expire before Uploading Earned Receipts to KickBak server
       //
       if (!me._syncTask)
       {
          me._syncTask = Ext.create('Ext.util.DelayedTask', function()
          {
-            var createStatement = "CREATE TABLE IF NOT EXISTS Receipt (id INTEGER PRIMARY KEY, receipts TEXT)";
-            var selectAllStatement = "SELECT * FROM Receipt";
-            var db = openDatabase('KickBak', 'ReceiptStore', "1.0", 5 * 1024 * 1024);
-            db.transaction(function(tx)
+            var selectAllStatement = "SELECT receipt FROM Receipt WHERE sync=0";
+            try
             {
-               //
-               // Create Table
-               //
-               tx.executeSql(createStatement, [], function()
+               me.db.transaction(function(tx)
                {
-                  console.debug("Successfully created/retrieved KickBak-Receipt Table");
-               }, function(tx, error)
-               {
-                  console.debug("Failed to create KickBak-Receipt Table : " + error.message);
-               });
-               //
-               // Retrieve Customers
-               //
-               tx.executeSql(selectAllStatement, [], function(tx, result)
-               {
-                  var items = [];
-                  var dataset = result.rows;
-                  for ( j = 0, item = null; j < dataset.length; j++)
+                  //
+                  // Retrieve Receipts
+                  //
+                  tx.executeSql(selectAllStatement, [], function(tx, result)
                   {
-                     item = dataset.item(j);
-                     console.debug("TxId - " + item['id'])
-                     items.push(
+                     var items = [], item;
+                     var dataset = result.rows;
+                     for ( j = 0; j < dataset.length; j++)
                      {
-                        id : item['id'],
-                        receipts : Ext.decode(item['receipts'])
-                     });
-                  }
-                  console.debug("syncReceiptDB  --- Found " + items.length + " records in SQL Receipt Database");
+                        item = Ext.decode(dataset.item(j));
+                        items.push(item);
+                        console.debug("Receipt TnId[" + item['tnId'] + "]");
+                     }
 
-                  if (items.length > 0)
+                     console.debug("syncReceiptDB  --- Found " + items.length + "Unsynchronized records in SQL Receipt Database");
+
+                     if (items.length > 0)
+                     {
+                        Ext.defer(me.uploadReceipts, 1, me, [items]);
+                     }
+                  }, function(tx, error)
                   {
-                     me.uploadReceipts(items);
-                  }
-               }, function(tx, error)
-               {
-                  console.debug("No Receipt Table found in SQL Database : " + error.message);
+                     console.debug("No Receipt Table found in SQL Database : " + error.message);
+                  });
                });
-            });
+            }
+            catch(e)
+            {
+            }
          });
       }
       me._syncTask.delay(duration);
-      console.debug("syncReceiptDB - Synchronize Database to start in " + (duration / (1000 * 60)).toFixed(2) + "mins of idle");
+      console.debug("syncReceiptDB - Synchronize Database to start in " + (duration / (1000 * 60)).toFixed(0) + "mins of idle");
    },
    tableFilterFn : function(item)
    {
