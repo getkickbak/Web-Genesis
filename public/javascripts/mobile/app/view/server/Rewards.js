@@ -54,6 +54,18 @@ Ext.define('Genesis.view.server.Rewards',
                   type : 'vbox',
                   pack : 'center'
                },
+               showAnimation :
+               {
+                  type : 'slideIn',
+                  duration : 500,
+                  direction : 'up'
+               },
+               hideAnimation :
+               {
+                  type : 'slideOut',
+                  duration : 500,
+                  direction : 'down'
+               },
                items : [
                {
                   xtype : 'segmentedbutton',
@@ -157,6 +169,19 @@ Ext.define('Genesis.view.server.Rewards',
                store : 'TableStore',
                displayField : 'id',
                valueField : 'id',
+               showAnimation :
+               {
+                  type : 'slideIn',
+                  duration : 500,
+                  direction : 'down'
+
+               },
+               hideAnimation :
+               {
+                  type : 'slideOut',
+                  duration : 500,
+                  direction : 'up'
+               },
                defaultPhonePickerConfig :
                {
                   height : (12.5 * 1.5) + 'em',

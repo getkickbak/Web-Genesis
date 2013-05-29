@@ -81,7 +81,6 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
       receiptIncomingHandler : function(receipts, supress)
       {
          var receiptsList = [], tableList = [];
-         //console.debug("WebSocketClient::onmessage - " + event);
          for (var i = 0, j = 0; i < receipts.length; i++)
          {
             var receipt = receiptsList[i] = this.createReceipt(receipts[i]);
@@ -124,7 +123,8 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
          {
             id : 'All'
          }));
-         rstore.setData(lists[0]);
+         
+         (lists[0].length > 0) ? rstore.setData(lists[0]) : rstore.clearData();         
          rstore.tableFilterId = null;
          tstore.setData(lists[1]);
 
@@ -157,9 +157,18 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
             };
             wssocket.onmessage = function(event)
             {
+               // console.debug("wssocket.onmessage - [" + event.data + "]");
+               var inputStream;
                try
                {
-                  var inputStream = Ext.decode(event.data);
+                  inputStream = Ext.decode(event.data);
+               }
+               catch(e)
+               {
+                  inputStream = eval('[' + event.data + ']')[0];
+               }
+               try
+               {
                   var cmd = inputStream['code'];
                   //
                   // Setup calculation for time drift
@@ -187,7 +196,7 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
                }
                catch(e)
                {
-                  console.debug("Exception while parsing Incoming Receipt ...\n" + Ext.encode(e));
+                  console.debug("Exception while parsing Incoming Receipt ...\n" + e);
                   Ext.Viewport.setMasked(null);
                }
             };
@@ -283,7 +292,7 @@ Ext.define('Genesis.controller.server.Receipts',
    _receiptCleanTask : null,
    init : function(app)
    {
-      var me = this, estore, worker;
+      var me = this, estore;
       var createStatement = "CREATE TABLE IF NOT EXISTS Receipt (id INTEGER PRIMARY KEY, receipt TEXT, sync INTEGER)";
       var db = openDatabase('KickBak', 'ReceiptStore', "1.0", 5 * 1024 * 1024);
       try
@@ -442,7 +451,12 @@ Ext.define('Genesis.controller.server.Receipts',
 
       estore = Ext.StoreMgr.get('EarnedReceiptStore');
 
-      worker = me.worker = new Worker('worker/server.js')
+      me.initWorker(estore);
+      me.restoreReceiptDB();
+   },
+   initWorker : function(estore)
+   {
+      var me = this, worker = me.worker = new Worker('worker/server.js')
       //worker.postMessage = worker.webkitPostMessage || worker.postMessage;
       worker.onmessage = function(e)
       {
@@ -461,8 +475,16 @@ Ext.define('Genesis.controller.server.Receipts',
                      items : item['items']
                   });
                }
-               me.uploadReceipts(items);
+               if (items.length > 0)
+               {
+                  me.uploadReceipts(items);
+               }
                console.debug("syncReceiptDB  --- Found " + items.length + " Unsynchronized records in SQL Receipt Database");
+               break;
+            }
+            case 'insertReceipts' :
+            {
+               console.debug("Receipts submission --- Inserted " + result['result'] + " records in KickBak-Receipt Database ...");
                break;
             }
             case 'updateReceipts':
@@ -483,8 +505,6 @@ Ext.define('Genesis.controller.server.Receipts',
             default:
          }
       };
-
-      me.restoreReceiptDB();
    },
    updateMetaDataInfo : function(metaData)
    {
@@ -508,11 +528,11 @@ Ext.define('Genesis.controller.server.Receipts',
    {
       var db = Genesis.db.getLocalDB();
 
-      db['enablePosIntegration'] = metaData['enable_pos'];
+      db['enablePosIntegration'] = metaData['feature_config']['enable_pos'];
       db['isPosEnabled'] = ((isPosEnabled === undefined) || (isPosEnabled));
       if (db['enablePosIntegration'] && db['isPosEnabled'])
       {
-         var filters = metaData['receipt_filters'] = metaData['receipt_fislters'] ||
+         var filters = metaData['feature_config']['receipt_filter'] = metaData['feature_config']['receipt_fislter'] ||
          {
          };
          db['receiptFilters'] =
@@ -541,7 +561,7 @@ Ext.define('Genesis.controller.server.Receipts',
          // BUG: We have to remove the filtered items as well
          console.debug("posIntegrationHandler - Disabled");
       }
-      db['enableReceiptUpload'] = metaData['enable_receipt_upload'];
+      db['enableReceiptUpload'] = metaData['feature_config']['enable_receipt_upload'];
       Genesis.db.setLocalDB(db);
    },
    batteryStatusFn : function(info)

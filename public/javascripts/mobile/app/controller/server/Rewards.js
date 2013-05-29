@@ -119,10 +119,12 @@ Ext.define('Genesis.controller.server.Rewards',
 
       Ext.StoreMgr.get('ReceiptStore').on(
       {
+         clear : 'onReceiptStoreUpdate',
          addrecords : 'onReceiptStoreUpdate',
          refresh : 'onReceiptStoreUpdate',
          removerecords : 'onReceiptStoreUpdate',
-         updaterecord : 'onReceiptStoreUpdate'
+         updaterecord : 'onReceiptStoreUpdate',
+         scope : me
       });
    },
    getAmountPrecision : function(num)
@@ -347,40 +349,24 @@ Ext.define('Genesis.controller.server.Rewards',
                   //
                   if (db['enableReceiptUpload'] && db['isPosEnabled'])
                   {
-                     var x, receipt, estore = Ext.StoreMgr.get('EarnedReceiptStore');
+                     var x, receipts = [], receipt, estore = Ext.StoreMgr.get('EarnedReceiptStore');
                      var insertStatement = "INSERT INTO Receipt (id, receipts, sync) VALUES (?, ?, 0)";
 
                      for (var i = 0; i < me.receiptSelected.length; i++)
                      {
                         me.receiptSelected[i].set('tnId', metaData['txnid']);
+                        receipts.push(me.receiptSelected[i].getData(true));
                      }
                      //
                      // Add to Earned store
                      //
                      estore.add(me.receiptSelected);
 
-                     try
+                     _application.getController('server' + '.Receipts').worker.postMessage(
                      {
-                        _application.getController('server' + '.Receipts').db.transaction(function(tx)
-                        {
-                           for ( x = 0; x < me.receiptSelected.length; x++)
-                           {
-                              receipt = me.receiptSelected[x];
-                              tx.executeSql(insertStatement, [receipt.getId(), Ext.encode(receipt.getData(true))], function()
-                              {
-                                 //console.debug("Inserted Receipt(" + item.getId() + ") to Database");
-                              }, function(tx, error)
-                              {
-                                 //console.debug("Failed to insert Customer(" + receipt.getId() + ") to Database : " +
-                                 // error.message);
-                              });
-                           }
-                           console.debug("Receipts submission --- Inserted " + items.length + " records in Receipt Database ...");
-                        });
-                     }
-                     catch(e)
-                     {
-                     }
+                        "cmd" : 'insertReceipts',
+                        "receipts" : receipts
+                     });
                   }
                }
                else
@@ -770,13 +756,17 @@ Ext.define('Genesis.controller.server.Rewards',
       if (list)
       {
          console.debug("Refreshing ReceiptStore ...");
-         store.setData(store.getData().all);
+         //store.setData(store.getData().all);
 
          if (isPosEnabled && me.getRewardTBar())
          {
             me.getRewardTBar()[visible]();
             me.getTableSelectField()[visible]();
          }
+      }
+      else
+      {
+      	//console.debug("onReceiptStoreUpdate - list not avail for update");
       }
    },
    onTableSelectFieldChange : function(field, newValue, oldValue, eOpts)

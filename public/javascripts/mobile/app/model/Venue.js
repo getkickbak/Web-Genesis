@@ -87,7 +87,7 @@ Ext.define('Genesis.model.Venue',
          });
          this.getProxy().setUrl(serverHost + '/api/v1/venues/updateLicenseKey');
       },
-      setMerchantReceiptUploadURL : function()
+      setMerchantReceiptUploadURL : function(venueId)
       {
          this.getProxy().setActionMethods(
          {

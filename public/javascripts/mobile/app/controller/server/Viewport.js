@@ -14,7 +14,7 @@ Ext.require(['Ext.device.Connection', 'Genesis.controller.ControllerBase'], func
       {
          return;
       }
-      
+
       var viewport = _application.getController('server.Viewport');
       if (!viewport || viewport.popViewInProgress)
       {
@@ -274,8 +274,11 @@ Ext.define('Genesis.controller.server.Viewport',
             var metaData = proxy.getReader().metaData;
             if (operation.wasSuccessful() && metaData)
             {
-               //metaData['enable_pos'] = true;
-               //metaData['enable_receipt_upload'] = true;
+               metaData['feature_config'] = ['feature_config'] ||
+               {
+               };
+               //metaData['feature_config']['enable_pos'] = true;
+               //metaData['feature_config']['enable_receipt_upload'] = true;
 
                viewport.setVenue(record);
                viewport.setMetaData(metaData);
