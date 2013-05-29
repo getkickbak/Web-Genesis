@@ -331,6 +331,7 @@ Ext.define('Genesis.controller.server.Rewards',
                Ext.Viewport.setMasked(null);
                if (operation.wasSuccessful())
                {
+                  var metaData = proxy.getReader().metaData;
                   Ext.device.Notification.show(
                   {
                      title : me.earnPtsTitle,
@@ -346,33 +347,40 @@ Ext.define('Genesis.controller.server.Rewards',
                   //
                   if (db['enableReceiptUpload'] && db['isPosEnabled'])
                   {
-                     var x, receipt, tnid = 0, estore = Ext.StoreMgr.get('EarnedReceiptStore');
+                     var x, receipt, estore = Ext.StoreMgr.get('EarnedReceiptStore');
                      var insertStatement = "INSERT INTO Receipt (id, receipts, sync) VALUES (?, ?, 0)";
 
                      for (var i = 0; i < me.receiptSelected.length; i++)
                      {
-                        me.receiptSelected[i].set('tnId', tnId);
+                        me.receiptSelected[i].set('tnId', metaData['txnid']);
                      }
                      //
                      // Add to Earned store
                      //
                      estore.add(me.receiptSelected);
 
-                     _application.getController('server' + '.Receipts').db.transaction(function(tx)
+                     try
                      {
-                        for ( x = 0; x < me.receiptSelected.length; x++)
+                        _application.getController('server' + '.Receipts').db.transaction(function(tx)
                         {
-                           receipt = me.receiptSelected[x];
-                           tx.executeSql(insertStatement, [receipt.getId(), Ext.encode(receipt.getData(true))], function()
+                           for ( x = 0; x < me.receiptSelected.length; x++)
                            {
-                              //console.debug("Inserted Receipt(" + item.getId() + ") to Database");
-                           }, function(tx, error)
-                           {
-                              //console.debug("Failed to insert Customer(" + receipt.getId() + ") to Database : " + error.message);
-                           });
-                        }
-                        console.debug("Receipts submission --- Inserted " + items.length + " records in Receipt Database ...");
-                     });
+                              receipt = me.receiptSelected[x];
+                              tx.executeSql(insertStatement, [receipt.getId(), Ext.encode(receipt.getData(true))], function()
+                              {
+                                 //console.debug("Inserted Receipt(" + item.getId() + ") to Database");
+                              }, function(tx, error)
+                              {
+                                 //console.debug("Failed to insert Customer(" + receipt.getId() + ") to Database : " +
+                                 // error.message);
+                              });
+                           }
+                           console.debug("Receipts submission --- Inserted " + items.length + " records in Receipt Database ...");
+                        });
+                     }
+                     catch(e)
+                     {
+                     }
                   }
                }
                else

@@ -119,6 +119,7 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
       receiptResponseHandler : function(receipts)
       {
          var lists = this.receiptIncomingHandler(receipts, true), rstore = Ext.StoreMgr.get('ReceiptStore'), tstore = Ext.StoreMgr.get('TableStore');
+         var cntlr = _application.getController('server' + '.Receipts');
          lists[1].push(Ext.create("Genesis.model.frontend.Table",
          {
             id : 'All'
@@ -127,8 +128,10 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
          rstore.tableFilterId = null;
          tstore.setData(lists[1]);
 
-         console.debug("WebSocketClient::receiptResponseHandler - Processed " + lists[0].length + " receipts");
          Ext.Viewport.setMasked(null);
+
+         console.debug("WebSocketClient::receiptResponseHandler - Processed " + lists[0].length + " receipts");
+         cntlr.receiptCleanFn(Genesis.db.getLocalDB()["displayMode"]);
       }
    });
 
@@ -247,7 +250,7 @@ Ext.define('Genesis.controller.server.Receipts',
    xtype : 'serverreceiptsCntlr',
    config :
    {
-      models : ['PurchaseReward', 'frontend.Receipt', 'frontend.Table'],
+      models : ['Venue', 'frontend.Receipt', 'frontend.Table'],
       refs :
       {
          posMode : 'serversettingspageview togglefield[tag=posMode]',
@@ -266,7 +269,10 @@ Ext.define('Genesis.controller.server.Receipts',
       }
    },
    mobileTimeout : 1 * 60 * 1000,
+   //fixedTimeout : 4 * 60 * 60 * 1000,
    fixedTimeout : 1 * 60 * 1000,
+   cleanupTimer : 4 * 60 * 60 * 1000,
+   batteryTimer : 30 * 1000,
    _statusInfo :
    {
       isPlugged : false,
@@ -274,24 +280,31 @@ Ext.define('Genesis.controller.server.Receipts',
    },
    _hyteresisTask : null,
    _syncTask : null,
+   _receiptCleanTask : null,
    init : function(app)
    {
-      var me = this, estore;
+      var me = this, estore, worker;
       var createStatement = "CREATE TABLE IF NOT EXISTS Receipt (id INTEGER PRIMARY KEY, receipt TEXT, sync INTEGER)";
-      me.db = openDatabase('KickBak', 'ReceiptStore', "1.0", 5 * 1024 * 1024);
-      me.db.transaction(function(tx)
+      var db = openDatabase('KickBak', 'ReceiptStore', "1.0", 5 * 1024 * 1024);
+      try
       {
-         //
-         // Create Table
-         //
-         tx.executeSql(createStatement, [], function()
+         db.transaction(function(tx)
          {
-            console.debug("Successfully created/retrieved KickBak-Receipt Table");
-         }, function(tx, error)
-         {
-            console.debug("Failed to create KickBak-Receipt Table : " + error.message);
+            //
+            // Create Table
+            //
+            tx.executeSql(createStatement, [], function()
+            {
+               console.debug("Successfully created/retrieved KickBak-Receipt Table");
+            }, function(tx, error)
+            {
+               console.debug("Failed to create KickBak-Receipt Table : " + error.message);
+            });
          });
-      });
+      }
+      catch(e)
+      {
+      }
 
       me.callParent(arguments);
 
@@ -301,9 +314,9 @@ Ext.define('Genesis.controller.server.Receipts',
       {
          if (!me._hyteresisTask)
          {
-            me._hyteresisTask = Ext.create('Ext.util.DelayedTask', me.batteryStatusFn);
+            me._hyteresisTask = Ext.create('Ext.util.DelayedTask');
          }
-         me._hyteresisTask.delay(30 * 1000, me.batteryStatusFn, me, [info]);
+         me._hyteresisTask.delay(me.batteryTimer, me.batteryStatusFn, me, [info]);
       }, false);
       window.addEventListener("batterylow", function(info)
       {
@@ -429,7 +442,49 @@ Ext.define('Genesis.controller.server.Receipts',
 
       estore = Ext.StoreMgr.get('EarnedReceiptStore');
 
-      me.restoreReceiptDB(estore);
+      worker = me.worker = new Worker('worker/server.js')
+      //worker.postMessage = worker.webkitPostMessage || worker.postMessage;
+      worker.onmessage = function(e)
+      {
+         var result = JSON.parse(e.data);
+         switch (result['cmd'])
+         {
+            case 'uploadReceipts':
+            {
+               var items = [], item;
+               for (var i = 0; i < result['result'].length; i++)
+               {
+                  item = Ext.decode(result['result'][i]);
+                  items.push(
+                  {
+                     tnId : item['tnId'],
+                     items : item['items']
+                  });
+               }
+               me.uploadReceipts(items);
+               console.debug("syncReceiptDB  --- Found " + items.length + " Unsynchronized records in SQL Receipt Database");
+               break;
+            }
+            case 'updateReceipts':
+            {
+               console.debug("updateReceipts --- Updated(synced) " + result['result'] + "Receipts from the KickBak-Receipt Database");
+               break;
+            }
+            case 'restoreReceipts' :
+            {
+               for (var i = 0; i < result['result'].length; i++)
+               {
+                  result['result'][i] = Ext.decode(result['result'][i]);
+               }
+               estore.setData(result['result']);
+               console.debug("restoreReceiptDB  --- Restored " + result['result'].length + " records in SQL Receipt Database");
+               break;
+            }
+            default:
+         }
+      };
+
+      me.restoreReceiptDB();
    },
    updateMetaDataInfo : function(metaData)
    {
@@ -453,17 +508,17 @@ Ext.define('Genesis.controller.server.Receipts',
    {
       var db = Genesis.db.getLocalDB();
 
-      db['enablePosIntegration'] = metaData['enablePOS'];
+      db['enablePosIntegration'] = metaData['enable_pos'];
       db['isPosEnabled'] = ((isPosEnabled === undefined) || (isPosEnabled));
       if (db['enablePosIntegration'] && db['isPosEnabled'])
       {
-         var filters = metaData['receiptFilters'] = metaData['receiptFilters'] ||
+         var filters = metaData['receipt_filters'] = metaData['receipt_fislters'] ||
          {
          };
          db['receiptFilters'] =
          {
-            minLineLength : filters['minLineLength'] || 5,
-            grandtotal : filters['grandtotal'] || "\\s*\\bGrand Total\\b\\s+\\$(\\d+\.\\d{2})\\s*",
+            minLineLength : filters['min_line_length'] || 5,
+            grandtotal : filters['grand_total'] || "\\s*\\bGrand Total\\b\\s+\\$(\\d+\.\\d{2})\\s*",
             subtotal : filters['subtotal'] || "\\s*\\bSubtotal\\b\\s+\\$(\\d+\.\\d{2})\\s*",
             item : filters['item'] || "([\\s*\\w+]+)\\s+(\\d+)\\s+\\$(\\d+\\.\\d{2})\\s*",
             table : filters['table'] || "\\s*\\bTABLE\\b:\\s+(Bar\\s+\\d+)\\s*"
@@ -486,7 +541,7 @@ Ext.define('Genesis.controller.server.Receipts',
          // BUG: We have to remove the filtered items as well
          console.debug("posIntegrationHandler - Disabled");
       }
-      db['enableReceiptUpload'] = metaData['enableReceiptUpload'];
+      db['enableReceiptUpload'] = metaData['enable_receipt_upload'];
       Genesis.db.setLocalDB(db);
    },
    batteryStatusFn : function(info)
@@ -530,62 +585,116 @@ Ext.define('Genesis.controller.server.Receipts',
       }
       me._statusInfo = info;
    },
+   receiptCleanFn : function(displayMode)
+   {
+      var me = this;
+      if (!me._receiptCleanTask)
+      {
+         me._receiptCleanTask = Ext.create('Ext.util.DelayedTask', function()
+         {
+            var store = Ext.StoreMgr.get('ReceiptStore'), tstore = Ext.StoreMgr.get('TableStore');
+            var records = store.getRange(), record, time;
+            var items = [], tableList = [], fourhrsago = (new Date()).addHours(-4).getTime();
+            var updateTableFilter = true;
+
+            for (var i = 0, j = 0; i < records.length; i++)
+            {
+               record = records[i];
+               time = record.getId() * 1000;
+
+               //
+               // Flush out old entries
+               //
+               if (fourhrsago > time)
+               {
+                  items.push(record);
+               }
+               else
+               {
+                  //console.debug("WebSocketClient::receiptIncomingHandler");
+                  tableList[j++] = Ext.create('Genesis.model.frontend.Table',
+                  {
+                     id : record.get('table')
+                  });
+
+                  if (store.tableFilterId == record.get('table'))
+                  {
+                     updateTableFilter = false;
+                  }
+               }
+            }
+            if (items.length > 0)
+            {
+               store.remove(items);
+            }
+            //if (tableList.length > 0)
+            {
+               tableList.push(Ext.create("Genesis.model.frontend.Table",
+               {
+                  id : 'All'
+               }));
+               tstore.setData(tableList);
+            }
+            if (updateTableFilter)
+            {
+               store.tableFilterId = null;
+            }
+
+            console.debug("receiptCleanFn - Removed " + items.length + " old records from the Receipt Store");
+            console.debug("receiptCleanFn - 4hrs till the next cleanup");
+            me._receiptCleanTask.delay(me.cleanupTimer);
+         });
+      }
+      switch (displayMode)
+      {
+         //
+         // We need to clean up on a periodic basis for we don't accumulate too many receipts
+         //
+         case 'Fixed' :
+         {
+            console.debug("receiptCleanFn - Cleanup is scheduled to start in 4hrs");
+            me._receiptCleanTask.delay(me.cleanupTimer);
+            break;
+         }
+         //
+         // No need to clean, it will clean up itself whenever the mobile phone reconnects with the POS
+         //
+         case 'Mobile':
+         default :
+            console.debug("receiptCleanFn - Disabled");
+            me._receiptCleanTask.cancel();
+            break;
+      }
+   },
    // --------------------------------------------------------------------------
    // Functions
    // --------------------------------------------------------------------------
-   restoreReceiptDB : function(estore)
+   restoreReceiptDB : function()
    {
-      var selectAllStatement = "SELECT receipt FROM Receipt";
-      try
+      var me = this;
+      me.worker.postMessage(
       {
-         this.db.transaction(function(tx)
-         {
-            //
-            // Retrieve Receipts
-            //
-            tx.executeSql(selectAllStatement, [], function(tx, result)
-            {
-               var items = [];
-               var dataset = result.rows;
-               for (var j = 0, item = null; j < dataset.length; j++)
-               {
-                  item = dataset.item(j);
-                  items.push(Ext.decode(item));
-               }
-               estore.setData(items);
-               console.debug("restoreReceiptDB  --- Restored " + items.length + " records in SQL Receipt Database");
-            }, function(tx, error)
-            {
-            });
-         });
-      }
-      catch(e)
-      {
-      }
+         "cmd" : 'restoreReceipts'
+      });
    },
    uploadReceipts : function(receipts)
    {
-      var me = this, proxy = PurchaseReward.getProxy(), displayMode = Genesis.db.getLocalDB["displayMode"];
+      var me = this, proxy = Venue.getProxy(), displayMode = Genesis.db.getLocalDB["displayMode"];
       var params =
       {
          version : Genesis.constants.serverVersion,
          'venue_id' : Genesis.fn.getPrivKey('venueId'),
          data :
          {
-            "receipts" : receipts,
-            "type" : 'earn_points',
-            'expiry_ts' : new Date().addHours(3).getTime()
+            "receipts" : receipts
+            //,"type" : 'earn_points',
+            //'expiry_ts' : new Date().addHours(3).getTime()
          }
       };
       params['data'] = me.self.encryptFromParams(params['data']);
 
-      var ids = [];
-      for (var i = 0; i < receipts.length; i++)
-      {
-         ids.push(receipts[i]['tnId']);
-      }
-      PurchaseReward['setMerchantReceiptUploadURL']();
-      PurchaseReward.load(1,
+      Venue['setMerchantReceiptUploadURL'](params['venue_id']);
+      Venue.load(1,
       {
          addRecords : true, //Append data
          scope : me,
@@ -599,26 +708,16 @@ Ext.define('Genesis.controller.server.Receipts',
             Ext.Viewport.setMasked(null);
             if (operation.wasSuccessful())
             {
-               var len = ids.length;
-               var updateStatement = "UPDATE Receipt SET sync=1 WHERE id in (" + ids.toString() + ");";
-               try
+               var ids = [];
+               for (var i = 0; i < receipts.length; i++)
                {
-                  me.db.transaction(function(tx)
-                  {
-                     //
-                     // Update Receipt Database
-                     //
-                     tx.executeSql(updateStatement, [], function()
-                     {
-                        console.debug("uploadReceipts --- Updated(synced) " + len + "Receipts from the KickBak-Receipt Database");
-                     }, function(tx, error)
-                     {
-                     });
-                  });
+                  ids.push(receipts[i]['tnId']);
                }
-               catch(e)
+               me.worker.postMessage(
                {
-               }
+                  'cmd' : 'updateReceipts',
+                  'ids' : ids
+               });
             }
             else
             {
@@ -654,44 +753,15 @@ Ext.define('Genesis.controller.server.Receipts',
       {
          me._syncTask = Ext.create('Ext.util.DelayedTask', function()
          {
-            var selectAllStatement = "SELECT receipt FROM Receipt WHERE sync=0";
-            try
+            me.worker.postMessage(
             {
-               me.db.transaction(function(tx)
-               {
-                  //
-                  // Retrieve Receipts
-                  //
-                  tx.executeSql(selectAllStatement, [], function(tx, result)
-                  {
-                     var items = [], item;
-                     var dataset = result.rows;
-                     for ( j = 0; j < dataset.length; j++)
-                     {
-                        item = Ext.decode(dataset.item(j));
-                        items.push(item);
-                        console.debug("Receipt TnId[" + item['tnId'] + "]");
-                     }
-
-                     console.debug("syncReceiptDB  --- Found " + items.length + "Unsynchronized records in SQL Receipt Database");
-
-                     if (items.length > 0)
-                     {
-                        Ext.defer(me.uploadReceipts, 1, me, [items]);
-                     }
-                  }, function(tx, error)
-                  {
-                     console.debug("No Receipt Table found in SQL Database : " + error.message);
-                  });
-               });
-            }
-            catch(e)
-            {
-            }
+               'cmd' : 'uploadReceipts'
+            });
          });
       }
+
       me._syncTask.delay(duration);
-      console.debug("syncReceiptDB - Synchronize Database to start in " + (duration / (1000 * 60)).toFixed(0) + "mins of idle");
+      console.debug("syncReceiptDB - process starting in " + (duration / (1000 * 60)).toFixed(0) + "mins");
    },
    tableFilterFn : function(item)
    {
@@ -728,6 +798,7 @@ Ext.define('Genesis.controller.server.Receipts',
       var me = this;
       Genesis.db.setLocalDBAttrib("displayMode", newValue);
       console.debug("onDisplayModeChange - " + newValue);
+      me.receiptCleanFn(newValue);
       me.batteryStatusFn();
    }
 });

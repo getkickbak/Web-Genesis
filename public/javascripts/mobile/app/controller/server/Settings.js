@@ -149,24 +149,30 @@ Ext.define('Genesis.controller.server.Settings',
          {
             if (btn.toLowerCase() == 'restart')
             {
-               db.transaction(function(tx)
+               try
                {
-                  //
-                  // Drop Table
-                  //
-                  tx.executeSql(dropStatement, [], function()
+                  db.transaction(function(tx)
                   {
-                     console.debug("onDeviceResetTap --- Successfully drop KickBak-Receipt Table");
                      //
-                     // Restart because we can't continue without Console Setup data
+                     // Drop Table
                      //
-                     navigator.app.exitApp();
-                  }, function()
-                  {
-                     console.debug("Failed to drop KickBak-Receipt Table : " + error.message);
-                     navigator.app.exitApp();
+                     tx.executeSql(dropStatement, [], function()
+                     {
+                        console.debug("onDeviceResetTap --- Successfully drop KickBak-Receipt Table");
+                        //
+                        // Restart because we can't continue without Console Setup data
+                        //
+                        navigator.app.exitApp();
+                     }, function()
+                     {
+                        console.debug("Failed to drop KickBak-Receipt Table : " + error.message);
+                        navigator.app.exitApp();
+                     });
                   });
-               });
+               }
+               catch(e)
+               {
+               }
             }
          }
       });

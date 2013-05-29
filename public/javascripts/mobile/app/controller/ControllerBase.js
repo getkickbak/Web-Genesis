@@ -928,42 +928,48 @@ Ext.define('Genesis.controller.ControllerBase',
                   if (stores[i][1] == 'CustomerStore')
                   {
                      var db = openDatabase('KickBak', stores[i][1], "1.0", 5 * 1024 * 1024);
-                     db.transaction(function(tx)
+                     try
                      {
-                        //
-                        // Create Table
-                        //
-                        tx.executeSql(createStatement, [], function()
+                        db.transaction(function(tx)
                         {
-                           console.debug("Successfully created/retrieved KickBak-Customers Table");
-                        }, function(tx, error)
-                        {
-                           console.debug("Failed to create KickBak-Customers Table : " + error.message);
-                        });
-                        //
-                        // Retrieve Customers
-                        //
-                        tx.executeSql(selectAllStatement, [], function(tx, result)
-                        {
-                           var items = [];
-                           var dataset = result.rows;
-                           for ( j = 0, item = null; j < dataset.length; j++)
+                           //
+                           // Create Table
+                           //
+                           tx.executeSql(createStatement, [], function()
                            {
-                              item = dataset.item(j);
-                              //console.debug("JSON - " + item['json'])
-                              items.push(Ext.decode(item['json']));
-                           }
-                           Ext.StoreMgr.get('CustomerStore').add(items);
-                           if ((flag |= 0x0010) == 0x11111)
+                              console.debug("Successfully created/retrieved KickBak-Customers Table");
+                           }, function(tx, error)
                            {
-                              callback();
-                           }
-                           console.debug("persistLoadStores  --- Restored " + items.length + " records from SQL Database, flag=" + flag);
-                        }, function(tx, error)
-                        {
-                           console.debug("No Customer Table found in SQL Database : " + error.message);
+                              console.debug("Failed to create KickBak-Customers Table : " + error.message);
+                           });
+                           //
+                           // Retrieve Customers
+                           //
+                           tx.executeSql(selectAllStatement, [], function(tx, result)
+                           {
+                              var items = [];
+                              var dataset = result.rows;
+                              for ( j = 0, item = null; j < dataset.length; j++)
+                              {
+                                 item = dataset.item(j);
+                                 //console.debug("JSON - " + item['json'])
+                                 items.push(Ext.decode(item['json']));
+                              }
+                              Ext.StoreMgr.get('CustomerStore').add(items);
+                              if ((flag |= 0x0010) == 0x11111)
+                              {
+                                 callback();
+                              }
+                              console.debug("persistLoadStores  --- Restored " + items.length + " records from SQL Database, flag=" + flag);
+                           }, function(tx, error)
+                           {
+                              console.debug("No Customer Table found in SQL Database : " + error.message);
+                           });
                         });
-                     });
+                     }
+                     catch(e)
+                     {
+                     }
                   }
 
                   if (flag == 0x11111)
@@ -1015,50 +1021,56 @@ Ext.define('Genesis.controller.ControllerBase',
          var db = openDatabase('KickBak', 'CustomerStore', "1.0", 5 * 1024 * 1024);
          var cstore = Ext.StoreMgr.get('CustomerStore');
 
-         db.transaction(function(tx)
+         try
          {
-            //
-            // Drop Table
-            //
-            tx.executeSql(dropStatement, [], function()
+            db.transaction(function(tx)
             {
-               console.debug("Successfully drop KickBak-Customers Table");
-            }, function(tx, error)
-            {
-               console.debug("Failed to drop KickBak-Customers Table : " + error.message);
-            });
-            //
-            // Create Table
-            //
-            tx.executeSql(createStatement, [], function()
-            {
-               console.debug("Successfully created/retrieved KickBak-Customers Table");
-            }, function(tx, error)
-            {
-               console.debug("Failed to create KickBak-Customers Table : " + error.message);
-            });
-
-            //
-            // Insert into Table
-            //
-            if (!cleanOnly)
-            {
-               items = cstore.getRange();
-               for ( x = 0; x < items.length; x++)
+               //
+               // Drop Table
+               //
+               tx.executeSql(dropStatement, [], function()
                {
-                  item = items[x];
-                  //console.debug("Inserting Customer(" + item.getId() + ") to Database");
-                  tx.executeSql(insertStatement, [Ext.encode(item.getData(true))], function()
+                  console.debug("Successfully drop KickBak-Customers Table");
+               }, function(tx, error)
+               {
+                  console.debug("Failed to drop KickBak-Customers Table : " + error.message);
+               });
+               //
+               // Create Table
+               //
+               tx.executeSql(createStatement, [], function()
+               {
+                  console.debug("Successfully created/retrieved KickBak-Customers Table");
+               }, function(tx, error)
+               {
+                  console.debug("Failed to create KickBak-Customers Table : " + error.message);
+               });
+
+               //
+               // Insert into Table
+               //
+               if (!cleanOnly)
+               {
+                  items = cstore.getRange();
+                  for ( x = 0; x < items.length; x++)
                   {
-                     //console.debug("Inserted Customer(" + item.getId() + ") to Database");
-                  }, function(tx, error)
-                  {
-                     console.debug("Failed to insert Customer(" + item.getId() + ") to Database : " + error.message);
-                  });
+                     item = items[x];
+                     //console.debug("Inserting Customer(" + item.getId() + ") to Database");
+                     tx.executeSql(insertStatement, [Ext.encode(item.getData(true))], function()
+                     {
+                        //console.debug("Inserted Customer(" + item.getId() + ") to Database");
+                     }, function(tx, error)
+                     {
+                        console.debug("Failed to insert Customer(" + item.getId() + ") to Database : " + error.message);
+                     });
+                  }
+                  console.debug("persistSyncStores  --- Inserted " + items.length + " records in Database ...");
                }
-               console.debug("persistSyncStores  --- Inserted " + items.length + " records in Database ...");
-            }
-         });
+            });
+         }
+         catch(e)
+         {
+         }
          stores[0][0].removeAll();
          stores[0][0].getProxy().clear();
          stores[0][0].sync();

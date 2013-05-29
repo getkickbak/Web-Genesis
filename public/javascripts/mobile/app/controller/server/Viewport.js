@@ -274,8 +274,8 @@ Ext.define('Genesis.controller.server.Viewport',
             var metaData = proxy.getReader().metaData;
             if (operation.wasSuccessful() && metaData)
             {
-               //metaData['enablePOS'] = true;
-               //metaData['enableReceiptUpload'] = true;
+               //metaData['enable_pos'] = true;
+               //metaData['enable_receipt_upload'] = true;
 
                viewport.setVenue(record);
                viewport.setMetaData(metaData);
