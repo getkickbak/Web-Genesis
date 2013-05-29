@@ -123,12 +123,10 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
          {
             id : 'All'
          }));
-         
-         (lists[0].length > 0) ? rstore.setData(lists[0]) : rstore.clearData();         
+
+         (lists[0].length > 0) ? rstore.setData(lists[0]) : rstore.clearData();
          rstore.tableFilterId = null;
          tstore.setData(lists[1]);
-
-         Ext.Viewport.setMasked(null);
 
          console.debug("WebSocketClient::receiptResponseHandler - Processed " + lists[0].length + " receipts");
          cntlr.receiptCleanFn(Genesis.db.getLocalDB()["displayMode"]);
@@ -152,8 +150,20 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
             //wssocket.binaryType = 'arraybuffer';
             wssocket.onopen = function(event)
             {
-               console.debug("WebSocketClient::onopen - \r\n" + Ext.encode(event));
-               wssocket.send("get_receipts");
+               Ext.Viewport.setMasked(null);
+
+               var store = Ext.StoreMgr.get('ReceiptStore');
+               var db = Genesis.db.getLocalDB(), lastPosConnectTime = db['lastPosConnectTime'] || 0, lastPosDisonnectTime = Genesis.db.getLocalDB()['lastPosDisconnectTime'] || 0;
+               //
+               // Retrieve new connections after 5mins of inactivity
+               //
+               console.debug("WebSocketClient::onopen - store[" + ((store) ? store.getAllCount() : 'N/A') + "]");
+
+               if (((lastPosDisonnectTime - lastPosConnectTime) > (5 * 60 * 1000)) || !store || !(store.getAllCount() > 0))
+               {
+                  wssocket.send("get_receipts");
+               }
+               Genesis.db.setLocalDBAttrib('lastPosConnectTime', Date.now());
             };
             wssocket.onmessage = function(event)
             {
@@ -180,13 +190,13 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
                   {
                      case 'receipt_incoming' :
                      {
-                        console.debug("receipt_incoming ...")
+                        console.debug("WebSocketClient::receipt_incoming ...")
                         wssocket.receiptIncomingHandler(inputStream['receipts']);
                         break;
                      }
                      case 'receipt_response' :
                      {
-                        console.debug("receipt_response ...")
+                        console.debug("WebSocketClient::receipt_response ...")
                         wssocket.receiptResponseHandler(inputStream['receipts']);
                         break;
                      }
@@ -202,18 +212,17 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
             };
             wssocket.onerror = function(event)
             {
-               console.debug("WebSocketClient::onerror - \r\n" + Ext.encode(event));
+               console.debug("WebSocketClient::onerror");
             };
             wssocket.onclose = function(event)
             {
-               var db = Genesis.db.getLocalDB();
-
-               console.debug("WebSocketClient::onclose - \r\n" + Ext.encode(event));
+               console.debug("WebSocketClient::onclose, 5sec before retrying ...");
                delete WebSocket.store[event._target];
                wssocket = null;
                //
                // Reconnect to server continuously
                //
+               Genesis.db.setLocalDBAttrib('lastPosDisconnectTime', Date.now());
                WebSocket._connTask.delay(5 * 1000, posConnect, wssocket, [++i]);
             };
 
@@ -292,7 +301,7 @@ Ext.define('Genesis.controller.server.Receipts',
    _receiptCleanTask : null,
    init : function(app)
    {
-      var me = this, estore;
+      var me = this;
       var createStatement = "CREATE TABLE IF NOT EXISTS Receipt (id INTEGER PRIMARY KEY, receipt TEXT, sync INTEGER)";
       var db = openDatabase('KickBak', 'ReceiptStore', "1.0", 5 * 1024 * 1024);
       try
@@ -319,6 +328,16 @@ Ext.define('Genesis.controller.server.Receipts',
 
       console.log("Server Receipts Init");
 
+      me.initEvent();
+      me.initStore();
+
+      me.initWorker(Ext.StoreMgr.get('EarnedReceiptStore'));
+
+      me.restoreReceiptDB();
+   },
+   initEvent : function()
+   {
+      var me = this;
       window.addEventListener("batterystatus", function(info)
       {
          if (!me._hyteresisTask)
@@ -353,6 +372,62 @@ Ext.define('Genesis.controller.server.Receipts',
             Ext.device.Notification.beep();
          }
       }, false);
+   },
+   initWorker : function(estore)
+   {
+      var me = this, worker = me.worker = new Worker('worker/server.js')
+      //worker.postMessage = worker.webkitPostMessage || worker.postMessage;
+      worker.onmessage = function(e)
+      {
+         var result = JSON.parse(e.data);
+         switch (result['cmd'])
+         {
+            case 'uploadReceipts':
+            {
+               var items = [], item;
+               for (var i = 0; i < result['result'].length; i++)
+               {
+                  item = Ext.decode(result['result'][i]);
+                  items.push(
+                  {
+                     tnId : item['tnId'],
+                     items : item['items']
+                  });
+               }
+               if (items.length > 0)
+               {
+                  me.uploadReceipts(items);
+               }
+               console.debug("uploadReceipts  --- Found " + items.length + " Receipts to Upload to Server");
+               break;
+            }
+            case 'insertReceipts' :
+            {
+               console.debug("insertReceipts --- Inserted " + result['result'] + " Receipts into KickBak-Receipt DB ...");
+               break;
+            }
+            case 'updateReceipts':
+            {
+               console.debug("updateReceipts --- Updated(synced) " + result['result'] + "Receipts from the KickBak-Receipt DB");
+               break;
+            }
+            case 'restoreReceipts' :
+            {
+               for (var i = 0; i < result['result'].length; i++)
+               {
+                  result['result'][i] = Ext.decode(result['result'][i]);
+               }
+               estore.setData(result['result']);
+               console.debug("restoreReceipt  --- Restored " + result['result'].length + " Receipts from the KickBak-Receipt DB");
+               break;
+            }
+            default:
+         }
+      };
+   },
+   initStore : function()
+   {
+      var me = this, estore;
 
       Ext.regStore('TableStore',
       {
@@ -448,63 +523,7 @@ Ext.define('Genesis.controller.server.Receipts',
             direction : 'DESC'
          }]
       });
-
       estore = Ext.StoreMgr.get('EarnedReceiptStore');
-
-      me.initWorker(estore);
-      me.restoreReceiptDB();
-   },
-   initWorker : function(estore)
-   {
-      var me = this, worker = me.worker = new Worker('worker/server.js')
-      //worker.postMessage = worker.webkitPostMessage || worker.postMessage;
-      worker.onmessage = function(e)
-      {
-         var result = JSON.parse(e.data);
-         switch (result['cmd'])
-         {
-            case 'uploadReceipts':
-            {
-               var items = [], item;
-               for (var i = 0; i < result['result'].length; i++)
-               {
-                  item = Ext.decode(result['result'][i]);
-                  items.push(
-                  {
-                     tnId : item['tnId'],
-                     items : item['items']
-                  });
-               }
-               if (items.length > 0)
-               {
-                  me.uploadReceipts(items);
-               }
-               console.debug("syncReceiptDB  --- Found " + items.length + " Unsynchronized records in SQL Receipt Database");
-               break;
-            }
-            case 'insertReceipts' :
-            {
-               console.debug("Receipts submission --- Inserted " + result['result'] + " records in KickBak-Receipt Database ...");
-               break;
-            }
-            case 'updateReceipts':
-            {
-               console.debug("updateReceipts --- Updated(synced) " + result['result'] + "Receipts from the KickBak-Receipt Database");
-               break;
-            }
-            case 'restoreReceipts' :
-            {
-               for (var i = 0; i < result['result'].length; i++)
-               {
-                  result['result'][i] = Ext.decode(result['result'][i]);
-               }
-               estore.setData(result['result']);
-               console.debug("restoreReceiptDB  --- Restored " + result['result'].length + " records in SQL Receipt Database");
-               break;
-            }
-            default:
-         }
-      };
    },
    updateMetaDataInfo : function(metaData)
    {
@@ -540,7 +559,7 @@ Ext.define('Genesis.controller.server.Receipts',
             minLineLength : filters['min_line_length'] || 5,
             grandtotal : filters['grand_total'] || "\\s*\\bGrand Total\\b\\s+\\$(\\d+\.\\d{2})\\s*",
             subtotal : filters['subtotal'] || "\\s*\\bSubtotal\\b\\s+\\$(\\d+\.\\d{2})\\s*",
-            item : filters['item'] || "([\\s*\\w+]+)\\s+(\\d+)\\s+\\$(\\d+\\.\\d{2})\\s*",
+            item : filters['item'] || "\\s*([\\s*\\w+]+)\\s+\\(?(\\d+(?=\\@\\$\\d+\\.\\d{2}\\))?).*?\\s+\\$(\\d+\\.\\d{2})",
             table : filters['table'] || "\\s*\\bTABLE\\b:\\s+(Bar\\s+\\d+)\\s*"
          }
          WebSocket.prototype.receiptFilters = Ext.clone(db['receiptFilters']);
@@ -773,9 +792,22 @@ Ext.define('Genesis.controller.server.Receipts',
       {
          me._syncTask = Ext.create('Ext.util.DelayedTask', function()
          {
+            var allRecords = Ext.StoreMgr.get('ReceiptStore').getData().all;
+
+            var oldestReceipt = Number.MAX_VALUE;
+            for (var i = 0; i < allRecords.length; i++)
+            {
+               var rec = allRecords[i];
+               if (Math.min(rec.getId(), oldestReceipt) == rec.getId())
+               {
+                  oldestReceipt = rec.getId();
+               }
+               //console.debug("syncReceiptDB - TimeStamp[" + Genesis.fn.convertDateFullTime(new Date(rec.getId()*1000)) + "]");
+            }
             me.worker.postMessage(
             {
-               'cmd' : 'uploadReceipts'
+               'cmd' : 'uploadReceipts',
+               'lastReceiptTime' : (oldestReceipt == Number.MAX_VALUE) ? 0 : oldestReceipt
             });
          });
       }

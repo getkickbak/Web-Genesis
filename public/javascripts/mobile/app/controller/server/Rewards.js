@@ -119,10 +119,11 @@ Ext.define('Genesis.controller.server.Rewards',
 
       Ext.StoreMgr.get('ReceiptStore').on(
       {
-         clear : 'onReceiptStoreUpdate',
+         //clear : 'onReceiptStoreUpdate',
+         filter : 'onReceiptStoreUpdate',
          addrecords : 'onReceiptStoreUpdate',
          refresh : 'onReceiptStoreUpdate',
-         removerecords : 'onReceiptStoreUpdate',
+         //removerecords : 'onReceiptStoreUpdate',
          updaterecord : 'onReceiptStoreUpdate',
          scope : me
       });
@@ -755,7 +756,7 @@ Ext.define('Genesis.controller.server.Rewards',
 
       if (list)
       {
-         console.debug("Refreshing ReceiptStore ...");
+         console.debug("Refreshing ReceiptStore ... count[" + store.getCount() + "]");
          //store.setData(store.getData().all);
 
          if (isPosEnabled && me.getRewardTBar())
@@ -766,7 +767,7 @@ Ext.define('Genesis.controller.server.Rewards',
       }
       else
       {
-      	//console.debug("onReceiptStoreUpdate - list not avail for update");
+         //console.debug("onReceiptStoreUpdate - list not avail for update");
       }
    },
    onTableSelectFieldChange : function(field, newValue, oldValue, eOpts)
@@ -775,7 +776,15 @@ Ext.define('Genesis.controller.server.Rewards',
 
       store.tableFilterId = (newValue != 'All') ? newValue : null;
       console.debug("Filter by Table[" + store.tableFilterId + "] ...");
-      me.onReceiptStoreUpdate(store);
+
+      //
+      // Wait for animation to complete before we filter
+      //
+      Ext.defer(function()
+      {
+         store.filter();
+         //me.onReceiptStoreUpdate(store);
+      }, 1 * 1000);
    },
    // --------------------------------------------------------------------------
    // Misc Event Funcs
