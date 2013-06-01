@@ -618,7 +618,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         if reward_model_type.value == "amount_spent"
           points = (amount / reward_model.price_per_point).to_i
         end  
-        record = EarnRewardRecord.new(
+        @record = EarnRewardRecord.new(
           :type => :purchase,
           :venue_id => @venue.id,
           :data => data,
@@ -628,18 +628,17 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           :created_ts => now,
           :update_ts => now
         )
-        record.merchant = @venue.merchant
-        record.customer = @customer
-        record.user = @current_user
-        record.save
+        @record.merchant = @venue.merchant
+        @record.customer = @customer
+        @record.user = @current_user
+        @record.save
         end_time2_2_1 = Time.now
         logger.info("Performance Test: Earn Common Part 3-2-2-1 #{end_time2_2_1 - start_time2_2} secs")
         trans_record = TransactionRecord.new(
           :type => :earn_points,
-          :ref_id => record.id,
+          :ref_id => @record.id,
           :description => I18n.t("transaction.earn"),
           :points => points,
-          #:fee => amount * APP_PROP["TRANS_FEE"],
           :created_ts => now,
           :update_ts => now
         )

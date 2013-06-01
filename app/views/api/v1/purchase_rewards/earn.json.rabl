@@ -25,7 +25,8 @@ if signed_in?
 				@prizes.map do |r|
 		 			partial('api/v1/customer_rewards/base', :object => r)
 				end if defined? @prizes
-			)
+			),
+			:txn_id => @record.id
 		}.delete_if { |k,v| v.nil? }
 	end	
 end

@@ -39,6 +39,7 @@ class Venue
   has 1, :type, 'VenueType', :through => :venue_to_type, :via => :venue_type
   has 1, :check_in_code, :constraint => :destroy
   has 1, :prize_info, :constraint => :destroy
+  has 1, :features_config, 'VenueFeaturesConfig', :constraint => :destroy
   has n, :challenge_venues, :constraint => :destroy
   has n, :customer_reward_venues, :constraint => :destroy
   has n, :challenges, :through => :challenge_venues
@@ -93,6 +94,7 @@ class Venue
     venue.check_in_code[:update_ts] = now
 =end    
     venue.prize_info = PrizeInfo.new
+    venue.features_config = VenueFeaturesConfig.create(venue, merchant.features_config)
     venue.save
     return venue
   end

@@ -1,3 +1,18 @@
+<% content_for :link do %>
+<link rel="stylesheet" href="/javascripts/desktop/lib/jquery-ui-1.8.20.custom/css/ui-lightness/jquery-ui-1.8.20.custom.css"/>
+<% end %>
+<% content_for :script do %>
+<script type="text/javascript" src="/javascripts/desktop/lib/jquery-ui-1.8.20.custom/js/jquery-ui-1.8.20.custom.min.js"/>
+<script type="text/javascript" src="/javascripts/desktop/src/base.js"></script>
+<script type="text/javascript" src="/javascripts/desktop/src/admin/features_config.js"></script>
+<% end %>
+<% if flash[:notice] %>
+<div style="display:none;" id="notice">
+	<p>
+		<%= flash[:notice] %>
+	</p>
+</div>
+<% end %>
 <div id="main" class="main">
 	<div class="main-inner">
 		<div class="container">
@@ -6,7 +21,7 @@
 				<div class="span10">
 					<div class="widget ">
 						<div class="widget-header">
-							<i class="icon-cogs"></i>
+							<i class="icon-money"></i>
 							<h3>Merchant</h3>
 						</div>
 						<!-- /widget-header -->
@@ -16,7 +31,7 @@
 									<li>
 										<a href="<%= merchant_path(@merchant) %>">Info</a>
 									</li>
-									<li>
+									<li class="active">
 										<a href="<%= features_config_merchant_path(@merchant) %>">Features Config</a>
 									</li>
 									<li>
@@ -28,14 +43,14 @@
 									<li>
 										<a href="<%= merchant_venues_path(@merchant) %>">Venues</a>
 									</li>
-									<li class="active">
+									<li>
 										<a href="<%= merchant_devices_path(@merchant) %>">Devices</a>
 									</li>
 								</ul>
 								<br>
 								<div class="tab-content">
-									<div class="tab-pane active" id="profile">
-										<%= render 'form' %>
+									<div class="tab-pane active" id="features">
+										<%= render 'features_config_form' %>
 									</div>
 								</div>
 							</div>
@@ -51,3 +66,7 @@
 	</div>
 	<!-- /main-inner -->
 </div>
+<!-- /main -->
+<!--
+<%= link_to 'Back', account_path %>
+-->

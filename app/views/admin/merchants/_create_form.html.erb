@@ -3,7 +3,7 @@
 	<%= f.input :type_id, :collection => MerchantType.values[I18n.locale], :input_html => { :class => 'input-medium' } %>
 	<%= f.input :visit_frequency_id, :collection => VisitFrequencyType.values[I18n.locale], :input_html => { :class => 'input-medium' } %>
 	<%= f.input :name, :input_html=>{:class => "input-xxlarge"} %>
-	<%= f.input :description, :as => :text, :input_html=>{:class => "input-xxlarge" }, :rows => 10 %>
+	<%= f.input :description, :as => :text, :input_html=>{ :rows => 10, :class => "input-xxlarge" } %>
 	<%= f.input :email, :input_html=>{:class => "input-xxlarge"} %>
 	<%= f.input :account_first_name, :input_html=>{:class => "input-xxlarge"} %>
 	<%= f.input :account_last_name, :input_html=>{:class => "input-xxlarge"} %>

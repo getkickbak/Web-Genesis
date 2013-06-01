@@ -278,6 +278,8 @@ en:
         destroy_failure: "Trouble with logout.\nPlease try again."  
       devices:
         get_encryption_key_failure: "Trouble with device initialization.\nPlease contact support."  
+      venues:
+        merchant_add_sku_data_failure: "Failed to update sku data."
   admin:
       configuration:
         update_success: "Configuration successfully updated."
@@ -289,9 +291,11 @@ en:
         update_success: "Merchant was successfully updated."
         min_end_date: "End date must be greater than start date."
         min_termination_date: "Termination date must be greater than or equal to today."
+        update_pos_config_success: "Merchant pos settings were successfully updated."
         update_payment_subscription_success: "Merchant payment subscription was successfully updated."
       venues:
-        update_success: "Venue was successfully updated."  
+        update_device_type_success: "Venue device type was successfully updated." 
+        update_pos_config_success: "Venue pos settings were successfully updated."
       devices:
         create_success: "Device was successfully created."
         update_success: "Device was successfully updated."  

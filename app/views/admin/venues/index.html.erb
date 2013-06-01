@@ -35,6 +35,9 @@
 										<a href="<%= merchant_path(@merchant) %>">Info</a>
 									</li>
 									<li>
+										<a href="<%= features_config_merchant_path(@merchant) %>">Features Config</a>
+									</li>
+									<li>
 										<a href="<%= payment_subscription_merchant_path(@merchant) %>">Payment Subscription</a>
 									</li>
 									<li>
@@ -64,6 +67,7 @@
 														<tr>
 															<th class="td-actions">Venue</th>
 															<th class="td-actions">Device Type</th>
+															<th class="td-actions">POS Config</th>
 															<th class="td-actions">Actions</th>
 														</tr>
 													</thead>
@@ -72,6 +76,7 @@
 														<tr>
 															<td class="td-actions"><%= venue.name %></td>
 															<td class="td-actions"><%= venue.device_type %></td>
+															<td class="td-actions"><%= venue.features_config.use_custom ? 'custom' : 'default' %></td>
 															<td class="td-actions"><!-- --> <%= link_to(edit_merchant_venue_path(@merchant, venue), :class=>"btn btn-small btn-warning", :title=>"edit") do %> <!-- --><i class="btn-icon-only icon-edit"></i><!-- --> <% end %> </td>
 														</tr>
 														<% end %>
