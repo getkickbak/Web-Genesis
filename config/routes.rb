@@ -156,6 +156,7 @@ Genesis::Application.routes.draw do
         match '/venues/share_photo' => 'venues#share_photo', :via => :post
         match '/venues/:id/explore' => 'venues#explore'
         match '/venues/:id/merchant_explore' => 'venues#merchant_explore'
+        match '/venues/:id/merchant_add_sku_data' => 'venues#merchant_add_sku_data', :via => :post
 
         match '/challenges' => 'challenges#index'
         match '/challenges/:id/start' => 'challenges#start'
@@ -169,7 +170,6 @@ Genesis::Application.routes.draw do
 
         match '/purchase_rewards/earn' => 'purchase_rewards#earn', :via => :post     
         match '/purchase_rewards/merchant_earn' => 'purchase_rewards#merchant_earn', :via => :post
-        match '/purchase_rewards/merchant_add_sku_data' => 'purchase_rewards#merchant_add_sku_data', :via => :post
         
         match '/devices/get_encryption_key' => 'devices#get_encryption_key'
       end

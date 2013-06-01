@@ -64,20 +64,27 @@ class Api::V1::VenuesController < Api::V1::BaseApplicationController
 
   def merchant_add_sku_data
     begin
-      SkuRecord.transaction do
-        @venue = Venue.get(params[:venue_id])
-        if @venue.nil?
-          raise "No such venue: #{params[:venue_id]}"
-        end
+      #SkuRecord.transaction do
+        if params[:venue_id]
+          @venue = Venue.get(params[:venue_id])
+          if @venue.nil?
+            raise "No such venue: #{params[:venue_id]}"
+          end
+          data = params[:data] ? params[:data].split('$')[1] : params[:data]
+        else
+          data = params[:data]  
+        end 
         cipher = Gibberish::AES.new(@venue.auth_code)
-        decrypted = cipher.dec(params[:data])
+        decrypted = cipher.dec(data)
         now = Time.now
         receipts = JSON.parse(decrypted, { :symbolize_names => true }) 
         txn_ids = []
         records = []
         receipts.each do |receipt|
-          txn_ids << receipt.txn_id
-          records << receipt.items
+          txn_ids << receipt[:txn_id]
+          receipt[:items].each do |item|
+            record << { :txn_id => receipt[:txn_id], :item => item }
+          end
         end
         id_to_reward_record = {}
         reward_records = EarnRewardRecord.all(:fields => [:id, :merchant_id, :customer_id, :user_id], :id => txn_ids)
@@ -85,18 +92,17 @@ class Api::V1::VenuesController < Api::V1::BaseApplicationController
           id_to_reward_record[record.id] = record
         end
         records.each do |record|
-          reward_record = id_to_reward_record[record.txn_id]
+          reward_record = id_to_reward_record[record[:txn_id]]
           DataMapper.repository(:default).adapter.execute(
             "INSERT INTO sku_records SET (sku_id, venue_id, txn_id, price, quantity, created_ts, update_ts, merchant_id, customer_id, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
-            record.name, params[:venue_id], record.txn_id, record.price, record.qty, now, now, reward_record.merchant_id, reward_record.customer_id, reward_record.user_id
+            record[:item][:name], params[:venue_id], record[:txn_id], record[:item][:price], record[:item][:qty], now, now, reward_record.merchant_id, reward_record.customer_id, reward_record.user_id
           )
         end
-        logger.info("Venue(#{@venue.id}) successfully added sku data")
         respond_to do |format|
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
           format.json { render :json => { :success => true } }
         end
-      end
+      #end
     rescue DataMapper::SaveFailureError => e  
       logger.error("Exception: " + e.resource.errors.inspect)  
       respond_to do |format|

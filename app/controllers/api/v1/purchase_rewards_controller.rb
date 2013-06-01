@@ -149,8 +149,9 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       # Performance Test
       start_time = Time.now
       logger.info("Merchant Earn Request Wait Starts at #{start_time.strftime("%a %m/%d/%y %H:%M:%S:%L %Z")}")
-      if (response = @request.is_status?(:complete))[:result]
-        @txn_id = response[:data][:txn_id]
+      response = @request.is_status?(:complete)
+      if response[:result]
+        @txn_id = JSON.parse(response[:data])[:txn_id]
         render :template => '/api/v1/purchase_rewards/earn' 
         logger.info("Venue(#{@venue.id}) successfully completed Request(#{@request.id})") 
       else
