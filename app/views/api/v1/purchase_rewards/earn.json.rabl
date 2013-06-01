@@ -26,7 +26,13 @@ if signed_in?
 		 			partial('api/v1/customer_rewards/base', :object => r)
 				end if defined? @prizes
 			),
-			:txn_id => @record.id
+			:txn_id => @txn_id
 		}.delete_if { |k,v| v.nil? }
+	end	
+else
+	node :metaData do
+		{
+			:txn_id => @txn_id
+		}
 	end	
 end

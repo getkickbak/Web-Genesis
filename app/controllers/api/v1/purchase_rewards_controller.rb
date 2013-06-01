@@ -150,11 +150,9 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       start_time = Time.now
       logger.info("Merchant Earn Request Wait Starts at #{start_time.strftime("%a %m/%d/%y %H:%M:%S:%L %Z")}")
       if (response = @request.is_status?(:complete))[:result]
-        logger.info("Venue(#{@venue.id}) successfully completed Request(#{@request.id})")
-        respond_to do |format|
-          #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => true } }
-        end  
+        @txn_id = response[:data][:txn_id]
+        render :template => '/api/v1/purchase_rewards/earn' 
+        logger.info("Venue(#{@venue.id}) successfully completed Request(#{@request.id})") 
       else
         logger.info("Venue(#{@venue.id}) failed to complete Request(#{@request.id})")
         respond_to do |format|
@@ -817,7 +815,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           @rewards = rewards
           @prizes = prizes
         end
-        Request.set_status(@request, :complete)
+        Request.set_status(@request, :complete, { :txn_id => @record.id }.to_json)
         if @current_user.facebook_auth
           posts = [ 
             FacebookPost.new(
@@ -875,6 +873,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         if referral_challenge
           UserAsyncMailer.referral_challenge_confirm_email(referrer.user.id, @current_user.id, @venue.id, referral_record.id).deliver
         end
+        @txn_id = @record.id
         render :template => '/api/v1/purchase_rewards/earn'
         logger.info(
           "User(#{@current_user.id}) successfully earned #{@reward_info[:points]} points, #{@reward_info[:signup_points]} signup points, #{@reward_info[:referral_points]} referral points, #{@reward_info[:birthday_points]} birthday points, #{@reward_info[:badge_points]} badge points, #{@reward_info[:prize_points]} prize points at Venue(#{@venue.id})"

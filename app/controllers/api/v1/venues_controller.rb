@@ -87,7 +87,7 @@ class Api::V1::VenuesController < Api::V1::BaseApplicationController
         records.each do |record|
           reward_record = id_to_reward_record[record.txn_id]
           DataMapper.repository(:default).adapter.execute(
-            "INSERT INTO sku_records SET sku_id = ?, venue_id = ?, txn_id = ?, price = ?, quantity = ?, created_ts = ?, update_ts = ?, merchant_id = ?, customer_id = ?, user_id = ?", 
+            "INSERT INTO sku_records SET (sku_id, venue_id, txn_id, price, quantity, created_ts, update_ts, merchant_id, customer_id, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
             record.name, params[:venue_id], record.txn_id, record.price, record.qty, now, now, reward_record.merchant_id, reward_record.customer_id, reward_record.user_id
           )
         end
