@@ -5,10 +5,13 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
    if (db['receiptFilters'])
    {
       WebSocket.prototype.receiptFilters = Ext.clone(db['receiptFilters']);
-      WebSocket.prototype.receiptFilters['grandtotal'] = new RegExp(db['receiptFilters']['grandtotal'], "i");
-      WebSocket.prototype.receiptFilters['subtotal'] = new RegExp(db['receiptFilters']['subtotal'], "i");
-      WebSocket.prototype.receiptFilters['item'] = new RegExp(db['receiptFilters']['item'], "i");
-      WebSocket.prototype.receiptFilters['table'] = new RegExp(db['receiptFilters']['table'], "i");
+      for (filter in db['receiptFilters'])
+      {
+         if (isNaN(filter))
+         {
+            WebSocket.prototype.receiptFilters[filter] = new RegExp(db['receiptFilters'][filter], "i");
+         }
+      }
    }
 
    WebSocket._connTask = Ext.create('Ext.util.DelayedTask');
@@ -296,6 +299,15 @@ Ext.define('Genesis.controller.server.Receipts',
    fixedTimeout : 1 * 60 * 1000,
    cleanupTimer : 4 * 60 * 60 * 1000,
    batteryTimer : 30 * 1000,
+   filter_config :
+   {
+
+      minLineLength : 5,
+      grandtotal : "\\s*\\bGrand Total\\b\\s+\\$(\\d+\.\\d{2})\\s*",
+      subtotal : "\\s*\\bSubtotal\\b\\s+\\$(\\d+\.\\d{2})\\s*",
+      item : "\\s*([\\s*\\w+]+)\\s+\\(?(\\d+(?=\\@\\$\\d+\\.\\d{2}\\))?).*?\\s+\\$(\\d+\\.\\d{2})",
+      table : "\\s*\\bTABLE\\b:\\s+(Bar\\s+\\d+)\\s*"
+   },
    _statusInfo :
    {
       isPlugged : false,
@@ -567,7 +579,7 @@ Ext.define('Genesis.controller.server.Receipts',
    // --------------------------------------------------------------------------
    posIntegrationHandler : function(metaData, isPosEnabled)
    {
-      var db = Genesis.db.getLocalDB();
+      var me = this, db = Genesis.db.getLocalDB();
 
       db['enablePosIntegration'] = metaData['features_config']['enable_pos'];
       db['isPosEnabled'] = ((isPosEnabled === undefined) || (isPosEnabled));
@@ -578,18 +590,21 @@ Ext.define('Genesis.controller.server.Receipts',
          });
          db['receiptFilters'] =
          {
-            minLineLength : filters['min_line_length'] || 5,
-            grandtotal : filters['grand_total'] || "\\s*\\bGrand Total\\b\\s+\\$(\\d+\.\\d{2})\\s*",
-            subtotal : filters['subtotal'] || "\\s*\\bSubtotal\\b\\s+\\$(\\d+\.\\d{2})\\s*",
-            item : filters['item'] || "\\s*([\\s*\\w+]+)\\s+\\(?(\\d+(?=\\@\\$\\d+\\.\\d{2}\\))?).*?\\s+\\$(\\d+\\.\\d{2})",
-            table : filters['table'] || "\\s*\\bTABLE\\b:\\s+(Bar\\s+\\d+)\\s*"
+            minLineLength : filters['min_line_length'] || me.filter_config['minLineLength'],
+            grandtotal : filters['grand_total'] || me.filter_config['grandtotal'],
+            subtotal : filters['subtotal'] || me.filter_config['subtotal'],
+            item : filters['item'] || me.filter_config['item'],
+            table : filters['table'] || me.filter_config['table']
          }
 
          WebSocket.prototype.receiptFilters = Ext.clone(db['receiptFilters']);
-         WebSocket.prototype.receiptFilters['grandtotal'] = new RegExp(db['receiptFilters']['grandtotal'], "i");
-         WebSocket.prototype.receiptFilters['subtotal'] = new RegExp(db['receiptFilters']['subtotal'], "i");
-         WebSocket.prototype.receiptFilters['item'] = new RegExp(db['receiptFilters']['item'], "i");
-         WebSocket.prototype.receiptFilters['table'] = new RegExp(db['receiptFilters']['table'], "i");
+         for (filter in db['receiptFilters'])
+         {
+            if (isNaN(filter))
+            {
+               WebSocket.prototype.receiptFilters[filter] = new RegExp(db['receiptFilters'][filter], "i");
+            }
+         }
          posConnect();
          console.debug("posIntegrationHandler - Enabled");
       }
