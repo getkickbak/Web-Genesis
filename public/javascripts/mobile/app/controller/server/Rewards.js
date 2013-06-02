@@ -334,7 +334,7 @@ Ext.define('Genesis.controller.server.Rewards',
                Ext.Viewport.setMasked(null);
                if (operation.wasSuccessful())
                {
-                  var metaData = proxy.getReader().metaData;
+                  var db = Genesis.db.getLocalDB(), metaData = proxy.getReader().metaData;
                   Ext.device.Notification.show(
                   {
                      title : me.earnPtsTitle,
@@ -350,24 +350,28 @@ Ext.define('Genesis.controller.server.Rewards',
                   //
                   if (db['enableReceiptUpload'] && db['isPosEnabled'])
                   {
-                     var x, receipts = [], receipt, estore = Ext.StoreMgr.get('EarnedReceiptStore');
-                     var insertStatement = "INSERT INTO Receipt (id, receipts, sync) VALUES (?, ?, 0)";
+                     var x, receipts = [], receipt, rstore = Ext.StoreMgr.get('ReceiptStore'), estore = Ext.StoreMgr.get('EarnedReceiptStore');
 
                      for (var i = 0; i < me.receiptSelected.length; i++)
                      {
-                        me.receiptSelected[i].set('tnId', metaData['txnid']);
+                        me.receiptSelected[i].set('txnId', metaData['txn_id']);
                         receipts.push(me.receiptSelected[i].getData(true));
+                        for (var j = 0; j < receipts[i]['items'].length; j++)
+                        {
+                           delete receipts[i]['items'][j]['id'];
+                        }
                      }
                      //
                      // Add to Earned store
                      //
                      estore.add(me.receiptSelected);
 
-                     _application.getController('server' + '.Receipts').worker.postMessage(
-                     {
-                        "cmd" : 'insertReceipts',
-                        "receipts" : receipts
-                     });
+                     _application.getController('server' + '.Receipts').fireEvent('insertReceipts', receipts);
+                     //
+                     // Refresh Store
+                     //
+                     me.getReceiptsList().deselectAll();
+                     rstore.filter();
                   }
                }
                else

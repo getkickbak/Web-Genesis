@@ -1028,7 +1028,7 @@ Ext.define('Genesis.controller.ControllerBase',
                //
                // Drop Table
                //
-               tx.executeSql(dropStatement, [], function()
+               tx.executeSql(dropStatement, [], function(tx, result)
                {
                   console.debug("Successfully drop KickBak-Customers Table");
                }, function(tx, error)
@@ -1038,7 +1038,7 @@ Ext.define('Genesis.controller.ControllerBase',
                //
                // Create Table
                //
-               tx.executeSql(createStatement, [], function()
+               tx.executeSql(createStatement, [], function(tx, result)
                {
                   console.debug("Successfully created/retrieved KickBak-Customers Table");
                }, function(tx, error)

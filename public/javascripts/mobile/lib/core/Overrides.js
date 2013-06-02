@@ -701,28 +701,17 @@ Genesis.db =
       };
 
       var dropStatement = "DROP TABLE Customer";
-      var createStatement = "CREATE TABLE IF NOT EXISTS Customer (id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT)";
       var db = openDatabase('KickBak', 'CustomerStore', "1.0", 5 * 1024 * 1024);
 
       db.transaction(function(tx)
       {
          //
-         // Create Table
-         //
-         tx.executeSql(createStatement, [], function()
-         {
-            console.debug("Successfully created/retrieved KickBak-Customers Table");
-         }, function(tx, error)
-         {
-            console.debug("Failed to create KickBak-Customers Table : " + error.message);
-         });
-         //
          // Drop Table
          //
-         tx.executeSql(dropStatement, [], function()
+         tx.executeSql(dropStatement, [], function(tx, result)
          {
             console.debug("ResetStorage --- Successfully drop KickBak-Customers Table");
-         }, function()
+         }, function(tx, error)
          {
             console.debug("Failed to drop KickBak-Customers Table : " + error.message);
          });

@@ -274,11 +274,11 @@ Ext.define('Genesis.controller.server.Viewport',
             var metaData = proxy.getReader().metaData;
             if (operation.wasSuccessful() && metaData)
             {
-               metaData['feature_config'] = ['feature_config'] ||
+               metaData['features_config'] = metaData['features_config'] ||
                {
                };
-               //metaData['feature_config']['enable_pos'] = true;
-               //metaData['feature_config']['enable_receipt_upload'] = true;
+               //console.debug("metaData - " + Ext.encode(metaData));
+               console.debug("features_config - " + Ext.encode(metaData['features_config']));
 
                viewport.setVenue(record);
                viewport.setMetaData(metaData);

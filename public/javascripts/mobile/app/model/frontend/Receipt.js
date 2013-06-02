@@ -19,7 +19,7 @@ Ext.define('Genesis.model.frontend.Receipt',
    id : 'Receipt',
    config :
    {
-      fields : ['id', 'txId',
+      fields : ['id', 'tnxId',
       {
          name : 'subtotal',
          type : 'float'

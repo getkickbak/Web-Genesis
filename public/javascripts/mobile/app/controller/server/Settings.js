@@ -136,43 +136,18 @@ Ext.define('Genesis.controller.server.Settings',
    onDeviceResetTap : function(b, e)
    {
       var me = this, viewport = me.getViewPortCntlr();
-      var dropStatement = "DROP TABLE Receipt";
-      var db = openDatabase('KickBak', 'ReceiptStore', "1.0", 5 * 1024 * 1024);
 
       me.self.playSoundFile(viewport.sound_files['clickSound']);
       Ext.device.Notification.show(
       {
          title : 'Device Reset Confirmation',
          message : me.proceedToResetDeviceeMsg,
-         buttons : ['Restart', 'Cancel'],
+         buttons : ['Confirm', 'Cancel'],
          callback : function(btn)
          {
-            if (btn.toLowerCase() == 'restart')
+            if (btn.toLowerCase() == 'confirm')
             {
-               try
-               {
-                  db.transaction(function(tx)
-                  {
-                     //
-                     // Drop Table
-                     //
-                     tx.executeSql(dropStatement, [], function()
-                     {
-                        console.debug("onDeviceResetTap --- Successfully drop KickBak-Receipt Table");
-                        //
-                        // Restart because we can't continue without Console Setup data
-                        //
-                        navigator.app.exitApp();
-                     }, function()
-                     {
-                        console.debug("Failed to drop KickBak-Receipt Table : " + error.message);
-                        navigator.app.exitApp();
-                     });
-                  });
-               }
-               catch(e)
-               {
-               }
+               _application.getController('server' + '.Receipts').fireEvent('resetReceipts');
             }
          }
       });

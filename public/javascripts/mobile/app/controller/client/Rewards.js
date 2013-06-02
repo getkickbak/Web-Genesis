@@ -567,6 +567,7 @@ Ext.define('Genesis.controller.client.Rewards',
       {
          var send = function()
          {
+         	var viewport = me.getViewPortCntlr();
             if (!me._actions)
             {
                me._actions = Ext.create('Genesis.view.widgets.PopupItemDetail',
@@ -605,23 +606,6 @@ Ext.define('Genesis.controller.client.Rewards',
             }
             viewport.popUpInProgress = true;
             me._actions.show();
-            /*
-             Ext.device.Notification.show(
-             {
-             title : 'Earn Reward Points',
-             message : me.showToServerMsg(),
-             buttons : ['Proceed', 'Cancel'],
-             callback : function(btn)
-             {
-             if (btn.toLowerCase() == 'proceed')
-             {
-             //var earnPts = Ext.bind(me.onEarnPtsSC, me);
-             //me.checkReferralPrompt(earnPts, earnPts);
-             me.fireEvent('rewarditem', notUseGeolocation);
-             }
-             }
-             });
-             */
          };
 
          if (Genesis.fn.isNative())
