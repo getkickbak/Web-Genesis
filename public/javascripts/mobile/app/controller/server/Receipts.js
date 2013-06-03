@@ -317,9 +317,8 @@ Ext.define('Genesis.controller.server.Receipts',
          'retrieveReceipts' : 'onRetrieveReceipts'
       }
    },
-   mobileTimeout : 1 * 60 * 1000,
-   //fixedTimeout : 4 * 60 * 60 * 1000,
-   fixedTimeout : 1 * 60 * 1000,
+   mobileTimeout : ((debugMode) ? 0.25 : 1) * 60 * 1000,
+   fixedTimeout : ((debugMode) ? 0.25 : 4 * 60) * 60 * 1000,
    cleanupTimer : 4 * 60 * 60 * 1000,
    batteryTimer : 30 * 1000,
    filter_config :
