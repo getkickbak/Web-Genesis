@@ -7,7 +7,7 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
       WebSocket.prototype.receiptFilters = Ext.clone(db['receiptFilters']);
       for (filter in db['receiptFilters'])
       {
-         if (isNaN(filter))
+         if (isNaN(db['receiptFilters'][filter]))
          {
             WebSocket.prototype.receiptFilters[filter] = new RegExp(db['receiptFilters'][filter], "i");
          }
@@ -49,6 +49,7 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
                {
                   matchFlag |= 0x0001;
                   receipt['subtotal'] = match[1];
+                  continue;
                }
 
                match = me.receiptFilters['grandtotal'].exec(text);
@@ -56,6 +57,7 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
                {
                   matchFlag |= 0x0010;
                   receipt['price'] = match[1];
+                  continue;
                }
 
                match = me.receiptFilters['table'].exec(text);
@@ -63,6 +65,7 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
                {
                   matchFlag |= 0x0100;
                   receipt['table'] = match[1];
+                  continue;
                }
 
                match = me.receiptFilters['item'].exec(text);
@@ -82,6 +85,7 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
                      maxItemPrice = currItemPrice;
                      receipt['title'] = match[1].trim();
                   }
+                  continue;
                }
             }
          }
@@ -238,7 +242,7 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
             {
                var timeout = wssocket.reconnectTimer;
                console.debug("WebSocketClient::onclose, 5sec before retrying ...");
-               delete WebSocket.store[event._target];
+               //delete WebSocket.store[event._target];
                wssocket = null;
                //
                // Reconnect to server continuously
@@ -619,11 +623,12 @@ Ext.define('Genesis.controller.server.Receipts',
          WebSocket.prototype.receiptFilters = Ext.clone(db['receiptFilters']);
          for (filter in db['receiptFilters'])
          {
-            if (isNaN(filter))
+            if (isNaN(db['receiptFilters'][filter]))
             {
                WebSocket.prototype.receiptFilters[filter] = new RegExp(db['receiptFilters'][filter], "i");
             }
          }
+         console.debug("receiptFilters - " + Ext.encode(db['receiptFilters']));
          posConnect();
          console.debug("posIntegrationHandler - Enabled");
       }
