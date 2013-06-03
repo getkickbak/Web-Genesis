@@ -1,17 +1,22 @@
 // add back button listener
-var onBackKeyDown, wssocket, posConnect, posDisconnect, enablePosIntegration;
-Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Receipt', 'Ext.device.Connection', 'Genesis.controller.ControllerBase'], function()
+var onBackKeyDown = Ext.emptyFn;
+Ext.require(['Ext.device.Connection', 'Genesis.controller.ControllerBase'], function()
 {
    onBackKeyDown = function(e)
    {
-      var viewport = _application.getController('server.Viewport');
 
       //e.preventDefault();
 
       //
       // Disable BackKey if something is in progress or application is not instantiated
       //
-      if (!_application || Ext.Viewport.getMasked() || !viewport || viewport.popViewInProgress)
+      if (!_application || Ext.Viewport.getMasked())
+      {
+         return;
+      }
+
+      var viewport = _application.getController('server.Viewport');
+      if (!viewport || viewport.popViewInProgress)
       {
          return;
       }
@@ -56,213 +61,14 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
          }
       }
    };
-
-   wssocket = null;
-   enablePosIntegration = false;
-   posConnect = function(i)
-   {
-      if (enablePosIntegration)
-      {
-         var scheme = 'ws://';
-         var host = '192.168.159.1';
-         var port = '443';
-
-         i = i || 0;
-         if (!wssocket && Ext.device.Connection.isOnline())
-         {
-            var url = scheme + host + ':' + port + "/pos";
-            wssocket = new WebSocket(url, 'json');
-            //wssocket.binaryType = 'arraybuffer';
-            wssocket.onopen = function(event)
-            {
-               console.debug("WebSocketClient::onopen - \r\n" + Ext.encode(event));
-               wssocket.send("get_receipts");
-            };
-            wssocket.onmessage = function(event)
-            {
-               try
-               {
-
-                  var inputStream = Ext.decode(event.data);
-                  var cmd = inputStream['code'];
-                  //
-                  // Setup calculation for time drift
-                  //
-                  Genesis.fn.systemTime = inputStream['systemTime'] * 1000;
-                  Genesis.fn.clientTime = new Date().getTime();
-
-                  switch (cmd)
-                  {
-                     case 'receipt_incoming' :
-                     {
-                        console.debug("receipt_incoming ...")
-                        wssocket.receiptIncomingHandler(inputStream['receipts']);
-                        break;
-                     }
-                     case 'receipt_response' :
-                     {
-                        console.debug("receipt_response ...")
-                        wssocket.receiptResponseHandler(inputStream['receipts']);
-                        Ext.Viewport.setMasked(null);
-                        break;
-                     }
-                     default:
-                        break;
-                  }
-               }
-               catch(e)
-               {
-                  console.debug("Exception while parsing Incoming Receipt ...\n" + Ext.encode(e));
-               }
-            };
-            wssocket.onerror = function(event)
-            {
-               console.debug("WebSocketClient::onerror - \r\n" + Ext.encode(event));
-            };
-            wssocket.onclose = function(event)
-            {
-               Ext.Viewport.setMasked(
-               {
-                  xtype : 'loadmask',
-                  message : Genesis.controller.ControllerBase.prototype.lostPosConnectionMsg
-               });
-               console.debug("WebSocketClient::onclose - \r\n" + Ext.encode(event));
-               delete WebSocket.store[event._target];
-               wssocket = null;
-               //
-               // Reconnect to server continuously
-               //
-               Ext.defer(posConnect, 5 * 1000, [++i]);
-            };
-
-            console.debug("WebSocketClient::posConnect(" + url + ")");
-         }
-      }
-      else if (Ext.Viewport)
-      {
-         Ext.Viewport.setMasked(null);
-      }
-   };
-   posDisconnect = function()
-   {
-      if (enablePosIntegration)
-      {
-         if (wssocket && wssocket.socket)
-         {
-            wssocket.socket.close();
-            console.debug("WebSocketClient::posDisconnect called");
-         }
-      }
-   };
-
-   WebSocket.prototype.minLineLength = 10;
-   WebSocket.prototype.grandtotalRegexp = new RegExp("\\s*\\bGrand Total\\b\\s+\\$(\\d+\.\\d{2})\\s*", "i");
-   WebSocket.prototype.subtotalRegexp = new RegExp("\\s*\\bSubtotal\\b\\s+\\$(\\d+\.\\d{2})\\s*", "i");
-   WebSocket.prototype.itemRegexp = new RegExp("([\\s*\\w+]+)\\s+(\\d+)\\s+\\$(\\d+\\.\\d{2})\\s*", "i");
-
-   WebSocket.prototype.createReceipt = function(receiptText)
-   {
-      var i, match, currItemPrice = 0, maxItemPrice = 0, id = receiptText[0];
-
-      receiptText.splice(0, 1);
-      var receipt =
-      {
-         id : id,
-         subtotal : currItemPrice.toFixed(2),
-         price : currItemPrice.toFixed(2),
-         title : '',
-         earned : false,
-         receipt : Ext.encode(receiptText),
-         items : []
-      }
-
-      //console.debug("WebSocketClient::createReceipt[" + Genesis.fn.convertDateFullTime(new Date(receipt['id']*1000)) + "]");
-      for ( i = 0; i < receiptText.length; i++)
-      {
-         var text = receiptText[i];
-         if (text.length > this.minLineLength)
-         {
-            match = this.subtotalRegexp.exec(text);
-            if (match)
-            {
-               receipt['subtotal'] = match[1];
-            }
-
-            match = this.grandtotalRegexp.exec(text);
-            if (match)
-            {
-               receipt['price'] = match[1];
-            }
-
-            match = this.itemRegexp.exec(text);
-            if (match)
-            {
-               var qty = Number(match[2]);
-               var currItemPrice = (Number(match[3]) / qty);
-               receipt['items'].push(new Ext.create('Genesis.model.frontend.ReceiptItem',
-               {
-                  qty : qty,
-                  price : currItemPrice,
-                  name : match[1].trim()
-               }));
-               if (Math.max(currItemPrice, maxItemPrice) == currItemPrice)
-               {
-                  maxItemPrice = currItemPrice;
-                  receipt['title'] = match[1].trim();
-               }
-            }
-         }
-      }
-      //console.debug("WebSocketClient::createReceipt");
-      var rc = Ext.create("Genesis.model.frontend.Receipt", receipt);
-      rc['items']().add(receipt['items']);
-      return rc;
-   };
-   WebSocket.prototype.receiptIncomingHandler = function(receipts, supress)
-   {
-      var receiptsList = [];
-      //console.debug("WebSocketClient::onmessage - " + event);
-      for (var i = 0; i < receipts.length; i++)
-      {
-         var receipt = receiptsList[i] = this.createReceipt(receipts[i]);
-
-         //console.debug("WebSocketClient::receiptIncomingHandler");
-         if (!supress)
-         {
-            console.debug("WebSocketClient::receiptIncomingHandler - \n" + //
-            "Date: " + Genesis.fn.convertDateFullTime(new Date(receipt.get('id') * 1000)) + '\n' + //
-            "Subtotal: $" + receipt.get('subtotal').toFixed(2) + '\n' + //
-            "Price: $" + receipt.get('price').toFixed(2) + '\n' + //
-            "Earned: " + receipt.get('earned') + '\n' + //
-            "Title: " + receipt.get('title') + '\n' + //
-            "Receipt: [\n" + Ext.decode(receipt.get('receipt')) + "\n]" + //
-            "");
-         }
-      }
-
-      if (!supress)
-      {
-         Ext.StoreMgr.get('ReceiptStore').add(receiptsList);
-      }
-
-      return receiptsList;
-   };
-   WebSocket.prototype.receiptResponseHandler = function(receipts)
-   {
-      var receiptsList = this.receiptIncomingHandler(receipts, true);
-      Ext.StoreMgr.get('ReceiptStore').setData(receiptsList);
-
-      console.debug("WebSocketClient::receiptResponseHandler - Processed " + receiptsList.length + " receipts");
-   };
 });
 
 Ext.define('Genesis.controller.server.Viewport',
 {
    extend : 'Genesis.controller.ViewportBase',
-   requires : ['Genesis.model.frontend.Receipt', 'Ext.dataview.List', 'Ext.XTemplate', 'Ext.util.DelayedTask'],
+   requires : ['Genesis.model.frontend.Receipt', 'Ext.dataview.List', 'Ext.XTemplate'],
    config :
    {
-      models : ['PurchaseReward'],
       customer : null,
       venue : null,
       metaData : null,
@@ -273,13 +79,6 @@ Ext.define('Genesis.controller.server.Viewport',
          metaData : null
       },
       activeController : null
-   },
-   mobileTimeout : 1 * 60 * 1000,
-   fixedTimeout : 1 * 60 * 1000,
-   _statusInfo :
-   {
-      isPlugged : false,
-      level : 0
    },
    setupInfoMissingMsg : 'Trouble initializing Merchant Device',
    licenseKeyInvalidMsg : 'Missing License Key',
@@ -295,6 +94,7 @@ Ext.define('Genesis.controller.server.Viewport',
    updateMetaDataInfo : function(metaData)
    {
       var me = this;
+
       try
       {
          //
@@ -360,6 +160,7 @@ Ext.define('Genesis.controller.server.Viewport',
                      licenseKey['r' + venueId] = licenseKey['p' + venueId] = records[0].getId();
 
                      me.persistSyncStores('LicenseStore');
+                     Genesis.db.resetStorage();
                      me.initializeConsole(callback);
                   }
                   else
@@ -443,34 +244,12 @@ Ext.define('Genesis.controller.server.Viewport',
          autoLoad : false
       });
 
-      Ext.regStore('ReceiptStore',
-      {
-         model : 'Genesis.model.frontend.Receipt',
-         autoLoad : false,
-         //
-         // Receipts sorted based on time
-         //
-         sorters : [
-         {
-            property : 'id',
-            direction : 'DESC'
-         }],
-         //
-         // Receipts that have not been redeemed
-         //
-         filters : [
-         {
-            filterFn : function(item)
-            {
-               return (item.get('earned') == false);
-            }
-         }]
-      });
       me.refreshLicenseKey(posConnect);
    },
    initializeConsole : function(callback)
    {
       var me = this, viewport = me, info = viewport.getCheckinInfo(), venueId = Genesis.fn.getPrivKey('venueId'), proxy = Venue.getProxy();
+      var db = Genesis.db.getLocalDB();
       var params =
       {
          'venue_id' : venueId
@@ -487,14 +266,28 @@ Ext.define('Genesis.controller.server.Viewport',
          scope : me,
          callback : function(record, operation)
          {
+            if (!db['enablePosIntegration'] || !db['isPosEnabled'])
+            {
+               Ext.Viewport.setMasked(null);
+            }
+
             var metaData = proxy.getReader().metaData;
             if (operation.wasSuccessful() && metaData)
             {
+               metaData['features_config'] = metaData['features_config'] ||
+               {
+               };
+               //console.debug("metaData - " + Ext.encode(metaData));
+               console.debug("features_config - " + Ext.encode(metaData['features_config']));
+
                viewport.setVenue(record);
                viewport.setMetaData(metaData);
                info.venue = viewport.getVenue();
                info.metaData = viewport.getMetaData();
+
                me.fireEvent('updatemetadata', metaData);
+               me.getApplication().getController('server' + '.Receipts').fireEvent('updatemetadata', metaData);
+
                console.debug("Successfully acquired dataset for Venue(" + venueId + ")");
                //console.debug("Record[" + Ext.encode(record) + "]");
                //console.debug("MetaData[" + Ext.encode(metaData) + "]");
@@ -637,217 +430,5 @@ Ext.define('Genesis.controller.server.Viewport',
          Genesis.fn.printProximityConfig();
          window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
       }
-
-      me.initListeners();
-
-   },
-   batteryStatusFn : function(info)
-   {
-      var me = this, displayMode = Genesis.db.getLocalDB["displayMode"];
-
-      info = info || me._statusInfo;
-      console.log("Device is " + ((info.isPlugged) ? "Plugged" : "Unplugged") + ", Battery " + info.level + "%");
-
-      var plugStatusChanged = me._statusInfo.isPlugged !== info.isPlugged;
-
-      if (!info.isPlugged)
-      {
-         if (me._syncTask)
-         {
-            me._syncTask.cancel();
-         }
-      }
-      else
-      {
-         //
-         // Minimum of 3% Battery
-         //
-         if (Ext.device && //
-         (plugStatusChanged || (me._statusInfo === info)) && //
-         (info.level >= 3))
-         {
-            switch (displayMode)
-            {
-               case 'Fixed' :
-               {
-                  me.syncReceiptDB(me.fixedTimeout);
-                  break;
-               }
-               case 'Mobile':
-               default :
-                  me.syncReceiptDB(me.mobileTimeout);
-                  break;
-            }
-         }
-      }
-      me._statusInfo = info;
-   },
-   initListeners : function()
-   {
-      var me = this;
-      window.addEventListener("batterystatus", function(info)
-      {
-         if (!me._hyteresisTask)
-         {
-            me._hyteresisTask = Ext.create('Ext.util.DelayedTask', me.batteryStatusFn);
-         }
-         me._hyteresisTask.delay(30 * 1000, me.batteryStatusFn, me, [info]);
-      }, false);
-      window.addEventListener("batterylow", function(info)
-      {
-         if (Ext.device)
-         {
-            Ext.device.Notification.show(
-            {
-               title : 'Battery Level Low',
-               messsage : 'Battery is at ' + info.level + '%'
-            });
-            Ext.device.Notification.vibrate();
-         }
-      }, false);
-      window.addEventListener("batterycritical", function(info)
-      {
-         if (Ext.device)
-         {
-            Ext.device.Notification.show(
-            {
-               title : 'Battery Level Critical',
-               messsage : 'Battery is at ' + info.level + '%' + '\n' + //
-               'Recharge Soon!'
-            });
-            Ext.device.Notification.vibrate();
-            Ext.device.Notification.beep();
-         }
-      }, false);
-   },
-   uploadReceipts : function(receipts)
-   {
-      var me = this, proxy = PurchaseReward.getProxy();
-      var params =
-      {
-         version : Genesis.constants.serverVersion,
-         'venue_id' : Genesis.fn.getPrivKey('venueId'),
-         data :
-         {
-            "receipts" : receipts,
-            "type" : 'earn_points',
-            'expiry_ts' : new Date().addHours(3).getTime()
-         }
-      };
-      params['data'] = me.self.encryptFromParams(params['data']);
-
-      PurchaseReward['setMerchantReceiptUploadURL']();
-      PurchaseReward.load(1,
-      {
-         addRecords : true, //Append data
-         scope : me,
-         jsonData :
-         {
-         },
-         doNotRetryAttempt : false,
-         params : params,
-         callback : function(record, operation)
-         {
-            Ext.Viewport.setMasked(null);
-            if (operation.wasSuccessful())
-            {
-               var createStatement = "CREATE TABLE IF NOT EXISTS Receipt (id INTEGER PRIMARY KEY, receipts TEXT)";
-               var deleteStatement = "DELETE FROM Receipt WHERE id=?";
-               var db = openDatabase('KickBak', 'ReceiptStore', "1.0", 5 * 1024 * 1024);
-               db.transaction(function(tx)
-               {
-                  //
-                  // Create Table
-                  //
-                  tx.executeSql(createStatement, [], function()
-                  {
-                     console.debug("Successfully created/retrieved KickBak-Receipt Table");
-                  }, function(tx, error)
-                  {
-                     console.debug("Failed to create KickBak-Receipt Table : " + error.message);
-                  });
-                  //
-                  // Retrieve Customers
-                  //
-                  for (var i = 0; i < receipts.length; i++)
-                  {
-                     tx.executeSql(deleteStatement, [receipts[i]['id']], function()
-                     {
-                     }, function(tx, error)
-                     {
-                     });
-                  }
-                  console.debug("uploadReceipts --- Removed " + receipts.length + "Receipts from  KickBak-Receipt Table");
-               });
-            }
-            else
-            {
-               proxy.supressErrorsPopup = true;
-               proxy.quiet = false;
-               //
-               // Try again at next interval
-               //
-               syncReceiptDB();
-            }
-         }
-      });
-   },
-   syncReceiptDB : function(duration)
-   {
-      var me = this;
-      //
-      // Wait for time to expire before Synchronizing Receipt Database with server
-      //
-      if (!me._syncTask)
-      {
-         me._syncTask = Ext.create('Ext.util.DelayedTask', function()
-         {
-            var createStatement = "CREATE TABLE IF NOT EXISTS Receipt (id INTEGER PRIMARY KEY, receipts TEXT)";
-            var selectAllStatement = "SELECT * FROM Receipt";
-            var db = openDatabase('KickBak', 'ReceiptStore', "1.0", 5 * 1024 * 1024);
-            db.transaction(function(tx)
-            {
-               //
-               // Create Table
-               //
-               tx.executeSql(createStatement, [], function()
-               {
-                  console.debug("Successfully created/retrieved KickBak-Receipt Table");
-               }, function(tx, error)
-               {
-                  console.debug("Failed to create KickBak-Receipt Table : " + error.message);
-               });
-               //
-               // Retrieve Customers
-               //
-               tx.executeSql(selectAllStatement, [], function(tx, result)
-               {
-                  var items = [];
-                  var dataset = result.rows;
-                  for ( j = 0, item = null; j < dataset.length; j++)
-                  {
-                     item = dataset.item(j);
-                     console.debug("TxId - " + item['id'])
-                     items.push(
-                     {
-                        id : item['id'],
-                        receipts : Ext.decode(item['receipts'])
-                     });
-                  }
-                  console.debug("syncReceiptDB  --- Found " + items.length + " records in SQL Receipt Database");
-
-                  if (items.length > 0)
-                  {
-                     me.uploadReceipts(items);
-                  }
-               }, function(tx, error)
-               {
-                  console.debug("No Receipt Table found in SQL Database : " + error.message);
-               });
-            });
-         });
-      }
-      me._syncTask.delay(duration);
-      console.debug("syncReceiptDB - Synchronize Database after " + (duration / 1000) + "sec of idle");
    }
 });

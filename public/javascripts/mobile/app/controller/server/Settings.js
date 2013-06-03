@@ -41,6 +41,10 @@ Ext.define('Genesis.controller.server.Settings',
          //
          // Settings Page
          //
+         'serversettingspageview listfield[name=resetdevice]' :
+         {
+            clearicontap : 'onDeviceResetTap'
+         },
          'serversettingspageview listfield[name=license]' :
          {
             clearicontap : 'onRefreshLicenseTap'
@@ -90,6 +94,7 @@ Ext.define('Genesis.controller.server.Settings',
    tagIdLength : 8,
    writeTagEnabled : false,
    proceedToUpdateLicenseMsg : 'Please confirm to proceed with License Update',
+   proceedToResetDeviceeMsg : 'Please confirm to Reset Device',
    noLicenseKeyScannedMsg : 'No License Key was found!',
    createTagMsg : function()
    {
@@ -128,6 +133,25 @@ Ext.define('Genesis.controller.server.Settings',
    // --------------------------------------------------------------------------
    // Button Handlers
    // --------------------------------------------------------------------------
+   onDeviceResetTap : function(b, e)
+   {
+      var me = this, viewport = me.getViewPortCntlr();
+
+      me.self.playSoundFile(viewport.sound_files['clickSound']);
+      Ext.device.Notification.show(
+      {
+         title : 'Device Reset Confirmation',
+         message : me.proceedToResetDeviceeMsg,
+         buttons : ['Confirm', 'Cancel'],
+         callback : function(btn)
+         {
+            if (btn.toLowerCase() == 'confirm')
+            {
+               _application.getController('server' + '.Receipts').fireEvent('resetReceipts');
+            }
+         }
+      });
+   },
    onRefreshLicenseTap : function(b, e, eOpts)
    {
       var me = this, viewport = me.getViewPortCntlr();
@@ -275,14 +299,18 @@ Ext.define('Genesis.controller.server.Settings',
    },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      var me = this, form = me.getSettingsPage(), displayMode = Genesis.db.getLocalDB()["displayMode"] || 'Mobile';
-      
+      var me = this, form = me.getSettingsPage(), db = Genesis.db.getLocalDB();
+
       me.getMerchantDevice().setLabel(Genesis.fn.getPrivKey('venue'));
-      me.getUtilitiesContainer()[me.writeTagEnabled ? 'show' : 'hide']();      
+      me.getUtilitiesContainer()[me.writeTagEnabled ? 'show' : 'hide']();
       form.setValues(
       {
-         displayMode : displayMode
+         posMode : ((db['isPosEnabled'] === undefined) || (db['isPosEnabled'])) ? 1 : 0,
+         displayMode : db["displayMode"] || 'Mobile'
       });
+      var field = form.query('togglefield[tag=posMode]')[0];
+      field.setReadOnly(db['enablePosIntegration'] ? false : true);
+      field[(db['enablePosIntegration']) ? 'enable' : 'disable']();
    },
    onDeactivate : function(activeItem, c, oldActiveItem, eOpts)
    {

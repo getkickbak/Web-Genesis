@@ -1,7 +1,7 @@
 Ext.define('Genesis.view.server.Rewards',
 {
    extend : 'Genesis.view.ViewBase',
-   requires : ['Ext.Toolbar', 'Ext.field.Text', 'Genesis.view.widgets.Calculator', 'Ext.dataview.List', 'Ext.XTemplate', 'Ext.plugin.ListPaging', 'Ext.plugin.PullRefresh'],
+   requires : ['Ext.Toolbar', 'Ext.field.Select', 'Ext.field.Text', 'Genesis.view.widgets.Calculator', 'Ext.dataview.List', 'Ext.XTemplate', 'Ext.plugin.ListPaging', 'Ext.plugin.PullRefresh'],
    alias : 'widget.serverrewardsview',
    config :
    {
@@ -38,19 +38,33 @@ Ext.define('Genesis.view.server.Rewards',
    },
    createView : function()
    {
-      var me = this, itemHeight = 1 + Genesis.constants.defaultIconSize() + 2 * Genesis.fn.calcPx(0.65, 1);
-      var toolbarBottom = function(tag)
+      var me = this, itemHeight = 1 + Genesis.constants.defaultIconSize() + 2 * Genesis.fn.calcPx(0.65, 1), store = Ext.StoreMgr.get('ReceiptStore'), db = Genesis.db.getLocalDB();
+      var isPosEnabled = (db['enablePosIntegration'] && db['isPosEnabled']);
+      var toolbarBottom = function(tag, hideTb)
       {
          return (
             {
                docked : 'bottom',
                cls : 'toolbarBottom',
                tag : tag,
+               hidden : hideTb,
                xtype : 'container',
                layout :
                {
                   type : 'vbox',
                   pack : 'center'
+               },
+               showAnimation :
+               {
+                  type : 'slideIn',
+                  duration : 500,
+                  direction : 'up'
+               },
+               hideAnimation :
+               {
+                  type : 'slideOut',
+                  duration : 500,
+                  direction : 'down'
                },
                items : [
                {
@@ -83,7 +97,6 @@ Ext.define('Genesis.view.server.Rewards',
          return;
       }
 
-      var store = Ext.StoreMgr.get('ReceiptStore');
       me.getPreRender().push(Ext.create('Ext.Container',
       {
          xtype : 'container',
@@ -103,7 +116,7 @@ Ext.define('Genesis.view.server.Rewards',
          {
             hidden : true
          },
-         activeItem : (store.getCount() > 0) ? 2 : 0,
+         activeItem : (isPosEnabled) ? 2 : 0,
          items : [
          // -------------------------------------------------------------------
          // Reward Calculator
@@ -143,6 +156,41 @@ Ext.define('Genesis.view.server.Rewards',
             tag : 'posSelect',
             layout : 'hbox',
             items : [
+            {
+               docked : 'top',
+               hidden : (store.getCount() <= 0),
+               xtype : 'selectfield',
+               labelWidth : '50%',
+               label : 'Receipts by Table',
+               tag : 'tableFilter',
+               name : 'tableFilter',
+               margin : '0 0 0.8em 0',
+               usePicker : true,
+               store : 'TableStore',
+               displayField : 'id',
+               valueField : 'id',
+               showAnimation :
+               {
+                  type : 'slideIn',
+                  duration : 500,
+                  direction : 'down'
+
+               },
+               hideAnimation :
+               {
+                  type : 'slideOut',
+                  duration : 500,
+                  direction : 'up'
+               },
+               defaultPhonePickerConfig :
+               {
+                  height : (12.5 * 1.5) + 'em',
+                  doneButton :
+                  {
+                     ui : 'normal'
+                  }
+               }
+            },
             {
                xtype : 'list',
                flex : 1,
@@ -197,7 +245,7 @@ Ext.define('Genesis.view.server.Rewards',
                   }
                }),
                onItemDisclosure : Ext.emptyFn
-            }, toolbarBottom('tbBottomSelection')]
+            }, toolbarBottom('tbBottomSelection', (store.getCount() <= 0))]
          },
          // -------------------------------------------------------------------
          // POS Receipt Detail
@@ -234,7 +282,7 @@ Ext.define('Genesis.view.server.Rewards',
                      return receipt;
                   }
                })
-            }, toolbarBottom('tbBottomDetail')]
+            }, toolbarBottom('tbBottomDetail', false)]
          }]
       }));
    },

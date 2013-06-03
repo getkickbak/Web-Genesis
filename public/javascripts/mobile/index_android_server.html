@@ -29,6 +29,7 @@
       <script type="text/javascript" charset="utf-8" src="lib/core/phonegap-nfc.js"></script>
 
       <script type="text/javascript" src="lib/sencha-touch-all.js"></script>
+      <script type="text/javascript" src="worker/server.js"></script>
       <!--
       Phone Gap Libs
       -->
@@ -114,7 +115,7 @@
                if (Ext.device)
                {
                   console.log("App is Paused");
-                  posDisconnect();
+                  //posDisconnect();
                }
             }, false);
 
@@ -123,7 +124,7 @@
                if (Ext.device)
                {
                   console.log("App is Resumed");
-                  posConnect();
+                  //posConnect();
                }
             }, false);
             document.addEventListener("deviceready", function()
@@ -152,8 +153,10 @@
             Ext.application(
             {
                profiles : ['Android'],
-               views : ['Document', 'server.Rewards', 'server.Redemptions', 'server.MerchantAccount', 'server.MainPage', 'widgets.server.RedeemItemDetail', 'server.SettingsPage', 'server.TagCreatePage', 'Viewport'],
-               controllers : ['server.Viewport', 'server.MainPage', 'server.Challenges', 'server.Rewards', 'server.Redemptions', 'server.Merchants', 'server.Settings', 'server.Prizes'],
+               views : ['Document', 'server.Rewards', 'server.Redemptions', 'server.MerchantAccount', 'server.MainPage', //
+               'widgets.server.RedeemItemDetail', 'server.SettingsPage', 'server.TagCreatePage', 'Viewport'],
+               controllers : ['server.Viewport', 'server.MainPage', 'server.Challenges',  'server.Receipts', 'server.Rewards',//
+                'server.Redemptions', 'server.Merchants', 'server.Settings', 'server.Prizes'],
                launch : function()
                {
                   _application = this;

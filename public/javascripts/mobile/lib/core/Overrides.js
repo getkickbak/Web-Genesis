@@ -218,7 +218,7 @@ Genesis.fn =
                return [timeExpiredSec, parseInt(timeExpiredSec) + ' mins ago'];
             timeExpiredSec = timeExpiredSec / 60;
             if ((timeExpiredSec) < 2)
-               return [date, 'an hr ago'];
+               return [date, '1 hr ago'];
             if ((timeExpiredSec) < 24)
                return [date, parseInt(timeExpiredSec) + ' hrs ago'];
             timeExpiredSec = timeExpiredSec / 24;
@@ -228,7 +228,7 @@ Genesis.fn =
                return [date, this.weekday[date.getDay()] + ' at ' + date.format('g:i A')];
             timeExpiredSec = timeExpiredSec / 7;
             if (((timeExpiredSec) < 2) && (timeExpiredSec % 7 == 0))
-               return [date, 'a wk ago'];
+               return [date, '1 wk ago'];
             if (((timeExpiredSec) < 5) && (timeExpiredSec % 7 == 0))
                return [date, parseInt(timeExpiredSec) + ' wks ago'];
 
@@ -673,7 +673,7 @@ Genesis.db =
    //
    resetStorage : function()
    {
-      if (Genesis.fn.isNative())
+      if (Genesis.fn.isNative() && Genesis.fb)
       {
          Genesis.fb.facebook_onLogout(null, false);
       }
@@ -701,28 +701,17 @@ Genesis.db =
       };
 
       var dropStatement = "DROP TABLE Customer";
-      var createStatement = "CREATE TABLE IF NOT EXISTS Customer (id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT)";
       var db = openDatabase('KickBak', 'CustomerStore', "1.0", 5 * 1024 * 1024);
 
       db.transaction(function(tx)
       {
          //
-         // Create Table
-         //
-         tx.executeSql(createStatement, [], function()
-         {
-            console.debug("Successfully created/retrieved KickBak-Customers Table");
-         }, function(tx, error)
-         {
-            console.debug("Failed to create KickBak-Customers Table : " + error.message);
-         });
-         //
          // Drop Table
          //
-         tx.executeSql(dropStatement, [], function()
+         tx.executeSql(dropStatement, [], function(tx, result)
          {
             console.debug("ResetStorage --- Successfully drop KickBak-Customers Table");
-         }, function()
+         }, function(tx, error)
          {
             console.debug("Failed to drop KickBak-Customers Table : " + error.message);
          });
@@ -1758,6 +1747,14 @@ Ext.merge(Array.prototype,
 //---------------------------------------------------------------------------------
 Ext.merge(String.prototype,
 {
+   hashCode : function()
+   {
+      for (var ret = 0, i = 0, len = this.length; i < len; i++)
+      {
+         ret = (31 * ret + this.charCodeAt(i)) << 0;
+      }
+      return ret;
+   },
    getFuncBody : function()
    {
       var str = this.toString();

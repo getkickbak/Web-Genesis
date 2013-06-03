@@ -558,15 +558,6 @@ Ext.define('Genesis.controller.ViewportBase',
          'resetview' : 'resetView'
       });
 
-      if (Ext.os.is('Android') && merchantMode)
-      {
-         nfc.isEnabled(function()
-         {
-            Genesis.constants.isNfcEnabled = true;
-            console.log('NFC is enabled on this device');
-         });
-      }
-
       Ext.regStore('LicenseStore',
       {
          model : 'Genesis.model.frontend.LicenseKey',

@@ -19,7 +19,7 @@ Ext.define('Genesis.model.frontend.Receipt',
    id : 'Receipt',
    config :
    {
-      fields : ['id',
+      fields : ['id', 'tnxId',
       {
          name : 'subtotal',
          type : 'float'
@@ -27,7 +27,7 @@ Ext.define('Genesis.model.frontend.Receipt',
       {
          name : 'price',
          type : 'float'
-      }, 'title', 'earned', 'receipt'],
+      }, 'title', 'table', 'receipt'],
       idProperty : 'id',
       hasMany : [
       {

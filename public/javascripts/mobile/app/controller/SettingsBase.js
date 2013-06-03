@@ -195,6 +195,9 @@ Ext.define('Genesis.controller.SettingsBase',
          me.redirectTo('aboutUs');
       }
    },
+   onDeviceReset : function(b, e)
+   {
+   },
    // --------------------------------------------------------------------------
    // Event Handlers
    // --------------------------------------------------------------------------

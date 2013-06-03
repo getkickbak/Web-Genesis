@@ -24,10 +24,12 @@ Ext.define('Genesis.controller.server.Rewards',
          },
          calcBtn : 'serverrewardsview button[tag=calculator]',
          receiptsList : 'serverrewardsview container list',
+         tableSelectField : 'serverrewardsview selectfield[tag=tableFilter]',
          backBB : 'serverrewardsview button[tag=back]',
          rptCloseBB : 'serverrewardsview button[tag=rptClose]',
          receiptDetail : 'serverrewardsview dataview[tag=receiptDetail]',
          rewardsContainer : 'serverrewardsview container[tag=rewards]',
+         rewardTBar : 'serverrewardsview container[tag=tbBottomSelection]',
          rewardSelection : 'serverrewardsview container[tag=tbBottomSelection] button[tag=rewardsSC]',
          rewardDetail : 'serverrewardsview container[tag=tbBottomDetail] button[tag=rewardsSC]',
          amount : 'serverrewardsview calculator[tag=amount] textfield',
@@ -58,6 +60,10 @@ Ext.define('Genesis.controller.server.Rewards',
          {
             //select : 'onReceiptSelect',
             disclose : 'onReceiptDisclose'
+         },
+         tableSelectField :
+         {
+            change : 'onTableSelectFieldChange'
          },
          'serverrewardsview calculator[tag=amount] container[tag=dialpad] button' :
          {
@@ -113,7 +119,13 @@ Ext.define('Genesis.controller.server.Rewards',
 
       Ext.StoreMgr.get('ReceiptStore').on(
       {
-         addrecords : 'onReceiptStoreRefresh'
+         //clear : 'onReceiptStoreUpdate',
+         filter : 'onReceiptStoreUpdate',
+         addrecords : 'onReceiptStoreUpdate',
+         refresh : 'onReceiptStoreUpdate',
+         //removerecords : 'onReceiptStoreUpdate',
+         updaterecord : 'onReceiptStoreUpdate',
+         scope : me
       });
    },
    getAmountPrecision : function(num)
@@ -144,23 +156,21 @@ Ext.define('Genesis.controller.server.Rewards',
    // --------------------------------------------------------------------------
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      var me = this;
-      var container = me.getRewardsContainer();
-      var store = Ext.StoreMgr.get('ReceiptStore');
+      var me = this, container = me.getRewardsContainer(), store = Ext.StoreMgr.get('ReceiptStore'), db = Genesis.db.getLocalDB();
+      var isPosEnabled = (db['enablePosIntegration'] && db['isPosEnabled'])
 
       if (container)
       {
          me.getAmount().reset();
-         me.onReceiptStoreRefresh();
-         container.setActiveItem((store.getCount() > 0) ? 2 : 0);
+         me.onReceiptStoreUpdate(store);
+         container.setActiveItem((isPosEnabled) ? 2 : 0);
       }
-      me.getCalcBtn()[(store.getCount() > 0) ? 'show' : 'hide']();
+      me.getCalcBtn()[(isPosEnabled) ? 'show' : 'hide']();
       //activeItem.createView();
    },
    onCalcBtnOverrideTap : function(b, e)
    {
-      var me = this;
-      var container = me.getRewardsContainer();
+      var me = this, container = me.getRewardsContainer(), animation = container.getLayout().getAnimation();
 
       if (container)
       {
@@ -185,17 +195,20 @@ Ext.define('Genesis.controller.server.Rewards',
    },
    onContainerActivate : function(c, value, oldValue, eOpts)
    {
-      var me = this;
-      var container = me.getRewardsContainer();
-      var animation = container.getLayout().getAnimation();
+      var me = this, container = me.getRewardsContainer(), animation = container.getLayout().getAnimation();
 
       switch (value.config.tag)
       {
          case 'posSelect' :
+         {
+            animation.setDirection('left');
+            console.debug("Rewards ContainerActivate Called. Showing POS Receipts ...");
+            break;
+         }
          case 'posDetail' :
          {
-            console.debug("Rewards ContainerActivate Called. Showing POS Receipts ...");
-            animation.setReverse(true);
+            animation.setDirection('right');
+            console.debug("Rewards ContainerActivate Called. Showing POS Receipt Detail ...");
             break;
          }
          case 'amount' :
@@ -321,6 +334,7 @@ Ext.define('Genesis.controller.server.Rewards',
                Ext.Viewport.setMasked(null);
                if (operation.wasSuccessful())
                {
+                  var db = Genesis.db.getLocalDB(), metaData = proxy.getReader().metaData;
                   Ext.device.Notification.show(
                   {
                      title : me.earnPtsTitle,
@@ -328,62 +342,36 @@ Ext.define('Genesis.controller.server.Rewards',
                      buttons : ['OK'],
                      callback : function()
                      {
-                        switch (me.getMode())
-                        {
-                           case 'POS_Selected' :
-                           case 'POS_Detail' :
-                           {
-                              for (var i = 0; i < me.receiptSelected.length; i++)
-                              {
-                                 me.receiptSelected[i].set('earned', true);
-                              }
-                              break;
-                           }
-                           case 'Manual' :
-                           default :
-                              break;
-                        }
                         me.onDoneTap();
                      }
                   });
                   //
                   // Store to Receipt Database
                   //
+                  if (db['enableReceiptUpload'] && db['isPosEnabled'])
                   {
-                     var x, receipt, txid = 0;
-                     var insertStatement = "INSERT INTO Receipt (id, receipts) VALUES (?, ?)";
-                     var dropStatement = "DROP TABLE Receipt";
-                     var createStatement = "CREATE TABLE IF NOT EXISTS Receipt (id INTEGER PRIMARY KEY, receipts TEXT)";
-                     var db = openDatabase('KickBak', 'ReceiptStore', "1.0", 5 * 1024 * 1024);
-                     db.transaction(function(tx)
+                     var x, receipts = [], receipt, rstore = Ext.StoreMgr.get('ReceiptStore'), estore = Ext.StoreMgr.get('EarnedReceiptStore');
+
+                     for (var i = 0; i < me.receiptSelected.length; i++)
                      {
-                        //
-                        // Create Table
-                        //
-                        tx.executeSql(createStatement, [], function()
+                        me.receiptSelected[i].set('txnId', metaData['txn_id']);
+                        receipts.push(me.receiptSelected[i].getData(true));
+                        for (var j = 0; j < receipts[i]['items'].length; j++)
                         {
-                           console.debug("Successfully created/retrieved KickBak-Receipt Table");
-                        }, function(tx, error)
-                        {
-                           console.debug("Failed to create KickBak-Receipt Table : " + error.message);
-                        });
-                        //
-                        // Insert Table
-                        //
-                        for ( x = 0; x < me.receiptSelected.length; x++)
-                        {
-                           receipt = me.receiptSelected[x];
-                           //console.debug("Inserting Customer(" + item.getId() + ") to Database");
-                           tx.executeSql(insertStatement, [txId, Ext.encode(receipt.getData(true))], function()
-                           {
-                              //console.debug("Inserted Customer(" + item.getId() + ") to Database");
-                           }, function(tx, error)
-                           {
-                              console.debug("Failed to insert Customer(" + receipt.getId() + ") to Database : " + error.message);
-                           });
+                           delete receipts[i]['items'][j]['id'];
                         }
-                        console.debug("Receipt Submission  --- Inserted " + items.length + " records in Receipt Database ...");
-                     });
+                     }
+                     //
+                     // Add to Earned store
+                     //
+                     estore.add(me.receiptSelected);
+
+                     _application.getController('server' + '.Receipts').fireEvent('insertReceipts', receipts);
+                     //
+                     // Refresh Store
+                     //
+                     me.getReceiptsList().deselectAll();
+                     rstore.filter();
                   }
                }
                else
@@ -745,9 +733,7 @@ Ext.define('Genesis.controller.server.Rewards',
    },
    onReceiptDisclose : function(list, record, target, index, e, eOpts, eInfo)
    {
-      var me = this;
-      var viewport = me.getViewPortCntlr();
-      var container = me.getRewardsContainer();
+      var me = this, viewport = me.getViewPortCntlr(), container = me.getRewardsContainer(), animation = container.getLayout().getAnimation();
 
       me.self.playSoundFile(viewport.sound_files['clickSound']);
 
@@ -767,28 +753,51 @@ Ext.define('Genesis.controller.server.Rewards',
          me.getCalcBtn()['show']();
       }
    },
-   onReceiptStoreRefresh : function(store, records, eOpts)
+   onReceiptStoreUpdate : function(store)
    {
-      var me = this;
-      var list = me.getReceiptsList();
+      var me = this, db = Genesis.db.getLocalDB(), list = me.getReceiptsList(), visible = (store.getCount() > 0) ? 'show' : 'hide';
+      var isPosEnabled = (db['enablePosIntegration'] && db['isPosEnabled']);
 
       if (list)
       {
-         var store = list.getStore();
-         console.debug("Refreshing ReceiptStore ...");
-         store.setData(store.getData().all);
+         console.debug("Refreshing ReceiptStore ... count[" + store.getCount() + "]");
+         //store.setData(store.getData().all);
+
+         if (isPosEnabled && me.getRewardTBar())
+         {
+            me.getRewardTBar()[visible]();
+            me.getTableSelectField()[visible]();
+         }
       }
+      else
+      {
+         //console.debug("onReceiptStoreUpdate - list not avail for update");
+      }
+   },
+   onTableSelectFieldChange : function(field, newValue, oldValue, eOpts)
+   {
+      var me = this, store = Ext.StoreMgr.get('ReceiptStore');
+
+      store.tableFilterId = (newValue != 'All') ? newValue : null;
+      console.debug("Filter by Table[" + store.tableFilterId + "] ...");
+
+      //
+      // Wait for animation to complete before we filter
+      //
+      Ext.defer(function()
+      {
+         store.filter();
+         //me.onReceiptStoreUpdate(store);
+      }, 1 * 1000);
    },
    // --------------------------------------------------------------------------
    // Misc Event Funcs
    // --------------------------------------------------------------------------
    onDoneTap : function(b, e, eOpts, eInfo)
    {
-      var me = this;
-      var container = me.getRewardsContainer();
+      var me = this, container = me.getRewardsContainer(), db = Genesis.db.getLocalDB(), store = Ext.StoreMgr.get('ReceiptStore');
+      var isPosEnabled = (db['enablePosIntegration'] && db['isPosEnabled']);
       delete me._params;
-      var store = Ext.StoreMgr.get('ReceiptStore');
-
       if (container)
       {
          switch (me.getMode())
@@ -796,7 +805,7 @@ Ext.define('Genesis.controller.server.Rewards',
             case 'Manual' :
             {
                me.getAmount().reset();
-               container.setActiveItem((store.getCount() > 0) ? 2 : 0);
+               container.setActiveItem((isPosEnabled) ? 2 : 0);
                break;
             }
             case 'POS_Detail' :
@@ -812,7 +821,7 @@ Ext.define('Genesis.controller.server.Rewards',
             default :
                break;
          }
-         me.getCalcBtn()[(store.getCount() > 0) ? 'show' : 'hide']();
+         me.getCalcBtn()[(isPosEnabled) ? 'show' : 'hide']();
       }
 
       console.debug("Rewards onDoneTap Called ...");
