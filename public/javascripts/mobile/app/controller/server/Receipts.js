@@ -214,13 +214,13 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
                   {
                      case 'receipt_incoming' :
                      {
-                        console.debug("WebSocketClient::receipt_incoming ...")
+                        //console.debug("WebSocketClient::receipt_incoming ...")
                         wssocket.receiptIncomingHandler(inputStream['receipts']);
                         break;
                      }
                      case 'receipt_response' :
                      {
-                        console.debug("WebSocketClient::receipt_response ...")
+                        //console.debug("WebSocketClient::receipt_response ...")
                         wssocket.receiptResponseHandler(inputStream['receipts']);
                         break;
                      }
@@ -628,7 +628,7 @@ Ext.define('Genesis.controller.server.Receipts',
                WebSocket.prototype.receiptFilters[filter] = new RegExp(db['receiptFilters'][filter], "i");
             }
          }
-         console.debug("receiptFilters - " + Ext.encode(db['receiptFilters']));
+         //console.debug("receiptFilters - " + Ext.encode(db['receiptFilters']));
          posConnect();
          console.debug("posIntegrationHandler - Enabled");
       }
@@ -741,8 +741,8 @@ Ext.define('Genesis.controller.server.Receipts',
                store.tableFilterId = null;
             }
 
-            console.debug("receiptCleanFn - Removed " + items.length + " old records from the Receipt Store");
-            console.debug("receiptCleanFn - 4hrs till the next cleanup");
+            console.debug("receiptCleanFn - Removed " + items.length + " old records from the Receipt Store\n" + //
+            "4hrs till the next cleanup");
             me._receiptCleanTask.delay(me.cleanupTimer);
          });
       }
@@ -753,7 +753,8 @@ Ext.define('Genesis.controller.server.Receipts',
          //
          case 'Fixed' :
          {
-            console.debug("receiptCleanFn - Cleanup is scheduled to start in 4hrs");
+            console.debug("receiptCleanFn(Enabled) --- DisplayMode(" + displayMode + ")\n" + //
+            "Cleanup is scheduled to start in 4hrs");
             me._receiptCleanTask.delay(me.cleanupTimer);
             break;
          }
@@ -762,7 +763,7 @@ Ext.define('Genesis.controller.server.Receipts',
          //
          case 'Mobile':
          default :
-            console.debug("receiptCleanFn - Disabled");
+            console.debug("receiptCleanFn(Disabled) --- DisplayMode(" + displayMode + ")");
             me._receiptCleanTask.cancel();
             break;
       }

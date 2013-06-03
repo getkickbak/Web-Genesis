@@ -23,6 +23,19 @@ Ext.define('Genesis.view.Viewport',
    initialize : function()
    {
       this.callParent(arguments);
+      
+      //
+      // Initialize NFC after DeviceReady
+      //
+      if (Ext.os.is('Android') && merchantMode)
+      {
+         handleNfcFromIntentFilter();
+         nfc.isEnabled(function()
+         {
+            Genesis.constants.isNfcEnabled = true;
+            console.log('NFC is enabled on this device');
+         });
+      }
       /*
        this.on(
        {
