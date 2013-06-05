@@ -62,32 +62,6 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
                'phoneID' : phoneId
             }
          });
-         /*
-          Ext.device.Notification.show(
-          {
-          title : me.getRedeemPopupTitle(),
-          message : me.redeemPtsConfirmMsg,
-          buttons : ['Confirm', 'Cancel'],
-          callback : function(btn)
-          {
-          if (btn.toLowerCase() == 'confirm')
-          {
-          me.onNfc(
-          {
-          id : null,
-          result :
-          {
-          'phoneID' : phoneId
-          }
-          });
-          }
-          else
-          {
-          container.setActiveItem(0);
-          }
-          }
-          });
-          */
       }
       else
       {
@@ -150,6 +124,35 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
       }
       var message = me.lookingForMobileDeviceMsg();
       var proxy = store.getProxy();
+      var callback = function(b)
+      {
+         viewport.popUpInProgress = false;
+         me._actions.hide();
+         viewport.setActiveController(null);
+         if (me.scanTask)
+         {
+            clearInterval(me.scanTask);
+            me.scanTask = null;
+         }
+         //
+         // Stop receiving ProximityID
+         //
+         if (Genesis.fn.isNative())
+         {
+            window.plugins.proximityID.stop();
+         }
+
+         if (b && (b.toLowerCase() == 'manual'))
+         {
+            Ext.Viewport.setMasked(null);
+            me.onEnterPhoneNum();
+         }
+         else if (!me.dismissDialog)
+         {
+            Ext.Viewport.setMasked(null);
+            me.onDoneTap();
+         }
+      };
 
       me.dismissDialog = false;
       me.redeemItemFn = function(p, closeDialog)
@@ -214,112 +217,84 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
          });
       };
 
-      if (btn)
+      if (!btn)
       {
-         var callback = function(b)
-         {
-            viewport.popUpInProgress = false;
-            me._actions.hide();
-            viewport.setActiveController(null);
-            if (me.scanTask)
-            {
-               clearInterval(me.scanTask);
-               me.scanTask = null;
-            }
-            //
-            // Stop receiving ProximityID
-            //
-            if (Genesis.fn.isNative())
-            {
-               window.plugins.proximityID.stop();
-            }
-
-            if (b && (b.toLowerCase() == 'manual'))
-            {
-               Ext.Viewport.setMasked(null);
-               me.onEnterPhoneNum();
-            }
-            else if (!me.dismissDialog)
-            {
-               Ext.Viewport.setMasked(null);
-               me.onDoneTap();
-            }
-         };
-
-         if (!me._actions)
-         {
-            me._actions = Ext.create('Genesis.view.widgets.PopupItemDetail',
-            {
-               iconType : 'prizewon',
-               icon : 'rss',
-               //cls : 'viewport',
-               title : message,
-               buttons : [
-               {
-                  margin : '0 0 0.5 0',
-                  text : me.mobilePhoneInputMsg,
-                  ui : 'action',
-                  height : '3em',
-                  handler : Ext.bind(callback, me, ['manual'])
-               },
-               {
-                  margin : '0.5 0 0 0',
-                  text : 'Cancel',
-                  ui : 'cancel',
-                  height : '3em',
-                  handler : Ext.bind(callback, me, ['cancel'])
-               }]
-            });
-            Ext.Viewport.add(me._actions);
-         }
-         viewport.popUpInProgress = true;
-         me._actions.show();
-
-         /*
-          Ext.device.Notification.show(
-          {
-          title : me.getRedeemPopupTitle(),
-          message : message,
-          ignoreOnHide : true,
-          buttons : [
-          {
-          text : me.mobilePhoneInputMsg,
-          itemId : 'manual'
-          },
-          {
-          text : 'Cancel',
-          itemId : 'cancel'
-          }],
-          callback : callback
-          });
-          */
-         if (Genesis.fn.isNative())
-         {
-            me.getLocalID(function(idx)
-            {
-               identifiers = idx;
-               me.redeemItemFn(
-               {
-                  data : me.self.encryptFromParams(
-                  {
-                     'frequency' : identifiers['localID'],
-                     'expiry_ts' : new Date().addHours(3).getTime()
-                  }, 'reward')
-               }, true);
-            }, function()
-            {
-               me._actions.hide();
-               me.onDoneTap();
-            }, Ext.bind(me.onRedeemItem, me, arguments));
-            viewport.setActiveController(me);
-         }
-         /*
-          else
-          {
-          me.redeemItemFn(params, false);
-          }
-          */
+         return;
       }
+
+      if (!me._actions)
+      {
+         me._actions = Ext.create('Genesis.view.widgets.PopupItemDetail',
+         {
+            iconType : 'prizewon',
+            icon : 'rss',
+            //cls : 'viewport',
+            title : message,
+            buttons : [
+            {
+               margin : '0 0 0.5 0',
+               text : me.mobilePhoneInputMsg,
+               ui : 'action',
+               height : '3em',
+               handler : Ext.bind(callback, me, ['manual'])
+            },
+            {
+               margin : '0.5 0 0 0',
+               text : 'Cancel',
+               ui : 'cancel',
+               height : '3em',
+               handler : Ext.bind(callback, me, ['cancel'])
+            }]
+         });
+         Ext.Viewport.add(me._actions);
+      }
+      viewport.popUpInProgress = true;
+      me._actions.show();
+
+      /*
+       Ext.device.Notification.show(
+       {
+       title : me.getRedeemPopupTitle(),
+       message : message,
+       ignoreOnHide : true,
+       buttons : [
+       {
+       text : me.mobilePhoneInputMsg,
+       itemId : 'manual'
+       },
+       {
+       text : 'Cancel',
+       itemId : 'cancel'
+       }],
+       callback : callback
+       });
+       */
+      if (Genesis.fn.isNative())
+      {
+         me.getLocalID(function(idx)
+         {
+            identifiers = idx;
+            me.redeemItemFn(
+            {
+               data : me.self.encryptFromParams(
+               {
+                  'frequency' : identifiers['localID'],
+                  'expiry_ts' : new Date().addHours(3).getTime()
+               }, 'reward')
+            }, true);
+         }, function()
+         {
+            me._actions.hide();
+            me.onDoneTap();
+         }, Ext.bind(me.onRedeemItem, me, arguments));
+         viewport.setActiveController(me);
+      }
+      /*
+       else
+       {
+       me.redeemItemFn(params, false);
+       }
+       */
    },
    onRedeemItemTap : function(b, e, eOpts, eInfo)
    {
