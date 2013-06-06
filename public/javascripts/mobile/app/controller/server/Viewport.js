@@ -93,10 +93,10 @@ Ext.define('Genesis.controller.server.Viewport',
    },
    updateMetaDataInfo : function(metaData)
    {
-      var me = this;
-
       try
       {
+         var me = this;
+
          //
          // Update Customer Rewards (Rewards Redemptions)
          //
@@ -105,6 +105,9 @@ Ext.define('Genesis.controller.server.Viewport',
          // Update Customer Rewards (Prizes Redemptions)
          //
          me.updatePrizes(metaData['prizes']);
+
+         metaData['reward_model'] = metaData['reward_model'] || 'amount_spent';
+         Genesis.db.setLocalDBAttrib('rewardModel', metaData['reward_model']);
       }
       catch(e)
       {

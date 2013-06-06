@@ -131,15 +131,18 @@ Ext.define('Genesis.controller.RedeemBase',
    onItemListSelect : function(d, model, eOpts)
    {
       d.deselect([model]);
-      this.onItemListDisclose(d, model);
+      this.onItemListDisclose(d, model, null, null, null, null, null, false);
       return false;
    },
-   onItemListDisclose : function(list, record, target, index, e, eOpts)
+   onItemListDisclose : function(list, record, target, index, e, eOpts, dummy, supressClick)
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
       var _showItem = function()
       {
+         //
+         // No Customer Account, then that means we show the item to the user regardless
+         //
          if (viewport.getCustomer())
          {
             var totalPts = viewport.getCustomer().get(me.getPtsProperty());
@@ -156,9 +159,12 @@ Ext.define('Genesis.controller.RedeemBase',
             }
          }
          me.fireEvent('showredeemitem', record);
-      }
+      };
 
-      me.self.playSoundFile(viewport.sound_files['clickSound']);
+      if (!supressClick)
+      {
+         me.self.playSoundFile(viewport.sound_files['clickSound']);
+      }
       switch (me.getBrowseMode())
       {
          case 'redeemBrowse' :
@@ -198,10 +204,14 @@ Ext.define('Genesis.controller.RedeemBase',
    },
    onRedeemItemActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      var me = this, tbbar = activeItem.query('titlebar')[0];
+      var me = this, tbbar = activeItem.query('titlebar')[0], store = Ext.StoreMgr.get(me.getRedeemStore());
 
-      me.getSCloseBB().show();
-      //me.getSBB().hide();
+      me.getSCloseBB()[(store.getAllCount() == 1) ? 'hide' : 'show']();
+      if (me.sBackBB)
+      {
+         me.sBackBB()[(store.getAllCount() == 1) ? 'show' : 'hide']();
+      }
+
       tbbar.setTitle(me.getTitle());
       tbbar.removeCls('kbTitle');
 
@@ -231,8 +241,7 @@ Ext.define('Genesis.controller.RedeemBase',
          if (Ext.os.is('iOS'))
          {
          }
-         else
-         if (Ext.os.is('Android'))
+         else if (Ext.os.is('Android'))
          {
          }
       }
@@ -328,18 +337,28 @@ Ext.define('Genesis.controller.RedeemBase',
       var page = null;
       switch (me.getBrowseMode())
       {
-         case 'redeemBrowse' :
-         {
-            me.setAnimationMode(Genesis.controller.ControllerBase.animationMode['cover']);
-            page = me.getRedemptions();
-            break;
-         }
          case 'redeemBrowseSC' :
          {
             me.setAnimationMode(Genesis.controller.ControllerBase.animationMode['coverUp']);
-            page = me.getRedemptions();
             break;
          }
+         case 'redeemBrowse' :
+         default:
+            me.setAnimationMode(Genesis.controller.ControllerBase.animationMode['cover']);
+            break;
+      }
+
+      var store = Ext.StoreMgr.get(me.getRedeemStore());
+      //
+      // There's only one item to redeem, autoselect item
+      //
+      if (store.getAllCount() == 1)
+      {
+         me.onItemListDisclose(null, store.first(), null, null, null, null, null, true);
+      }
+      else
+      {
+         page = me.getRedemptions();
       }
 
       return page;
