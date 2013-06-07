@@ -38,8 +38,15 @@ Ext.define('Genesis.view.server.Rewards',
    },
    createView : function()
    {
-      var me = this, itemHeight = 1 + Genesis.constants.defaultIconSize() + 2 * Genesis.fn.calcPx(0.65, 1), store = Ext.StoreMgr.get('ReceiptStore'), db = Genesis.db.getLocalDB();
+      var me = this;
+      if (!me.callParent(arguments))
+      {
+         return;
+      }
+
+      var itemHeight = 1 + Genesis.constants.defaultIconSize() + 2 * Genesis.fn.calcPx(0.65, 1), store = Ext.StoreMgr.get('ReceiptStore'), db = Genesis.db.getLocalDB();
       var isPosEnabled = (db['enablePosIntegration'] && db['isPosEnabled']);
+      var manualMode = ((db['rewardModel'] == 'items_purchase') ? 4 : 0);
       var toolbarBottom = function(tag, hideTb)
       {
          return (
@@ -92,11 +99,7 @@ Ext.define('Genesis.view.server.Rewards',
                }]
             });
       };
-      if (!me.callParent(arguments))
-      {
-         return;
-      }
-
+      
       me.getPreRender().push(Ext.create('Ext.Container',
       {
          xtype : 'container',
@@ -116,7 +119,7 @@ Ext.define('Genesis.view.server.Rewards',
          {
             hidden : true
          },
-         activeItem : (isPosEnabled) ? 2 : 0,
+         activeItem : (isPosEnabled) ? 2 : manualMode,
          items : [
          // -------------------------------------------------------------------
          // Reward Calculator
@@ -283,6 +286,21 @@ Ext.define('Genesis.view.server.Rewards',
                   }
                })
             }, toolbarBottom('tbBottomDetail', false)]
+         },
+         // -------------------------------------------------------------------
+         // ItemsPurchased
+         // -------------------------------------------------------------------
+         {
+            xtype : 'calculator',
+            tag : 'itemsPurchased',
+            title : 'Stamp Points',
+            placeHolder : '0',
+            bottomButtons : [
+            {
+               tag : 'earnPts',
+               text : 'Stamp Me!',
+               ui : 'orange-large'
+            }]
          }]
       }));
    },

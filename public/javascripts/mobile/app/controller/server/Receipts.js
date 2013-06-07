@@ -33,6 +33,7 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
             subtotal : currItemPrice.toFixed(2),
             price : currItemPrice.toFixed(2),
             table : '',
+            itemsPurchased : 0,
             title : '',
             receipt : Ext.encode(receiptText),
             items : []
@@ -47,7 +48,7 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
                match = me.receiptFilters['subtotal'].exec(text);
                if (match)
                {
-                  matchFlag |= 0x0001;
+                  matchFlag |= 0x00001;
                   receipt['subtotal'] = match[1];
                   continue;
                }
@@ -55,7 +56,7 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
                match = me.receiptFilters['grandtotal'].exec(text);
                if (match)
                {
-                  matchFlag |= 0x0010;
+                  matchFlag |= 0x00010;
                   receipt['price'] = match[1];
                   continue;
                }
@@ -63,7 +64,7 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
                match = me.receiptFilters['table'].exec(text);
                if (match)
                {
-                  matchFlag |= 0x0100;
+                  matchFlag |= 0x00100;
                   receipt['table'] = match[1];
                   continue;
                }
@@ -71,7 +72,7 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
                match = me.receiptFilters['item'].exec(text);
                if (match)
                {
-                  matchFlag |= 0x1000;
+                  matchFlag |= 0x01000;
                   var qty = Number(match[2]);
                   var currItemPrice = (Number(match[3]) / qty);
                   receipt['items'].push(new Ext.create('Genesis.model.frontend.ReceiptItem',
@@ -80,11 +81,28 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
                      price : currItemPrice,
                      name : match[1].trim()
                   }));
+                  //
+                  // Find Most expensive Item
+                  //
                   if (Math.max(currItemPrice, maxItemPrice) == currItemPrice)
                   {
                      maxItemPrice = currItemPrice;
                      receipt['title'] = match[1].trim();
                   }
+                  //
+                  // Count Stamps
+                  //
+                  if (me.receiptFilters['itemsPurchased'])
+                  {
+                     match = me.receiptFilters['itemsPurchased'].exec(text);
+                     if (match)
+                     {
+                        matchFlag |= 0x10000;
+                        receipt['itemsPurchased'] += qty;
+                        continue;
+                     }
+                  }
+
                   continue;
                }
             }
@@ -92,7 +110,8 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
          //
          // Meet minimum crtieria to be considered a valid receipt
          //
-         if (matchFlag & 0x0011)
+         if (((matchFlag & 0x00011) && !me.receiptFilters['itemsPurchased']) || //
+         ((matchFlag & 0x10011) && me.receiptFilters['itemsPurchased']))
          {
             rc = Ext.create("Genesis.model.frontend.Receipt", receipt);
             rc['items']().add(receipt['items']);
@@ -126,6 +145,7 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
                   "Subtotal: $" + receipt.get('subtotal').toFixed(2) + '\n' + //
                   "Price: $" + receipt.get('price').toFixed(2) + '\n' + //
                   "table: " + receipt.get('table') + '\n' + //
+                  "itemsPurchased: " + receipt.get('itemsPurchased') + '\n' + //
                   "Title: " + receipt.get('title') + '\n' + //
                   "Receipt: [\n" + Ext.decode(receipt.get('receipt')) + "\n]" + //
                   "");
@@ -327,8 +347,9 @@ Ext.define('Genesis.controller.server.Receipts',
       minLineLength : 5,
       grandtotal : "\\s*\\bGrand Total\\b\\s+\\$(\\d+\.\\d{2})\\s*",
       subtotal : "\\s*\\bSubtotal\\b\\s+\\$(\\d+\.\\d{2})\\s*",
-      item : "\\s*([\\s*\\w+]+)\\s+\\(?(\\d+(?=\\@\\$\\d+\\.\\d{2}\\))?).*?\\s+\\$(\\d+\\.\\d{2})",
-      table : "\\s*\\bTABLE\\b:\\s+(Bar\\s+\\d+)\\s*"
+      item : "\\s*([\\w+\\W*]+)\\s+\\(?(\\d+(?=\\@\\$\\d+\\.\\d{2}\\))?).*?\\s+\\$(\\d+\\.\\d{2})",
+      table : "\\s*\\bTABLE\\b:\\s+(Bar\\s+\\d+)\\s*",
+      itemsPurchased : ""
    },
    _statusInfo :
    {
@@ -616,7 +637,8 @@ Ext.define('Genesis.controller.server.Receipts',
             grandtotal : filters['grand_total'] || me.filter_config['grandtotal'],
             subtotal : filters['subtotal'] || me.filter_config['subtotal'],
             item : filters['item'] || me.filter_config['item'],
-            table : filters['table'] || me.filter_config['table']
+            table : filters['table'] || me.filter_config['table'],
+            itemsPurchased : filters['items_purchased'] || me.filter_config['itemsPurchased']
          }
 
          WebSocket.prototype.receiptFilters = Ext.clone(db['receiptFilters']);

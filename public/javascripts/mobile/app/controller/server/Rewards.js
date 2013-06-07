@@ -5,7 +5,7 @@ Ext.define('Genesis.controller.server.Rewards',
    xtype : 'serverRewardsCntlr',
    config :
    {
-      mode : 'Manual', // 'POS_Selection', 'POS_Detail', 'Maunal'
+      mode : 'Manual', // 'POS_Selection', 'POS_Detail', 'Maunal', 'Visit'
       models : ['PurchaseReward', 'CustomerReward'],
       routes :
       {
@@ -81,6 +81,14 @@ Ext.define('Genesis.controller.server.Rewards',
          {
             tap : 'onTagItTap'
          },
+         'serverrewardsview calculator[tag=itemsPurchased] container[tag=dialpad] button' :
+         {
+            tap : 'onStampBtnTap'
+         },
+         'serverrewardsview calculator[tag=itemsPurchased] container[tag=bottomButtons] button[tag=earnPts]' :
+         {
+            tap : 'onEarnPtsTap'
+         },
          rewardSelection :
          {
             tap : 'onRewardSelectionTap'
@@ -96,10 +104,12 @@ Ext.define('Genesis.controller.server.Rewards',
       }
    },
    maxValue : 1000.00,
+   maxStampValue : 9,
    phoneIdMaxLength : 10,
    rewardSuccessfulMsg : 'Transaction Complete',
    rewardFailedMsg : 'Transaction Failed',
    invalidAmountMsg : 'Please enter a valid amount (eg. 5.00), upto $1000',
+   invalidStampMsg : 'Please enter a valid Stamp amount (1-9)',
    earnPtsConfirmMsg : 'Please confirm to submit',
    earnPtsTitle : 'Earn Reward Points',
    selectRewardMsg : 'Please select your Receipt(s)',
@@ -135,18 +145,45 @@ Ext.define('Genesis.controller.server.Rewards',
    },
    validateAmount : function()
    {
-      var me = this, amount = me.getAmount().getValue(), precision = me.getAmountPrecision(amount);
+      var me = this, amount = me.getAmount().getValue();
 
-      if (precision < 2)
+      switch (db['rewardModel'])
       {
-         console.debug("Ammount = [" + amount + "]");
-         Ext.device.Notification.show(
+         case 'items_purchased' :
          {
-            title : 'Validation Error',
-            message : me.invalidAmountMsg,
-            buttons : ['Dismiss']
-         });
-         amount = -1;
+            console.debug("Ammount = [" + amount + "]");
+            var precision = me.getAmountPrecision(amount);
+            if (precision < 2)
+            {
+               Ext.device.Notification.show(
+               {
+                  title : 'Validation Error',
+                  message : me.invalidAmountMsg,
+                  buttons : ['Dismiss']
+               });
+               amount = -1;
+            }
+            break;
+         }
+         case 'amount_spent' :
+         {
+            console.debug("Stamp Ammount = [" + amount + "]");
+            var db = Genesis.db.getLocalDB();
+            if (amount <= 0)
+            {
+               Ext.device.Notification.show(
+               {
+                  title : 'Validation Error',
+                  message : me.invalidStampMsg,
+                  buttons : ['Dismiss']
+               });
+               amount = -1;
+            }
+            break;
+         }
+         case 'visits' :
+         default:
+            break;
       }
 
       return amount;
@@ -157,29 +194,37 @@ Ext.define('Genesis.controller.server.Rewards',
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this, container = me.getRewardsContainer(), store = Ext.StoreMgr.get('ReceiptStore'), db = Genesis.db.getLocalDB();
-      var isPosEnabled = (db['enablePosIntegration'] && db['isPosEnabled'])
+      var isPosEnabled = (db['enablePosIntegration'] && db['isPosEnabled']);
+      var manualMode = ((db['rewardModel'] == 'items_purchased') ? 4 : 0);
 
       if (container)
       {
          me.getAmount().reset();
          me.onReceiptStoreUpdate(store);
-         container.setActiveItem((isPosEnabled) ? 2 : 0);
+         container.setActiveItem((isPosEnabled) ? 2 : manualMode);
       }
-      me.getCalcBtn()[(isPosEnabled) ? 'show' : 'hide']();
+      if (debugMode)
+      {
+         me.getCalcBtn()[(isPosEnabled) ? 'show' : 'hide']();
+      }
       //activeItem.createView();
    },
    onCalcBtnOverrideTap : function(b, e)
    {
-      var me = this, container = me.getRewardsContainer(), animation = container.getLayout().getAnimation();
+      var me = this, container = me.getRewardsContainer(), animation = container.getLayout().getAnimation(), db = Genesis.db.getLocalDB();
+      var manualMode = ((db['rewardModel'] == 'items_purchased') ? 4 : 0);
 
       if (container)
       {
          me.getAmount().reset();
          animation.setDirection('down');
-         container.setActiveItem(0);
+         container.setActiveItem(manualMode);
          me.getRptCloseBB()['hide']();
          me.getBackBB()['show']();
-         me.getCalcBtn()['hide']();
+         if (debugMode)
+         {
+            me.getCalcBtn()['hide']();
+         }
       }
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
@@ -216,6 +261,13 @@ Ext.define('Genesis.controller.server.Rewards',
             me.getAmount().reset();
             animation.setReverse(true);
             console.debug("Rewards ContainerActivate Called. Reset Amount ...");
+            break;
+         }
+         case 'itemsPurchased' :
+         {
+            me.getAmount().reset();
+            animation.setReverse(true);
+            console.debug("Rewards ContainerActivate Called. Reset ItemsPurchased ...");
             break;
          }
          case 'phoneId' :
@@ -270,27 +322,38 @@ Ext.define('Genesis.controller.server.Rewards',
       me.dismissDialog = false;
       me.rewardItemFn = function(params, closeDialog)
       {
-         var amount = 0;
+         var amount = 0, itemsPurchased = 0, visit = 0;
+
          switch (me.getMode())
          {
             case 'Manual' :
             {
-               amount = me.getAmount().getValue();
+               itemsPurchased = amount = me.getAmount().getValue();
+               visits++;
                break;
             }
             case 'POS_Detail' :
             case 'POS_Selection' :
             {
+               var receiptSelected;
                for (var i = 0; i < me.receiptSelected.length; i++)
                {
-                  amount += Number(me.receiptSelected[i].get('subtotal'));
+                  receiptSelected = me.receiptSelected[i];
+                  amount += Number(receiptSelected.get('subtotal'));
+                  itemsPurchased += Number(receiptSelected.get('itemsPurchased'));
+                  visits++;
                }
+               break;
+            }
+            case 'Visit' :
+            {
+               visits++;
                break;
             }
             default:
                break;
          }
-         console.debug("Amount:$" + amount);
+         console.debug("Amount:$" + amount + ", ItemsPurchased = " + itemsPurchased + ", Visits = " + visits);
 
          me.dismissDialog = closeDialog;
          callback();
@@ -302,6 +365,8 @@ Ext.define('Genesis.controller.server.Rewards',
             data :
             {
                "amount" : amount,
+               "items" : itemsPurchased,
+               "visits" : visits,
                "type" : 'earn_points',
                'expiry_ts' : new Date().addHours(3).getTime()
             }
@@ -518,8 +583,10 @@ Ext.define('Genesis.controller.server.Rewards',
       {
          return;
       }
-
-      me.getCalcBtn()['hide']();
+      if (debugMode)
+      {
+         me.getCalcBtn()['hide']();
+      }
       container.setActiveItem(1);
    },
    onEarnPtsTap : function(b, e, eOpts, eInfo)
@@ -632,6 +699,38 @@ Ext.define('Genesis.controller.server.Rewards',
             break;
       }
    },
+   onStampBtnTap : function(b, e, eOpts, eInfo)
+   {
+      var me = this;
+      var amountField = me.getAmount();
+      var value = b.getText();
+      switch (value)
+      {
+         case 'AC' :
+         {
+            amountField.reset();
+            break;
+         }
+         default :
+            var amountFieldLength = amountField.getValue().length, amount = Number(amountField.getValue() || 0);
+
+            if ((amount == 0) && (amountFieldLength > 0))
+            {
+               amount = Number(value);
+            }
+            else
+            {
+               amount = (10 * amount) + Number(value);
+            }
+
+            // Max value
+            if (amount <= me.maxStampValue)
+            {
+               amountField.setValue(amount);
+            }
+            break;
+      }
+   },
    // --------------------------------------------------------------------------
    // TAG ID Tab
    // --------------------------------------------------------------------------
@@ -728,7 +827,10 @@ Ext.define('Genesis.controller.server.Rewards',
          container.setActiveItem(2);
          me.getRptCloseBB()['hide']();
          me.getBackBB()['show']();
-         me.getCalcBtn()['show']();
+         if (debugMode)
+         {
+            me.getCalcBtn()['show']();
+         }
       }
    },
    onReceiptDisclose : function(list, record, target, index, e, eOpts, eInfo)
@@ -750,7 +852,10 @@ Ext.define('Genesis.controller.server.Rewards',
          me.receiptSelected = [record];
          me.getRptCloseBB()['show']();
          me.getBackBB()['hide']();
-         me.getCalcBtn()['show']();
+         if (debugMode)
+         {
+            me.getCalcBtn()['show']();
+         }
       }
    },
    onReceiptStoreUpdate : function(store)
@@ -797,6 +902,7 @@ Ext.define('Genesis.controller.server.Rewards',
    {
       var me = this, container = me.getRewardsContainer(), db = Genesis.db.getLocalDB(), store = Ext.StoreMgr.get('ReceiptStore');
       var isPosEnabled = (db['enablePosIntegration'] && db['isPosEnabled']);
+      var manualMode = ((db['rewardModel'] == 'items_purchased') ? 4 : 0);
       delete me._params;
       if (container)
       {
@@ -805,7 +911,7 @@ Ext.define('Genesis.controller.server.Rewards',
             case 'Manual' :
             {
                me.getAmount().reset();
-               container.setActiveItem((isPosEnabled) ? 2 : 0);
+               container.setActiveItem((isPosEnabled) ? 2 : manualMode);
                break;
             }
             case 'POS_Detail' :
@@ -818,10 +924,14 @@ Ext.define('Genesis.controller.server.Rewards',
                container.setActiveItem(2);
                break;
             }
+            case 'Visit' :
             default :
                break;
          }
-         me.getCalcBtn()[(isPosEnabled) ? 'show' : 'hide']();
+         if (me.getCalcBtn())
+         {
+            me.getCalcBtn()[(isPosEnabled) ? 'show' : 'hide']();
+         }
       }
 
       console.debug("Rewards onDoneTap Called ...");
@@ -859,12 +969,30 @@ Ext.define('Genesis.controller.server.Rewards',
    },
    openPage : function(subFeature)
    {
-      var me = this;
+      var me = this, db = Genesis.db.getLocalDB();
+      var isPosEnabled = (db['enablePosIntegration'] && db['isPosEnabled']);
+
       switch (subFeature)
       {
          case 'rewards':
          {
-            me.redirectTo('earnPts');
+            switch (db['rewardModel'])
+            {
+               case 'visits' :
+               {
+                  if (!isPosEnabled)
+                  {
+                     me.setMode('Visit');
+                     me.fireEvent('rewarditem', subFeature);
+                     break;
+                  }
+               }
+               case 'amount_spent' :
+               case 'items_purchased' :
+               default:
+                  me.redirectTo('earnPts');
+                  break;
+            }
             break;
          }
       }

@@ -24,6 +24,7 @@ Ext.define('Genesis.model.frontend.Receipt',
          name : 'subtotal',
          type : 'float'
       },
+      'itemsPurchased',
       {
          name : 'price',
          type : 'float'
