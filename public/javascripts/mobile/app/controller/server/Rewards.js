@@ -203,7 +203,10 @@ Ext.define('Genesis.controller.server.Rewards',
          me.onReceiptStoreUpdate(store);
          container.setActiveItem((isPosEnabled) ? 2 : manualMode);
       }
-      me.getCalcBtn()[(isPosEnabled) ? 'show' : 'hide']();
+      if (debugMode)
+      {
+         me.getCalcBtn()[(isPosEnabled) ? 'show' : 'hide']();
+      }
       //activeItem.createView();
    },
    onCalcBtnOverrideTap : function(b, e)
@@ -218,7 +221,10 @@ Ext.define('Genesis.controller.server.Rewards',
          container.setActiveItem(manualMode);
          me.getRptCloseBB()['hide']();
          me.getBackBB()['show']();
-         me.getCalcBtn()['hide']();
+         if (debugMode)
+         {
+            me.getCalcBtn()['hide']();
+         }
       }
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
@@ -577,8 +583,10 @@ Ext.define('Genesis.controller.server.Rewards',
       {
          return;
       }
-
-      me.getCalcBtn()['hide']();
+      if (debugMode)
+      {
+         me.getCalcBtn()['hide']();
+      }
       container.setActiveItem(1);
    },
    onEarnPtsTap : function(b, e, eOpts, eInfo)
@@ -819,7 +827,10 @@ Ext.define('Genesis.controller.server.Rewards',
          container.setActiveItem(2);
          me.getRptCloseBB()['hide']();
          me.getBackBB()['show']();
-         me.getCalcBtn()['show']();
+         if (debugMode)
+         {
+            me.getCalcBtn()['show']();
+         }
       }
    },
    onReceiptDisclose : function(list, record, target, index, e, eOpts, eInfo)
@@ -841,7 +852,10 @@ Ext.define('Genesis.controller.server.Rewards',
          me.receiptSelected = [record];
          me.getRptCloseBB()['show']();
          me.getBackBB()['hide']();
-         me.getCalcBtn()['show']();
+         if (debugMode)
+         {
+            me.getCalcBtn()['show']();
+         }
       }
    },
    onReceiptStoreUpdate : function(store)
