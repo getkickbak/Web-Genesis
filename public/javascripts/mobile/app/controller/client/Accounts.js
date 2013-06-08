@@ -172,8 +172,7 @@ Ext.define('Genesis.controller.client.Accounts',
 
             return true;
          }
-         else
-         if (activeItem == me.getTransferPage())
+         else if (activeItem == me.getTransferPage())
          {
             if (activeItem.getActiveItem() == me.getQrcodeContainer())
             {
@@ -443,11 +442,30 @@ Ext.define('Genesis.controller.client.Accounts',
    {
       var me = this;
       var customerId = record.getId();
+      var merchant = record.getMerchant();
       //var merchantName = record.getMerchant().get('name');
       var vport = me.getViewport();
 
+      switch(me.getMode())
+      {
+         case 'redeemPrizesProfile' :
+         {
+            if (merchant.get('features_config') && !merchant.get('features_config')['enable_prizes'])
+            {
+               return;
+            }
+            break;
+         }
+         case 'profile' :
+         case 'redeemRewardsProfile' :
+         case 'emailtransfer' :
+         case 'transfer' :
+         default:
+            break;
+      }
+
       me.self.playSoundFile(me.getViewPortCntlr().sound_files['clickSound']);
-      me.merchantId = record.getMerchant().getId();
+      me.merchantId = merchant.getId();
       me.rec = record;
 
       switch(me.getMode())
@@ -586,8 +604,7 @@ Ext.define('Genesis.controller.client.Accounts',
                }
                delete me.rec;
             }
-            else
-            if (!operation.wasSuccessful() && !metaData)
+            else if (!operation.wasSuccessful() && !metaData)
             {
                Ext.Viewport.setMasked(null);
                console.log(me.metaDataMissingMsg);
@@ -793,8 +810,7 @@ Ext.define('Genesis.controller.client.Accounts',
             {
                me.sendEmailIOS(qrcode, emailTpl, subject);
             }
-            else
-            if (Ext.os.is('Android'))
+            else if (Ext.os.is('Android'))
             {
                me.sendEmailAndroid(qrcode, emailTpl, subject);
             }

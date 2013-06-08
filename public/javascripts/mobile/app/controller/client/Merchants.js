@@ -336,9 +336,10 @@ Ext.define('Genesis.controller.client.Merchants',
       var viewport = me.getViewPortCntlr();
       var vrecord = viewport.getVenue();
       var crecord = viewport.getCustomer();
+      var mrecord = vrecord.getMerchant();
       var customerId = crecord.getId();
       var venueId = vrecord.getId();
-      var merchantId = vrecord.getMerchant().getId();
+      var merchantId = mrecord.getId();
 
       var cvenue = viewport.getCheckinInfo().venue;
       var checkedIn = (cvenue != null);
@@ -405,23 +406,13 @@ Ext.define('Genesis.controller.client.Merchants',
 
       //me.getCheckinBtn()[(activeItem.showCheckinBtn) ? 'show':'hide']();
       me.getMainBtn()[(activeItem.showMainBtn) ? 'show':'hide']();
-      /*
-      var prizeBtn = me.getPrizesBtn();
-      //if (!Customer.isValid(crecord.getId()))
-      {
-      prizeBtn.setIcon('');
-      prizeBtn.setIconCls('prizes');
-      }
-      */
-      /*
-      else
-      {
-      var type = Ext.StoreMgr.get('BadgeStore').getById(crecord.get('badge_id')).get('type');
 
-      prizeBtn.setIconCls('prizeicon');
-      prizeBtn.setIcon(Genesis.view.client.Badges.getPhoto(type, 'thumbnail_small_url'));
+      var prizeBtn = me.getPrizesBtn(), features_config = mrecord.get('features_config');
+      if (prizeBtn)
+      {
+         prizeBtn.setVisibility(!features_config || (features_config && features_config['enable_prizes']));
       }
-      */
+      
       // Update TitleBar
       var bar = activeItem.query('titlebar')[0];
       bar.setTitle(' ');

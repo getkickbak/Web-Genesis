@@ -250,9 +250,11 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
       var viewport = _application.getController(((merchantMode) ? 'server' : 'client') + '.Viewport');
       var customer = viewport.getCustomer();
       var venue = viewport.getVenue();
+      var merchant = venue.getMerchant();
       var venueId = venue.getId();
       var cvenue = viewport.getCheckinInfo().venue;
       var customerId = customer.getId();
+      var features_config = merchant.get('features_config');
 
       //var crecord = cstore.getById(data.Merchant['merchant_id']);
       var bg = this.query('container[tag=background]')[0];
@@ -288,6 +290,8 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             "prize_points" : "---"
          });
       }
+      prizepoints.setVisibility(!features_config || (features_config && features_config['enable_prizes']));
+
    },
    applyWinnersCount : function(config)
    {

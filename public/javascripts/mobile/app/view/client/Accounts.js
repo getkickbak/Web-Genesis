@@ -180,14 +180,14 @@ Ext.define('Genesis.view.client.Accounts',
                '{[this.isEligible(values)]}',
                '<img src="{[this.getPhoto(values)]}"/>',
             '</div>',
-            '<div class="listItemDetailsWrapper {[this.isSingle(values)]}">',
+            '<div class="listItemDetailsWrapper {[this.isSingle(values)]}" style="position:relative;{[this.getDisclose(values)]}">',
                //'<div class="title">{[this.getTitle()]}</div>',
-               '<tpl if="this.showRewardPoints()">',
+               '<tpl if="this.showRewardPoints(values)">',
                   '<div class="points">',
                      '{[this.getRewardPoints(values)]}',
                   '</div>',
                '</tpl>',
-               '<tpl if="this.showPrizePoints()">',
+               '<tpl if="this.showPrizePoints(values)">',
                   '<div class="points">',
                       '{[this.getPrizePoints(values)]}'+
                  '</div>',
@@ -196,9 +196,36 @@ Ext.define('Genesis.view.client.Accounts',
          '</tpl>',
          // @formatter:on
          {
-            isSingle : function(values)
+            getDisclose : function(customer)
+            {
+               var rc = '', merchant = customer.merchant;
+               customer['disclosure'] = true;
+
+               switch (me.mode)
+               {
+                  case 'redeemPrizesProfile' :
+                  {
+                     if (merchant['features_config'] && !merchant['features_config']['enable_prizes'])
+                     {
+                        customer['disclosure'] = false;
+                     }
+                     rc = ((customer['disclosure'] === false) ? 'padding-right:0;' : '');
+                     break;
+                  }
+                  case 'redeemRewardsProfile' :
+                  case 'emailtransfer' :
+                  case 'transfer' :
+                  case 'profile' :
+                  default :
+                     break;
+               }
+
+               return rc;
+            },
+            isSingle : function(customer)
             {
                rc = '';
+               var merchant = customer.merchant;
                switch (me.mode)
                {
                   case 'redeemPrizesProfile' :
@@ -210,6 +237,13 @@ Ext.define('Genesis.view.client.Accounts',
                      break;
                   }
                   case 'profile' :
+                  {
+                     if (merchant['features_config'] && !merchant['features_config']['enable_prizes'])
+                     {
+                        rc = 'single';
+                     }
+                     break;
+                  }
                   default :
                      break;
                }
@@ -256,7 +290,7 @@ Ext.define('Genesis.view.client.Accounts',
             {
                return values.merchant['photo']['thumbnail_medium_url'];
             },
-            showRewardPoints : function()
+            showRewardPoints : function(customer)
             {
                var rc = true;
                switch (me.mode)
@@ -279,9 +313,9 @@ Ext.define('Genesis.view.client.Accounts',
             {
                return values['points'] + '<img src="' + Genesis.constants.getIconPath('miscicons', 'points') + '">';
             },
-            showPrizePoints : function()
+            showPrizePoints : function(customer)
             {
-               var rc = true;
+               var rc = true, merchant = customer.merchant;
                switch (me.mode)
                {
                   case 'redeemRewardsProfile' :
@@ -291,6 +325,14 @@ Ext.define('Genesis.view.client.Accounts',
                      rc = false;
                      break;
                   }
+                  case 'profile' :
+                  {
+                     if (merchant['features_config'] && !merchant['features_config']['enable_prizes'])
+                     {
+                        rc = false;
+                     }
+                     break;
+                  }
                   case 'redeemPrizesProfile' :
                   default :
                      break;
@@ -298,9 +340,29 @@ Ext.define('Genesis.view.client.Accounts',
 
                return rc;
             },
-            getPrizePoints : function(values)
+            getPrizePoints : function(customer)
             {
-               return values['prize_points'] + '<img src="' + Genesis.constants.getIconPath('miscicons', 'prize_points') + '">';
+               var rc, merchant = customer.merchant;
+               switch (me.mode)
+               {
+                  case 'redeemPrizesProfile' :
+                  {
+                     if (merchant['features_config'] && !merchant['features_config']['enable_prizes'])
+                     {
+                        rc = 'Not Participating';
+                        break;
+                     }
+                  }
+                  case 'redeemRewardsProfile' :
+                  case 'emailtransfer' :
+                  case 'transfer' :
+                  case 'profile' :
+                  default :
+                     rc = customer['prize_points'] + '<img src="' + Genesis.constants.getIconPath('miscicons', 'prize_points') + '">';
+                     break;
+               }
+
+               return rc;
             }
          }),
          onItemDisclosure : Ext.emptyFn

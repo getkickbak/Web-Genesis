@@ -344,10 +344,9 @@ Ext.define('Genesis.controller.ViewportBase',
    onUpdateDeviceToken : Ext.emptyFn,
    onActivate : function()
    {
-      var me = this;
+      var me = this, file = Ext.Loader.getPath("Genesis") + "/store/" + ((!merchantMode) ? 'mainClientPage' : 'mainServerPage') + '.json', path = "", db = Genesis.db.getLocalDB();
+      var request = new XMLHttpRequest(), enablePrizes = db['enablePrizes'], enableChallenges = db['enableChallenges'];
 
-      var file = Ext.Loader.getPath("Genesis") + "/store/" + ((!merchantMode) ? 'mainClientPage' : 'mainServerPage') + '.json';
-      var path = "";
       if (( typeof (device) != 'undefined') && device.uuid)
       {
          if (Ext.os.is('iOS'))
@@ -363,7 +362,6 @@ Ext.define('Genesis.controller.ViewportBase',
 
       console.log("Loading MainPage Store ...");
       //console.debug("Creating Request [" + path + file + "]");
-      var request = new XMLHttpRequest();
       request.onreadystatechange = function()
       {
          if (request.readyState == 4)
@@ -372,6 +370,32 @@ Ext.define('Genesis.controller.ViewportBase',
             {
                console.log("Loaded MainPage Store ...");
                var response = Ext.decode(request.responseText.replace(me.mainPageStorePathToken, Genesis.constants._iconPath));
+               var data = response.data;
+               for (var i = 0; i < data.length; i++)
+               {
+                  var item = data[i];
+                  var index = data.indexOf(item);
+                  if (Ext.isDefined(enablePrizes))
+                  {
+                     if (!enablePrizes)
+                     {
+                        if (item['id'] == 'redeemPrizes')
+                        {
+                           data.splice(index, 1);
+                        }
+                     }
+                  }
+                  if (Ext.isDefined(enableChallenges))
+                  {
+                     if (!enableChallenges)
+                     {
+                        if (item['id'] == 'challenges')
+                        {
+                           data.splice(index, 1);
+                        }
+                     }
+                  }
+               }
                Ext.StoreMgr.get('MainPageStore').setData(response.data);
             }
          }

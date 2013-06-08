@@ -27,7 +27,7 @@ Genesis.constants =
       if (Ext.os.is('Tablet') && //
       (Ext.os.is('Android') || (Ext.os.is('iOS') && merchantMode)))
       {
-         ratio = (window.innerHeight > 640) ? 2 * ratio : 1.5 * ratio;
+         ratio = (window.innerHeight > 640) ? 1.5 * ratio : 1.5 * ratio;
       }
       return Math.floor(((16 * ratio * Math.min(1.0, window.devicePixelRatio)) || (16 * ratio)));
    })(),

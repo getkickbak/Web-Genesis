@@ -622,13 +622,13 @@ Ext.define('Genesis.controller.server.Receipts',
    // --------------------------------------------------------------------------
    posIntegrationHandler : function(metaData, isPosEnabled)
    {
-      var me = this, db = Genesis.db.getLocalDB();
+      var me = this, db = Genesis.db.getLocalDB(), features_config = metaData['features_config'];
 
-      db['enablePosIntegration'] = metaData['features_config']['enable_pos'];
+      db['enablePosIntegration'] = features_config['enable_pos'];
       db['isPosEnabled'] = ((isPosEnabled === undefined) || (isPosEnabled));
       if (db['enablePosIntegration'] && db['isPosEnabled'])
       {
-         var filters = metaData['features_config']['receipt_filter'] = (metaData['features_config']['receipt_filter'] ||
+         var filters = features_config['receipt_filter'] = (features_config['receipt_filter'] ||
          {
          });
          db['receiptFilters'] =
@@ -663,7 +663,9 @@ Ext.define('Genesis.controller.server.Receipts',
          // BUG: We have to remove the filtered items as well
          console.debug("posIntegrationHandler - Disabled");
       }
-      db['enableReceiptUpload'] = metaData['features_config']['enable_sku_data_upload'];
+      db['enableReceiptUpload'] = features_config['enable_sku_data_upload'];
+      db['enablePrizes'] = features_config['enable_prizes'];
+
       Genesis.db.setLocalDB(db);
    },
    batteryStatusFn : function(info)
