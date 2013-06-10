@@ -99,15 +99,30 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
               :venue_id => @venue.id
             }.to_json
           else
-            points = @decrypted_data[:points]
+            if @venue.features_config.use_custom
+              enable_pos = @venue.features_config.enable_pos 
+            else
+              enable_pos = @merchant.features_config.enable_pos
+            end
+            amount = nil
+            if enable_pos
+              amount = @decrypted_data[:amount].to_f
+            end
+            if reward_model_type.value == "items_purchased"
+              points = @decrypted_data[:items]
+            else
+              points = @decrypted_data[:visits]  
+            end
             if points == 0
               raise "Points must be >= 1"
             end
             request_data = { 
+              :amount => amount,
               :points => points,
               :data => params[:data],
               :venue_id => @venue.id
-            }.to_json
+            }.delete_if { |k,v| v.nil? }
+            request_data = request_data.to_json
           end  
           if params[:frequency] || @decrypted_data[:frequency]
             if params[:frequency]
@@ -216,7 +231,11 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           if reward_model_type.value == "amount_spent"
             amount = @decrypted_data[:amount].to_f
           else
-            amount = 0.00
+            if @decrypted_data.include :amount
+              amount = @decrypted_data[:amount].to_f
+            else
+              amount = 0.00
+            end   
             points = @decrypted_data[:points].to_i
           end
 
@@ -720,101 +739,96 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         
         # Performance Test
         start_time4 = Time.now  
-        prize_info = @venue.prize_info
-        if prize_info.prize_interval == 0
-          prize_interval = pick_prize_interval(reward_model, @venue)
-          prize_info.prize_interval = prize_interval
-          prize_info.prize_win_offset = pick_prize_win_offset(prize_interval) + 1
-        else
-          prize_interval = prize_info.prize_interval
-        end
-        current_point_offset = prize_info.prize_point_offset + points
-        #logger.debug("Check if Prize has been won yet.")
-        won_prize_before = EarnPrizeRecord.count(:customer => @customer, :points.gt => 1) > 0
-        if (prize_info.prize_point_offset < prize_info.prize_win_offset)
-          if (current_point_offset >= prize_info.prize_win_offset) || ((@customer.visits > 1) && !won_prize_before)
-            prize_points = prize_interval
-          end
-          if (current_point_offset < prize_info.prize_win_offset) && ((@customer.visits > 1) && !won_prize_before)
-            prize_info.prize_win_offset = current_point_offset
-          end
-        end
-        if current_point_offset >= prize_interval
-          #logger.debug("Current Point Offset >= Prize Interval.")
-          current_point_offset -= prize_interval
-          prize_interval = pick_prize_interval(reward_model, @venue)
-          prize_info.prize_interval = prize_interval
-          prize_info.prize_win_offset = pick_prize_win_offset(prize_interval) + 1
-          if (prize_points == 1) && ((current_point_offset >= prize_info.prize_win_offset) || ((@customer.visits > 1) && !won_prize_before))
-            prize_points = prize_interval
-            if current_point_offset >= prize_info.prize_win_offset
-              prize_interval = pick_prize_interval(reward_model, @venue)
-              prize_info.prize_interval = prize_interval
-              prize_info.prize_win_offset = pick_prize_win_offset(prize_interval) + 1
-              current_point_offset = current_point_offset % prize_interval
-            else
-              prize_info.prize_win_offset = current_point_offset
-            end
-          elsif current_point_offset >= prize_info.prize_win_offset
-            current_point_offset = pick_prize_win_offset(prize_info.prize_win_offset - 1) + 1
-          end
-        end
-        #logger.debug("Set Prize Point Offset = Current Point Offset.")
-        prize_info.prize_point_offset = current_point_offset
-        prize_info.save
-
-        previous_prize_points = @customer.prize_points
-        @customer.prize_points += prize_points
-        @reward_info[:prize_points] = prize_points
-
-        prize_record = EarnPrizeRecord.new(
-          :venue_id => @venue.id,
-          :points => prize_points,
-          :created_ts => now,
-          :update_ts => now
-        )
-        prize_record.merchant = @venue.merchant
-        prize_record.customer = @customer
-        prize_record.user = @current_user
-        prize_record.save
-        prize_trans_record = TransactionRecord.new(
-          :type => :earn_prize_points,
-          :ref_id => prize_record.id,
-          :description => I18n.t("transaction.earn"),
-          :points => prize_points,
-          :created_ts => now,
-          :update_ts => now
-        )
-        prize_trans_record.merchant = @venue.merchant
-        prize_trans_record.customer = @customer
-        prize_trans_record.user = @current_user
-        prize_trans_record.save
-          
-        @prize_jackpots = EarnPrizeRecord.count(:merchant => @venue.merchant, :points.gt => 1, :created_ts.gte => today.at_beginning_of_month.to_time)
         @account_info = {}
         @account_info[:visits] = @customer.visits
         @account_info[:next_badge_visits] = @customer.next_badge_visits
         @account_info[:points] = @customer.points
-        @account_info[:prize_points] = @customer.prize_points
         @account_info[:badge_id] = @customer.badge.id
         @account_info[:next_badge_id] = next_badge.id
         rewards = Common.get_rewards_by_venue(@venue, :reward)
-        prizes = Common.get_rewards_by_venue(@venue, :prize)
-        new_eligible_prize = Common.find_eligible_reward(prizes.to_a, @customer.prize_points - previous_prize_points)
-        @reward_info[:eligible_prize_id] = new_eligible_prize.id if !new_eligible_prize.nil?
         eligible_reward = Common.find_eligible_reward(rewards.to_a, @customer.points)
-        eligible_prize = Common.find_eligible_reward(prizes.to_a, @customer.prize_points)
         eligible_for_reward = !eligible_reward.nil?
-        eligible_for_prize = !eligible_prize.nil?
         @customer.eligible_for_reward = eligible_for_reward
-        @customer.eligible_for_prize = eligible_for_prize
+        @account_info[:eligible_for_reward] = eligible_for_reward
+        if @venue.merchant.features_config.enable_prizes
+          prize_info = @venue.prize_info
+          if prize_info.prize_interval == 0
+            prize_interval = pick_prize_interval(reward_model, @venue)
+            prize_info.prize_interval = prize_interval
+            prize_info.prize_win_offset = pick_prize_win_offset(prize_interval) + 1
+          else
+            prize_interval = prize_info.prize_interval
+          end
+          current_point_offset = prize_info.prize_point_offset + points
+          #logger.debug("Check if Prize has been won yet.")
+          if (prize_info.prize_point_offset < prize_info.prize_win_offset) && (current_point_offset >= prize_info.prize_win_offset)
+            prize_points = prize_interval
+          end
+          if current_point_offset >= prize_interval
+            #logger.debug("Current Point Offset >= Prize Interval.")
+            current_point_offset -= prize_interval
+            prize_interval = pick_prize_interval(reward_model, @venue)
+            prize_info.prize_interval = prize_interval
+            prize_info.prize_win_offset = pick_prize_win_offset(prize_interval) + 1
+            if (prize_points == 1) && (current_point_offset >= prize_info.prize_win_offset)
+              prize_points = prize_interval
+              prize_interval = pick_prize_interval(reward_model, @venue)
+              prize_info.prize_interval = prize_interval
+              prize_info.prize_win_offset = pick_prize_win_offset(prize_interval) + 1
+              current_point_offset = current_point_offset % prize_interval
+            elsif current_point_offset >= prize_info.prize_win_offset
+              current_point_offset = pick_prize_win_offset(prize_info.prize_win_offset - 1) + 1
+            end
+          end
+          #logger.debug("Set Prize Point Offset = Current Point Offset.")
+          prize_info.prize_point_offset = current_point_offset
+          prize_info.save
+
+          previous_prize_points = @customer.prize_points
+          @customer.prize_points += prize_points
+          @reward_info[:prize_points] = prize_points
+
+          prize_record = EarnPrizeRecord.new(
+            :venue_id => @venue.id,
+            :points => prize_points,
+            :created_ts => now,
+            :update_ts => now
+          )
+          prize_record.merchant = @venue.merchant
+          prize_record.customer = @customer
+          prize_record.user = @current_user
+          prize_record.save
+          prize_trans_record = TransactionRecord.new(
+            :type => :earn_prize_points,
+            :ref_id => prize_record.id,
+            :description => I18n.t("transaction.earn"),
+            :points => prize_points,
+            :created_ts => now,
+            :update_ts => now
+          )
+          prize_trans_record.merchant = @venue.merchant
+          prize_trans_record.customer = @customer
+          prize_trans_record.user = @current_user
+          prize_trans_record.save
+          
+          @prize_jackpots = EarnPrizeRecord.count(:merchant => @venue.merchant, :points.gt => 1, :created_ts.gte => today.at_beginning_of_month.to_time)
+          
+          @account_info[:prize_points] = @customer.prize_points
+          prizes = Common.get_rewards_by_venue(@venue, :prize)
+          new_eligible_prize = Common.find_eligible_reward(prizes.to_a, @customer.prize_points - previous_prize_points)
+          @reward_info[:eligible_prize_id] = new_eligible_prize.id if !new_eligible_prize.nil?
+          eligible_prize = Common.find_eligible_reward(prizes.to_a, @customer.prize_points)
+          eligible_for_prize = !eligible_prize.nil?
+          @customer.eligible_for_prize = eligible_for_prize
+          @account_info[:eligible_for_prize] = eligible_for_prize
+          if @venue_id.nil?
+            @prizes = prizes
+          end
+        end
         @customer.update_ts = now
         @customer.save
-        @account_info[:eligible_for_reward] = eligible_for_reward
-        @account_info[:eligible_for_prize] = eligible_for_prize
         if @venue_id.nil?
           @rewards = rewards
-          @prizes = prizes
         end
         Request.set_status(@request, :complete, { :txn_id => @record.id }.to_json)
         if @current_user.facebook_auth
@@ -850,8 +864,14 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         end
         if !signed_in? && @current_user.status == :pending
           if @first_time
-            sms_message_type = SmsMessageType::MERCHANT_REGISTRATION
-            options = { :name => @venue.name, :points => @reward_info[:points], :prize_points => @reward_info[:prize_points] }.to_json
+            if eligible_for_reward || eligible_for_prize
+              sms_message_type = SmsMessageType::MERCHANT_REGISTRATION_REWARD
+              reward_name = eligible_for_reward ? eligible_reward.title : eligible_prize.title
+              options = { :name => @venue.name, :reward_name => reward_name }.to_json
+            else
+              sms_message_type = SmsMessageType::MERCHANT_REGISTRATION
+              options = { :name => @venue.name, :points => @reward_info[:points], :prize_points => @reward_info[:prize_points] }.to_json
+            end
           else
             if eligible_for_reward || eligible_for_prize
               sms_message_type = SmsMessageType::MERCHANT_REGISTRATION_REMINDER_REWARD
@@ -864,7 +884,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           end
           Resque.enqueue(SendSms, SmsProvider.get_current, sms_message_type, @current_user.id, nil, options) if !@current_user.phone.empty?
         end
-        if !signed_in? && @current_user.status != :pending && @current_user.subscription.email_notif
+        if !signed_in? && @current_user.status == :active && @current_user.subscription.email_notif
           if @reward_info[:birthday_points] > 0 || @reward_info[:badge_points] > 0 || @reward_info[:prize_points] > 1
             UserAsyncMailer.reward_notif_email(@customer.id, @reward_info.to_json).deliver
           elsif eligible_for_reward

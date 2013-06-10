@@ -55,9 +55,13 @@ class Api::V1::VenuesController < Api::V1::BaseApplicationController
     @rewards = Common.get_rewards_by_venue(@venue, :reward)
     @prizes = Common.get_rewards_by_venue(@venue, :prize)
     if @venue.features_config.use_custom
-      @features_config = @venue.features_config
+      @features_config = MerchantFeaturesConfig.new(
+        :enable_prizes => @venue.merchant.features_config.enable_prizes,
+        :enable_pos => @venue.features_config.enable_pos
+      )
+      @features_config.receipt_filter = @venue.features_config.receipt_filter
     else
-      @features_config = @merchant.features_config
+      @features_config = @venue.merchant.features_config
     end
     render :template => '/api/v1/venues/merchant_explore'
   end

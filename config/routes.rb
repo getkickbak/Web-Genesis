@@ -95,7 +95,7 @@ Genesis::Application.routes.draw do
         get "payment_subscription", :on => :member, :as => :payment_subscription
         put "update_payment_subscription", :on => :member, :as => :update_payment_subscription
         get "features_config", :on => :member, :as => :features_config
-        put "update_pos_config", :on => :member, :as => :update_pos_config
+        put "update_features_config", :on => :member, :as => :update_features_config
       end
       
       match "/configuration" => 'configuration#index', :as => :configuration

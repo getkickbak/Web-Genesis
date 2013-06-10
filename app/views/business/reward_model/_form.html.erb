@@ -9,6 +9,11 @@
    <%= f.input :prize_rebate_rate, :hint => "% of every dollar spent", :input_html=>{:class => "input-medium"} %>
    <% else %>
    <%= f.input :badge_rebate_rate, :hint => "Visit(s) for every point", :input_html=>{:class => "input-medium"} %>
+   <% if @reward_model.type.value == "items_purchased" %>
+   <%= f.input :prize_rebate_rate, :hint => "Item(s) for every point", :input_html=>{:class => "input-medium"} %>
+   <% else %>
+   <%= f.input :prize_rebate_rate, :hint => "Visit(s) for every point", :input_html=>{:class => "input-medium"} %>
+   <% end %>
    <% end %>
    <% if @reward_model.type.value == "amount_spent" %>
    <%= f.input :signup_amount, :input_html=>{:class => "input-medium"}%>

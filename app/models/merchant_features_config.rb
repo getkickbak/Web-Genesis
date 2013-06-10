@@ -2,6 +2,7 @@ class MerchantFeaturesConfig
   include DataMapper::Resource
 
   property :id, Serial
+  property :enable_prizes, Boolean, :default => true
   property :enable_pos, Boolean, :default => false
   property :enable_sku_data_upload, Boolean, :default => false
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
@@ -9,7 +10,7 @@ class MerchantFeaturesConfig
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
 
-  attr_accessible :enable_pos, :enable_sku_data_upload, :receipt_filter_attributes
+  attr_accessible :enable_prizes, :enable_pos, :enable_sku_data_upload, :receipt_filter_attributes
 
   belongs_to :merchant
 
@@ -31,6 +32,7 @@ class MerchantFeaturesConfig
 
   def update(features_config_info)
     now = Time.now
+    self.enable_prizes = features_config_info[:enable_prizes]
     self.enable_pos = features_config_info[:enable_pos]
     self.enable_sku_data_upload = features_config_info[:enable_sku_data_upload]
     features_config_info[:receipt_filter_attributes].each do |attr, val|

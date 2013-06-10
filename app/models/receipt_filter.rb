@@ -9,4 +9,5 @@ class ReceiptFilter
   property :subtotal, String, :default => ""
   property :item, String, :default => ""
   property :table, String, :default => ""    
+  property :items_purchased, String, :default => ""
 end

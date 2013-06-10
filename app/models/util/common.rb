@@ -258,7 +258,7 @@ class Common
     today = Date.today
     promotions = Promotion.all(:merchant => venue.merchant, :start_date.lte => today, :end_date.gte => today)
     if customer.promotions
-      promotions << customer.promotions.all(:start_date.lte => today, :end_date.gte => today)
+      promotions.concat(customer.promotions.all(:start_date.lte => today, :end_date.gte => today))
     end
     promotions = promotions.all(:order => [:start_date.desc,:created_ts.desc])
     promotions.each do |promotion|

@@ -12,10 +12,21 @@ module SendSms
       opts = JSON.parse(options, { :symbolize_names => true }) if options
       texts = []
       if sms_message_type == SmsMessageType::MERCHANT_REGISTRATION
-        texts << I18n.t("sms.merchant_registration_1") % [opts[:name], opts[:points], opts[:prize_points]]
+        if opts[:prize_points] > 0
+          texts << I18n.t("sms.merchant_registration_1") % [opts[:name], opts[:points], opts[:prize_points]]
+        else
+          texts << I18n.t("sms.merchant_registration_1_no_prize_points") % [opts[:name], opts[:points]]
+        end
         texts << I18n.t("sms.merchant_registration_2")
+      elsif sms_message_type == SmsMessageType::MERCHANT_REGISTRATION_REWARD  
+        texts << I18n.t("sms.merchant_registration_reward_1") % [opts[:name], opts[:reward_name]]
+        texts << I18n.t("sms.merchant_registration_reward_2")
       elsif sms_message_type == SmsMessageType::MERCHANT_REGISTRATION_REMINDER
-        texts << I18n.t("sms.merchant_registration_reminder_1") % [opts[:name], opts[:points], opts[:prize_points]]
+        if opts[:prize_points] > 0
+          texts << I18n.t("sms.merchant_registration_reminder_1") % [opts[:name], opts[:points], opts[:prize_points]]
+        else 
+          texts << I18n.t("sms.merchant_registration_reminder_1_no_prize_points") % [opts[:name], opts[:points]] 
+        end
         texts << I18n.t("sms.merchant_registration_reminder_2")
       elsif sms_message_type == SmsMessageType::MERCHANT_REGISTRATION_REMINDER_REWARD
         texts << I18n.t("sms.merchant_registration_reminder_reward_1") % [opts[:name], opts[:reward_name]]

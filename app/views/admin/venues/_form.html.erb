@@ -5,13 +5,13 @@
 		Device Settings
 	</legend>
 	<%= f.input :device_type, :collection => Venue::DeviceType, :input_html => { :class => 'input-medium' } %>
+	<br/>
+	<div class="form-actions">
+		<%= f.button :submit , "Update", :class => 'btn btn-primary' %>
+		<%= link_to("Cancel", merchant_venues_path(@merchant), :class => 'btn') %>
+	</div>
+	<!-- /form-actions -->
 </fieldset>
-<br/>
-<div class="form-actions">
-	<%= f.button :submit , "Update", :class => 'btn btn-primary' %>
-	<%= link_to("Cancel", merchant_venues_path(@merchant), :class => 'btn') %>
-</div>
-<!-- /form-actions -->
 <% end %>
 <%= simple_form_for @features_config, :url => update_pos_config_merchant_venue_path(@merchant, @venue), :html => { :class => 'form-vertical' } do |f| %>
 <fieldset>
@@ -33,15 +33,16 @@
 				<%= builder.input :subtotal, :as => :text, :input_html => { :rows => 5, :class => 'input-xlarge' } %>
 				<%= builder.input :item, :as => :text, :input_html => { :rows => 5, :class => 'input-xlarge' } %>
 				<%= builder.input :table, :as => :text, :input_html => { :rows => 5, :class => 'input-xlarge' } %>
+				<%= builder.input :items_purchased, :as => :text, :input_html => { :rows => 5, :class => 'input-xlarge' } %>
 			</fieldset>
 			<% end %>
 		</div>
 	</div>
+	<br/>
+	<div class="form-actions">
+		<%= f.button :submit , "Update", :class => 'btn btn-primary' %>
+		<%= link_to("Cancel", merchant_venues_path(@merchant), :class => 'btn') %>
+	</div>
 </fieldset>
-<br/>
-<div class="form-actions">
-	<%= f.button :submit , "Update", :class => 'btn btn-primary' %>
-	<%= link_to("Cancel", merchant_venues_path(@merchant), :class => 'btn') %>
-</div>
 <!-- /form-actions -->
 <% end %>

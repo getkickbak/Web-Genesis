@@ -19,7 +19,7 @@
 	</div>
 	<%= f.input :description, :as => :hidden %>
 	<%= f.input :require_verif, :as => :hidden %>
-	<% if current_merchant.reward_model.type == "amount_spent" %>
+	<% if current_merchant.reward_model.type.value == "amount_spent" %>
 	<%= f.input :points, :as => :hidden %>
 	<div class="challenge_desc_last">
 		<span>they will get $</span>
@@ -39,7 +39,7 @@
 	</div>
 	<%= f.input :description, :as => :hidden %>
 	<%= f.input :require_verif, :as => :hidden %>
-	<% if current_merchant.reward_model.type == "amount_spent" %>
+	<% if current_merchant.reward_model.type.value == "amount_spent" %>
 	<%= f.input :points, :as => :hidden %>
 	<div class="challenge_desc_last">
 		<span>they will get $</span>
@@ -60,7 +60,7 @@
 	</div>
 	<%= f.input :description, :as => :hidden %>
 	<%= f.input :require_verif, :as => :hidden %>
-	<% if current_merchant.reward_model.type == "amount_spent" %>
+	<% if current_merchant.reward_model.type.value == "amount_spent" %>
 	<%= f.input :points, :as => :hidden %>
 	<div class="challenge_desc_last">
 		<span>they will get $</span>
@@ -80,7 +80,7 @@
 	</div>
 	<%= f.input :description, :as => :hidden %>
 	<%= f.input :require_verif, :as => :hidden %>
-	<% if current_merchant.reward_model.type == "amount_spent" %>
+	<% if current_merchant.reward_model.type.value == "amount_spent" %>
 	<%= f.input :points, :as => :hidden %>
 	<div class="challenge_desc_last">
 		<span>they will get $</span>
@@ -100,7 +100,7 @@
 	</div>
 	<%= f.input :description, :as => :hidden %>
 	<%= f.input :require_verif, :as => :hidden %>
-	<% if current_merchant.reward_model.type == "amount_spent" %>
+	<% if current_merchant.reward_model.type.value == "amount_spent" %>
 	<div class="challenge_desc">
 		<span>they will get $</span>
 		<input id="challenge_reward_amount" name="challenge[reward_amount]" type="text" class="input-small" placeholder=""/>
@@ -129,7 +129,7 @@
 	<%= f.input :name , :input_html => { :class => 'input-large' }%>
 	<%= f.input :description, :as => :text, :input_html => { :rows => 10 , :class => 'input-large' } %>
 	<%= f.input :require_verif, :as => :hidden %>
-	<% if current_merchant.reward_model.type == "amount_spent" %>
+	<% if current_merchant.reward_model.type.value == "amount_spent" %>
 	<%= f.input :reward_amount, :input_html => { :class => 'input-medium' } %>
 	<% end %>
 	<%= f.input :points, :input_html => { :class => 'input-medium' } %>

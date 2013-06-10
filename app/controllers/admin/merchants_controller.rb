@@ -136,7 +136,7 @@ module Admin
       end
     end
     
-    def update_pos_config
+    def update_features_config
       @merchant = Merchant.get(params[:id]) || not_found
       authorize! :update, @merchant
 
@@ -147,7 +147,7 @@ module Admin
           end
           @merchant.features_config.update(params[:merchant_features_config])
           respond_to do |format|
-            format.html { redirect_to(merchant_path(@merchant), :notice => t("admin.merchants.update_pos_config_success")) }
+            format.html { redirect_to(merchant_path(@merchant), :notice => t("admin.merchants.update_features_config_success")) }
           #format.xml  { head :ok }
           end
         end

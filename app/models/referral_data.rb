@@ -7,7 +7,7 @@ class ReferralData
   attr_accessor :referral_points
   
   validates :referral_points, :presence => true
-  validates_numericality_of :referral_reward_amount, :only_integer => false, :if => lambda { |t| !t.referral_reward_amount.present? }
+  validates_numericality_of :referral_reward_amount, :only_integer => false, :if => lambda { |t| t.referral_reward_amount.present? }
   validates_numericality_of :referral_points, :only_integer => true
   validate :check_referral_reward_amount
   validate :check_referral_points
@@ -36,7 +36,7 @@ class ReferralData
   private
 
   def check_referral_reward_amount
-    if not self.referral_reward_amount.present?
+    if self.referral_reward_amount.present?
       self.referral_reward_amount = self.referral_reward_amount.to_i
       errors.add(:referral_reward_amount, I18n.t("business.challenges.min_referral_reward_amount")) unless self.referral_reward_amount > 0.00
     end
