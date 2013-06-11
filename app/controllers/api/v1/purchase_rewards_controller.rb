@@ -86,45 +86,45 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       data_expiry_ts = Time.at(expiry_ts_secs)  
       if @decrypted_data[:type] == EncryptedDataType::EARN_POINTS
         # Cache expires in 12 hrs
-        if (data_expiry_ts >= Time.now) && EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => data_expiry_ts, :data => data).nil?
-          reward_model_type = @venue.merchant.reward_model.type
-          if reward_model_type.value == "amount_spent"
-            amount = @decrypted_data[:amount].to_f
-            if amount < 1.00
-              raise "Amount must be >= 1.00"  
-            end
-            request_data = { 
-              :amount => amount,
-              :data => params[:data],
-              :venue_id => @venue.id
-            }.to_json
-          else
-            if @venue.features_config.use_custom
-              enable_pos = @venue.features_config.enable_pos 
-            else
-              enable_pos = @merchant.features_config.enable_pos
-            end
-            amount = nil
-            if enable_pos
-              amount = @decrypted_data[:amount].to_f
-            end
-            if reward_model_type.value == "items_purchased"
-              points = @decrypted_data[:items]
-            else
-              points = @decrypted_data[:visits]  
-            end
-            if points == 0
-              raise "Points must be >= 1"
-            end
-            request_data = { 
-              :amount => amount,
-              :points => points,
-              :data => params[:data],
-              :venue_id => @venue.id
-            }.delete_if { |k,v| v.nil? }
-            request_data = request_data.to_json
-          end  
+        if (data_expiry_ts >= Time.now) && EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => data_expiry_ts, :data => data).nil?  
           if params[:frequency] || @decrypted_data[:frequency]
+            reward_model_type = @venue.merchant.reward_model.type
+            if reward_model_type.value == "amount_spent"
+              amount = @decrypted_data[:amount].to_f
+              if amount < 1.00
+                raise "Amount must be >= 1.00"  
+              end
+              request_data = { 
+                :amount => amount,
+                :data => params[:data],
+                :venue_id => @venue.id
+              }.to_json
+            else
+              if @venue.features_config.use_custom
+                enable_pos = @venue.features_config.enable_pos 
+              else
+                enable_pos = @venue.merchant.features_config.enable_pos
+              end
+              amount = nil
+              if enable_pos
+                amount = @decrypted_data[:amount].to_f
+              end
+              if reward_model_type.value == "items_purchased"
+                points = @decrypted_data[:items].to_i
+              else
+                points = @decrypted_data[:visits].to_i
+              end
+              if points == 0
+                raise "Points must be >= 1"
+              end
+              request_data = { 
+                :amount => amount,
+                :points => points,
+                :data => params[:data],
+                :venue_id => @venue.id
+              }.delete_if { |k,v| v.nil? }
+              request_data = request_data.to_json
+            end
             if params[:frequency]
               frequency = JSON.parse(params[:frequency], { :symbolize_names => true })
             else
@@ -222,21 +222,28 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
             if @venue.nil?
               raise "No such venue: #{@decrypted_data[:venue_id]}"
             end
-            reward_model_type = @venue.merchant.reward_model.type 
           else
             data = params[:data]
-            reward_model_type = @venue.merchant.reward_model.type
           end
-          
+          reward_model_type = @venue.merchant.reward_model.type 
+
           if reward_model_type.value == "amount_spent"
             amount = @decrypted_data[:amount].to_f
           else
-            if @decrypted_data.include :amount
+            if @decrypted_data.include? :amount
               amount = @decrypted_data[:amount].to_f
             else
               amount = 0.00
             end   
-            points = @decrypted_data[:points].to_i
+            if signed_in?
+              points = @decrypted_data[:points].to_i
+            else
+              if reward_model_type.value == "items_purchased"
+                points = @decrypted_data[:items].to_i
+              else
+                points = @decrypted_data[:visits].to_i
+              end
+            end  
           end
 
           encrypted_data = data.split('$')
@@ -634,7 +641,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         # Performance Test
         start_time2_2 = Time.now
         if reward_model_type.value == "amount_spent"
-          points = (amount / reward_model.price_per_point).to_i
+          points = (amount / reward_model.price_per_point).to_i  
         end  
         @record = EarnRewardRecord.new(
           :type => :purchase,

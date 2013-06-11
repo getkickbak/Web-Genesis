@@ -1,7 +1,7 @@
 $(document).ready($(function() {
 	
 	$("#reward_model_type_id").change(function() {
-		location.href = location.origin + location.pathname + "?type_id=" +$(this).val();
+		location.href = location.origin + "/reward_model?type_id=" +$(this).val();
 	});
 	
 	function set_fields() {

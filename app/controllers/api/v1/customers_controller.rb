@@ -63,7 +63,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
       session[:resolution] = Common.get_thumbail_resolution(session[:user_agent], params[:device_pixel_ratio].to_f)
       @customer = Customer.first(:merchant => @venue.merchant, :user => @user)
       if @customer.nil?
-        logger.error("User(#{@user.id}) is not a customer of Merchant(#{@venue.merchant})")
+        logger.error("User(#{@user.id}) is not a customer of Merchant(#{@venue.merchant.id})")
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :message => t("api.invalid_customer").split(/\n/) } }
