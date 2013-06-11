@@ -9,7 +9,11 @@
 	<legend>
 		POS Settings
 	</legend>
+	<% if @merchant.reward_model.type.value == "amount_spent" %>
 	<%= f.input :enable_pos, :as => :boolean, :label => false, :inline_label => true %>
+	<% else %>
+	<%= f.input :enable_pos, :as => :boolean, :label => false, :inline_label => true, :input_html => { :disabled => true } %>
+	<% end %>
 	<div id="pos_settings_group" class="group" style="<%= @features_config.enable_pos ? 'display : block;' : 'display : none;'%>">
 		<%= f.input :enable_sku_data_upload, :as => :boolean, :label => false, :inline_label => true %>
 		<%= f.simple_fields_for :receipt_filter do |builder| %>

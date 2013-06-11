@@ -56,7 +56,7 @@ module Admin
 
       begin
         VenueFeaturesConfig.transaction do
-          if !params[:venue_features_config][:enable_pos].to_bool
+          if (params[:venue_features_config].include? :enable_pos) && !params[:venue_features_config][:enable_pos].to_bool
             params[:venue_features_config][:enable_sku_data_upload] = false
           end
           @venue.features_config.update(params[:venue_features_config])

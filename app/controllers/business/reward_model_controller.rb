@@ -55,6 +55,13 @@ module Business
               challenge.update_ts = now
               challenge.save!
             end
+          else
+            current_merchant.features_config.enable_pos = true
+            current_merchant.features_config.save!
+            current_merchant.venues.each do |venue|
+              venue.features_config.enable_pos = true
+              venue.save!
+            end  
           end
           respond_to do |format|
             format.html { redirect_to({:action => "index"}, {:notice => msg}) }

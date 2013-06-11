@@ -141,7 +141,7 @@ module Admin
 
       begin
         MerchantFeaturesConfig.transaction do
-          if !params[:merchant_features_config][:enable_pos].to_bool
+          if (params[:merchant_features_config].include? :enable_pos) && !params[:merchant_features_config][:enable_pos].to_bool
             params[:merchant_features_config][:enable_sku_data_upload] = false
           end
           @merchant.features_config.update(params[:merchant_features_config])

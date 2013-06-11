@@ -33,7 +33,7 @@ class MerchantFeaturesConfig
   def update(features_config_info)
     now = Time.now
     self.enable_prizes = features_config_info[:enable_prizes]
-    self.enable_pos = features_config_info[:enable_pos]
+    self.enable_pos = features_config_info[:enable_pos] if features_config_info.include? :enable_pos
     self.enable_sku_data_upload = features_config_info[:enable_sku_data_upload]
     features_config_info[:receipt_filter_attributes].each do |attr, val|
       self.receipt_filter[attr] = val

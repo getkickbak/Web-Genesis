@@ -36,7 +36,9 @@
 										<th>Name</th>
 										<th class="td-actions">Email</th>
 										<th class="td-actions">Points</th>
+										<% if current_merchant.features_config.enable_prizes %>
 										<th class="td-actions">Prize Points</th>
+										<% end %>
 										<th class="td-actions">Joined Date</th>
 									</tr>
 								</thead>
@@ -47,7 +49,9 @@
 										<td><%= user.name %></td>
 										<td class="td-actions"><%= user.email %></td>
 										<td class="td-actions"><%= customer.points %></td>
+										<% if current_merchant.features_config.enable_prizes %>
 										<td class="td-actions"><%= customer.prize_points %></td>
+										<% end %>
 										<td class="td-actions"><%= customer.created_ts.strftime("%b %d, %Y") %></td>
 									</tr>
 									<% end %>

@@ -31,10 +31,12 @@
 									<h4>Total visits in last 12 months</h4>
 									<span class="value"><%= @purchases_total %></span>
 								</div>
+								<% if current_merchant.features_config.enable_prizes %>
 								<div class="stat">
 									<h4>Revenue in last 12 months</h4>
 									<span class="value"><%= number_to_currency(@revenue_total, :precision => 0) %></span>
 								</div>
+								<% end %>
 							</div>
 							<div id="big_stats" class="cf">
 								<div class="stat">
@@ -46,6 +48,7 @@
 									<h4>Rewards claimed in last 12 months</h4>
 									<span class="value"><%= @new_rewards_redeemed_total %></span>
 								</div>
+								<% if current_merchant.features_config.enable_prizes %>
 								<div class="stat">
 									<h4>Total prizes claimed</h4>
 									<span class="value"><%= @prizes_redeemed_total %></span>
@@ -54,6 +57,12 @@
 									<h4>Prizes claimed in last 12 months</h4>
 									<span class="value"><%= @new_prizes_redeemed_total %></span>
 								</div>
+								<% else %>
+								<div class="stat">
+									<h4>Revenue in last 12 months</h4>
+									<span class="value"><%= number_to_currency(@revenue_total, :precision => 0) %></span>
+								</div>
+								<% end %>
 							</div>
 						</div>
 					</div>
