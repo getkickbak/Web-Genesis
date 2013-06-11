@@ -21,8 +21,7 @@ module Admin
       
       @features_config = @venue.features_config
       if @features_config.nil?
-        @venue.features_config = VenueFeaturesConfig.create(@merchant.features_config)
-        @venue.save
+        VenueFeaturesConfig.create(@venue, @merchant.features_config)
       end
       @features_config = @venue.features_config
     end

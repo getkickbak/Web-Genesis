@@ -131,8 +131,7 @@ module Admin
       
       @features_config = @merchant.features_config
       if @features_config.nil?
-        @merchant.features_config = MerchantFeaturesConfig.create(@merchant)
-        @merchant.save
+        MerchantFeaturesConfig.create(@merchant)
       end
     end
     

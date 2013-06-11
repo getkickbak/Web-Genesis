@@ -94,7 +94,13 @@ class Venue
     venue.check_in_code[:update_ts] = now
 =end    
     venue.prize_info = PrizeInfo.new
-    venue.features_config = VenueFeaturesConfig.create(venue, merchant.features_config)
+    venue.features_config = VenueFeaturesConfig.new(
+      :enable_pos => merchant.features_config.enable_pos,
+      :enable_sku_data_upload => merchant.features_config.enable_sku_data_upload
+    )
+    venue.features_config[:created_ts] = now
+    venue.features_config[:update_ts] = now
+    venue.features_config.receipt_filter = ReceiptFilter.new(merchant.features_config.receipt_filter.attributes.merge(:id => nil))
     venue.save
     return venue
   end

@@ -149,7 +149,10 @@ class Merchant
     merchant.payment_subscription = MerchantPaymentSubscription.new
     merchant.payment_subscription[:created_ts] = now
     merchant.payment_subscription[:update_ts] = now
-    merchant.features_config = MerchantFeaturesConfig.create(merchant)
+    merchant.features_config = MerchantFeaturesConfig.new
+    merchant.features_config[:created_ts] = now
+    merchant.features_config[:update_ts] = now
+    merchant.features_config.receipt_filter = ReceiptFilter.new
     merchant.save
     return merchant
   end
