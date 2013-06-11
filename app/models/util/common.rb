@@ -1,61 +1,61 @@
-class Common
-  def self.generate_full_merchant_qr_code_image_file_path(merchant_id, filename)
+module Common
+  def Common.generate_full_merchant_qr_code_image_file_path(merchant_id, filename)
     get_file_host+generate_merchant_qr_code_image_file_path(merchant_id, filename)
   end
 
-  def self.generate_merchant_qr_code_image_file_path(merchant_id, filename)
+  def Common.generate_merchant_qr_code_image_file_path(merchant_id, filename)
     "merchants/#{merchant_id}/qr_code_image/#{filename}"
   end
 
-  def self.generate_full_merchant_qr_code_file_path(merchant_id, filename)
+  def Common.generate_full_merchant_qr_code_file_path(merchant_id, filename)
     get_file_host+generate_merchant_qr_code_file_path(merchant_id, filename)
   end
 
-  def self.generate_merchant_qr_code_file_path(merchant_id, filename)
+  def Common.generate_merchant_qr_code_file_path(merchant_id, filename)
     "merchants/#{merchant_id}/qr_code/#{filename}"
   end
 
-  def self.generate_full_voucher_file_path(user_id, filename)
+  def Common.generate_full_voucher_file_path(user_id, filename)
     get_file_host+generate_voucher_file_path(user_id, filename)
   end
 
-  def self.generate_voucher_file_path(user_id, filename)
+  def Common.generate_voucher_file_path(user_id, filename)
     "users/#{user_id}/vouchers/#{filename}"
   end
 
-  def self.generate_merchant_file_path(merchant_id, filename)
+  def Common.generate_merchant_file_path(merchant_id, filename)
     "merchants/#{merchant_id}/#{filename}"
   end
   
-  def self.generate_full_merchant_file_path(merchant_id, filename)
+  def Common.generate_full_merchant_file_path(merchant_id, filename)
     get_file_host+generate_merchant_file_path(merchant_id, filename)
   end
   
-  def self.generate_merchant_photo_file_path(merchant_id, filename)
+  def Common.generate_merchant_photo_file_path(merchant_id, filename)
     "merchants/#{merchant_id}/#{filename}"
   end
 
-  def self.generate_full_merchant_photo_file_path(merchant_id, filename)
+  def Common.generate_full_merchant_photo_file_path(merchant_id, filename)
     get_photo_host+generate_merchant_photo_file_path(merchant_id, filename)
   end
 
-  def self.generate_temp_file_path(filename)
+  def Common.generate_temp_file_path(filename)
     "temp/#{filename}"
   end
 
-  def self.generate_full_temp_file_path(filename)
+  def Common.generate_full_temp_file_path(filename)
     get_photo_host+generate_temp_file_path(filename)
   end
 
-  def self.get_reward_icon_file_path(merchant_type, reward_type_value, user_agent, resolution)
+  def Common.get_reward_icon_file_path(merchant_type, reward_type_value, user_agent, resolution)
     get_file_host+"v1/icons/#{merchant_type}items/#{user_agent}/#{resolution}/#{reward_type_value}.png"  
   end
   
-  def self.get_challenge_icon_file_path(challenge_type_value, user_agent, resolution)
+  def Common.get_challenge_icon_file_path(challenge_type_value, user_agent, resolution)
     get_file_host+"v1/icons/mainicons/#{user_agent}/#{resolution}/#{challenge_type_value}.png" 
   end
   
-  def self.within_geo_distance?(user, latitude_1, longitude_1, latitude_2, longitude_2)
+  def Common.within_geo_distance?(user, latitude_1, longitude_1, latitude_2, longitude_2)
     if !APP_PROP["SIMULATOR_MODE"] && user.role == "user"
       cal_distance = 6371000 * Math.acos( Math.cos( Math.radians( latitude_1 ) ) * Math.cos( Math.radians( latitude_2 ) ) * Math.cos( Math.radians( longitude_2 ) - Math.radians( longitude_1 ) ) + Math.sin( Math.radians( latitude_1 ) ) * Math.sin( Math.radians( latitude_2 ) ) )
       Rails.logger.info("Check geo-distance: #{cal_distance}m away")
@@ -64,7 +64,7 @@ class Common
     return true
   end
 
-  def self.get_user_agent(user_agent)
+  def Common.get_user_agent(user_agent)
     case user_agent
     when /iPhone/
       agent = :iphone
@@ -75,7 +75,7 @@ class Common
     end  
   end
   
-  def self.get_thumbail_resolution(agent, device_pixel_ratio)
+  def Common.get_thumbail_resolution(agent, device_pixel_ratio)
     case agent
     when :iphone
       if device_pixel_ratio == 1 || device_pixel_ratio == 2
@@ -90,7 +90,7 @@ class Common
     end
   end
   
-  def self.register_user_device(user, device_info)
+  def Common.register_user_device(user, device_info)
     device = UserDevice.first(:user => user)
     if device.nil?
       device = UserDevice.create(user, device_info)
@@ -100,7 +100,7 @@ class Common
     return device
   end
 
-  def self.get_rewards_by_venue(venue, mode)
+  def Common.get_rewards_by_venue(venue, mode)
     customer_reward_venues = CustomerRewardVenue.all(:fields => [:customer_reward_id], :venue_id => venue.id)
     customer_reward_ids = []
     customer_reward_venues.each do |reward_venue|
@@ -118,7 +118,7 @@ class Common
     return rewards
   end
   
-  def self.get_rewards_by_merchant(merchant)
+  def Common.get_rewards_by_merchant(merchant)
     customer_reward_ids = []
     rewards = CustomerReward.all(:merchant => merchant, :order => [:points.asc])
     rewards.each do |reward|
@@ -135,7 +135,7 @@ class Common
     return rewards
   end
 
-  def self.get_challenges_by_merchant(merchant)
+  def Common.get_challenges_by_merchant(merchant)
     challenge_ids = []
     challenges = Challenge.all(:merchant => merchant)
     challenges.each do |challenge|
@@ -152,13 +152,13 @@ class Common
     return challenges
   end
   
-  def self.find_next_badge(badges, badge)
+  def Common.find_next_badge(badges, badge)
     idx = badges.bsearch_upper_boundary {|x| x.rank <=> badge.rank}
     idx = (idx > (badges.length - 1) ? badges.length - 1 : idx)
     badges[idx]
   end
 
-  def self.find_badge(badges, visits)
+  def Common.find_badge(badges, visits)
     total_visits = 0
     next_badge_visits = visits
     found_badge = badges.first
@@ -175,7 +175,7 @@ class Common
     return found_badge, next_badge_visits
   end
   
-  def self.find_eligible_reward(rewards, points)
+  def Common.find_eligible_reward(rewards, points)
     idx = rewards.bsearch_lower_boundary {|x| x.points <=> points}
     idx = (idx > (rewards.length - 1) ? rewards.length - 1 : idx)
     reward = rewards[idx]
@@ -185,7 +185,7 @@ class Common
     return reward
   end
 
-  def self.populate_badge(badge, user_agent, resolution)
+  def Common.populate_badge(badge, user_agent, resolution)
     if badge.custom
       badge_type_image = MerchantBadgeTypeImage.first(:merchant_badge_type_id => badge.custom_type.id)
       badge_type = badge.custom_type
@@ -199,7 +199,7 @@ class Common
     badge_type.thumbnail_large_url = "#{get_file_host}#{BadgeTypeImage.thumbnail_url_path[user_agent][resolution][:large]}/#{badge_type_image.thumbnail_url}"
   end
   
-  def self.populate_badges(merchant, user_agent, resolution)
+  def Common.populate_badges(merchant, user_agent, resolution)
     badges = merchant.badges
     badge_ids = []
     badges.each do |badge|
@@ -233,7 +233,7 @@ class Common
     merchant.badges.sort_by { |b| b.rank }
   end
 
-  def self.populate_badge_type_images(custom_badges, user_agent, resolution, type_ids, badge_type_id_to_type)
+  def Common.populate_badge_type_images(custom_badges, user_agent, resolution, type_ids, badge_type_id_to_type)
     if custom_badges
       badge_type_images = MerchantBadgeTypeImage.all(:merchant_badge_type_id => type_ids)
     else
@@ -253,7 +253,7 @@ class Common
     end
   end
   
-  def self.get_news(venue, customer)
+  def Common.get_news(venue, customer)
     newsfeed = []
     today = Date.today
     promotions = Promotion.all(:merchant => venue.merchant, :start_date.lte => today, :end_date.gte => today)
@@ -277,7 +277,7 @@ class Common
     return newsfeed
   end
 
-  def self.connect_to_facebook(user, posts)
+  def Common.connect_to_facebook(user, posts)
     success_posts = 0
     if (user.facebook_share_settings.checkins || user.facebook_share_settings.badge_promotions || user.facebook_share_settings.rewards) && user.facebook_auth
       oauth = Koala::Facebook::OAuth.new(APP_PROP["FACEBOOK_APP_ID"], APP_PROP["FACEBOOK_APP_SECRET"])
@@ -339,7 +339,7 @@ class Common
     return success_posts
   end 
   
-  def self.get_customer_segment_count(merchant, customer_segment)
+  def Common.get_customer_segment_count(merchant, customer_segment)
     customer_segment_visit_range = CustomerSegmentVisitRange.values[merchant.visit_frequency.value][customer_segment]
     case customer_segment
     when "all"
@@ -390,15 +390,15 @@ class Common
     
   private
 
-  def self.get_photo_host_bucket
+  def Common.get_photo_host_bucket
     "#{APP_PROP["AMAZON_PHOTOS_BUCKET"]}"
   end
 
-  def self.get_photo_host
+  def Common.get_photo_host
     "http://#{APP_PROP["PHOTO_HOST"]}/"
   end
 
-  def self.get_file_host
+  def Common.get_file_host
     "http://#{APP_PROP["FILE_HOST"]}/"
   end
 end
