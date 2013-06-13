@@ -207,9 +207,9 @@ Ext.define('Genesis.controller.RedeemBase',
       var me = this, tbbar = activeItem.query('titlebar')[0], store = Ext.StoreMgr.get(me.getRedeemStore());
 
       me.getSCloseBB()[(store.getAllCount() == 1) ? 'hide' : 'show']();
-      if (me.sBackBB)
+      if (me.getSBackBB)
       {
-         me.sBackBB()[(store.getAllCount() == 1) ? 'show' : 'hide']();
+         me.getSBackBB()[(store.getAllCount() == 1) ? 'show' : 'hide']();
       }
 
       tbbar.setTitle(me.getTitle());

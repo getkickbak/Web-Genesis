@@ -135,7 +135,7 @@
       background: theme_image($theme-path,  "noprizes" + ".png") center no-repeat;
       &:before {
          margin-top: -1.0em;
-         content:"No recent receipts were sent to the Receipt Printer!";
+         content:"No Pending Receipts.";
       }
    }
 }

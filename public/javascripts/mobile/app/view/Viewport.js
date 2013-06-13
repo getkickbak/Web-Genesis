@@ -23,7 +23,7 @@ Ext.define('Genesis.view.Viewport',
    initialize : function()
    {
       this.callParent(arguments);
-      
+
       //
       // Initialize NFC after DeviceReady
       //
@@ -65,8 +65,8 @@ Ext.define('Genesis.view.Viewport',
     */
    animateActiveItem : function(activeItem, animation)
    {
-      var layout = this.getLayout(), defaultAnimation = (layout.getAnimation) ? layout.getAnimation() : null;
       var oldActiveItem = this.getActiveItem();
+      var layout = this.getLayout(), defaultAnimation = (layout.getAnimation) ? layout.getAnimation() : null;
       var disableAnimation = (activeItem.disableAnimation || ((oldActiveItem) ? oldActiveItem.disableAnimation : false));
       var titlebar, viewport = _application.getController(((merchantMode) ? 'server' : 'client') + '.Viewport');
 
@@ -77,13 +77,12 @@ Ext.define('Genesis.view.Viewport',
       }
       this.activeItemAnimation = animation = new Ext.fx.layout.Card(animation);
 
-      console.debug('Activate View [' + activeItem._itemId + ']');
       if (animation && layout.isCard && !disableAnimation)
       {
          animation.setLayout(layout);
          if (defaultAnimation)
          {
-            var controller = _application.getController(((merchantMode) ? 'server' : 'client') + '.Viewport').getEventDispatcher().controller;
+            var controller = viewport.getEventDispatcher().controller;
 
             defaultAnimation.disable();
             controller.pause();

@@ -1,4 +1,11 @@
 var wssocket = null, initReceipt = 0x00, posConnect = Ext.emptyFn, posDisconnect = Ext.emptyFn, lastPosDisonnectTime = 0;
+var isPosEnabled = function()
+{
+   var db = Genesis.db.getLocalDB(), rc = db['enablePosIntegration'] && db['isPosEnabled'];
+   //console.debug("WebSocketClient::isPosEnabled(" + rc + ")");
+   return rc;
+};
+
 Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Receipt', 'Ext.device.Connection', 'Genesis.controller.ControllerBase'], function()
 {
    var db = Genesis.db.getLocalDB();
@@ -99,7 +106,7 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
                      {
                         matchFlag |= 0x10000;
                         receipt['itemsPurchased'] += qty;
-                        continue;
+                        //console.debug("WebSocketClient::createReceipt - Stamps(" + receipt['itemsPurchased'] + ")");
                      }
                   }
 
@@ -173,7 +180,7 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
 
          lists[1].push(Ext.create("Genesis.model.frontend.Table",
          {
-            id : 'All'
+            id : 'None'
          }));
          (lists[0].length > 0) ? rstore.setData(lists[0]) : rstore.clearData();
          rstore.tableFilterId = null;
@@ -186,8 +193,9 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
 
    posConnect = function(i)
    {
-      var db = Genesis.db.getLocalDB();
-      if (db['enablePosIntegration'] && db['isPosEnabled'] && Ext.Viewport)
+      var posEnabled = isPosEnabled();
+
+      if (posEnabled && Ext.Viewport)
       {
          i = i || 0;
          if (!wssocket && Ext.device.Connection.isOnline())
@@ -207,7 +215,7 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
                //
                console.debug("WebSocketClient::onopen");
 
-               lastPosDisonnectTime = Genesis.db.getLocalDB()['lastPosDisconnectTime'] || 0;
+               lastPosDisonnectTime = db['lastPosDisconnectTime'] || 0;
                initReceipt |= 0x10;
                if (cntlr)
                {
@@ -498,6 +506,7 @@ Ext.define('Genesis.controller.server.Receipts',
       {
          "cmd" : 'restoreReceipts'
       });
+
       console.debug("Server Receipts : initWorker");
    },
    initStore : function()
@@ -516,11 +525,11 @@ Ext.define('Genesis.controller.server.Receipts',
                if (record1.data['id'] === record2.data['id'])
                   return 0;
 
-               if (record1.data['id'] == 'All')
+               if (record1.data['id'] == 'None')
                {
                   return -1;
                }
-               if (record2.data['id'] == 'All')
+               if (record2.data['id'] == 'None')
                {
                   return 1;
                }
@@ -620,13 +629,13 @@ Ext.define('Genesis.controller.server.Receipts',
    // --------------------------------------------------------------------------
    // Callback Handlers
    // --------------------------------------------------------------------------
-   posIntegrationHandler : function(metaData, isPosEnabled)
+   posIntegrationHandler : function(metaData, posEnabled)
    {
       var me = this, db = Genesis.db.getLocalDB(), features_config = metaData['features_config'];
 
       db['enablePosIntegration'] = features_config['enable_pos'];
-      db['isPosEnabled'] = ((isPosEnabled === undefined) || (isPosEnabled));
-      if (db['enablePosIntegration'] && db['isPosEnabled'])
+      db['isPosEnabled'] = ((posEnabled === undefined) || (posEnabled));
+      if (isPosEnabled())
       {
          var filters = features_config['receipt_filter'] = (features_config['receipt_filter'] ||
          {
@@ -667,6 +676,7 @@ Ext.define('Genesis.controller.server.Receipts',
       db['enablePrizes'] = features_config['enable_prizes'];
 
       Genesis.db.setLocalDB(db);
+      Genesis.controller.ViewportBase.prototype.onActivate.call(me.getViewPortCntlr());
    },
    batteryStatusFn : function(info)
    {
@@ -755,7 +765,7 @@ Ext.define('Genesis.controller.server.Receipts',
             {
                tableList.push(Ext.create("Genesis.model.frontend.Table",
                {
-                  id : 'All'
+                  id : 'None'
                }));
                tstore.setData(tableList);
             }
@@ -796,7 +806,8 @@ Ext.define('Genesis.controller.server.Receipts',
    // --------------------------------------------------------------------------
    uploadReceipts : function(receipts, ids)
    {
-      var me = this, proxy = Venue.getProxy(), displayMode = Genesis.db.getLocalDB["displayMode"];
+      var me = this, proxy = Venue.getProxy(), db = Genesis.db.getLocalDB();
+      var displayMode = db["displayMode"], enableReceiptUpload = db['enableReceiptUpload'], posEnabled = isPosEnabled();
       var params =
       {
          version : Genesis.constants.serverVersion,
@@ -808,8 +819,22 @@ Ext.define('Genesis.controller.server.Receipts',
             //'expiry_ts' : new Date().addHours(3).getTime()
          }
       };
-      params['data'] = me.self.encryptFromParams(params['data']);
 
+      //
+      // Don't upload
+      //
+      if (!posEnabled || (posEnabled && !enableReceiptUpload))
+      {
+         me.worker.postMessage(
+         {
+            'cmd' : 'updateReceipts',
+            'ids' : ids
+         });
+
+         console.log("Successfully DISCARDED " + receipts.length + " Receipt(s) sent to Server");
+      }
+
+      params['data'] = me.self.encryptFromParams(params['data']);
       Venue['setMerchantReceiptUploadURL'](params['venue_id']);
       Venue.load(1,
       {
@@ -905,10 +930,14 @@ Ext.define('Genesis.controller.server.Receipts',
 
       if (viewport.getMetaData())
       {
-         var isPosEnabled = (field.getValue() == 1) ? true : false;
-         Genesis.db.setLocalDBAttrib('isPosEnabled', isPosEnabled);
-         console.debug("onPosModeChange - " + isPosEnabled);
+         var posEnabled = (field.getValue() == 1) ? true : false;
+         Genesis.db.setLocalDBAttrib('isPosEnabled', posEnabled);
+         console.debug("onPosModeChange - " + posEnabled);
          me.updateMetaDataInfo(viewport.getMetaData());
+         //
+         // Update Native Code
+         //
+         window.plugins.WifiConnMgr.setIsPosEnabled(isPosEnabled());
       }
       else
       {

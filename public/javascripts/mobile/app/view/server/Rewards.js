@@ -33,6 +33,20 @@ Ext.define('Genesis.view.server.Rewards',
             ui : 'normal',
             iconCls : 'order',
             tag : 'calculator'
+         },
+         {
+            hidden : true,
+            align : 'right',
+            ui : 'normal',
+            iconCls : 'refresh',
+            tag : 'refresh',
+            handler : function()
+            {
+               if (wssocket)
+               {
+                  wssocket.send("get_receipts");
+               }
+            }
          }]
       })]
    },
@@ -45,8 +59,9 @@ Ext.define('Genesis.view.server.Rewards',
       }
 
       var itemHeight = 1 + Genesis.constants.defaultIconSize() + 2 * Genesis.fn.calcPx(0.65, 1), store = Ext.StoreMgr.get('ReceiptStore'), db = Genesis.db.getLocalDB();
-      var isPosEnabled = (db['enablePosIntegration'] && db['isPosEnabled']);
-      var manualMode = ((db['rewardModel'] == 'items_purchase') ? 4 : 0);
+      var posEnabled = isPosEnabled();
+      var manualMode = ((db['rewardModel'] == 'items_purchased') ? 4 : 0);
+      console.debug("createView - rewardModel[" + db['rewardModel'] + "]")
       var toolbarBottom = function(tag, hideTb)
       {
          return (
@@ -99,7 +114,7 @@ Ext.define('Genesis.view.server.Rewards',
                }]
             });
       };
-      
+
       me.getPreRender().push(Ext.create('Ext.Container',
       {
          xtype : 'container',
@@ -119,7 +134,7 @@ Ext.define('Genesis.view.server.Rewards',
          {
             hidden : true
          },
-         activeItem : (isPosEnabled) ? 2 : manualMode,
+         activeItem : (posEnabled) ? 2 : manualMode,
          items : [
          // -------------------------------------------------------------------
          // Reward Calculator
@@ -164,7 +179,7 @@ Ext.define('Genesis.view.server.Rewards',
                hidden : (store.getCount() <= 0),
                xtype : 'selectfield',
                labelWidth : '50%',
-               label : 'Receipts by Table',
+               label : 'Sort Receipts By :',
                tag : 'tableFilter',
                name : 'tableFilter',
                margin : '0 0 0.8em 0',
@@ -295,6 +310,7 @@ Ext.define('Genesis.view.server.Rewards',
             tag : 'itemsPurchased',
             title : 'Stamp Points',
             placeHolder : '0',
+            hideZero : true,
             bottomButtons : [
             {
                tag : 'earnPts',

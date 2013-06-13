@@ -17,7 +17,7 @@ Ext.define('Genesis.view.MainPageBase',
       }],
       scrollable : undefined
    },
-   disableAnimation : null,
+   //disableAnimation : null,
    isEligible : Ext.emptyFn,
    initialize : function()
    {
@@ -43,13 +43,10 @@ Ext.define('Genesis.view.MainPageBase',
    },
    createView : function()
    {
-      var me = this, carousel = me.query('carousel')[0];
-      var app = _application;
-      var viewport = app.getController(((merchantMode) ? 'server' : 'client') + '.Viewport');
-      var vport = viewport.getViewport();
+      var me = this, carousel = me.query('carousel')[0], app = _application;
+      var viewport = app.getController(((merchantMode) ? 'server' : 'client') + '.Viewport'), vport = viewport.getViewport();
       var show = (!merchantMode) ? viewport.getCheckinInfo().venue != null : false;
-      var items = Ext.StoreMgr.get('MainPageStore').getRange();
-      var list = Ext.Array.clone(items);
+      var items = Ext.StoreMgr.get('MainPageStore').getRange(), list = Ext.Array.clone(items);
 
       if (!carousel._listitems)
       {

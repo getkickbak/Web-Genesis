@@ -701,7 +701,7 @@ Genesis.db =
       };
 
       var dropStatement = "DROP TABLE Customer";
-      var db = openDatabase('KickBak', 'CustomerStore', "1.0", 5 * 1024 * 1024);
+      var db = openDatabase('KickBak', '1.0', 'CustomerStore', 5 * 1024 * 1024);
 
       db.transaction(function(tx)
       {

@@ -368,8 +368,9 @@ Ext.define('Genesis.controller.ViewportBase',
          {
             if (request.status == 200 || request.status == 0)
             {
+               var text = request.responseText.replace(me.mainPageStorePathToken, Genesis.constants._iconPath);
                console.log("Loaded MainPage Store ...");
-               var response = Ext.decode(request.responseText.replace(me.mainPageStorePathToken, Genesis.constants._iconPath));
+               var response = Ext.decode(text);
                var data = response.data;
                for (var i = 0; i < data.length; i++)
                {
@@ -433,7 +434,13 @@ Ext.define('Genesis.controller.ViewportBase',
    },
    pushView : function(view, animation)
    {
+      if (!view)
+      {
+         return;
+      }
+
       var me = this;
+
       animation = Ext.apply(animation,
       {
          reverse : false
@@ -470,6 +477,20 @@ Ext.define('Genesis.controller.ViewportBase',
          });
          me.getViewport().animateActiveItem(view, animation);
       }
+      /*
+       console.debug("pushView - length[" + me.viewStack.length + "]");
+       for (var i = 0; i < me.viewStack.length; i++)
+       {
+       if (me.viewStack[i]['view'])
+       {
+       console.debug("pushView - [" + me.viewStack[i]['view']._itemId + "]")
+       }
+       else
+       {
+       console.debug("pushView - [" + Ext.encode(me.viewStack[i]['view']) + "]")
+       }
+       }
+       */
    },
    silentPopView : function(num)
    {
@@ -498,9 +519,29 @@ Ext.define('Genesis.controller.ViewportBase',
 
       if (me.viewStack.length > 1)
       {
+         /*
+          console.debug("popView - length[" + me.viewStack.length + "]");
+          for (var i = 0; i < me.viewStack.length; i++)
+          {
+          if (me.viewStack[i]['view'])
+          {
+          console.debug("popView - [" + me.viewStack[i]['view']._itemId + "]")
+          }
+          else
+          {
+          console.debug("popView - [" + Ext.encode(me.viewStack[i]['view']) + "]")
+          }
+          }
+          */
          var lastView = me.viewStack.pop();
          var currView = me.viewStack[me.viewStack.length - 1];
-
+         /*
+          if (lastView)
+          {
+          console.debug("popView - lastView[" + lastView['view']._itemId + "]");
+          }
+          console.debug("popView - currView[" + currView['view']._itemId + "]")
+          */
          if (!me.popViewInProgress)
          {
             me.popViewInProgress = true;
