@@ -274,6 +274,7 @@ Genesis.fb =
                'tap' : function()
                {
                   Ext.Viewport.setMasked(null);
+                  _application.getController('client' + ".MainPage")._loggingIn = false;
                }
             }
          });
