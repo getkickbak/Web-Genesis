@@ -636,6 +636,10 @@ Genesis.db =
          this.setLocalDB(db);
       }
    },
+   openDatabase : function()
+   {
+      return openDatabase('KickBak', '1.0', 'KickBakDB', 5 * 1024 * 1024);
+   },
    //
    // Referral DB
    //
@@ -701,7 +705,7 @@ Genesis.db =
       };
 
       var dropStatement = "DROP TABLE Customer";
-      var db = openDatabase('KickBak', '1.0', 'CustomerStore', 5 * 1024 * 1024);
+      var db = Genesis.db.openDatabase();
 
       db.transaction(function(tx)
       {
