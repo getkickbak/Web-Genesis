@@ -657,6 +657,7 @@ Ext.define('Genesis.controller.client.Accounts',
       window.plugins.emailComposer.showEmailComposerWithCB(function(res)
       {
          // Delay is needed to not block email sending ...
+         console.log("Email callback response(" + res + ")");
          Ext.defer(function()
          {
             Ext.Viewport.setMasked(null);
@@ -702,56 +703,59 @@ Ext.define('Genesis.controller.client.Accounts',
    sendEmailAndroid : function(stream, emailTpl, subject)
    {
       var me = this;
-      var extras =
-      {
-      };
-      extras[WebIntent.EXTRA_SUBJECT] = subject;
-      extras[WebIntent.EXTRA_TEXT] = emailTpl;
+      /*
+       var extras =
+       {
+       };
+       extras[WebIntent.EXTRA_SUBJECT] = subject;
+       extras[WebIntent.EXTRA_TEXT] = emailTpl;
 
-      console.log("Saving QRCode to temporary file ...");
-      window.plugins.base64ToPNG.saveImage(stream,
-      {
-         filename : 'qrcode.gif',
-         overwrite : true
-      }, function(result)
-      {
-         extras[WebIntent.EXTRA_STREAM] = 'file://' + result.filename;
+       console.log("Saving QRCode to temporary file ...");
+       window.plugins.base64ToPNG.saveImage(stream,
+       {
+       filename : 'qrcode.gif',
+       overwrite : true
+       }, function(result)
+       {
+       extras[WebIntent.EXTRA_STREAM] = 'file://' + result.filename;
 
-         console.log("QRCode saved to " + extras[WebIntent.EXTRA_STREAM]);
-         window.plugins.webintent.startActivity(
-         {
-            action : WebIntent.ACTION_SEND,
-            type : 'text/html',
-            extras : extras
-         }, function()
-         {
-            Ext.Viewport.setMasked(null);
-            me.xferCodeRecv = true;
-            me.onTransferCompleteTap();
-         }, function()
-         {
-            Ext.Viewport.setMasked(null);
-            Ext.device.Notification.show(
-            {
-               title : 'Transfer Failed',
-               message : me.transferFailedMsg,
-               buttons : ['Dismiss'],
-               callback : function()
-               {
-                  //me.onTransferCompleteTap();
-               }
-            });
-         });
-      }, function(error)
-      {
-      });
-      //var writer = new FileWriter('/android_asset/www/' + 'tmp_' + appName + '_' + 'qrcode.gif');
-      //writer.write(window.atob(stream), false);
-      //console.debug("Content Written to Disk");
-      //Genesis.fn.writeFile('qrcode.gif', stream, function(evt)
-      //{
-      //}
-      //);
+       console.log("QRCode saved to " + extras[WebIntent.EXTRA_STREAM]);
+       window.plugins.webintent.startActivity(
+       {
+       action : WebIntent.ACTION_SEND,
+       type : 'text/html',
+       extras : extras
+       }, function()
+       {
+       Ext.Viewport.setMasked(null);
+       me.xferCodeRecv = true;
+       me.onTransferCompleteTap();
+       }, function()
+       {
+       Ext.Viewport.setMasked(null);
+       Ext.device.Notification.show(
+       {
+       title : 'Transfer Failed',
+       message : me.transferFailedMsg,
+       buttons : ['Dismiss'],
+       callback : function()
+       {
+       //me.onTransferCompleteTap();
+       }
+       });
+       });
+       }, function(error)
+       {
+       });
+       //var writer = new FileWriter('/android_asset/www/' + 'tmp_' + appName + '_' + 'qrcode.gif');
+       //writer.write(window.atob(stream), false);
+       //console.debug("Content Written to Disk");
+       //Genesis.fn.writeFile('qrcode.gif', stream, function(evt)
+       //{
+       //}
+       //);
+       */
+      me.sendEmailIOS.apply(me, arguments);
    },
    onXferCodeRecv : function(metaData)
    {
