@@ -16,8 +16,11 @@
       <script type="text/javascript" src="../lib/core/qrcode.js"></script>
       <script type="text/javascript" src="../lib/core/date.js"></script>
       <script type="text/javascript" src="../lib/core/extras.js"></script>
+      <script type="text/javascript" src="../lib/core/RiffWave.js"></script>
+      <script type="text/javascript" src="../lib/core/WebWorkerConsole.js"></script>
       <!-- Debug Javascript on mobile browser -->
       <script type="text/javascript" src="../lib/touch-2.1.1/sencha-touch-all-debug.js"></script>
+      <script type="text/javascript" src="worker/server.js"></script>
       <!--
       Phone Gap Libs
       -->
@@ -97,6 +100,8 @@
       <script type="text/javascript" src="app/model/Customer.js"></script>
       <script type="text/javascript" src="app/model/frontend/Account.js"></script>
       <script type="text/javascript" src="app/model/frontend/Signin.js"></script>
+      <script type="text/javascript" src="app/model/frontend/Receipt.js"></script>
+      <script type="text/javascript" src="app/model/frontend/Table.js"></script>
       <!-- Views -->
       <script type="text/javascript" src="app/view/Document.js"></script>
       <script type="text/javascript" src="app/view/Viewport.js"></script>
@@ -128,6 +133,7 @@
       <script type="text/javascript" src="app/controller/server/Redemptions.js"></script>
       <script type="text/javascript" src="app/controller/server/Prizes.js"></script>
       <script type="text/javascript" src="app/controller/server/Merchants.js"></script>
+      <script type="text/javascript" src="app/controller/server/Receipts.js"></script>
 
       <!-- External Libs -->
    </head>
@@ -164,7 +170,7 @@
                requires : ['Ext.device.Connection', 'Ext.device.Notification', 'Ext.device.Camera', 'Ext.device.Communicator', 'Ext.device.Geolocation', 'Ext.device.Orientation'],
                profiles : ['Desktop'],
                views : ['Document', 'server.Rewards', 'server.Redemptions', 'server.MainPage', 'widgets.server.RedeemItemDetail', 'server.SettingsPage', 'server.TagCreatePage', 'Viewport'],
-               controllers : ['server.Viewport', 'server.MainPage', 'server.Challenges', 'server.Rewards', 'server.Redemptions', 'server.Settings', 'server.Prizes'],
+               controllers : ['server.Viewport', 'server.MainPage', 'server.Challenges', 'server.Receipts', 'server.Rewards', 'server.Redemptions', 'server.Merchants',  'server.Settings', 'server.Prizes'],
                stores : [],
                launch : function()
                {
