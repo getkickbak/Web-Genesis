@@ -22,21 +22,47 @@
 						<table width="100%" border="0" cellspacing="0" cellpadding="0">
 							<tbody>
 								<tr valign="middle">
-									<td valign="top" style="width:50px;padding-right:10px;padding-bottom:10px;">
-										<%= link_to image_tag(@promotion.merchant.photo.thumbnail_ios_small.url), business_profile_url(@promotion.merchant) %>
-									</td>
 									<td>
-									<b><a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= business_profile_url(@promotion.merchant) %>"><%= "#{@promotion.merchant.name}" %></a></b>	
 									<br>
 									<br>
-									<%= @promotion.message %>
+									<b>Hi <%= @user.name.split(' ')[0] %>,</b>
 									<br>
 									<br>
-									<% if @promotion.photo_url %>
-									<%= image_tag @promotion.photo.thumbnail_ios_large.url %>
+									Your birthday is coming soon!  To celebrate, you will get extra reward points when you visit your favorite local businesses on your special day.
 									<br>
 									<br>
-									<% end %>
+									<div>
+										<% if @merchants.length <= 9 %>
+										<% per_row = 3 %>
+										<% else %>
+										<% per_row = 5 %>
+										<% end %>
+										<% n = @merchants.length / per_row %>
+										<% n = (@merchants.length % per_row) > 0 ? n+1 : n %>
+										<% for i in 0..n-1 %>
+										<div style="clear:both;">
+											<% for x in 0..per_row-1 %>
+											<% if (y = i*per_row+x) < @merchants.length %>
+											<% merchant = @merchants[y] %>
+											<div>
+												<% if per_row > 3 %>
+												<%= link_to image_tag(merchant.photo.thumbnail_ios_medium.url, :style => "float:left; width:90px;height:90px;"), business_profile_url(merchant) %>
+												<% else %>
+												<%= link_to image_tag(merchant.photo.thumbnail_ios_large.url, :style => "float:left; width:150px;height:150px;"), business_profile_url(merchant) %>
+												<% end %>
+											</div>
+											<% else %>
+											<div></div>
+											<% end %>
+											<% end %>
+										</div>
+										<% end %>
+									</div>
+									<div style="clear:both;">
+										<br>
+										That's what we call customer love.
+									</div>
+									<br>
 									</td>
 								</tr>
 							</tbody>
@@ -50,12 +76,6 @@
 									<br>
 									<br>
 									Thanks from the <a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= root_url %>">KICKBAK</a> team.
-									<br>
-									<br>
-										<div style="font-size:10px;">
-											If you would like to change your email notification settings,
-											<a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= account_subscriptions_url %>">click here</a>
-										</div>	
 									<br>
 									<br>
 									</td>

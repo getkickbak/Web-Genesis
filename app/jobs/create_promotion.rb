@@ -130,7 +130,7 @@ module CreatePromotion
             user_id_to_subscription[subscription.user_id] = subscription
           end
           email_users.each do |user|
-            if user.status != :pending
+            if user.status == :active
               if user_id_to_subscription[user.id]
                 UserMailer.promotion_email(user, promotion).deliver if user_id_to_subscription[user.id].email_notif
               else

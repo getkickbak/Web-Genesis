@@ -2,11 +2,19 @@
 #  cron: 0 0 * * Mon
 #  class: MerchantSummary
 #  description: Merchant Summary
+birthday_reminders:
+  cron: 0 1 * * *
+  class: BirthdayReminders
+  description: Merchant Triggers
 merchant_payments:
   cron: 0 0 1 * *
   class: MerchantPayments
   description: Merchant Payments
+#merchant_triggers:
+#  cron: 0 2 * * *
+#  class: MerchantTriggers
+#  description: Merchant Triggers
 registration_reminders:
   cron: 0 8 * * *
   class: RegistrationReminders
-  description: Registration Reminders
+  description: Registration Reminders  
