@@ -72,6 +72,10 @@ Ext.define('Genesis.controller.client.Settings',
       },
       control :
       {
+         settingsPage :
+         {
+            deactivate : 'onDeactivate'
+         },
          'clientsettingspageview togglefield[name=facebook]' :
          {
             change : 'onFacebookChange'
@@ -365,16 +369,33 @@ Ext.define('Genesis.controller.client.Settings',
    // --------------------------------------------------------------------------
    // Event Handlers
    // --------------------------------------------------------------------------
+   onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
+   {
+      var me = this, fb = Genesis.fb;
+      console.debug("Settings: onDeactivate");
+      fb.un('connected', me.updateFBSignUpPopupCallback);
+      fb.un('unauthorized', me.updateFBSignUpPopupCallback);
+      fb.un('exception', me.updateFBSignUpPopupCallback);
+   },
    onToggleFB : function(toggle, slider, thumb, newValue, oldValue, eOpts)
    {
-      var me = this, db = Genesis.db.getLocalDB();
+      var me = this, fb = Genesis.fb;
 
       if (newValue == 1)
       {
-         me.updateFBSettingsPopup(me.settingsTitle, toggle);
+         fb.on('connected', me.updateFBSignUpPopupCallback, me);
+         fb.on('unauthorized', me.updateFBSignUpPopupCallback, me);
+         fb.on('exception', me.updateFBSignUpPopupCallback, me);
+
+         //me.updateFBSettingsPopup(me.settingsTitle, toggle);
+         me.updateFBSignUpPopup(me.signupTitle, toggle);
       }
       else if (db['enableFB'])
       {
+         fb.un('connected', me.updateFBSignUpPopupCallback);
+         fb.un('unauthorized', me.updateFBSignUpPopupCallback);
+         fb.un('exception', me.updateFBSignUpPopupCallback);
+
          console.debug("Cancelling Facebook Login ...");
          var params =
          {
@@ -415,6 +436,109 @@ Ext.define('Genesis.controller.client.Settings',
          });
       }
    },
+   updateFBSignUpPopupCallback : function(params, operation)
+   {
+      var me = this, page = me.getSettingsPage();
+      var toggle = (page) ? page.query('togglefield[name=facebook]')[0] : null;
+
+      Ext.Viewport.setMasked(null);
+      if ((operation && operation.wasSuccessful()) || (params && (params['type'] != 'timeout')))
+      {
+         me.updateFBSettings(params);
+         if (toggle)
+         {
+            toggle.originalValue = 1;
+            me.updateAccountInfo();
+         }
+      }
+      else
+      {
+         if (toggle)
+         {
+            toggle.toggle();
+         }
+         Ext.device.Notification.show(
+         {
+            title : 'Facebook Connect',
+            message : Genesis.fb.fbConnectFailMsg,
+            buttons : ['Dismiss']
+         });
+      }
+   },
+   updateFBSignUpPopup : function(title, toggle)
+   {
+      var me = this, page = me.getSettingsPage();
+
+      Genesis.fb.facebook_onLogin(db['enableTwitter']);
+   },
+   updateFBSignUp : function(params)
+   {
+      var me = this;
+
+      Ext.defer(function()
+      {
+         Ext.device.Notification.show(
+         {
+            title : 'Facebook Connect',
+            message : me.fbLoggedInIdentityMsg(params['email']),
+            buttons : ['OK']
+         });
+      }, 1, me);
+
+      me.response = params;
+   },
+   /*
+    onToggleFB : function(toggle, slider, thumb, newValue, oldValue, eOpts)
+    {
+    var me = this, db = Genesis.db.getLocalDB();
+
+    if (newValue == 1)
+    {
+    me.updateFBSettingsPopup(me.settingsTitle, toggle);
+    }
+    else if (db['enableFB'])
+    {
+    console.debug("Cancelling Facebook Login ...");
+    var params =
+    {
+    facebook_id : 0
+    };
+
+    Account['setUpdateFbLoginUrl']();
+    Account.load(0,
+    {
+    jsonData :
+    {
+    },
+    params :
+    {
+    user : Ext.encode(params)
+    },
+    callback : function(record, operation)
+    {
+    if (operation.wasSuccessful())
+    {
+    db = Genesis.db.getLocalDB();
+    db['enableFB'] = false;
+    db['currFbId'] = 0;
+    delete db['fbAccountId'];
+    delete db['fbResponse'];
+    Genesis.db.setLocalDB(db);
+
+    if (Genesis.fn.isNative())
+    {
+    Genesis.fb.facebook_onLogout(null, true);
+    }
+    }
+    else if (!me.getSettingsPage().isHidden())
+    {
+    toggle.toggle();
+    }
+    }
+    });
+    }
+    },
+    */
    onToggleTwitter : function(toggle, slider, thumb, newValue, oldValue, eOpts)
    {
       var me = this, db = Genesis.db.getLocalDB();

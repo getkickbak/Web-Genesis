@@ -387,7 +387,7 @@ Ext.define('Genesis.controller.client.MainPage',
             },
             callback : function(records, operation)
             {
-            	me._loggingIn = false;
+               me._loggingIn = false;
                me._loggingOut = false;
                if (operation.wasSuccessful())
                {
@@ -451,10 +451,64 @@ Ext.define('Genesis.controller.client.MainPage',
          me._logout();
       }
    },
+   onFacebookLoginCallback : function(params, op, eOpts, eInfo, failCallback)
+   {
+      var me = this, fb = Genesis.fb;
+
+      fb.un('connected', me.fn);
+      fb.un('unauthorized', me.fn);
+      fb.un('exception', me.fn);
+      delete me.fn;
+
+      if ((op && op.wasSuccessful()) || (params && (params['type'] != 'timeout')))
+      {
+         Customer['setFbLoginUrl']();
+         console.log("setFbLoginUrl - Logging in ... params(" + Ext.encode(params) + ")");
+         me.updatedDeviceToken = (Genesis.constants.device) ? true : false;
+         Ext.StoreMgr.get('CustomerStore').load(
+         {
+            jsonData :
+            {
+            },
+            params : Ext.apply(
+            {
+               version : Genesis.constants.clientVersion,
+               device_pixel_ratio : window.devicePixelRatio,
+               device : Ext.encode(Genesis.constants.device)
+            }, params),
+            callback : function(records, operation)
+            {
+               me._loggingIn = false;
+               //
+               // Login Error, let the user login again
+               //
+               if (!operation.wasSuccessful())
+               {
+                  //
+                  // If we are already in Login Page, reset all values
+                  //
+                  //Genesis.db.resetStorage();
+                  failCallback();
+               }
+               else
+               {
+                  Ext.Viewport.setMasked(null);
+                  Genesis.db.setLocalDBAttrib('enableFB', true);
+                  me.persistSyncStores('CustomerStore');
+               }
+            }
+         });
+      }
+      else
+      {
+         me._loggingIn = false;
+         failCallback();
+      }
+   },
    onFacebookTap : function(b, e, eOpts, eInfo, failCallback)
    {
-      var me = this;
-      failCallback = failCallback || Ext.emptyFn;
+      var me = this, fb = Genesis.fb;
+      failCallback = (Ext.isFunction(failCallback)) ? failCallback : Ext.emptyFn;
       //
       // Forced to Login to Facebook
       //
@@ -463,55 +517,16 @@ Ext.define('Genesis.controller.client.MainPage',
          failCallback();
          return;
       }
+
       me._loggingIn = true;
       Genesis.db.removeLocalDBAttrib('currFbId');
-      Genesis.fb.facebook_onLogin(function(params)
-      {
-         if (params)
-         {
-            Customer['setFbLoginUrl']();
-            console.log("setFbLoginUrl - Logging in ...");
-            me.updatedDeviceToken = (Genesis.constants.device) ? true : false;
-            Ext.StoreMgr.get('CustomerStore').load(
-            {
-               jsonData :
-               {
-               },
-               params : Ext.apply(
-               {
-                  version : Genesis.constants.clientVersion,
-                  device_pixel_ratio : window.devicePixelRatio,
-                  device : Ext.encode(Genesis.constants.device)
-               }, params),
-               callback : function(records, operation)
-               {
-                  me._loggingIn = false;
-                  //
-                  // Login Error, let the user login again
-                  //
-                  if (!operation.wasSuccessful())
-                  {
-                     //
-                     // If we are already in Login Page, reset all values
-                     //
-                     //Genesis.db.resetStorage();
-                     failCallback();
-                  }
-                  else
-                  {
-                     Ext.Viewport.setMasked(null);
-                     Genesis.db.setLocalDBAttrib('enableFB', true);
-                     me.persistSyncStores('CustomerStore');
-                  }
-               }
-            });
-         }
-         else
-         {
-            me._loggingIn = false;
-            failCallback();
-         }
-      }, true);
+
+      me.fn = Ext.bind(me.onFacebookLoginCallback, me, [failCallback], true);
+      fb.on('connected', me.fn);
+      fb.on('unauthorized', me.fn);
+      fb.on('exception', me.fn);
+
+      Genesis.fb.facebook_onLogin(false);
    },
    onCreateAccountTap : function(b, e, eOpts, eInfo)
    {
