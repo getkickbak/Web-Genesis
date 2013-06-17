@@ -3,7 +3,8 @@
 <% end %>
 <% content_for :script do %>
 <script type="text/javascript" src="/javascripts/desktop/lib/jquery-ui-1.8.20.custom/js/jquery-ui-1.8.20.custom.min.js"/>
-	<script type="text/javascript" src="/javascripts/desktop/src/base.js"></script>
+<script type="text/javascript" src="/javascripts/desktop/src/base.js"></script>
+<script type="text/javascript" src="/javascripts/desktop/src/admin/features_config.js"></script>
 <% end %>
 <% if flash[:notice] %>
 <div style="display:none;" id="notice">
@@ -29,6 +30,9 @@
 								<ul class="nav nav-tabs">
 									<li>
 										<a href="<%= merchant_path(@merchant) %>">Info</a>
+									</li>
+									<li>
+										<a href="<%= features_config_merchant_path(@merchant) %>">Features Config</a>
 									</li>
 									<li>
 										<a href="<%= payment_subscription_merchant_path(@merchant) %>">Payment Subscription</a>

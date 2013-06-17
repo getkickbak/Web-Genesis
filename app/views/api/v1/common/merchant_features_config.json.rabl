@@ -1,0 +1,2 @@
+object @merchant_features_config
+attributes :enable_prizes

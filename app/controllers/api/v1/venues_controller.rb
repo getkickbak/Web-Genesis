@@ -1,7 +1,7 @@
 class Api::V1::VenuesController < Api::V1::BaseApplicationController
-  skip_before_filter :verify_authenticity_token, :only => [:merchant_explore, :share_photo]
-  before_filter :authenticate_user!, :except => [:merchant_explore]
-  skip_authorization_check :only => [:merchant_explore]
+  skip_before_filter :verify_authenticity_token, :only => [:merchant_explore, :merchant_add_sku_data, :share_photo]
+  before_filter :authenticate_user!, :except => [:merchant_explore, :merchant_add_sku_data]
+  skip_authorization_check :only => [:merchant_explore, :merchant_add_sku_data]
   
   def explore
     @venue = Venue.get(params[:id]) || not_found
@@ -36,7 +36,7 @@ class Api::V1::VenuesController < Api::V1::BaseApplicationController
     @prize_jackpots = EarnPrizeRecord.count(:merchant => @venue.merchant, :points.gt => 1, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
     @rewards = Common.get_rewards_by_venue(@venue, :reward)
     @prizes = Common.get_rewards_by_venue(@venue, :prize)
-    @newsfeed = Common.get_news(@venue)
+    @newsfeed = Common.get_news(@venue, @customer)
     render :template => '/api/v1/check_ins/create'
   end
 
@@ -54,10 +54,84 @@ class Api::V1::VenuesController < Api::V1::BaseApplicationController
     @prize_jackpots = EarnPrizeRecord.count(:merchant => @venue.merchant, :points.gt => 1, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
     @rewards = Common.get_rewards_by_venue(@venue, :reward)
     @prizes = Common.get_rewards_by_venue(@venue, :prize)
-    @newsfeed = Common.get_news(@venue)
+    if @venue.features_config.use_custom
+      @features_config = MerchantFeaturesConfig.new(
+        :enable_prizes => @venue.merchant.features_config.enable_prizes,
+        :enable_pos => @venue.features_config.enable_pos
+      )
+      @features_config.receipt_filter = @venue.features_config.receipt_filter
+    else
+      @features_config = @venue.merchant.features_config
+    end
     render :template => '/api/v1/venues/merchant_explore'
   end
 
+  def merchant_add_sku_data
+    begin
+      SkuRecord.transaction do
+        if params[:venue_id]
+          @venue = Venue.get(params[:venue_id])
+          if @venue.nil?
+            raise "No such venue: #{params[:venue_id]}"
+          end
+          data = params[:data] ? params[:data].split('$')[1] : params[:data]
+        else
+          data = params[:data]  
+        end 
+        cipher = Gibberish::AES.new(@venue.auth_code)
+        decrypted = cipher.dec(data)
+        now = Time.now
+        receipts = JSON.parse(decrypted, { :symbolize_names => true })[:receipts] 
+        txn_ids = []
+        records = []
+        receipts.each do |receipt|
+          txn_ids << receipt[:txnId]
+          receipt[:items].each do |item|
+            records << { :txn_id => receipt[:txnId], :item => item }
+          end
+        end
+        id_to_reward_record = {}
+        reward_records = EarnRewardRecord.all(:id => txn_ids)
+        reward_records.each do |record|
+          id_to_reward_record[record.id] = record
+        end
+        records.each do |record|
+          reward_record = id_to_reward_record[record[:txn_id]]
+          sku_record = SkuRecord.new(
+            :sku_id => record[:item][:name], 
+            :venue_id => params[:venue_id], 
+            :txn_id => record[:txn_id], 
+            :price => record[:item][:price], 
+            :quantity => record[:item][:qty]
+          )
+          sku_record[:created_ts] = now
+          sku_record[:update_ts] = now
+          sku_record.merchant = @venue.merchant
+          sku_record.customer = reward_record.customer
+          sku_record.user = reward_record.user
+          sku_record.save
+        end
+        respond_to do |format|
+          #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+          format.json { render :json => { :success => true } }
+        end
+      end
+    rescue DataMapper::SaveFailureError => e  
+      logger.error("Exception: " + e.resource.errors.inspect)  
+      respond_to do |format|
+        #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+        format.json { render :json => { :success => false, :message => t("api.venues.merchant_add_sku_data_failure").split(/\n/) } }
+      end
+      return
+    rescue StandardError => e  
+      logger.error("Exception: " + e.message)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+        format.json { render :json => { :success => false, :message => t("api.venues.merchant_add_sku_data_failure").split(/\n/) } }
+      end
+    end
+  end
+  
   def find_closest
     @merchant = Merchant.get(params[:merchant_id]) || not_found
     authorize! :read, Venue
@@ -88,7 +162,7 @@ class Api::V1::VenuesController < Api::V1::BaseApplicationController
     @account_info = { :badge_id => @customer.badge.id, :next_badge_id => @next_badge.id }
     @rewards = Common.get_rewards_by_venue(@venue, :reward)
     @prizes = Common.get_rewards_by_venue(@venue, :prize)
-    @newsfeed = Common.get_news(@venue)
+    @newsfeed = Common.get_news(@venue, @customer)
     render :template => '/api/v1/venues/find_closest'
   end
 

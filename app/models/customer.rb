@@ -23,6 +23,8 @@ class Customer
   has 1, :last_check_in, 'CheckIn', :constraint => :destroy
   has 1, :customer_to_badge, :constraint => :destroy
   has 1, :badge, :through => :customer_to_badge,  :via => :badge
+  has n, :customer_to_promotions, :constraint => :destroy
+  has n, :promotions, :through => :customer_to_promotions, :via => :promotion
   
   belongs_to :merchant
   belongs_to :user

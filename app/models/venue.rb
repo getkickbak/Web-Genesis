@@ -39,6 +39,7 @@ class Venue
   has 1, :type, 'VenueType', :through => :venue_to_type, :via => :venue_type
   has 1, :check_in_code, :constraint => :destroy
   has 1, :prize_info, :constraint => :destroy
+  has 1, :features_config, 'VenueFeaturesConfig', :constraint => :destroy
   has n, :challenge_venues, :constraint => :destroy
   has n, :customer_reward_venues, :constraint => :destroy
   has n, :challenges, :through => :challenge_venues
@@ -93,6 +94,13 @@ class Venue
     venue.check_in_code[:update_ts] = now
 =end    
     venue.prize_info = PrizeInfo.new
+    venue.features_config = VenueFeaturesConfig.new(
+      :enable_pos => merchant.features_config.enable_pos,
+      :enable_sku_data_upload => merchant.features_config.enable_sku_data_upload
+    )
+    venue.features_config[:created_ts] = now
+    venue.features_config[:update_ts] = now
+    venue.features_config.receipt_filter = ReceiptFilter.new(merchant.features_config.receipt_filter.attributes.merge(:id => nil))
     venue.save
     return venue
   end

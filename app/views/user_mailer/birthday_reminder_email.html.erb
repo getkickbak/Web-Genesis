@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+	</head>
+	<body>
+		<div>
+			<table cellspacing="0" cellpadding="0" width="487" border="0" align="center" bgcolor="#ffffff" style="font-size:12px;color:#444;font-family:arial,sans-serif">
+				<tbody>
+					<tr>
+						<td align="left">
+						<div style="background:#0A78BE;padding: 20px 15px;border-radius:0.6em;">
+							<a href="http://www.getkickbak.com" target="_blank"> <img src="https://s3.amazonaws.com/files.getkickbak.com/v1/logo.png" width="100" border="0" alt="KICKBAK"> </a>
+						</div></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td height="10"></td><td></td>
+					</tr>
+					<tr>
+						<td style="border-top:1px solid #ccc;padding:10px 15px">
+						<table width="100%" border="0" cellspacing="0" cellpadding="0">
+							<tbody>
+								<tr valign="middle">
+									<td>
+									<br>
+									<br>
+									<b>Hi <%= @user.name.split(' ')[0] %>,</b>
+									<br>
+									<br>
+									Your birthday is coming soon!  To celebrate, you will get extra reward points when you visit your favorite local businesses on your special day.
+									<br>
+									<br>
+									<div>
+										<% if @merchants.length <= 9 %>
+										<% per_row = 3 %>
+										<% else %>
+										<% per_row = 5 %>
+										<% end %>
+										<% n = @merchants.length / per_row %>
+										<% n = (@merchants.length % per_row) > 0 ? n+1 : n %>
+										<% for i in 0..n-1 %>
+										<div style="clear:both;">
+											<% for x in 0..per_row-1 %>
+											<% if (y = i*per_row+x) < @merchants.length %>
+											<% merchant = @merchants[y] %>
+											<div>
+												<% if per_row > 3 %>
+												<%= link_to image_tag(merchant.photo.thumbnail_ios_medium.url, :style => "float:left; width:90px;height:90px;"), business_profile_url(merchant) %>
+												<% else %>
+												<%= link_to image_tag(merchant.photo.thumbnail_ios_large.url, :style => "float:left; width:150px;height:150px;"), business_profile_url(merchant) %>
+												<% end %>
+											</div>
+											<% else %>
+											<div></div>
+											<% end %>
+											<% end %>
+										</div>
+										<% end %>
+									</div>
+									<div style="clear:both;">
+										<br>
+										That's what we call customer love.
+									</div>
+									<br>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						<table width="100%" border="0" cellpadding="0" cellspacing="0" style="border-top:1px solid #ccc">
+							<tbody>
+								<tr>
+									<td align="center">
+									<br>
+									Questions or comments? Email us at <a rel="nofollow" ymailto="mailto:help@getkickbak.com" target="_blank" style="text-decoration: none;" href="mailto:help@getkickbak.com">help@getkickbak.com</a>
+									<br>
+									<br>
+									Thanks from the <a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= root_url %>">KICKBAK</a> team.
+									<br>
+									<br>
+									</td>
+								</tr>
+							</tbody>
+						</table></td>
+						<td style="vertical-align:top;padding-left:7px"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</body>
+</html>

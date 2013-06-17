@@ -83,13 +83,19 @@ Genesis::Application.routes.draw do
       end
       resources :staffs
       resources :merchants do
-        resources :venues, :only => [:index, :edit, :update]
+        resources :venues, :only => [:index, :edit] do
+          put "update_device_type", :on => :member, :as => :update_device_type
+          get "features_config", :on => :member, :as => :features_config
+          put "update_pos_config", :on => :member, :as => :update_pos_config
+        end
         resources :devices
         resources :invoices do
           post "pay", :on => :member, :as => :pay
         end
         get "payment_subscription", :on => :member, :as => :payment_subscription
         put "update_payment_subscription", :on => :member, :as => :update_payment_subscription
+        get "features_config", :on => :member, :as => :features_config
+        put "update_features_config", :on => :member, :as => :update_features_config
       end
       
       match "/configuration" => 'configuration#index', :as => :configuration
@@ -150,6 +156,7 @@ Genesis::Application.routes.draw do
         match '/venues/share_photo' => 'venues#share_photo', :via => :post
         match '/venues/:id/explore' => 'venues#explore'
         match '/venues/:id/merchant_explore' => 'venues#merchant_explore'
+        match '/venues/:id/merchant_add_sku_data' => 'venues#merchant_add_sku_data', :via => :post
 
         match '/challenges' => 'challenges#index'
         match '/challenges/:id/start' => 'challenges#start'

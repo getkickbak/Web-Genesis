@@ -320,7 +320,7 @@ namespace :db do
           :copy_acl => true
         )
         DataMapper.repository(:default).adapter.execute(
-        "UPDATE merchants SET photo = ?, alt_photo = ? WHERE id = ?", filename, filename, merchant.id
+          "UPDATE merchants SET photo = ?, alt_photo = ? WHERE id = ?", filename, filename, merchant.id
         )
         type = RewardModelType.value_to_type["amount_spent"]
         RewardModel.create(merchant, type,
@@ -605,7 +605,8 @@ namespace :db do
           customer.save
         end
         10.times do |i|
-          promotion = Promotion.create(merchant,
+          customer_segment = CustomerSegment.get(1)
+          promotion = Promotion.create(merchant, customer_segment,
           {
             :subject => "Hello",
             :message => "This is a test #{i}",

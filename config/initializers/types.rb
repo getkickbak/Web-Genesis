@@ -202,6 +202,35 @@ if exists
   payment_plans.each do |plan|
     payment_plan_id_to_plan[plan.id] = plan
   end
+  customer_segments = CustomerSegment.all
+  customer_segment_values = {}
+  customer_segment_id_to_value = {}
+  customer_segment_id_to_segment = {}
+  customer_segment_value_to_id = {}
+  customer_segment_value_to_name = {}
+  customer_segments.each do |segment|
+    customer_segment_id_to_value[segment.id] = segment.value
+    customer_segment_id_to_segment[segment.id] = segment
+    customer_segment_value_to_id[segment.value] = segment.id
+    customer_segment_value_to_name[segment.value] = {}
+    I18n.available_locales.each do |locale|
+      name = I18n.t "customer_segment.#{segment.value}", :locale => locale
+      if !customer_segment_values.include? locale
+        customer_segment_values[locale] = []
+      end
+      customer_segment_values[locale] << [name, segment.id] 
+      customer_segment_value_to_name[segment.value][locale] = name
+    end
+  end
+  customer_segment_visit_ranges = CustomerSegmentVisitRange.all
+  customer_segment_visit_range_values = {}
+  customer_segment_visit_ranges.each do |range|
+    visit_frequency_type = visit_frequency_type_id_to_type[range.visit_frequency_type_id]
+    if !customer_segment_visit_range_values.include? visit_frequency_type.value
+      customer_segment_visit_range_values[visit_frequency_type.value] = {}
+    end
+    customer_segment_visit_range_values[visit_frequency_type.value][range.value] = { :period_in_months => range.period_in_months, :low => range.low, :high => range.high }
+  end    
   MerchantType.values = merchant_type_values
   MerchantType.value_to_name = merchant_type_value_to_name
   MerchantType.id_to_type = merchant_type_id_to_type
@@ -232,4 +261,10 @@ if exists
   VisitFrequencyType.value_to_name = visit_frequency_type_value_to_name
   VisitFrequencyType.id_to_type = visit_frequency_type_id_to_type
   PaymentPlan.id_to_plan = payment_plan_id_to_plan
+  CustomerSegment.values = customer_segment_values
+  CustomerSegment.id_to_value = customer_segment_id_to_value
+  CustomerSegment.value_to_id = customer_segment_value_to_id
+  CustomerSegment.value_to_name = customer_segment_value_to_name
+  CustomerSegment.id_to_segment = customer_segment_id_to_segment
+  CustomerSegmentVisitRange.values = customer_segment_visit_range_values
 end

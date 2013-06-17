@@ -13,8 +13,8 @@ module Business
       elsif @reward_model.type
         @reward_model.type_id = @reward_model.type.id
       else
-        @reward_model.type = RewardModelType.value_to_type["amount_spent"]  
-        @reward_model.type_id = @reward_model.type.id 
+        @reward_model.type = RewardModelType.value_to_type["amount_spent"]
+        @reward_model.type_id = @reward_model.type.id
       end
       model_type = RewardModelType.values[I18n.locale]
       respond_to do |format|
@@ -22,7 +22,7 @@ module Business
         #format.xml  { render :xml => @merchants }
       end
     end
-    
+
     def update
       @reward_model = current_merchant.reward_model
       begin
@@ -30,29 +30,38 @@ module Business
           type = RewardModelType.id_to_type[params[:reward_model][:type_id].to_i]
           now = Time.now
           if @reward_model.nil?
-            RewardModel.create(current_merchant, type, params[:reward_model])
+            @reward_model = RewardModel.create(current_merchant, type, params[:reward_model])
             msg = t("business.reward_model.setup_success")
           else
             @reward_model.update_all(type, params[:reward_model])
             msg = t("business.reward_model.update_success")
           end
-          rewards = CustomerReward.all(:merchant => current_merchant)
-          rewards.each do |reward|
-            reward.type_id = reward.type.id
-            if reward.mode == :reward
-              reward.points = (reward.price / @reward_model.price_per_point / @reward_model.rebate_rate * 100).to_i
-            else
-              reward.points = (reward.price / @reward_model.price_per_prize_point / @reward_model.prize_rebate_rate * 100).to_i
+          if @reward_model.type.value == "amount_spent"
+            rewards = CustomerReward.all(:merchant => current_merchant)
+            rewards.each do |reward|
+              reward.type_id = reward.type.id
+              if reward.mode == :reward
+                reward.points = (reward.price / @reward_model.price_per_point / @reward_model.rebate_rate * 100).to_i
+              else
+                reward.points = (reward.price / @reward_model.price_per_prize_point / @reward_model.prize_rebate_rate * 100).to_i
+              end
+              reward.update_ts = now
+              reward.save!
             end
-            reward.update_ts = now
-            reward.save!
-          end
-          challenges = Challenge.all(:merchant => current_merchant)
-          challenges.each do |challenge|
-            challenge.type_id = challenge.type.id
-            challenge.points = (challenge.reward_amount / @reward_model.price_per_point / @reward_model.rebate_rate * 100).to_i
-            challenge.update_ts = now
-            challenge.save!
+            challenges = Challenge.all(:merchant => current_merchant)
+            challenges.each do |challenge|
+              challenge.type_id = challenge.type.id
+              challenge.points = (challenge.reward_amount / @reward_model.price_per_point / @reward_model.rebate_rate * 100).to_i
+              challenge.update_ts = now
+              challenge.save!
+            end
+          else
+            current_merchant.features_config.enable_pos = true
+            current_merchant.features_config.save!
+            current_merchant.venues.each do |venue|
+              venue.features_config.enable_pos = true
+              venue.save!
+            end  
           end
           respond_to do |format|
             format.html { redirect_to({:action => "index"}, {:notice => msg}) }
@@ -63,10 +72,10 @@ module Business
         @reward_model = e.resource
         respond_to do |format|
           format.html { render :action => "index" }
-          #format.xml  { render :xml => @deal.errors, :status => :unprocessable_entity }
-          #format.json { render :json => { :success => false } }
+        #format.xml  { render :xml => @deal.errors, :status => :unprocessable_entity }
+        #format.json { render :json => { :success => false } }
         end
-      end      
+      end
     end
   end
 end

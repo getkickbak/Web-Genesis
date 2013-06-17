@@ -13,7 +13,7 @@
             <div class="span9">
                <div class="widget ">
                   <div class="widget-header">
-                  	 <% if params[:mode] && params[:mode].to_sym == :prize %>
+                  	 <% if @customer_reward.mode == :prize %>
                   	 <i class="icon-star"></i>
                      <h3>Prize</h3>
                   	 <% else %>

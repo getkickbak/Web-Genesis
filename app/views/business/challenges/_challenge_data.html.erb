@@ -1,4 +1,6 @@
 <% if type == 'referral' %>
+<% if current_merchant.reward_model.type.value == "amount_spent" %>
 <%= f.input :referral_reward_amount, :input_html => {:class=>"input-medium"} %>
+<% end %>
 <%= f.input :referral_points, :input_html => {:class=>"input-medium"} %>
 <% end %>

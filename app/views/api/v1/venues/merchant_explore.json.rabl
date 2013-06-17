@@ -18,10 +18,7 @@ node :metaData do
 		 		partial('api/v1/customer_rewards/base', :object => r)
 			end
 		),
-		:newsfeed => (
-			@newsfeed.map do |r|
-		 		partial('api/v1/common/news', :object => r)
-			end
-		)
+		:features_config => partial('api/v1/common/features_config', :object => @features_config),
+		:reward_model => @venue.merchant.reward_model.type.value
 	}.delete_if { |k,v| v.nil? }		 	
 end

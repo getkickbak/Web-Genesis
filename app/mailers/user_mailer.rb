@@ -5,7 +5,7 @@ class UserMailer < ActionMailer::Base
   
   def contact_email(contact)
     @contact = contact
-    mail(:to => 'help@getkickbak.com', :subject => @contact.topic)
+    mail(:to => 'help@getkickbak.com', :subject => contact.topic)
   end
   
   def add_merchant_contact_email(contact)
@@ -19,10 +19,10 @@ class UserMailer < ActionMailer::Base
     mail(:to => user.email, :subject => I18n.t("mailer.email_subject_points_expiration"))
   end
   
-  def points_summary(user, records)
+  def account_balance_summary_email(customers, user)
+    @customers = customers
     @user = user
-    @records = records
-    mail(:to => user.email, :subject => I18n.t("mailer.email_subject_points_summary"))
+    mail(:to => user.email, :subject => I18n.t("mailer.email_subject_account_balance_summary"))
   end
   
   def promotion_email(user, promotion)
@@ -34,5 +34,11 @@ class UserMailer < ActionMailer::Base
   def facebook_token_expired_email(user)
     @user = user
     mail(:to => user.email, :subject => I18n.t("mailer.email_subject_facebook_token_expired"))
+  end
+  
+  def birthday_reminder_email(merchants, user)
+    @merchants = merchants
+    @user = user
+    mail(:to => user.email, :subject => I18n.t("mailer.email_subject_birthday_reminder"))
   end
 end

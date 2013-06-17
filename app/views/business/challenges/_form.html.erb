@@ -21,7 +21,7 @@
    <%= render "challenge_data", :f => builder, :type => @challenge.type.value %>
    <% end %>
    <% end %>
-   <% if current_merchant.reward_model.type == "amount_spent" %>
+   <% if current_merchant.reward_model.type.value == "amount_spent" %>
    <%= f.input :reward_amount, :input_html => {:class=>"input-medium"} %>
    <% end %>
    <%= f.input :points, :input_html => {:class=>"input-medium"} %>

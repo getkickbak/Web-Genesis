@@ -5,7 +5,7 @@ class CustomerReward
 
   property :id, Serial
   property :title, String, :length => 40, :required => true, :default => ""
-  property :price, Decimal, :required => true, :scale => 2, :min => 1.00
+  property :price, Decimal, :scale => 2, :min => 1.00, :default => 1.00
   property :points, Integer, :required => true, :min => 1
   property :mode, Enum[:reward, :prize], :required => true, :default => :reward
   property :quantity_limited, Boolean, :required  => true, :default => false
@@ -30,6 +30,8 @@ class CustomerReward
   has n, :customer_reward_venues, :constraint => :destroy
   has n, :venues, :through => :customer_reward_venues
 
+  validates_presence_of :price, :if => lambda { |t| !t.merchant.nil? && RewardModelType.id_to_value[t.merchant.type.id] == "amount_spent"  }
+
   validates_with_method :type_id, :method => :check_type_id
   validates_with_method :expiry_date, :method => :validate_expiry_date
   validates_with_method :check_venues
@@ -39,17 +41,19 @@ class CustomerReward
   def self.create(merchant, type, reward_info, venues)
     now = Time.now
     reward = CustomerReward.new(
-      :type_id => type ? type.id : nil,
-      :title => reward_info[:title].squeeze(' ').strip,
-      :price => reward_info[:price],
-      :points => reward_info[:points],
-      :mode => reward_info[:mode],
-      :quantity_limited => reward_info[:quantity_limited],
-      :quantity => reward_info[:quantity_limited] ? reward_info[:quantity] : 0,
-      :time_limited => reward_info[:time_limited],
-      :expiry_date => now.to_date,
-      :photo => reward_info[:photo],
-      :photo_cache => reward_info[:photo_cache]
+      {
+        :type_id => type ? type.id : nil,
+        :title => reward_info[:title].squeeze(' ').strip,
+        :price => reward_info[:price],
+        :points => reward_info[:points],
+        :mode => reward_info[:mode],
+        :quantity_limited => reward_info[:quantity_limited],
+        :quantity => reward_info[:quantity_limited] ? reward_info[:quantity] : 0,
+        :time_limited => reward_info[:time_limited],
+        :expiry_date => now.to_date,
+        :photo => reward_info[:photo],
+        :photo_cache => reward_info[:photo_cache]
+      }.delete_if { |k,v| v.nil? }
     )
     reward.expiry_date_str = reward_info[:time_limited] ? reward_info[:expiry_date] : ""
     reward[:created_ts] = now

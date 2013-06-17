@@ -125,6 +125,41 @@ module Admin
       end    
     end
     
+    def features_config
+      @merchant = Merchant.get(params[:id]) || not_found
+      authorize! :update, @merchant
+      
+      @features_config = @merchant.features_config
+      if @features_config.nil?
+        MerchantFeaturesConfig.create(@merchant)
+      end
+    end
+    
+    def update_features_config
+      @merchant = Merchant.get(params[:id]) || not_found
+      authorize! :update, @merchant
+
+      begin
+        MerchantFeaturesConfig.transaction do
+          if (params[:merchant_features_config].include? :enable_pos) && !params[:merchant_features_config][:enable_pos].to_bool
+            params[:merchant_features_config][:enable_sku_data_upload] = false
+          end
+          @merchant.features_config.update(params[:merchant_features_config])
+          respond_to do |format|
+            format.html { redirect_to(merchant_path(@merchant), :notice => t("admin.merchants.update_features_config_success")) }
+          #format.xml  { head :ok }
+          end
+        end
+      rescue DataMapper::SaveFailureError => e
+        logger.error("Exception: " + e.resource.errors.inspect)
+        @features_config = @merchant.features_config
+        respond_to do |format|
+          format.html { render :action => "features_config" }
+        #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
+        end
+      end
+    end
+    
     def payment_subscription
       @merchant = Merchant.get(params[:id]) || not_found
       authorize! :update, @merchant

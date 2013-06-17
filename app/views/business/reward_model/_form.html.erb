@@ -6,18 +6,28 @@
    <% end %>
    <% if @reward_model.type.value == "amount_spent" %>
    <%= f.input :badge_rebate_rate, :hint => "% of every dollar spent", :input_html=>{ :disabled => 'disabled', :class => "input-medium"} %>
-   <%= f.input :prize_rebate_rate, :hint => "% of every dollar spent", :input_html=>{:class => "input-medium"} %>
    <% else %>
    <%= f.input :badge_rebate_rate, :hint => "Visit(s) for every point", :input_html=>{:class => "input-medium"} %>
+   <% end %>
+   <% if current_merchant.features_config.enable_prizes %>
+   <% if @reward_model.type.value == "amount_spent" %>
+   <%= f.input :prize_rebate_rate, :hint => "% of every dollar spent", :input_html=>{:class => "input-medium"} %>
+   <% elsif @reward_model.type.value == "items_purchased" %>
+   <%= f.input :prize_rebate_rate, :hint => "Item(s) for every point", :input_html=>{:class => "input-medium"} %>
+   <% else %>
+   <%= f.input :prize_rebate_rate, :hint => "Visit(s) for every point", :input_html=>{:class => "input-medium"} %>
+   <% end %>
    <% end %>
    <% if @reward_model.type.value == "amount_spent" %>
    <%= f.input :signup_amount, :input_html=>{:class => "input-medium"}%>
    <% end %>
    <%= f.input :signup_points, :input_html=>{:class => "input-medium"} %>
    <% if @reward_model.type.value == "amount_spent" %>
+   <% if current_merchant.features_config.enable_prizes %>
    <%= f.input :price_per_point, :input_html => { :disabled => 'disabled', :class => 'input-medium' } %>
    <%= f.input :price_per_prize_point, :input_html => { :disabled => 'disabled', :class => 'input-medium' } %>
-   <%= f.input :expected_avg_spend, :input_html=>{:class => "input-medium"}%>
+   <% end %>
+   <%= f.input :expected_avg_spend, :input_html=>{:class => "input-medium"} %>
    <% end %>
    <br />
    <div class="form-actions">

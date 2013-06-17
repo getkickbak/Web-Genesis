@@ -68,7 +68,8 @@ class Merchant
   has 1, :reward_model, :constraint => :destroy
   has 1, :merchant_to_visit_frequency_type, :constraint => :destroy
   has 1, :visit_frequency, 'VisitFrequencyType', :through => :merchant_to_visit_frequency_type, :via => :visit_frequency_type
-  has 1, :payment_subscription, 'MerchantPaymentSubscription', :destroy
+  has 1, :payment_subscription, 'MerchantPaymentSubscription', :constraint => :destroy
+  has 1, :features_config, 'MerchantFeaturesConfig', :constraint => :destroy
   has n, :merchant_to_badge, :constraint => :destroy
   has n, :badges, :through => :merchant_to_badge, :via => :badge
   has n, :merchant_credit_cards, :child_key => [ :merchant_id ], :constraint => :destroy
@@ -148,6 +149,10 @@ class Merchant
     merchant.payment_subscription = MerchantPaymentSubscription.new
     merchant.payment_subscription[:created_ts] = now
     merchant.payment_subscription[:update_ts] = now
+    merchant.features_config = MerchantFeaturesConfig.new
+    merchant.features_config[:created_ts] = now
+    merchant.features_config[:update_ts] = now
+    merchant.features_config.receipt_filter = ReceiptFilter.new
     merchant.save
     return merchant
   end

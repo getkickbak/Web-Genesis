@@ -19,6 +19,7 @@ module RegistrationReminders
       elsif count > max
         n = count/max + 1
       end
+      logger.info("Registration Reminders requires #{n} iterations")
       for i in 0..n-1
         logger.info("Sending iteration #{i+1}")
         start = i*max
@@ -37,7 +38,7 @@ module RegistrationReminders
                 }
               ) if reminder.nil?
               if diff >= backoff && !reminder.delivered
-                Resque.enqueue(SendSms, SmsMessageType::REGISTRATION_REMINDER, user.id, nil, nil)
+                Resque.enqueue(SendSms, SmsProvider.get_current, SmsMessageType::REGISTRATION_REMINDER, user.id, nil, nil)
               end
             end
           rescue DataMapper::SaveFailureError => e

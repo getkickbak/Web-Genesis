@@ -57,7 +57,7 @@ en:
         messages:
           blank: "%{attribute} is required"
           email_format: "%{attribute} is not formatted properly"
-          phone_format: "%{attribute} is not formatted properly (digits only)"
+          phone_format: "%{attribute} is not formatted properly (digits only)"        
   merchant:
       type:
         food: "Food"
@@ -167,7 +167,31 @@ en:
       earn: "Earn Points"
       transfer: "Transfer Points"
       expire: "Expire Points"
-      adjust: "Adjustment"      
+      adjust: "Adjustment"     
+  customer_segment:
+      all: "All"
+      custom: "Custom"
+      newly_joined: "Newly Joined"
+      very_frequent_last_1_month: "Very Frequent in last 1 month"
+      very_frequent_last_3_month: "Very Frequent in last 3 months"
+      very_frequent_last_6_month: "Very Frequent in last 6 months"
+      somewhat_frequent_last_1_month: "Somewhat Frequent in last 1 month"
+      somewhat_frequent_last_3_month: "Somewhat Frequent in last 3 months"
+      somewhat_frequent_last_6_month: "Somewhat Frequent in last 6 months"
+      not_frequent_last_1_month: "Not Frequent in last 1 month"
+      not_frequent_last_3_month: "Not Frequent in last 3 months"
+      not_frequent_last_6_month: "Not Frequent in last 6 months"
+      top_5_percent: "Top 5% Spenders"
+      top_10_percent: "Top 10% Spenders"
+      top_15_percent: "Top 15% Spenders"
+      top_20_percent: "Top 20% Spenders"
+      top_25_percent: "Top 25% Spenders"
+      last_visited_10_days: "Last visited in 10 days"
+      last_visited_20_days: "Last visited in 20 days"
+      last_visited_30_days: "Last visited in 30 days"
+      last_visited_60_days: "Last visited in 60 days"
+      last_visited_90_days: "Last visited in 90 days"
+      last_visited_180_days: "Last visited in 180 days"
   api:
       incompatible_merchant_user_role: "Your account is not compatible with selected merchant."
       inactive_merchant: "This merchant is not active.\nPlease try a different one."
@@ -254,6 +278,8 @@ en:
         destroy_failure: "Trouble with logout.\nPlease try again."  
       devices:
         get_encryption_key_failure: "Trouble with device initialization.\nPlease contact support."  
+      venues:
+        merchant_add_sku_data_failure: "Failed to update sku data."
   admin:
       configuration:
         update_success: "Configuration successfully updated."
@@ -265,9 +291,11 @@ en:
         update_success: "Merchant was successfully updated."
         min_end_date: "End date must be greater than start date."
         min_termination_date: "Termination date must be greater than or equal to today."
+        update_features_config_success: "Merchant features configuration was successfully updated."
         update_payment_subscription_success: "Merchant payment subscription was successfully updated."
       venues:
-        update_success: "Venue was successfully updated."  
+        update_device_type_success: "Venue device type was successfully updated." 
+        update_pos_config_success: "Venue pos settings were successfully updated."
       devices:
         create_success: "Device was successfully created."
         update_success: "Device was successfully updated."  
@@ -329,6 +357,7 @@ en:
         create_success: "Promotion was successfully created." 
         min_start_date: "Start date must be greater than or equal to today."
         min_end_date: "End date must be greater than start date." 
+        no_targeted_customers: "No targeted customers."
       purchase_rewards:
         create_success: "Reward was successfully created."
         update_success: "Reward was successfully updated."
@@ -358,6 +387,8 @@ en:
       email_subject_eligible_reward: "You earned a reward from %s"
       email_subject_facebook_token_expired: "Facebook offline access expired"
       email_subject_business_inquiry: "Business Inquiry"
+      email_subject_birthday_reminder: "Happy Birthday"
+      email_subject_account_balance_summary: "Account Balance Summary"
   users:
       update_success: "Account was successfully updated."
       update_password_success: "Password was successfully updated." 
@@ -384,10 +415,14 @@ en:
         visits: "%s."
         text: "Sign up with KICKBAK to get rewards at your favorite locations in the local area."        
   sms:
-      registration_reminder: "Hi, this is a friendly reminder to sign up for your KICKBAK Rewards Program.  Go to www.getkickbak.com to comlete our registration."
-      merchant_registration_1: "Welcome to the KICKBAK Rewards Program at %s! You have earned %s points and %s prize points during this visit."
+      registration_reminder: "Hi, this is a friendly reminder to sign up for your KICKBAK Rewards Program.  Go to www.getkickbak.com to complete your registration."
+      merchant_registration_1: "Welcome to the KICKBAK Rewards Program at %s! You have earned %s point(s) and %s prize points during this visit."
+      merchant_registration_1_no_prize_points: "Welcome to the KICKBAK Rewards Program at %s! You have earned %s point(s) during this visit."
       merchant_registration_2: "To get your bonus sign up points, please go to www.getkickbak.com to complete your registration."
-      merchant_registration_reminder_1: "Thank you for coming to %s! You have earned %s points and %s prize points during this visit."
+      merchant_registration_reward_1: "Welcome to the KICKBAK Rewards Program at %s! You have earned %s!"
+      merchant_registration_reward_2: "To get your bonus sign up points, please go to www.getkickbak.com to complete your registration."
+      merchant_registration_reminder_1: "Thank you for coming to %s! You have earned %s point(s) and %s prize points during this visit."
+      merchant_registration_reminder_1_no_prize_points: "Thank you for coming to %s! You have earned %s point(s) during this visit."
       merchant_registration_reminder_2: "Don't forget to sign up for your KICKBAK Rewards Program. Go to www.getkickbak.com to complete your registration."
       merchant_registration_reminder_reward_1: "Thank you for coming to %s! You have earned %s!"
       merchant_registration_reminder_reward_2: "Don't forget to sign up for your KICKBAK Rewards Program. Go to www.getkickbak.com to complete your registration."
