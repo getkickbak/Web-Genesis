@@ -6,6 +6,7 @@ namespace :db do
     merchants.each do |merchant|
       if merchant.features_config.nil?
         MerchantFeaturesConfig.create(merchant)
+        merchant.reload
       end
       merchant.venues.each do |venue|
         if venue.features_config.nil?
