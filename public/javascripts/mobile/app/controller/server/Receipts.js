@@ -5,6 +5,19 @@ var isPosEnabled = function()
    //console.debug("WebSocketClient::isPosEnabled(" + rc + ")");
    return rc;
 };
+var retrieveReceipts = function()
+{
+   if (wssocket)
+   {
+      Ext.Viewport.setMasked(null);
+      Ext.Viewport.setMasked(
+      {
+         xtype : 'loadmask',
+         message : Genesis.controller.server.Receipts.prototype.retrieveReceiptsMsg
+      });
+      wssocket.send('get_receipts');
+   }
+};
 
 Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Receipt', 'Ext.device.Connection', 'Genesis.controller.ControllerBase'], function()
 {
@@ -188,6 +201,7 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
 
          console.debug("WebSocketClient::receiptResponseHandler - Processed " + lists[0].length + " Valid Receipts");
          cntlr.receiptCleanFn(Genesis.db.getLocalDB()["displayMode"]);
+         Ext.Viewport.setMasked(null);
       }
    });
 
@@ -345,6 +359,7 @@ Ext.define('Genesis.controller.server.Receipts',
          'retrieveReceipts' : 'onRetrieveReceipts'
       }
    },
+   retrieveReceiptsMsg : 'Retrieving Receipts from POS ...',
    mobileTimeout : ((debugMode) ? 0.25 : 1) * 60 * 1000,
    fixedTimeout : ((debugMode) ? 0.25 : 4 * 60) * 60 * 1000,
    cleanupTimer : 4 * 60 * 60 * 1000,
@@ -984,7 +999,7 @@ Ext.define('Genesis.controller.server.Receipts',
 
          if (((lastPosDisonnectTime - lastPosConnectTime) > (wssocket.reconnectTimeoutTimer)) || !store || !(store.getAllCount() > 0))
          {
-            wssocket.send("get_receipts");
+            retrieveReceipts();
          }
       }
    }
