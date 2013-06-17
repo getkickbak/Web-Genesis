@@ -1,7 +1,7 @@
 Ext.define('Genesis.controller.client.Challenges',
 {
    extend : 'Genesis.controller.ControllerBase',
-   requires : ['Ext.Anim'],
+   requires : ['Ext.Anim', 'Ext.device.Camera', 'Ext.device.Connection', 'Ext.device.Notification', 'Ext.device.Orientation'],
    inheritableStatics :
    {
    },
@@ -137,7 +137,8 @@ Ext.define('Genesis.controller.client.Challenges',
    },
    photoTakenFailMsg : function(msg)
    {
-      return msg + Genesis.constants.addCRLF() + 'No Photos were taken.'
+      //return msg + Genesis.constants.addCRLF() + 'No Photos were taken.'
+      return 'No photo was selected.'
    },
    photoUploadIncompletesMsg : function(errors)
    {
@@ -1330,53 +1331,60 @@ Ext.define('Genesis.controller.client.Challenges',
       navigator.camera.cleanup(Ext.emptyFn, Ext.emptyFn);
       console.debug("Photo Cleanup Complete.")
    },
+   onFacebookPhotoCallback : function(params, operation, eOpts, eInfo, sourceType)
+   {
+      var me = this, fb = Genesis.fb;
+      if ((operation && operation.wasSuccessful()) || (params && (params['type'] != 'timeout')))
+      {
+         Ext.Viewport.setMasked(null);
+         Ext.Viewport.setMasked(
+         {
+            xtype : 'loadmask',
+            message : me.cameraAccessMsg
+         });
+         console.log("Accessing Camera Plugin(" + sourceType + ") ...");
+
+         Ext.device.Camera.capture(
+         {
+            success : me.onCameraSuccessFn,
+            failure : me.onCameraErrorFn,
+            scope : me,
+            quality : 49,
+            correctOrientation : true,
+            //correctOrientation : false,
+            //saveToPhotoAlbum : false,
+            destination : 'file',
+            source : sourceType,
+            allowEdit : false,
+            encoding : "jpg",
+            width : 960,
+            height : 960
+            //targetHeight : 480
+         });
+      }
+      fb.un('connected', me.fn);
+      fb.un('unauthorized', me.fn);
+      fb.un('exception', me.fn);
+      delete me.fn;
+   },
    onPhotoBtnCommon : function(sourceType)
    {
+      var me = this, fb = Genesis.fb, photoAction = me.getChallengePage().photoAction;
 
-      var me = this;
-      var photoAction = me.getChallengePage().photoAction;
       photoAction.hide();
-
-      console.log("Checking for Facebook Plugin ...");
+      console.log("Checking for Facebook Plugin(" + sourceType + ") ...");
       if (Genesis.fn.isNative())
       {
-         Genesis.fb.facebook_onLogin(function(params)
-         {
-            if (params)
-            {
-               console.log("Accessing Camera Plugin ...");
-               Ext.Viewport.setMasked(null);
-               Ext.Viewport.setMasked(
-               {
-                  xtype : 'loadmask',
-                  message : me.cameraAccessMsg
-               });
-
-               Ext.device.Camera.capture(
-               {
-                  success : me.onCameraSuccessFn,
-                  failure : me.onCameraErrorFn,
-                  scope : me,
-                  quality : 49,
-                  correctOrientation : true,
-                  //correctOrientation : false,
-                  //saveToPhotoAlbum : false,
-                  destination : 'file',
-                  source : sourceType,
-                  allowEdit : false,
-                  encoding : "jpeg",
-                  width : 960,
-                  height : 960
-                  //targetHeight : 480
-               });
-            }
-         }, false, me.photoUploadFbReqMsg);
+         me.fn = Ext.bind(me.onFacebookPhotoCallback, me, [sourceType], true);
+         fb.on('connected', me.fn, me);
+         fb.on('unauthorized', me.fn, me);
+         fb.on('exception', me.fn, me);
+         Genesis.fb.facebook_onLogin(false, me.photoUploadFbReqMsg, true);
       }
       else
       {
          me.onCameraSuccessFn(me.samplePhotoURL);
       }
-
    },
    onLibraryBtnTap : function(b, e, eOpts, eInfo)
    {
@@ -1435,11 +1443,10 @@ Ext.define('Genesis.controller.client.Challenges',
             message : me.completingChallengeMsg
          });
          console.debug("photoURL[" + me.metaData['photo_url'] + "], message[" + desc + "], accessToken[" + db['fbResponse'].accessToken + "]");
-         FB.requestWithGraphPath('/me/photos',
+         Genesis.fb.uploadPhoto(
          {
             'message' : desc,
             'url' : me.metaData['photo_url'],
-            'access_token' : db['fbResponse'].accessToken
             /*
              ,"place" :
              {
@@ -1455,41 +1462,36 @@ Ext.define('Genesis.controller.client.Challenges',
              }
              }
              */
-         }, 'POST', function(response)
+         }, function(response)
          {
-            if (!response || response.error || Ext.isString(response))
-            {
-               console.log("FacebookConnect.requestWithGraphPath:" + JSON.stringify(response));
+            console.log("FacebookConnect.requestWithGraphPath: Post ID - " + Ext.encode(response));
+            me.fireEvent('fbphotouploadcomplete');
+         }, function(response)
+         {
+            var message = (response && response.error) ? response.error.message : me.fbUploadFailedMsg;
 
-               var message = (response && response.error) ? response.error.message : me.fbUploadFailedMsg;
-               Ext.Viewport.setMasked(null);
-               Ext.device.Notification.show(
-               {
-                  title : 'Upload Failed!',
-                  message : message,
-                  buttons : ['Try Again', 'Cancel'],
-                  callback : function(btn)
-                  {
-                     if (btn.toLowerCase() == 'try again')
-                     {
-                        Ext.defer(me.onUploadPhotosTap, 1 * 1000, me);
-                     }
-                     else
-                     {
-                        //
-                        // Go back to Checked-in Merchant Account
-                        //
-                        me.metaData = null;
-                        me.goToMerchantMain(true);
-                     }
-                  }
-               });
-            }
-            else
+            Ext.Viewport.setMasked(null);
+            Ext.device.Notification.show(
             {
-               console.log("FacebookConnect.requestWithGraphPath: Post ID - " + JSON.stringify(response));
-               me.fireEvent('fbphotouploadcomplete');
-            }
+               title : 'Upload Failed!',
+               message : message,
+               buttons : ['Try Again', 'Cancel'],
+               callback : function(btn)
+               {
+                  if (btn.toLowerCase() == 'try again')
+                  {
+                     Ext.defer(me.onUploadPhotosTap, 1 * 1000, me);
+                  }
+                  else
+                  {
+                     //
+                     // Go back to Checked-in Merchant Account
+                     //
+                     me.metaData = null;
+                     me.goToMerchantMain(true);
+                  }
+               }
+            });
          });
       }
       else

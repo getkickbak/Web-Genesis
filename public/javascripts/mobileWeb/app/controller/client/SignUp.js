@@ -403,6 +403,12 @@ Ext.define('KickBak.controller.client.SignUp',
 
          me.updateFBSignUpPopup(me.signupTitle, toggle);
       }
+      else
+      {
+         KickBak.fb.un('connected', me.updateFBSignUpPopupCallback);
+         KickBak.fb.un('unauthorized', me.updateFBSignUpPopupCallback);
+         KickBak.fb.un('exception', me.updateFBSignUpPopupCallback);         
+      }
    },
    onToggleTwitter : function(toggle, slider, thumb, newValue, oldValue, eOpts)
    {

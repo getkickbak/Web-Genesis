@@ -1,21 +1,23 @@
 // window.plugins.emailComposer
 
-(function(cordova)
+EmailComposer =
 {
-   function EmailComposer()
-   {
-      this.resultCallback = null;
-      // Function
-   }
-
-
-   EmailComposer.ComposeResultType =
+   ComposeResultType :
    {
       Cancelled : 0,
       Saved : 1,
       Sent : 2,
       Failed : 3,
       NotSent : 4
+   }
+};
+
+(function(cordova)
+{
+   function EmailComposer()
+   {
+      this.resultCallback = null;
+      // Function
    }
 
    // showEmailComposer : all args optional

@@ -27,7 +27,7 @@ Genesis.constants =
       if (Ext.os.is('Tablet') && //
       (Ext.os.is('Android') || (Ext.os.is('iOS') && merchantMode)))
       {
-         ratio = (window.innerHeight > 640) ? 2 * ratio : 1.5 * ratio;
+         ratio = (window.innerHeight > 640) ? 1.5 * ratio : 1.5 * ratio;
       }
       return Math.floor(((16 * ratio * Math.min(1.0, window.devicePixelRatio)) || (16 * ratio)));
    })(),
@@ -636,6 +636,10 @@ Genesis.db =
          this.setLocalDB(db);
       }
    },
+   openDatabase : function()
+   {
+      return openDatabase('KickBak', '1.0', 'KickBakDB', 5 * 1024 * 1024);
+   },
    //
    // Referral DB
    //
@@ -701,7 +705,7 @@ Genesis.db =
       };
 
       var dropStatement = "DROP TABLE Customer";
-      var db = openDatabase('KickBak', 'CustomerStore', "1.0", 5 * 1024 * 1024);
+      var db = Genesis.db.openDatabase();
 
       db.transaction(function(tx)
       {

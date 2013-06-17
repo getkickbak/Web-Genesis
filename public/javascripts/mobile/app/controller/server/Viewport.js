@@ -95,7 +95,7 @@ Ext.define('Genesis.controller.server.Viewport',
    {
       try
       {
-         var me = this;
+         var me = this, db = Genesis.db.getLocalDB();
 
          //
          // Update Customer Rewards (Rewards Redemptions)
@@ -106,8 +106,11 @@ Ext.define('Genesis.controller.server.Viewport',
          //
          me.updatePrizes(metaData['prizes']);
 
-         metaData['reward_model'] = metaData['reward_model'] || 'amount_spent';
-         Genesis.db.setLocalDBAttrib('rewardModel', metaData['reward_model']);
+         metaData['reward_model'] = (!db['rewardModel']) ? metaData['reward_model'] || 'amount_spent' : metaData['reward_model'];
+         if (metaData['reward_model'])
+         {
+            Genesis.db.setLocalDBAttrib('rewardModel', metaData['reward_model']);
+         }
       }
       catch(e)
       {
@@ -150,8 +153,8 @@ Ext.define('Genesis.controller.server.Viewport',
                },
                callback : function(records, operation)
                {
-                  console.debug("Loading License Key ...");
-                  if (operation.wasSuccessful())
+                  console.debug("Loading License Key ... Record Length(" + records.length + ")");
+                  if (operation.wasSuccessful() && records[0])
                   {
                      var venueId = records[0].get('venue_id');
                      var venueName = records[0].get('venue_name');
@@ -165,6 +168,10 @@ Ext.define('Genesis.controller.server.Viewport',
                      me.persistSyncStores('LicenseStore');
                      Genesis.db.resetStorage();
                      me.initializeConsole(callback);
+                  }
+                  else if (!records[0])
+                  {
+                     me.initNotification(me.licenseKeyInvalidMsg);
                   }
                   else
                   {
@@ -257,7 +264,7 @@ Ext.define('Genesis.controller.server.Viewport',
       {
          'venue_id' : venueId
       }
-      console.debug("Loaded License Key ...");
+      console.debug("Loaded License Key for Venue(" + venueId + ")...");
       Venue['setGetMerchantVenueExploreURL'](venueId);
       Venue.load(venueId,
       {
@@ -289,6 +296,9 @@ Ext.define('Genesis.controller.server.Viewport',
                info.metaData = viewport.getMetaData();
 
                me.fireEvent('updatemetadata', metaData);
+               //
+               // POS Connection needs to be established
+               //
                me.getApplication().getController('server' + '.Receipts').fireEvent('updatemetadata', metaData);
 
                console.debug("Successfully acquired dataset for Venue(" + venueId + ")");
@@ -432,6 +442,12 @@ Ext.define('Genesis.controller.server.Viewport',
          c.proximityRxTimeout = 40 * 1000;
          Genesis.fn.printProximityConfig();
          window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
+      }
+
+      if (isPosEnabled())
+      {
+         console.debug("Server Viewport - establishPosConn");
+         window.plugins.WifiConnMgr.establishPosConn();
       }
    }
 });

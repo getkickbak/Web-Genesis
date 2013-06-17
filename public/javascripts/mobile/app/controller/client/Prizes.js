@@ -403,13 +403,13 @@ Ext.define('Genesis.controller.client.Prizes',
    {
       var me = this, viewport = me.getViewPortCntlr(), soundType, message;
       var info = metaData['reward_info'], eligible = info['eligible_prize_id'] > 0;
-      var points = info['points'];
+      var ppoints = info['prize_points'];
 
       //
       // Can't win PrizePoints if you didn't win any Reward Points
       //
       me.flag = 0;
-      var rc = Ext.isDefined(points) && (points > 0);
+      var rc = Ext.isDefined(ppoints) && (ppoints > 0);
       if (rc)
       {
          var eligiblePrizeCallback = function(setFlag, viewsPopLength)
@@ -426,7 +426,7 @@ Ext.define('Genesis.controller.client.Prizes',
             }
          };
 
-         if (info['prize_points'] > me.getMinPrizePts())
+         if (ppoints > me.getMinPrizePts())
          {
             soundType = 'winPrizeSound';
             message = me.wonPrizeMsg(info);
@@ -449,7 +449,7 @@ Ext.define('Genesis.controller.client.Prizes',
          else
          {
             soundType = 'losePrizeSound';
-            message = me.gotMinPrizePtsMsg(info['prize_points']);
+            message = me.gotMinPrizePtsMsg(ppoints);
          }
          //
          // Play the prize winning music!

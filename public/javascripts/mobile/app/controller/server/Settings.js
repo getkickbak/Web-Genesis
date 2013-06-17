@@ -92,7 +92,6 @@ Ext.define('Genesis.controller.server.Settings',
       }
    },
    tagIdLength : 8,
-   writeTagEnabled : false,
    proceedToUpdateLicenseMsg : 'Please confirm to proceed with License Update',
    proceedToResetDeviceeMsg : 'Please confirm to Reset Device',
    noLicenseKeyScannedMsg : 'No License Key was found!',
@@ -302,7 +301,7 @@ Ext.define('Genesis.controller.server.Settings',
       var me = this, form = me.getSettingsPage(), db = Genesis.db.getLocalDB();
 
       me.getMerchantDevice().setLabel(Genesis.fn.getPrivKey('venue'));
-      me.getUtilitiesContainer()[me.writeTagEnabled ? 'show' : 'hide']();
+      me.getUtilitiesContainer()[debugMode ? 'show' : 'hide']();
       form.setValues(
       {
          posMode : ((db['isPosEnabled'] === undefined) || (db['isPosEnabled'])) ? 1 : 0,

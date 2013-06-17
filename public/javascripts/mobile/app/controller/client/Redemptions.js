@@ -29,6 +29,7 @@ Ext.define('Genesis.controller.client.Redemptions',
          //
          // Redeem Rewards
          //
+         sBackBB : 'clientredeemitemdetailview[tag=redeemReward] button[tag=back]',
          sCloseBB : 'clientredeemitemdetailview[tag=redeemReward] button[tag=close]',
          //sBB : 'clientredeemitemdetailview[tag=redeemReward] button[tag=back]',
          sDoneBtn : 'clientredeemitemdetailview[tag=redeemReward] button[tag=done]',

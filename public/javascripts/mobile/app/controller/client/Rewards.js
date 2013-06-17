@@ -90,9 +90,10 @@ Ext.define('Genesis.controller.client.Rewards',
       var me = this;
       var points = reward_info['points'];
       var extraPoints = reward_info['referral_points'];
+      var msg = (reward_info['prize_points'] && (reward_info['prize_points'] > 0)) ? me.prizeCheckMsg : '';
 
       return 'You\'ve earned ' + points + ' Reward Pts from this purchase.' + //
-      ((extraPoints > 0) ? '' : ' ' + me.prizeCheckMsg);
+      ((extraPoints > 0) ? '' : ' ' + msg);
    },
    getReferralMsg : function(points)
    {
@@ -314,8 +315,9 @@ Ext.define('Genesis.controller.client.Rewards',
    },
    scanAndWinHandler : function(metaData, customer, venue, merchantId)
    {
-      var me = this, info = metaData['reward_info'], ainfo = metaData['account_info'], points = info['points'];
+      var me = this, info = metaData['reward_info'], ainfo = metaData['account_info'], points = info['points'], ppoints = info['prize_points'];
       var rc = Ext.isDefined(points) && (points > 0);
+      var prc = Ext.isDefined(ppoints) && (ppoints > 0);
 
       if (me.promoteCount > 0)
       {
@@ -334,14 +336,17 @@ Ext.define('Genesis.controller.client.Rewards',
       //
       // Can't play Scan-To-Win if you didn't win any Reward Points
       //
-      if (rc)
+      if (rc && prc)
       {
          me.redirectTo('scanAndWin');
       }
-      else
+      else if (prc)
       {
          var app = me.getApplication(), controller = app.getController('client.Prizes');
          controller.fireEvent('prizecheck', metaData);
+      }
+      else if (rc)
+      {
       }
 
       return false;
@@ -567,7 +572,7 @@ Ext.define('Genesis.controller.client.Rewards',
       {
          var send = function()
          {
-         	var viewport = me.getViewPortCntlr();
+            var viewport = me.getViewPortCntlr();
             if (!me._actions)
             {
                me._actions = Ext.create('Genesis.view.widgets.PopupItemDetail',

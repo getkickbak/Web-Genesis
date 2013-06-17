@@ -8,6 +8,7 @@ Ext.define('Genesis.view.widgets.Calculator',
       title : null,
       bottomButtons : null,
       placeHolder : '0',
+      hideZero : false,
       cls : 'calculator',
       layout : 'fit',
       // -------------------------------------------------------------------
@@ -102,6 +103,7 @@ Ext.define('Genesis.view.widgets.Calculator',
                text : 'AC'
             },
             {
+               tag : 'zero',
                flex : 2.3,
                text : '0'
             }]
@@ -122,12 +124,19 @@ Ext.define('Genesis.view.widgets.Calculator',
    },
    initialize : function()
    {
-      var title = this.query('title')[0];
-      var textField = this.query('textfield')[0];
-      var buttons = this.query('container[tag=bottomButtons]')[0];
+      var me = this;
+      var title = me.query('title')[0];
+      var textField = me.query('textfield')[0];
+      var buttons = me.query('container[tag=bottomButtons]')[0];
 
-      title.setTitle(this.getTitle());
-      textField.setPlaceHolder(this.getPlaceHolder());
-      buttons.add(this.getBottomButtons());
+      title.setTitle(me.getTitle());
+      textField.setPlaceHolder(me.getPlaceHolder());
+      buttons.add(me.getBottomButtons());
+
+      if (me.getHideZero())
+      {
+         var btn = me.query("button[tag=zero]")[0];
+         btn.getParent().remove(btn);
+      }
    }
 });

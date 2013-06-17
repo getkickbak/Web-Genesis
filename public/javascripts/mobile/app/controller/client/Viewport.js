@@ -311,58 +311,67 @@ Ext.define('Genesis.controller.client.Viewport',
          }
       });
    },
+   onFacebookShareCallback : function(params, op)
+   {
+      var me = this, fb = Genesis.fb;
+      if ((op && op.wasSuccessful()) || (params && (params['type'] != 'timeout')))
+      {
+         var venue = me.getVenue();
+         var merchant = venue.getMerchant();
+         var photoUrl = merchant.get('photo')['thumbnail_large_url'];
+
+         console.log('Posting to Facebook ...');
+
+         Genesis.fb.share(
+         {
+            name : venue.get('name'),
+            //link : href,
+            link : venue.get('website') || site,
+            caption : venue.get('website') || site,
+            description : venue.get('description'),
+            picture : photoUrl,
+            message : 'Check out this place!'
+         }, function(response)
+         {
+            Ext.Viewport.setMasked(null);
+            console.log(me.fbShareSuccessMsg);
+
+            Ext.device.Notification.show(
+            {
+               title : 'Facebook Connect',
+               message : me.fbShareSuccessMsg,
+               buttons : ['OK']
+            });
+            fb.un('connected', me.onFacebookShareCallback);
+            fb.un('unauthorized', me.onFacebookShareCallback);
+            fb.un('exception', me.onFacebookShareCallback);
+         }, function(response)
+         {
+            Ext.Viewport.setMasked(null);
+            console.log('Post was not published to Facebook.');
+            /*
+             Ext.device.Notification.show(
+             {
+             title : 'Facebook Connect',
+             message : me.fbShareSuccessMsg,
+             buttons : ['OK']
+             });
+             */
+            fb.un('connected', me.onFacebookShareCallback);
+            fb.un('unauthorized', me.onFacebookShareCallback);
+            fb.un('exception', me.onFacebookShareCallback);
+         });
+      }
+   },
    onShareMerchantTap : function(b, e, eOpts, eInfo)
    {
-      var me = this, FB = window.plugins.facebookConnect;
-      var site = Genesis.constants.site;
+      var me = this, site = Genesis.constants.site, fb = Genesis.fb;
+      //var FB = window.plugins.facebookConnect;
       //var db = Genesis.db.getLocaDB();
-      Genesis.fb.facebook_onLogin(function(params)
-      {
-         if (params)
-         {
-            var venue = me.getVenue();
-            var merchant = venue.getMerchant();
-            var photoUrl = merchant.get('photo')['thumbnail_large_url'];
-
-            console.log('Posting to Facebook ...');
-            FB.requestWithGraphPath('/me/feed',
-            {
-               name : venue.get('name'),
-               //link : href,
-               link : venue.get('website') || site,
-               caption : venue.get('website') || site,
-               description : venue.get('description'),
-               picture : photoUrl,
-               message : 'Check out this place!'
-            }, 'POST', function(response)
-            {
-               Ext.Viewport.setMasked(null);
-               if (!response || response.error || Ext.isString(response))
-               {
-                  console.log('Post was not published to Facebook.');
-                  Ext.defer(function()
-                  {
-                     var me = this;
-                     Genesis.fb.facebook_onLogout(null, false);
-                     Genesis.fb.facebook_onLogin(function()
-                     {
-                        me.onShareEmailTap();
-                     }, false);
-                  }, 1, me);
-               }
-               else
-               {
-                  console.log(me.fbShareSuccessMsg);
-                  Ext.device.Notification.show(
-                  {
-                     title : 'Facebook Connect',
-                     message : me.fbShareSuccessMsg,
-                     buttons : ['OK']
-                  });
-               }
-            });
-         }
-      }, true);
+      fb.on('connected', me.onFacebookShareCallback, me);
+      fb.on('unauthorized', me.onFacebookShareCallback, me);
+      fb.on('exception', me.onFacebookShareCallback, me);
+      Genesis.fb.facebook_onLogin(true, null, true);
    },
    onInfoTap : function(b, e, eOpts, eInfo)
    {
@@ -492,16 +501,20 @@ Ext.define('Genesis.controller.client.Viewport',
    {
       var me = this;
 
+      __initFb__();
+
       me.callParent(arguments);
 
       console.log("Client Viewport Init");
       //
       // Initialize Facebook
       //
+      /*
       if (Genesis.fn.isNative())
       {
-         Genesis.fb.initFb();
+      Genesis.fb.initFb();
       }
+      */
 
       //
       // Initialize Sound Files, make it non-blocking
