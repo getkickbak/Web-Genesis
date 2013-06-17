@@ -19,10 +19,10 @@ class UserMailer < ActionMailer::Base
     mail(:to => user.email, :subject => I18n.t("mailer.email_subject_points_expiration"))
   end
   
-  def points_summary_email(user, records)
+  def account_balance_summary_email(customers, user)
+    @customers = customers
     @user = user
-    @records = records
-    mail(:to => user.email, :subject => I18n.t("mailer.email_subject_points_summary"))
+    mail(:to => user.email, :subject => I18n.t("mailer.email_subject_account_balance_summary"))
   end
   
   def promotion_email(user, promotion)

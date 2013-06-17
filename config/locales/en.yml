@@ -388,6 +388,7 @@ en:
       email_subject_facebook_token_expired: "Facebook offline access expired"
       email_subject_business_inquiry: "Business Inquiry"
       email_subject_birthday_reminder: "Happy Birthday"
+      email_subject_account_balance_summary: "Account Balance Summary"
   users:
       update_success: "Account was successfully updated."
       update_password_success: "Password was successfully updated." 

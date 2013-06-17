@@ -18,3 +18,7 @@ registration_reminders:
   cron: 0 8 * * *
   class: RegistrationReminders
   description: Registration Reminders  
+account_balance_summaries:
+  cron: 0 0 1-7,15-21 * 3
+  class: AccountBalanceSummaries
+  description: Account Balance Summaries

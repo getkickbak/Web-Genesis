@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+	</head>
+	<body>
+		<div>
+			<table cellspacing="0" cellpadding="0" width="507" border="0" align="center" bgcolor="#ffffff" style="font-size:12px;color:#444;font-family:arial,sans-serif">
+				<tbody>
+					<tr>
+						<td align="left">
+						<div style="background:#0A78BE;padding: 20px 15px;border-radius:0.6em;">
+							<a href="http://www.getkickbak.com" target="_blank"> <img src="https://s3.amazonaws.com/files.getkickbak.com/v1/logo.png" width="100" border="0" alt="KICKBAK"> </a>
+						</div></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td height="10"></td><td></td>
+					</tr>
+					<tr>
+						<td style="border-top:1px solid #ccc;padding:10px 15px">
+						<table width="100%" border="0" cellspacing="0" cellpadding="0">
+							<tbody>
+								<tr valign="middle">
+									<td>
+									<br>
+									<br>
+									<b>Hi <%= @user.name.split(' ')[0] %>,</b>
+									<br>
+									<br>
+									Your KICKBAK account balances as of <%= Date.today.strftime("%b %d, %Y") %> are: 
+									<br>
+									<br>
+									<table width="100%" border="0" cellpadding="0" cellspacing="0">
+										<% per_row = 3 %>
+										<% n = @customers.length / per_row %>
+										<% n = (@customers.length % per_row) > 0 ? n+1 : n %>
+										<% for i in 0..n-1 %>
+										<tr>
+											<% for x in 0..per_row-1 %>
+											<% if (y = i*per_row+x) < @customers.length %>
+											<% customer = @customers[y] %>
+											<td style="border-top: 1px solid #c1c1c1;border-left: 1px solid #c1c1c1;border-right: 1px solid #c1c1c1;">
+												<table width="100%" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width ="150">
+															<%= link_to image_tag(customer.merchant.photo.thumbnail_ios_large.url), business_profile_url(customer.merchant) %>
+														</td>
+													</tr>
+													<tr>
+														<td style="padding:10px 10px 5px 10px;width:100%;">
+															<table width="100%" border="0" cellpadding="0" cellspacing="0">
+																<tr>
+																	<td colspan="2"><%= customer.merchant.name %></td>
+																</tr>
+																<tr>
+																	<% if customer.merchant.features_config.enable_prizes %>
+																	<td style="border-right: 1px solid #c1c1c1;">
+																		<table width="100%" border="0" cellpadding="0" cellspacing="0">
+																			<tr>
+																				<td><%= customer.points %></td>
+																			</tr>
+																			<tr>
+																				<td>Points</td>
+																			</tr>
+																		</table>	
+																	</td>
+																	<td>
+																		<table width="100%" border="0" cellpadding="0" cellspacing="0">
+																			<tr>
+																				<td><%= customer.prize_points %></td>
+																			</tr>
+																			<tr>
+																				<td>Prize Points</td>
+																			</tr>
+																		</table>
+																	</td>
+																	<% else %>
+																	<td colspan="2">
+																		<table width="100%" border="0" cellpadding="0" cellspacing="0">
+																			<tr>
+																				<td><%= customer.points %></td>
+																			</tr>
+																			<tr>
+																				<td>Points</td>
+																			</tr>
+																		</table>	
+																	</td>
+																	<% end %>
+																</tr>
+															</table>
+														</td>
+													</tr>
+												</table>
+											</td>
+											<% if x < per_row-1 %>
+											<td width="10"><td>
+											<% end %>
+											<% else %>
+											<td></td>
+											<% end %>
+											<% end %>
+										</tr>
+										<% if i < n-1 %>
+										<tr>
+											<td style="padding-top: 10px;">&nbsp;</td>
+										</tr>
+										<% end %>
+										<% end %>
+									</table>
+									<div style="clear:both;">
+										<br>
+										Find out what you can <a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= new_user_session_url %>">redeem</a> now!
+									</div>
+									<br>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						<table width="100%" border="0" cellpadding="0" cellspacing="0" style="border-top:1px solid #ccc">
+							<tbody>
+								<tr>
+									<td align="center">
+									<br>
+									Questions or comments? Email us at <a rel="nofollow" ymailto="mailto:help@getkickbak.com" target="_blank" style="text-decoration: none;" href="mailto:help@getkickbak.com">help@getkickbak.com</a>
+									<br>
+									<br>
+									Thanks from the <a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= root_url %>">KICKBAK</a> team.
+									<br>
+									<br>
+									</td>
+								</tr>
+							</tbody>
+						</table></td>
+						<td style="vertical-align:top;padding-left:7px"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</body>
+</html>
