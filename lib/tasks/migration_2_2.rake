@@ -9,7 +9,7 @@ namespace :db do
       end
       merchant.venues.each do |venue|
         if venue.features_config.nil?
-          VenueFeaturesConfig.create(@venue, merchant.features_config)
+          VenueFeaturesConfig.create(venue, merchant.features_config)
         end
       end
     end
