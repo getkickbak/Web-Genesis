@@ -3,7 +3,6 @@ DataMapper.setup(:default, hash[Rails.env])
 I18n.load_path += Dir[Rails.root.join('config', 'locales', '*.{rb,yml}').to_s]
 
 exists = DataMapper.repository(:default).adapter.storage_exists?('merchant_types')
-=begin
 if exists
   merchant_types = MerchantType.all
   merchant_type_id_to_value = {}
@@ -269,4 +268,3 @@ if exists
   CustomerSegment.id_to_segment = customer_segment_id_to_segment
   CustomerSegmentVisitRange.values = customer_segment_visit_range_values
 end
-=end
