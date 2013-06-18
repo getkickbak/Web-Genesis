@@ -378,6 +378,7 @@ Ext.define('Genesis.controller.ViewportBase',
                   var index = data.indexOf(item);
                   if (Ext.isDefined(enablePrizes))
                   {
+                     console.log("enablePrizes=" + enablePrizes);
                      if (!enablePrizes)
                      {
                         if (item['id'] == 'redeemPrizes')
@@ -388,6 +389,7 @@ Ext.define('Genesis.controller.ViewportBase',
                   }
                   if (Ext.isDefined(enableChallenges))
                   {
+                     console.log("enableChallenges=" + enableChallenges);
                      if (!enableChallenges)
                      {
                         if (item['id'] == 'challenges')
