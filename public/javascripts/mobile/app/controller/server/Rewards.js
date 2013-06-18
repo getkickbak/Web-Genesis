@@ -982,7 +982,7 @@ Ext.define('Genesis.controller.server.Rewards',
          {
             'uid' : (nfcResult) ? nfcResult.id : null,
             'tag_id' : (nfcResult) ? nfcResult.result['tagID'] : null,
-            'phone_id' : (nfcResult) ? nfcResult.result['phoneID'] : null,
+            'phone_id' : (nfcResult) ? nfcResult.result['phoneID'] : null
          }
       }, true);
    },

@@ -1446,7 +1446,7 @@ Ext.define('Genesis.controller.client.Challenges',
          Genesis.fb.uploadPhoto(
          {
             'message' : desc,
-            'url' : me.metaData['photo_url'],
+            'url' : me.metaData['photo_url']
             /*
              ,"place" :
              {

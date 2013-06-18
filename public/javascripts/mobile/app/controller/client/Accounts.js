@@ -15,7 +15,7 @@ Ext.define('Genesis.controller.client.Accounts',
          'etransfer' : 'emailTransferPage',
          'transfer' : 'transferPage',
          'selectTransfer' : 'selectTransferPage',
-         'transferComplete' : 'transferCompletePage',
+         'transferComplete' : 'transferCompletePage'
          //,'redememChooseSC' : 'redeemChooseSCPage'
       },
       refs :

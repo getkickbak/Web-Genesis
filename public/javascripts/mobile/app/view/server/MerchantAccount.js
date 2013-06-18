@@ -103,7 +103,7 @@ Ext.define('Genesis.view.server.MerchantAccount',
                name : 'tagid',
                clearIcon : false,
                label : "Tag ID",
-               value : ' ',
+               value : ' '
             },
             {
                xtype : 'textfield',

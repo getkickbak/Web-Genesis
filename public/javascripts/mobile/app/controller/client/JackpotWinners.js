@@ -10,7 +10,7 @@ Ext.define('Genesis.controller.client.JackpotWinners',
    {
       routes :
       {
-         'jackpotWinners/:id' : 'mainPage',
+         'jackpotWinners/:id' : 'mainPage'
       },
       models : ['frontend.JackpotWinner'],
       refs :

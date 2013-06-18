@@ -384,7 +384,7 @@ Ext.define('Genesis.view.CreateAccountPage',
          {
             xtype : 'passwordfield',
             name : 'password',
-            label : 'Password',
+            label : 'Password'
          }]
       },
       {
