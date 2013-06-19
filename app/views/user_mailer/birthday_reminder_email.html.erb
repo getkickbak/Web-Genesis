@@ -28,36 +28,36 @@
 									<b>Hi <%= @user.name.split(' ')[0] %>,</b>
 									<br>
 									<br>
-									Your birthday is coming soon!  To celebrate, you will get extra reward points when you visit your favorite local businesses on your special day.
+									<table width="100%" border="0" cellpadding="0" cellspacing="0">
+										<tr style="background-color:#f3f3f4;">
+											<td style="padding:10px 5px 10px 10px;">
+											Your birthday is coming soon!  To celebrate, you will get extra reward points when you visit any of your favorite local businesses on your special day.
+											</td>
+											<td style="padding:10px 10px 10px 5px;">
+												<img style="width:40px;" src="https://s3.amazonaws.com/files.getkickbak.com/v1/icons/mainicons/ios/mxhdpi/birthday.png">
+											</td>
+										<tr>
+									</table>
 									<br>
-									<br>
-									<div>
-										<% if @merchants.length <= 9 %>
+									<table width="100%" border="0" cellpadding="0" cellspacing="0">
 										<% per_row = 3 %>
-										<% else %>
-										<% per_row = 5 %>
-										<% end %>
 										<% n = @merchants.length / per_row %>
 										<% n = (@merchants.length % per_row) > 0 ? n+1 : n %>
 										<% for i in 0..n-1 %>
-										<div style="clear:both;">
+										<tr style="border-spacing: 0px;">
 											<% for x in 0..per_row-1 %>
 											<% if (y = i*per_row+x) < @merchants.length %>
 											<% merchant = @merchants[y] %>
-											<div>
-												<% if per_row > 3 %>
-												<%= link_to image_tag(merchant.photo.thumbnail_ios_medium.url, :style => "float:left; width:90px;height:90px;"), business_profile_url(merchant) %>
-												<% else %>
-												<%= link_to image_tag(merchant.photo.thumbnail_ios_large.url, :style => "float:left; width:150px;height:150px;"), business_profile_url(merchant) %>
-												<% end %>
-											</div>
+											<td style="border-spacing: 0px;max-height: 150px;text-align: center;">
+												<%= link_to image_tag(merchant.photo.thumbnail_ios_large.url, :style => "width:150px;border-bottowm-width: 0px;"), business_profile_url(merchant), :style => "display:block;max-height:150px;" %>
+											</td>
 											<% else %>
-											<div></div>
+											<td></td>
 											<% end %>
 											<% end %>
-										</div>
+										</tr>
 										<% end %>
-									</div>
+									</table>
 									<div style="clear:both;">
 										<br>
 										That's what we call customer love.
