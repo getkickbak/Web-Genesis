@@ -150,15 +150,15 @@ Ext.define('Genesis.view.widgets.RedeemItem',
          cls : 'info',
          tpl : Ext.create('Ext.XTemplate',
          // @formatter:off
-            '<div class="photo">'+
-               '<img src="{[this.getPhoto(values)]}"/>'+
-            '</div>',
-            '<div class="infoWrapper">' +
-               '<div class="name">{[this.getName(values)]}</div>' +
-               '<div class="disclaimer">{[this.getDisclaimer(values)]}</div>' +
-               '<div class="date">{[this.getExpiryDate(values)]}</div>' +
-            '</div>',
-            // @formatter:on
+         '<div class="photo">' +
+            '<img src="{[this.getPhoto(values)]}"/>' +
+         '</div>' +
+         '<div class="infoWrapper">' +
+            '<div class="name">{[this.getName(values)]}</div>' +
+            '<div class="disclaimer">{[this.getDisclaimer(values)]}</div>' +
+            '<div class="date">{[this.getExpiryDate(values)]}</div>' +
+         '</div>',
+         // @formatter:on
          {
             getExpiryDate : function(values)
             {
@@ -219,7 +219,7 @@ Ext.define('Genesis.view.widgets.RedeemItem',
             {
                return ((values['points'] > 0) ? values['points'] + '  Pts' : ' ');
             }
-         }),
+         })
       }, config);
 
       this.callParent(arguments);

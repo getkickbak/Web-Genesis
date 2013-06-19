@@ -52,7 +52,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
                   }
                }),
                cls : 'pointsphotodesc x-hasbadge'
-            }],
+            }]
          }]
       },
       winnersCount :

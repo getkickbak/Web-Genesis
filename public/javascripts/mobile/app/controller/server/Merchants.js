@@ -120,7 +120,7 @@ Ext.define('Genesis.controller.server.Merchants',
       {
          birthday : fields['birthday'].birthday,
          phone : fields['phone'].phone,
-         tagid : tagId,
+         tagid : tagId
       });
       form.query('textfield[name=user]')[0].setLabel(account['name'] + '<br/>' + '<label>' + account['email'] + "</label>");
    },
@@ -146,7 +146,7 @@ Ext.define('Genesis.controller.server.Merchants',
          data : me.self.encryptFromParams(
          {
             'uid' : nfcResult.id,
-            'tag_id' : nfcResult.result['tagID'],
+            'tag_id' : nfcResult.result['tagID']
          }, 'reward')
       }
       //

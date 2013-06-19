@@ -34,7 +34,6 @@ __initFb__ = function()
          var me = this;
 
          me.appId = (debugMode) ? 477780595628080 : 197968780267830;
-         me._appSecretId = (debugMode) ? 'f47bc95247d475ca734b3a72e0bb544c' : '080cb42570fde6ced464aa083e7b1c5a';
          console.log("FacebookConnect::initialize");
       },
       /**
@@ -63,6 +62,8 @@ __initFb__ = function()
          {
             redirect_uri : this.currentLocation(),
             client_id : this.appId,
+            state : appName,
+            response_type : 'token',
             scope : this.fbScope.toString()
          });
 
@@ -178,9 +179,24 @@ __initFb__ = function()
             //console.log("FacebookConnect::loadstart - url(" + event.url + ")");
             if (event.url.match(me.currentLocation()))
             {
-               if (event.url.indexOf("code=") >= 1)
+               if (event.url.indexOf("access_token=") >= 1)
                {
-                  me.code = event.url.split("=")[1];
+                  var params = Ext.Object.fromQueryString(event.url.split("#")[1]);
+                  if (params['state'] == appName)
+                  {
+                     var db = Genesis.db.getLocalDB();
+
+                     //console.log("FacebookConnect::authDialog = " + Ext.encode(params));
+                     me.code = db['access_token'] = params['access_token'];
+                     db['fbExpiresIn'] = (new Date(Date.now() + Number(params['expires_in']))).getTime();
+                     //console.log("FacebookConnect::access_token=" + db['access_token']);
+                     //console.log("FacebookConnect::fbExpiresIn=" + db['fbExpiresIn']);
+                     Genesis.db.setLocalDB(db);
+                  }
+                  else
+                  {
+                     console.error("CSRF Forgery detected! Ignore Request");
+                  }
                }
                Ext.defer(function()
                {
@@ -205,71 +221,27 @@ __initFb__ = function()
                   Ext.Ajax.request(
                   {
                      async : true,
-                     method : 'POST',
-                     params :
-                     {
-                        client_id : me.appId,
-                        client_secret : me._appSecretId,
-                        redirect_uri : me.currentLocation(),
-                        code : me.code,
-                     },
                      disableCaching : false,
-                     url : 'https://graph.facebook.com/oauth/access_token',
-                     cache : false,
+                     url : 'https://graph.facebook.com/me?access_token=' + Genesis.db.getLocalDB()['access_token'],
                      callback : function(option, success, response)
                      {
-                        var res = null;
-                        try
+                        if (success || (response.status == 200))
                         {
-                           //console.log("FacebookConnect::authCode=" + response.responseText);
-                           res = Ext.Object.fromQueryString(response.responseText);
-
-                           if (success || (response.status == 200))
+                           try
                            {
-                              var db = Genesis.db.getLocalDB();
-                              db['access_token'] = res['access_token'];
-                              db['fbExpiresIn'] = (new Date(Date.now() + Number(res['expires']))).getTime();
-                              //console.log("FacebookConnect::access_token=" + db['access_token']);
-                              //console.log("FacebookConnect::fbExpiresIn=" + db['fbExpiresIn']);
-                              Genesis.db.setLocalDB(db);
-
-                              Ext.Ajax.request(
-                              {
-                                 async : true,
-                                 disableCaching : false,
-                                 url : 'https://graph.facebook.com/me?access_token=' + res['access_token'],
-                                 callback : function(option, success, response)
-                                 {
-                                    if (success || (response.status == 200))
-                                    {
-                                       try
-                                       {
-                                          var res = Ext.decode(response.responseText);
-                                          res['status'] = 'connected';
-                                          me.facebook_loginCallback(res);
-                                       }
-                                       catch(e)
-                                       {
-                                       }
-                                    }
-                                    else
-                                    {
-                                       console.log("Error Logging into Facebook\n" + //
-                                       'Return ' + Ext.encode(response));
-                                       me.facebook_loginCallback(null);
-                                    }
-                                 }
-                              });
-                           }
-                           else
-                           {
-                              console.log("Error Logging into Facebook\n" + //
-                              'Return ' + Ext.encode(response));
+                              var res = Ext.decode(response.responseText);
+                              res['status'] = 'connected';
                               me.facebook_loginCallback(res);
                            }
+                           catch(e)
+                           {
+                           }
                         }
-                        catch(e)
+                        else
                         {
+                           console.log("Error Logging into Facebook\n" + //
+                           'Return ' + Ext.encode(response));
+                           me.facebook_loginCallback(null);
                         }
                      }
                   });

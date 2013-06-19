@@ -100,7 +100,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
       var item = view.getInnerItems()[0];
 
       var photo = item.query('component[tag=itemPhoto]')[0];
-      var img = Ext.get(Ext.DomQuery.select('img',photo.element.dom)[0]);
+      var img = Ext.get(Ext.DomQuery.select('img', photo.element.dom)[0]);
       img.set(
       {
          'src' : qrcodeMeta[0]
@@ -363,7 +363,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
       me.getAuthText()[(me.getRedeemMode() == 'authReward') ? 'show' : 'hide']();
 
       console.log("RewardItem View - Updated RewardItem View.");
-   },
+   }
    // --------------------------------------------------------------------------
    // Page Navigation
    // --------------------------------------------------------------------------

@@ -628,7 +628,7 @@ Ext.define('Genesis.controller.ViewportBase',
       Ext.regStore('LicenseStore',
       {
          model : 'Genesis.model.frontend.LicenseKey',
-         autoLoad : false,
+         autoLoad : false
       });
 
       me.last_click_time = new Date().getTime();

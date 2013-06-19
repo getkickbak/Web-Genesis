@@ -621,7 +621,7 @@ Ext.define('Genesis.controller.client.MainPage',
          Ext.Viewport.setMasked(
          {
             xtype : 'loadmask',
-            message : me.creatingAccountMsg,
+            message : me.creatingAccountMsg
          });
 
          Customer['setCreateAccountUrl']();
@@ -969,7 +969,7 @@ Ext.define('Genesis.controller.client.MainPage',
    {
       this.setAnimationMode(this.self.animationMode['slide']);
       this.pushView(this.getCreateAccount());
-   },
+   }
    // --------------------------------------------------------------------------
    // Base Class Overrides
    // --------------------------------------------------------------------------
