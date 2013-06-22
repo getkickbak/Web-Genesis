@@ -61,6 +61,7 @@ Ext.define('Genesis.controller.client.Settings',
    xtype : 'clientSettingsCntlr',
    config :
    {
+      models : ['frontend.Account'],
       refs :
       {
          settingsPage :

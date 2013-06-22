@@ -13,11 +13,14 @@ will need to resolve manually.
 // DO NOT DELETE - this directive is required for Sencha Cmd packages to work.
 //@require @packageOverrides
 
+//@require lib/core/Overrides.js
+
 //<debug>
-Ext.Loader.setPath({
-    'Ext': '../touch/src',
-    'Genesis': '../mobile/app',
-    'Ext.ux': '../mobile/app'
+Ext.Loader.setPath(
+{
+   'Ext' : '../touch/src',
+   'Genesis' : '../mobile/app',
+   'Ext.ux' : '../mobile/app'
 });
 //</debug>
 
@@ -65,13 +68,61 @@ function _appLaunch()
       Ext.create('Genesis.view.Viewport');
       //this.redirectTo('');
       console.log("Launched App");
-      navigator.splashscreen.hide();
-      initPushwoosh();
    }
+};
+
+var appLaunchCallbackFn = function()
+{
+   Ext.application(
+   {
+      viewport :
+      {
+         autoMaximize : true
+      },
+      name : 'Genesis',
+      //profiles : ['Iphone'],
+      requires : ['Ext.MessageBox', 'Ext.device.Connection', 'Ext.device.Notification', //
+      'Ext.device.Geolocation', 'Ext.device.Orientation'],
+      views : ['ViewBase', 'Document', 'client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions',
+      // //
+      'client.AccountsTransfer', 'client.SettingsPage', 'client.CheckinExplore', 'LoginPage', 'SignInPage', //
+      'client.MainPage', 'widgets.client.RedeemItemDetail', 'client.Badges', 'client.JackpotWinners', 'client.MerchantAccount', //
+      'client.MerchantDetails', 'client.Accounts', 'client.Prizes', 'Viewport'],
+      controllers : ['client.Challenges', 'client.Rewards', 'client.Redemptions', 'client.Viewport', 'client.MainPage', //
+      'client.Badges', 'client.Merchants', 'client.Accounts', 'client.Settings', 'client.Checkins', 'client.JackpotWinners', //
+      'client.Prizes'],
+      launch : function()
+      {
+         _application = this;
+         if (launched > 0x000)
+         {
+            launched |= 0x001;
+         }
+         else
+         {
+            launched = 0x001;
+         }
+         console.log("Ext App Launch")
+         _appLaunch();
+      },
+      onUpdated : function()
+      {
+         Ext.Msg.confirm("Application Update", "This application has just successfully been updated to the latest version. Reload now?", function(buttonId)
+         {
+            if (buttonId === 'yes')
+            {
+               window.location.reload();
+            }
+         });
+      }
+   });
 };
 
 Ext.onReady(function()
 {
+   console.debug = console.debug || console.log;
+   console.warn = console.warn || console.debug;
+
    document.addEventListener("online", function()
    {
       if (Ext.device)
@@ -99,72 +150,89 @@ Ext.onReady(function()
       }
       console.log("Phone is Offline");
    }, false);
-   document.addEventListener("pause", function()
-   {
-      if (_application && (launched == 0x111))
-      {
-         _application.getController('client.Viewport').persistSyncStores();
-      }
-      console.log("App is Paused");
-   }, false);
 
-   document.addEventListener("resume", function()
+   launched |= 0x110;
+   _appLaunch();
+});
+
+// **************************************************************************
+// Bootup Sequence
+// **************************************************************************
+(function()
+{
+   var host = "/javascripts/build/Genesis/testing/";
+   var resolution = function()
    {
-      if (Ext.device)
+      return (((window.screen.height >= 641) && ((window.devicePixelRatio == 1.0) || (window.devicePixelRatio >= 2.0))) ? 'mxhdpi' : 'lhdpi');
+   };
+
+   if (Ext.os.is('Tablet'))
+   {
+      if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
       {
-         if (!Ext.device.Connection.isOnline())
+         Genesis.fn.checkloadjscssfile(host + "resources/css/ipad.css?v=" + Genesis.constants.clientVersion, "css", appLaunchCallbackFn);
+      }
+      else
+      //if (Ext.os.is('Android'))
+      {
+         switch (resolution())
          {
-            _onGotoMain();
+            case 'lhdpi' :
+            {
+               Genesis.fn.checkloadjscssfile(host + "resources/css/android-tablet-lhdpi.css?v=" + Genesis.constants.clientVersion, "css", appLaunchCallbackFn);
+               break;
+            }
+            case 'mxhdpi' :
+            {
+               Genesis.fn.checkloadjscssfile(host + "resources/css/android-tablet-mxhdpi.css?v=" + Genesis.constants.clientVersion, "css", appLaunchCallbackFn);
+               break;
+            }
+         }
+      }
+   }
+   else
+   {
+      if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
+      {
+         if (Ext.os.is('iPhone5'))
+         {
+            var flag = 0x00;
+            Genesis.fn.checkloadjscssfile(host + "resources/css/iphone.css?v=" + Genesis.constants.clientVersion, "css", function()
+            {
+               if ((flag |= 0x01) == 0x11)
+               {
+                  appLaunchCallbackFn();
+               }
+            });
+            Genesis.fn.checkloadjscssfile(host + "resources/css/iphone5.css?v=" + Genesis.constants.clientVersion, "css", function()
+            {
+               if ((flag |= 0x10) == 0x11)
+               {
+                  appLaunchCallbackFn();
+               }
+            });
          }
          else
          {
-            //_onGotoMainCallBackFn();
+            Genesis.fn.checkloadjscssfile(host + "resources/css/iphone.css?v=" + Genesis.constants.clientVersion, "css", appLaunchCallbackFn);
          }
       }
-      console.log("App is Resumed");
-   }, false);
-});
-
-Ext.application(
-{
-   viewport :
-   {
-      autoMaximize : true
-   },
-   name : 'Genesis',
-   profiles : ['Iphone'],
-   requires : ['Ext.MessageBox', 'Ext.device.Connection', 'Ext.device.Notification', 'Ext.device.Camera', //
-   'Ext.device.Communicator', 'Ext.device.Geolocation', 'Ext.device.Orientation'],
-   views : ['Document', 'client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions', //
-   'client.AccountsTransfer', 'client.SettingsPage', 'client.CheckinExplore', 'LoginPage', 'SignInPage', //
-   'client.MainPage', 'widgets.client.RedeemItemDetail', 'client.Badges', 'client.JackpotWinners', 'client.MerchantAccount', //
-   'client.MerchantDetails', 'client.Accounts', 'client.Prizes', 'Viewport'],
-   controllers : ['client.Challenges', 'client.Rewards', 'client.Redemptions', 'client.Viewport', 'client.MainPage', //
-   'client.Badges', 'client.Merchants', 'client.Accounts', 'client.Settings', 'client.Checkins', 'client.JackpotWinners', //
-   'client.Prizes'],
-   launch : function()
-   {
-      _application = this;
-      if (launched > 0x000)
+      else//
+      //if (Ext.os.is('Android'))
       {
-         launched |= 0x001;
-      }
-      else
-      {
-         launched = 0x001;
-      }
-      console.log("Ext App Launch")
-      _appLaunch();
-   },
-   onUpdated : function()
-   {
-      Ext.Msg.confirm("Application Update", "This application has just successfully been updated to the latest version. Reload now?", function(buttonId)
-      {
-         if (buttonId === 'yes')
+         switch (resolution())
          {
-            window.location.reload();
+            case 'lhdpi' :
+            {
+               Genesis.fn.checkloadjscssfile(host + "resources/css/android-phone-lhdpi.css?v=" + Genesis.constants.clientVersion, "css", appLaunchCallbackFn);
+               break;
+            }
+            case 'mxhdpi' :
+            {
+               Genesis.fn.checkloadjscssfile(host + "resources/css/android-phone-mxhdpi.css?v=" + Genesis.constants.clientVersion, "css", appLaunchCallbackFn);
+               break;
+            }
          }
-      });
+      }
    }
-});
-
+})();

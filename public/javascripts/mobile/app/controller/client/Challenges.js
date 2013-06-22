@@ -1160,7 +1160,7 @@ Ext.define('Genesis.controller.client.Challenges',
          });
       };
 
-      if (Genesis.fn.isNative())
+      //if (Genesis.fn.isNative())
       {
          if (!me.selectedItem)
          {

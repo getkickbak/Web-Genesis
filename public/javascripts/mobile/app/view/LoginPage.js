@@ -54,7 +54,7 @@ Ext.define('Genesis.view.SignInPage',
 {
    extend : 'Ext.form.Panel',
    alias : 'widget.signinpageview',
-   requires : ['Ext.field.Email', 'Ext.field.Password'],
+   requires : ['Ext.field.Email', 'Ext.field.Password', 'Genesis.view.ViewBase'],
    config :
    {
       preRender : null,
@@ -153,7 +153,7 @@ Ext.define('Genesis.view.PasswdResetPage',
 {
    extend : 'Ext.form.Panel',
    alias : 'widget.passwdresetpageview',
-   requires : ['Ext.field.Email'],
+   requires : ['Ext.field.Email', 'Genesis.view.ViewBase'],
    config :
    {
       preRender : null,

@@ -108,7 +108,7 @@ $badgePoints-bg-gradient: $base-gradient;
       background-size : contain;
    }
    
-   body.x-tablet {
+   body.x-tablet, body.x-desktop {
       font-size :171%;
    }
 }
@@ -121,7 +121,7 @@ $badgePoints-bg-gradient: $base-gradient;
       background-size : contain;
    }
    
-   body.x-tablet {
+   body.x-tablet, body.x-desktop {
       //font-size : 228%;
       font-size :171%;
    }

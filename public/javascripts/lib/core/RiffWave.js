@@ -67,8 +67,11 @@ var FastBase64 =
 
 FastBase64.Init();
 
-var RIFFWAVE = function(data)
+var RIFFWAVE = function(config)
 {
+   config = config ||
+   {
+   };
 
    this.data = [];
    // Array containing audio samples
@@ -77,7 +80,7 @@ var RIFFWAVE = function(data)
    this.dataURI = '';
    // http://en.wikipedia.org/wiki/Data_URI_scheme
 
-   this.header =
+   this.header = Ext.apply(
    {
       // OFFS SIZE NOTES
       chunkId : [0x52, 0x49, 0x46, 0x46], // 0    4    "RIFF" = 0x52494646
@@ -93,7 +96,7 @@ var RIFFWAVE = function(data)
       bitsPerSample : 8, // 34   2    8 bits = 8, 16 bits = 16
       subChunk2Id : [0x64, 0x61, 0x74, 0x61], // 36   4    "data" = 0x64617461
       subChunk2Size : 0 // 40   4    data size = NumSamples*NumChannels*BitsPerSample/8
-   };
+   }, config['header']);
 
    function u32ToArray(i)
    {
@@ -128,13 +131,12 @@ var RIFFWAVE = function(data)
       this.header.subChunk2Size = this.data.length * (this.header.bitsPerSample >> 3);
       this.header.chunkSize = 36 + this.header.subChunk2Size;
 
+      console.log("RIFFWAVE - " + Ext.encode(this.header));
       this.wav = this.header.chunkId.concat(u32ToArray(this.header.chunkSize), this.header.format, this.header.subChunk1Id, u32ToArray(this.header.subChunk1Size), u16ToArray(this.header.audioFormat), u16ToArray(this.header.numChannels), u32ToArray(this.header.sampleRate), u32ToArray(this.header.byteRate), u16ToArray(this.header.blockAlign), u16ToArray(this.header.bitsPerSample), this.header.subChunk2Id, u32ToArray(this.header.subChunk2Size), (this.header.bitsPerSample == 16) ? split16bitArray(this.data) : this.data);
       this.dataURI = 'data:audio/wav;base64,' + FastBase64.Encode(this.wav);
    };
 
-   if ( data instanceof Array)
-      this.Make(data);
-
+   if (config['data'] instanceof Array)
+      this.Make(config['data']);
 };
 // end RIFFWAVE
-

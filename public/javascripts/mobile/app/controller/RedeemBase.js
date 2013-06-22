@@ -7,7 +7,7 @@ Ext.define('Genesis.controller.RedeemBase',
    xtype : 'redeemBaseCntlr',
    config :
    {
-      models : ['PurchaseReward', 'CustomerReward'],
+      models : ['Customer', 'PurchaseReward', 'CustomerReward'],
       listeners :
       {
          'redeemitem' : 'onRedeemItem'
@@ -224,10 +224,7 @@ Ext.define('Genesis.controller.RedeemBase',
       {
          me.getSDoneBtn()['hide']();
       }
-      if (Genesis.fn.isNative())
-      {
-         window.plugins.proximityID.stop();
-      }
+      window.plugins.proximityID.stop();
       console.log("onRedeemItemDeactivate - Done with RewardItem View!");
    },
 

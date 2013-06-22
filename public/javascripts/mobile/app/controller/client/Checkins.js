@@ -7,6 +7,7 @@ Ext.define('Genesis.controller.client.Checkins',
    xtype : 'clientcheckinsCntlr',
    config :
    {
+      models : ['Venue'],
       routes :
       {
          'exploreS' : 'explorePageUp',

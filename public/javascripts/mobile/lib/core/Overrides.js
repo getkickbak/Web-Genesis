@@ -1,12 +1,453 @@
 // **************************************************************************
 // System Functions
 // **************************************************************************
-Genesis =
+if ( typeof (Genesis) == 'undefined')
 {
-};
+   Genesis =
+   {
+   };
+
+}
 
 window.plugins = window.plugins ||
 {
+};
+
+// Domain Public by Eric Wendelin http://eriwen.com/ (2008)
+//                  Luke Smith http://lucassmith.name/ (2008)
+//                  Loic Dachary <loic@dachary.org> (2008)
+//                  Johan Euphrosine <proppy@aminche.com> (2008)
+//                  �yvind Sean Kinsey http://kinsey.no/blog (2010)
+//
+// Information and discussions
+// http://jspoker.pokersource.info/skin/test-printstacktrace.html
+// http://eriwen.com/javascript/js-stack-trace/
+// http://eriwen.com/javascript/stacktrace-update/
+// http://pastie.org/253058
+// http://browsershots.org/http://jspoker.pokersource.info/skin/test-printstacktrace.html
+//
+
+//
+// guessFunctionNameFromLines comes from firebug
+//
+// Software License Agreement (BSD License)
+//
+// Copyright (c) 2007, Parakey Inc.
+// All rights reserved.
+//
+// Redistribution and use of this software in source and binary forms, with or without modification,
+// are permitted provided that the following conditions are met:
+//
+// * Redistributions of source code must retain the above
+//   copyright notice, this list of conditions and the
+//   following disclaimer.
+//
+// * Redistributions in binary form must reproduce the above
+//   copyright notice, this list of conditions and the
+//   following disclaimer in the documentation and/or other
+//   materials provided with the distribution.
+//
+// * Neither the name of Parakey Inc. nor the names of its
+//   contributors may be used to endorse or promote products
+//   derived from this software without specific prior
+//   written permission of Parakey Inc.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
+// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+// FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+// CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+// IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+// OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+/**
+ *
+ * @cfg {Error} e The error to create a stacktrace from (optional)
+ * @cfg {Boolean} guess If we should try to resolve the names of anonymous functions
+ */
+function printStackTrace(options)
+{
+   var ex = (options && options.e) ? options.e : null;
+   var guess = options ? !!options.guess : true;
+
+   var p = new printStackTrace.implementation();
+   var result = p.run(ex);
+   return (guess) ? p.guessFunctions(result) : result;
+};
+printStackTrace.implementation = Ext.emptyFn;
+printStackTrace.implementation.prototype =
+{
+   run : function(ex)
+   {
+      // Use either the stored mode, or resolve it
+      var mode = this._mode || this.mode();
+      if (mode === 'other')
+      {
+         return this.other(arguments.callee).join('\n');
+      }
+      else
+      {
+         ex = ex || (function()
+         {
+            try
+            {
+               (0)();
+            }
+            catch (e)
+            {
+               return e;
+            }
+         })();
+         var stack = (this[mode](ex));
+         return ( typeof (stack) == 'object') ? stack.join('\n') : stack;
+      }
+   },
+   mode : function()
+   {
+      try
+      {
+         (0)();
+      }
+      catch (e)
+      {
+         if (e.arguments)
+         {
+            return (this._mode = 'chrome');
+         }
+         else if (e.stack)
+         {
+            return (this._mode = 'firefox');
+         }
+         else if (window.opera && !('stacktrace' in e))
+         {
+            //Opera 9-
+            return (this._mode = 'opera');
+         }
+      }
+      return (this._mode = 'other');
+   },
+   chrome : function(e)
+   {
+      if (e.stack)
+      {
+         return e.stack.replace(/^.*?\n/, '').replace(/^.*?\n/, '').replace(/^.*?\n/, '').replace(/^[^\(]+?[\n$]/gm, '').replace(/^\s+at\s+/gm, '').replace(/^Object.<anonymous>\s*\(/gm, '{anonymous}()@').split('\n');
+      }
+      else
+      {
+         return '';
+      }
+   },
+   firefox : function(e)
+   {
+      if (e.stack)
+      {
+         return e.stack.replace(/^.*?\n/, '').replace(/(?:\n@:0)?\s+$/m, '').replace(/^\(/gm, '{anonymous}(').split('\n');
+      }
+      else
+      {
+         return '';
+      }
+   },
+   // Opera 7.x and 8.x only!
+   opera : function(e)
+   {
+      if (e.message)
+      {
+         var lines = e.message.split('\n'), ANON = '{anonymous}', lineRE = /Line\s+(\d+).*?script\s+(http\S+)(?:.*?in\s+function\s+(\S+))?/i, i, j, len;
+
+         for ( i = 4, j = 0, len = lines.length; i < len; i += 2)
+         {
+            if (lineRE.test(lines[i]))
+            {
+               lines[j++] = (RegExp.$3 ? RegExp.$3 + '()@' + RegExp.$2 + RegExp.$1 : ANON + '()@' + RegExp.$2 + ':' + RegExp.$1) + ' -- ' + lines[i + 1].replace(/^\s+/, '');
+            }
+         }
+
+         lines.splice(j, lines.length - j);
+         return lines;
+      }
+      else
+      {
+         return '';
+      }
+   },
+   // Safari, Opera 9+, IE, and others
+   other : function(curr)
+   {
+      var ANON = '{anonymous}', fnRE = /function\s*([\w\-$]+)?\s*\(/i, stack = [], j = 0, fn, args;
+
+      var maxStackSize = 10;
+      while (curr && stack.length < maxStackSize)
+      {
+         fn = fnRE.test(curr.toString()) ? RegExp.$1 || ANON : ANON;
+         args = Array.prototype.slice.call(curr['arguments']);
+         stack[j++] = fn + '(' + printStackTrace.implementation.prototype.stringifyArguments(args) + ')';
+
+         //Opera bug: if curr.caller does not exist, Opera returns curr (WTF)
+         if (curr === curr.caller && window.opera)
+         {
+            //TODO: check for same arguments if possible
+            break;
+         }
+         curr = curr.caller;
+      }
+      return stack;
+   },
+   /**
+    * @return given arguments array as a String, subsituting type names for non-string types.
+    */
+   stringifyArguments : function(args)
+   {
+      for (var i = 0; i < args.length; ++i)
+      {
+         var arg = args[i];
+         if (arg === undefined)
+         {
+            args[i] = 'undefined';
+         }
+         else if (arg === null)
+         {
+            args[i] = 'null';
+         }
+         else if (arg.constructor)
+         {
+            if (arg.constructor === Array)
+            {
+               if (arg.length < 3)
+               {
+                  args[i] = '[' + this.stringifyArguments(arg) + ']';
+               }
+               else
+               {
+                  args[i] = '[' + this.stringifyArguments(Array.prototype.slice.call(arg, 0, 1)) + '...' + this.stringifyArguments(Array.prototype.slice.call(arg, -1)) + ']';
+               }
+            }
+            else if (arg.constructor === Object)
+            {
+               args[i] = '#object';
+            }
+            else if (arg.constructor === Function)
+            {
+               args[i] = '#function';
+            }
+            else if (arg.constructor === String)
+            {
+               args[i] = '"' + arg + '"';
+            }
+         }
+      }
+      return (( typeof (args) == 'object') ? args.join(',') : args);
+   },
+   sourceCache :
+   {
+   },
+   /**
+    * @return the text from a given URL.
+    */
+   ajax : function(url)
+   {
+      var req = this.createXMLHTTPObject();
+      if (!req)
+      {
+         return;
+      }
+      req.open('GET', url, false);
+      req.setRequestHeader('User-Agent', 'XMLHTTP/1.0');
+      req.send('');
+      return req.responseText;
+   },
+   createXMLHTTPObject : function()
+   {
+      // Try XHR methods in order and store XHR factory
+      var xmlhttp, XMLHttpFactories = [
+      function()
+      {
+         return new XMLHttpRequest();
+      },
+      function()
+      {
+         return new ActiveXObject('Msxml2.XMLHTTP');
+      },
+      function()
+      {
+         return new ActiveXObject('Msxml3.XMLHTTP');
+      },
+      function()
+      {
+         return new ActiveXObject('Microsoft.XMLHTTP');
+      }];
+      for (var i = 0; i < XMLHttpFactories.length; i++)
+      {
+         try
+         {
+            xmlhttp = XMLHttpFactories[i]();
+            // Use memoization to cache the factory
+            this.createXMLHTTPObject = XMLHttpFactories[i];
+            return xmlhttp;
+         }
+         catch (e)
+         {
+         }
+      }
+   },
+   getSource : function(url)
+   {
+      if (!( url in this.sourceCache))
+      {
+         this.sourceCache[url] = this.ajax(url).split('\n');
+      }
+      return this.sourceCache[url];
+   },
+   guessFunctions : function(stack)
+   {
+      if (stack.length)
+      {
+         for (var i = 0; i < stack.length; ++i)
+         {
+            var reStack = /{anonymous}\(.*\)@(\w+:\/\/([-\w\.]+)+(:\d+)?[^:]+):(\d+):?(\d+)?/;
+            var frame = stack[i], m = reStack.exec(frame);
+            if (m)
+            {
+               var file = m[1], lineno = m[4];
+               //m[7] is character position in Chrome
+               if (file && lineno)
+               {
+                  var functionName = this.guessFunctionName(file, lineno);
+                  stack[i] = frame.replace('{anonymous}', functionName);
+               }
+            }
+         }
+         return ( typeof (stack) == 'object') ? stack.join('\n') : stack;
+      }
+      return stack;
+   },
+   guessFunctionName : function(url, lineNo)
+   {
+      try
+      {
+         return this.guessFunctionNameFromLines(lineNo, this.getSource(url));
+      }
+      catch (e)
+      {
+         return 'getSource failed with url: ' + url + ', exception: ' + e.toString();
+      }
+   },
+   guessFunctionNameFromLines : function(lineNo, source)
+   {
+      var reFunctionArgNames = /function ([^(]*)\(([^)]*)\)/;
+      var reGuessFunction = /['"]?([0-9A-Za-z_]+)['"]?\s*[:=]\s*(function|eval|new Function)/;
+      // Walk backwards from the first line in the function until we find the line which
+      // matches the pattern above, which is the function definition
+      var line = "", maxLines = 10;
+      for (var i = 0; i < maxLines; ++i)
+      {
+         line = source[lineNo - i] + line;
+         if (line !== undefined)
+         {
+            var m = reGuessFunction.exec(line);
+            if (m && m[1])
+            {
+               return m[1];
+            }
+            else
+            {
+               m = reFunctionArgNames.exec(line);
+               if (m && m[1])
+               {
+                  return m[1];
+               }
+            }
+         }
+      }
+      return '(?)';
+   }
+};
+
+/**
+ *
+ *  URL encode / decode
+ *  http://www.webtoolkit.info/
+ *
+ **/
+var Url =
+{
+   // public method for url encoding
+   encode : function(string)
+   {
+      return escape(this._utf8_encode(string));
+   },
+   // public method for url decoding
+   decode : function(string)
+   {
+      return this._utf8_decode(unescape(string));
+   },
+   // private method for UTF-8 encoding
+   _utf8_encode : function(string)
+   {
+      string = string.replace(/\r\n/g, "\n");
+      var utftext = "";
+
+      for (var n = 0; n < string.length; n++)
+      {
+
+         var c = string.charCodeAt(n);
+
+         if (c < 128)
+         {
+            utftext += String.fromCharCode(c);
+         }
+         else if ((c > 127) && (c < 2048))
+         {
+            utftext += String.fromCharCode((c >> 6) | 192);
+            utftext += String.fromCharCode((c & 63) | 128);
+         }
+         else
+         {
+            utftext += String.fromCharCode((c >> 12) | 224);
+            utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+            utftext += String.fromCharCode((c & 63) | 128);
+         }
+
+      }
+
+      return utftext;
+   },
+   // private method for UTF-8 decoding
+   _utf8_decode : function(utftext)
+   {
+      var string = "";
+      var i = 0;
+      var c = 0, c1 = 0, c2 = 0, c3 = 0;
+
+      while (i < utftext.length)
+      {
+
+         c = utftext.charCodeAt(i);
+
+         if (c < 128)
+         {
+            string += String.fromCharCode(c);
+            i++;
+         }
+         else if ((c > 191) && (c < 224))
+         {
+            c2 = utftext.charCodeAt(i + 1);
+            string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+            i += 2;
+         }
+         else
+         {
+            c2 = utftext.charCodeAt(i + 1);
+            c3 = utftext.charCodeAt(i + 2);
+            string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+            i += 3;
+         }
+
+      }
+
+      return string;
+   }
 };
 
 Genesis.constants =
@@ -20,17 +461,7 @@ Genesis.constants =
    _thumbnailAttribPrefix : '',
    _iconPath : '',
    _iconSize : 0,
-   defaultFontSize : (function()
-   {
-      var ratio = 1.14;
-
-      if (Ext.os.is('Tablet') && //
-      (Ext.os.is('Android') || (Ext.os.is('iOS') && merchantMode)))
-      {
-         ratio = (window.innerHeight > 640) ? 1.5 * ratio : 1.5 * ratio;
-      }
-      return Math.floor(((16 * ratio * Math.min(1.0, window.devicePixelRatio)) || (16 * ratio)));
-   })(),
+   fontSize : 0,
    defaultIconSize : function()
    {
       return this._iconSize;
@@ -58,12 +489,19 @@ Genesis.constants =
    spinnerDom : '<div class="x-loading-spinner-outer"><div class="x-loading-spinner"><span class="x-loading-top"></span><span class="x-loading-right"></span><span class="x-loading-bottom"></span><span class="x-loading-left"></span></div></div>',
    init : function()
    {
-      var me = this;
+      var me = this, ratio = 1.14;
+
+      if (merchantMode)
+      {
+         ratio = (Ext.os.is('Tablet') ? 1.5 * ratio : 1.0 * ratio);
+      }
+      me.fontSize = Math.floor(((16 * ratio * Math.min(1.0, window.devicePixelRatio)) || (16 * ratio)));
+
       if (Ext.os.is('iOS'))
       {
          me._iconPath = '/ios';
          me._thumbnailAttribPrefix = 'thumbnail_ios_';
-         me._iconSize = 57;
+         me._iconSize = 57 * ( merchantMode ? 1.5 : 1.0);
 
          //
          // Push Notification
@@ -80,19 +518,19 @@ Genesis.constants =
          }
          me.pushNotifType = 1;
 
-         console.log("Running a iOS System");
+         console.log("Running a iOS System or a Desktop System");
       }
-      else if (Ext.os.is('Android'))
+      else if (Ext.os.is('Android') || Ext.os.is('Desktop'))
       {
          if ((window.devicePixelRatio == 1) || (window.devicePixelRatio >= 2))
          {
-            me._iconSize = 48 * ((Ext.os.is('Tablet')) ? 3.0 : 1.2);
+            me._iconSize = 48 * ((merchantMode && (Ext.os.is('Tablet'))) ? 3.0 : 1.2);
             me._iconPath = '/android/mxhdpi';
             me._thumbnailAttribPrefix = 'thumbnail_android_mxhdpi_';
          }
          else
          {
-            me._iconSize = 36 * ((Ext.os.is('Tablet')) ? 3.0 : 1.5);
+            me._iconSize = 36 * ((merchantMode && (Ext.os.is('Tablet'))) ? 3.0 : 1.5);
             me._iconPath = '/android/lhdpi';
             me._thumbnailAttribPrefix = 'thumbnail_android_lhdpi_';
          }
@@ -156,6 +594,393 @@ Genesis.fn =
    {
       //return Ext.isDefined(cordova);
       return phoneGapAvailable;
+   },
+   filesadded : [], //list of files already added
+   checkloadjscssfile : function(filename, filetype, cb)
+   {
+      var decodeFilename = Url.decode(filename);
+      var index = this.filesadded[decodeFilename];
+      if (Ext.isEmpty(index))
+      {
+         index = this.filesadded[decodeFilename] = [];
+         if (Ext.isFunction(cb))
+         {
+            index[0] = false;
+            index[1] = [cb];
+            this.loadjscssfile(filename, filetype, false);
+         }
+         else
+         {
+            index[0] = true;
+            this.loadjscssfile(filename, filetype, true);
+         }
+      }
+      else if (index[0] == true)
+      {
+         if (Ext.isFunction(cb))
+            cb(true);
+      }
+      else if (Ext.isFunction(cb))
+      {
+         if (index[1].indexOf(cb) < 0)
+         {
+            index[1].push(cb);
+         }
+      }
+      else
+      {
+         console.debug("Do nothing for file[" + filename + "]");
+      }
+   },
+   createjscssfile : function(filename, filetype)
+   {
+      var fileref;
+      filename = Url.decode(filename);
+      if (filetype == "js")
+      {
+         //if filename is a external JavaScript file
+         fileref = document.createElement('script')
+         fileref.setAttribute("type", "text/javascript")
+         fileref.setAttribute("src", filename)
+      }
+      else if (filetype == "css")
+      {
+         //if filename is an external CSS file
+         fileref = document.createElement("link")
+         fileref.setAttribute("rel", "stylesheet")
+         fileref.setAttribute("type", "text/css")
+         fileref.setAttribute("href", filename)
+      }
+
+      return fileref;
+   },
+   loadjscsstext : function(filename, filetype, text, cb)
+   {
+      var fileref;
+      filename = Url.decode(filename);
+      if (filetype == "js")
+      {
+         //if filename is a external JavaScript file
+         fileref = document.createElement('script')
+         fileref.setAttribute("type", "text/javascript")
+         fileref.setAttribute("id", filename)
+         //      fileref.innerHTML = "<!-- " + text + " -->";
+         fileref.innerHTML = text;
+      }
+      else if (filetype == "css")
+      {
+         log("Loading cssfile (" + filename + ")");
+         //if filename is an external CSS file
+         fileref = document.createElement("style")
+         fileref.setAttribute("id", filename)
+         fileref.setAttribute("rel", "stylesheet")
+         fileref.setAttribute("type", "text/css")
+         // FF, Safari
+         if ( typeof (fileref.textContent) != 'undefined')
+         {
+            fileref.textContent = text;
+         }
+         else
+         {
+            fileref.styleSheet.cssText = text;
+            // FF, IE
+         }
+      }
+      fileref.onerror = fileref.onload = fileref.onreadystatechange = function()
+      {
+         var rs = this.readyState;
+         if (rs && (rs != 'complete' && rs != 'loaded'))
+            return;
+         if (cb)
+            cb();
+      }
+      if (( typeof fileref) != undefined)
+         document.getElementsByTagName("head")[0].appendChild(fileref)
+
+      return fileref;
+   },
+   loadjscssfileCallBackFunc : function(b, t, href)
+   {
+      href = Url.decode(href);
+      if (t < 100)
+      {
+         /* apply only if the css is completely loded in DOM */
+         try
+         {
+            var url = (document.styleSheets[b].href) ? document.styleSheets[b].href.replace('http://192.168.0.52:3000', '') : '';
+
+            //if (url.search(href) < 0)
+            if (url != href)
+            {
+               for (var i = 0; i < document.styleSheets.length; i++)
+               {
+                  url = (document.styleSheet[i].href) ? document.styleSheet[i].href.replace('http://192.168.0.52:3000', '') : '';
+                  //if (url.search(href) >= 0)
+                  if (url == href)
+                  {
+                     b = i;
+                     break;
+                  }
+               }
+            }
+            // FF if css not loaded an exception is fired
+            if (document.styleSheets[b].cssRules)
+            {
+               this.cssOnReadyStateChange(href);
+            }
+            // IE no exception is fired!!!
+            else
+            {
+               if (document.styleSheets[b].rules && document.styleSheets[b].rules.length)
+               {
+                  this.cssOnReadyStateChange(href);
+                  return;
+               }++t;
+               Ext.defer(this.loadjscssfileCallBackFunc, 100, this, [b, t, href]);
+               if ((t / 25 > 0) && (t % 25 == 0))
+                  console.debug("IE Exception : Loading [" + href + "] index[" + b + "] try(" + t + ")");
+            }
+         }
+         catch(e)
+         {++t;
+            if ((t / 25 > 0) && (t % 25 == 0))
+            {
+               console.debug(printStackTrace(
+               {
+                  e : e
+               }));
+               console.debug("FF Exception : Loading [" + href + "] index[" + b + "] try(" + t + ")");
+            }
+            Ext.defer(this.loadjscssfileCallBackFunc, 100, this, [b, t, href]);
+         }
+      }
+      else
+      {
+         //this.removejscssfile(href,"css");
+         console.debug("Cannot load [" + href + "], index=[" + b + "]");
+         //Cannot load CSS, but we still need to continue processing
+         this.cssOnReadyStateChange(href);
+      }
+   },
+   scriptOnError : function(loadState)
+   {
+      this.scriptOnReadyStateChange.call(this, loadState, true);
+   },
+   scriptOnReadyStateChange : function(loadState, error)
+   {
+      var src = this.src;
+      //Url.decode(this.src);
+      /*
+       if (!Genesis.toontiBaseURL().match(Genesis.baseURL()))
+       {
+       src = src.replace(Genesis.baseURL(), '');
+       }
+       */
+      if (!error)
+      {
+         var rs = this.readyState;
+         if (rs && (rs != 'complete' && rs != 'loaded'))
+         {
+            //console.debug("file ["+this.src+"] not loaded yet");
+            return;
+         }
+         else if (!rs)
+         {
+            //console.debug("file ["+this.src+"] is loading");
+            //return;
+         }
+      }
+      else
+      {
+         console.debug("Error Loading JS file[" + src + "]");
+      }
+
+      var cbList = Genesis.fn.filesadded[src];
+      if (cbList)
+      {
+         cbList[0] = true;
+         var i = 0;
+         /*
+          try
+          {
+          */
+         for (; i < cbList[1].length; i++)
+         {
+            cbList[1][i](!error);
+         }
+         /*
+          }
+          catch (e)
+          {
+          debug(printStackTrace(
+          {
+          e: e
+          }));
+          debug("Error Calling callback on JS file["+src+"] index["+i+"]\nStack: ===========\n"+e.stack);
+          }
+          */
+
+         if (Genesis.fn.filesadded[src])
+            delete Genesis.fn.filesadded[src][1];
+      }
+      else
+      {
+         console.debug("Cannot find callback on JS file[" + src + "] index[" + i + "]");
+      }
+   },
+   cssOnReadyStateChange : function(href)
+   {
+      //href = Url.decode(href);
+      var cbList = Genesis.fn.filesadded[href];
+      if (cbList)
+      {
+         cbList[0] = true;
+         var i = 0;
+         try
+         {
+            for (; i < cbList[1].length; i++)
+            {
+               cbList[1][i](true);
+            }
+         }
+         catch (e)
+         {
+            console.debug(printStackTrace(
+            {
+               e : e
+            }));
+            console.debug("Error Calling callback on CSS file[" + href + "] index[" + i + "]\nStack: ===========\n" + e.stack);
+         }
+
+         if (Genesis.fn.filesadded[href])
+         {
+            delete Genesis.fn.filesadded[href][1];
+         }
+      }
+      else
+      {
+         console.debug("Cannot find callback on CSSS file[" + href + "] index[" + i + "]");
+      }
+   },
+   loadjscssfile : function(filename, filetype, noCallback)
+   {
+      var fileref;
+      filename = Url.decode(filename);
+      if (filetype == "js")
+      {
+         //if filename is a external Javascript file
+         fileref = document.createElement('script')
+         fileref.setAttribute("type", "text/javascript")
+         if (!noCallback)
+         {
+            fileref.onerror = this.scriptOnError;
+            fileref.onload = fileref.onreadystatechange = this.scriptOnReadyStateChange;
+         }
+         fileref.setAttribute("src", filename)
+         document.getElementsByTagName("head")[0].appendChild(fileref)
+      }
+      else if (filetype == "css")
+      {
+         // if filename is an external CSS file
+         fileref = document.createElement('link')
+         fileref.setAttribute("rel", "stylesheet")
+         fileref.setAttribute("type", "text/css")
+         fileref.setAttribute("media", "screen")
+         fileref.setAttribute("href", filename)
+         document.getElementsByTagName("head")[0].appendChild(fileref)
+         if (!noCallback)
+         {
+            // +1 for inline style in webpage
+            Ext.defer(this.loadjscssfileCallBackFunc, 50, this, [(document.styleSheets.length - 1) + 1, 0, filename]);
+         }
+      }
+   },
+   removejscssfile : function(filename, filetype)
+   {
+      filename = Url.decode(filename);
+      var efilename = escape(filename);
+      var targetelement = (filetype == "js") ? "script" : (filetype == "css") ? "link" : "none"//determine element type to create
+      // nodelist from
+      var targetattr = (filetype == "js") ? "src" : (filetype == "css") ? "href" : "none"//determine corresponding attribute to test
+      // for
+      var allsuspects = document.getElementsByTagName(targetelement)
+      for (var i = allsuspects.length; i >= 0; i--)
+      {
+         //search backwards within nodelist for matching elements to remove
+         if (allsuspects[i])
+         {
+            var attr = escape(allsuspects[i].getAttribute(targetattr));
+            if (attr != null && ((attr == efilename) || (attr.search(efilename) != -1)))
+            {
+               allsuspects[i].disabled = true;
+               allsuspects[i].parentNode.removeChild(allsuspects[i])//remove element by calling parentNode.removeChild()
+               delete Genesis.fn.filesadded[filename];
+            }
+         }
+      }
+   },
+   findjscssfile : function(filename, filetype)
+   {
+      filename = Url.decode(filename);
+      var targetelement = (filetype == "js") ? "script" : (filetype == "css") ? "style" : "none"//determine element type to create
+      // nodelist from
+      var targetattr = (filetype == "js") ? "id" : (filetype == "css") ? "id" : "none"//determine corresponding attribute to test for
+      var allsuspects = document.getElementsByTagName(targetelement)
+      for (var i = allsuspects.length; i >= 0; i--)
+      {
+         //search backwards within nodelist for matching elements to remove
+         if (allsuspects[i])
+         {
+            var attr = allsuspects[i].getAttribute(targetattr);
+            if (attr != null && attr.search(filename) != -1)
+            {
+               return allsuspects[i];
+            }
+         }
+      }
+      return null;
+   },
+   removejscsstext : function(filename, filetype)
+   {
+      filename = Url.decode(filename);
+      var targetelement = (filetype == "js") ? "script" : (filetype == "css") ? "style" : "none"//determine element type to create
+      // nodelist from
+      var targetattr = (filetype == "js") ? "id" : (filetype == "css") ? "id" : "none"//determine corresponding attribute to test for
+      var allsuspects = document.getElementsByTagName(targetelement)
+      for (var i = allsuspects.length; i >= 0; i--)
+      {
+         //search backwards within nodelist for matching elements to remove
+         if (allsuspects[i])
+         {
+            var attr = allsuspects[i].getAttribute(targetattr);
+            if (attr != null && ((attr == filename) || (attr.search(filename) != -1)))
+            {
+               allsuspects[i].parentNode.removeChild(allsuspects[i])//remove element by calling parentNode.removeChild()
+               delete Genesis.fn.filesadded[filename];
+            }
+         }
+      }
+   },
+   replacejscssfile : function(oldfilename, newfilename, filetype)
+   {
+      newfilename = Url.decode(newfilename);
+      oldfilename = Url.decode(oldfilename);
+      var targetelement = (filetype == "js") ? "script" : (filetype == "css") ? "link" : "none"//determine element type to create
+      // nodelist using
+      var targetattr = (filetype == "js") ? "src" : (filetype == "css") ? "href" : "none"//determine corresponding attribute to test
+      // for
+      var allsuspects = document.getElementsByTagName(targetelement)
+      for (var i = allsuspects.length; i >= 0; i--)
+      {
+         //search backwards within nodelist for matching elements to remove
+         if (allsuspects[i] && allsuspects[i].getAttribute(targetattr) != null && allsuspects[i].getAttribute(targetattr).indexOf(oldfilename) != -1)
+         {
+            var newelement = this.createjscssfile(newfilename, filetype)
+            allsuspects[i].parentNode.replaceChild(newelement, allsuspects[i])
+            delete this.filesadded[oldfilename];
+            this.filesadded[newfilename] = [true];
+         }
+      }
    },
    convertDateCommon : function(v, dateFormat, noConvert)
    {
@@ -327,11 +1152,11 @@ Genesis.fn =
    },
    calcPx : function(em, fontsize)
    {
-      return Math.floor(((em / fontsize) * Genesis.constants.defaultFontSize));
+      return Math.floor(((em / fontsize) * Genesis.constants.fontSize));
    },
    calcPxEm : function(px, em, fontsize)
    {
-      return ((px / Genesis.constants.defaultFontSize / fontsize) + (em / fontsize));
+      return ((px / Genesis.constants.fontSize / fontsize) + (em / fontsize));
    },
    failFileHandler : function(error)
    {

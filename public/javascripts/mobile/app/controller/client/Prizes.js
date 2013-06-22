@@ -9,6 +9,7 @@ Ext.define('Genesis.controller.client.Prizes',
    xtype : 'clientPrizesCntlr',
    config :
    {
+      models : ['CustomerReward'],
       redeemPath : 'redeemBrowsePrizesSC',
       routes :
       {

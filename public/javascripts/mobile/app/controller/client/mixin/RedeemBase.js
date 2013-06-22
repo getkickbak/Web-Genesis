@@ -222,7 +222,7 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
          });
       };
 
-      if (Genesis.fn.isNative())
+      //if (Genesis.fn.isNative())
       {
          var privKey = Genesis.fn.privKey =
          {
@@ -282,10 +282,12 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
             Ext.Viewport.setMasked(null);
          });
       }
+      /*
       else
       {
          me.redeemItemFn(params);
       }
+      */
    },
    onRedeemItemTap : function(b, e, eOpts, eInfo)
    {
@@ -353,23 +355,16 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
                 */
             };
 
-            if (Genesis.fn.isNative())
+            Ext.Viewport.setMasked(
             {
-               Ext.Viewport.setMasked(
-               {
-                  xtype : 'loadmask',
-                  message : me.prepareToSendMerchantDeviceMsg
-               });
-               window.plugins.proximityID.preLoadSend(function()
-               {
-                  Ext.Viewport.setMasked(null);
-                  Ext.defer(send, 0.25 * 1000, me);
-               });
-            }
-            else
+               xtype : 'loadmask',
+               message : me.prepareToSendMerchantDeviceMsg
+            });
+            window.plugins.proximityID.preLoadSend(function()
             {
-               send();
-            }
+               Ext.Viewport.setMasked(null);
+               Ext.defer(send, 0.25 * 1000, me);
+            });
             break;
          }
       }

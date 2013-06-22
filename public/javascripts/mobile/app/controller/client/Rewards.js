@@ -472,11 +472,14 @@ Ext.define('Genesis.controller.client.Rewards',
          delete me.qrcode;
       };
 
-      if (Genesis.fn.isNative())
+      //if (Genesis.fn.isNative())
       {
-         var db = Genesis.db.getLocalDB(), venue = viewport.getVenue(), venueId;
+         var db = Genesis.db.getLocalDB(), venue = viewport.getVenue(), venueId, position = viewport.getLastPosition();
 
-         viewport.setLastPosition(null);
+         if (!position || (position['coords'] && (position['coords'].getTimestamp() < (new Date()).addMinutes(-5).getTime())))
+         {
+            viewport.setLastPosition(null);
+         }
          //
          // Get GeoLocation and frequency markers
          //
@@ -549,10 +552,12 @@ Ext.define('Genesis.controller.client.Rewards',
             Ext.Viewport.setMasked(null);
          });
       }
-      else
-      {
-         me.scanQRCode();
-      }
+      /*
+       else
+       {
+       me.scanQRCode();
+       }
+       */
    },
    onEarnPts : function(notUseGeolocation)
    {
@@ -613,23 +618,17 @@ Ext.define('Genesis.controller.client.Rewards',
             me._actions.show();
          };
 
-         if (Genesis.fn.isNative())
+         Ext.Viewport.setMasked(
          {
-            Ext.Viewport.setMasked(
-            {
-               xtype : 'loadmask',
-               message : me.prepareToSendMerchantDeviceMsg
-            });
-            window.plugins.proximityID.preLoadSend(function()
-            {
-               Ext.Viewport.setMasked(null);
-               Ext.defer(send, 0.25 * 1000, me);
-            });
-         }
-         else
+            xtype : 'loadmask',
+            message : me.prepareToSendMerchantDeviceMsg
+         });
+
+         window.plugins.proximityID.preLoadSend(function()
          {
-            send();
-         }
+            Ext.Viewport.setMasked(null);
+            Ext.defer(send, 0.25 * 1000, me);
+         });
       }
    },
    updateMetaDataInfo : function(metaData)

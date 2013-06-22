@@ -13,7 +13,7 @@ Ext.define('Genesis.controller.client.Badges',
          'badges' : 'mainPage',
          'badgeDesc' : 'badgeDescPage'
       },
-      models : ['Badge', 'Customer', 'Merchant'],
+      models : ['CustomerReward', 'Badge', 'Customer', 'Merchant'],
       refs :
       {
          // Main Page

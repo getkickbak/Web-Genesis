@@ -5,6 +5,7 @@ Ext.define('Genesis.view.client.ChallengePage',
    alias : 'widget.clientchallengepageview',
    config :
    {
+      models : ['Challenge'],
       layout : 'fit',
       cls : 'viewport',
       scrollable : undefined,

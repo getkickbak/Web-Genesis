@@ -5,6 +5,7 @@ Ext.define('Genesis.view.client.Badges',
    alias : 'widget.clientbadgesview',
    config :
    {
+      models : ['Badge'],
       cls : 'viewport',
       preRender : null,
       direction : 'horizontal',

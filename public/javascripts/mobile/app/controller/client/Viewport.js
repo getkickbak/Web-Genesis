@@ -541,7 +541,7 @@ Ext.define('Genesis.controller.client.Viewport',
          }
       }, 1, me);
 
-      if (Genesis.fn.isNative())
+      //if (Genesis.fn.isNative())
       {
          //
          // Sender/Receiver Volume Settings
@@ -551,7 +551,22 @@ Ext.define('Genesis.controller.client.Viewport',
          // Client Device always transmits
          //
          var s_vol_ratio, r_vol_ratio, c = Genesis.constants;
-         if (Ext.os.is('iOS'))
+         if (Ext.os.is('Android'))
+         {
+            //(tx)
+            s_vol_ratio = 0.50;
+            //Default Volume laying flat on a surface (tx)
+            c.s_vol = 50;
+
+            //(rx)
+            r_vol_ratio = 0.5;
+            c.conseqMissThreshold = 1;
+            c.magThreshold = 20000;
+            c.numSamples = 4 * 1024;
+            //Default Overlap of FFT signal analysis over previous samples
+            c.sigOverlapRatio = 0.25;
+         }
+         else if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
          {
             //(tx)
             s_vol_ratio = 0.50;
@@ -567,22 +582,7 @@ Ext.define('Genesis.controller.client.Viewport',
             //Default Overlap of FFT signal analysis over previous samples
             c.sigOverlapRatio = 0.25;
          }
-         if (Ext.os.is('Android'))
-         {
-            //(tx)
-            s_vol_ratio = 0.50;
-            //Default Volume laying flat on a surface (tx)
-            c.s_vol = 50;
 
-            //(rx)
-            r_vol_ratio = 0.5;
-            c.conseqMissThreshold = 1;
-            c.magThreshold = 20000;
-            c.numSamples = 4 * 1024;
-            //Default Overlap of FFT signal analysis over previous samples
-            c.sigOverlapRatio = 0.25;
-
-         }
          c.proximityTxTimeout = 20 * 1000;
          c.proximityRxTimeout = 40 * 1000;
          Genesis.fn.printProximityConfig();

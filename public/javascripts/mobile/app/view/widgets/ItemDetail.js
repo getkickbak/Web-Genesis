@@ -46,6 +46,7 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
    alias : 'widget.popupitemdetailview',
    config :
    {
+      models : ['CustomerReward'],
       bottom : 0,
       left : 0,
       top : 0,

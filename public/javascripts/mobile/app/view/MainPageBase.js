@@ -5,6 +5,7 @@ Ext.define('Genesis.view.MainPageBase',
    alias : 'widget.mainpagebaseview',
    config :
    {
+      models : ['frontend.MainPage'],
       itemPerPage : 6,
       layout : 'fit',
       cls : 'viewport',

@@ -7,6 +7,7 @@ Ext.define('Genesis.controller.ViewportBase',
    },
    config :
    {
+      models : ['Customer', 'Checkin', 'Venue', 'frontend.LicenseKey'],
       sound_files : null,
       refs :
       {
@@ -598,9 +599,6 @@ Ext.define('Genesis.controller.ViewportBase',
       Genesis.constants.init();
 
       me.callParent(arguments);
-
-      QRCodeReader.prototype.scanType = "Default";
-      console.debug("QRCode Scanner Mode[" + QRCodeReader.prototype.scanType + "]")
 
       if (Ext.isDefined(window.device))
       {

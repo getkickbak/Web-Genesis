@@ -9,6 +9,7 @@ Ext.define('Genesis.controller.client.Merchants',
    xtype : 'clientmerchantsCntlr',
    config :
    {
+      models : ['News', 'Venue'],
       routes :
       {
          'venue/:id/:id' : 'mainPage',
