@@ -377,25 +377,55 @@ Ext.define('Genesis.controller.ViewportBase',
                {
                   var item = data[i];
                   var index = data.indexOf(item);
-                  if (Ext.isDefined(enablePrizes))
+                  if (merchantMode)
                   {
-                     console.log("enablePrizes=" + enablePrizes);
-                     if (!enablePrizes)
+                     if (Ext.isDefined(enablePrizes))
                      {
-                        if (item['id'] == 'redeemPrizes')
+                        //console.log("enablePrizes=" + enablePrizes);
+                        if (!enablePrizes)
                         {
-                           data.splice(index, 1);
+                           if (item['id'] == 'redeemPrizes')
+                           {
+                              data.splice(index, 1);
+                              if (index == i)
+                              {
+                                 i--;
+                              }
+                           }
+                        }
+                     }
+                     if (Ext.isDefined(enableChallenges))
+                     {
+                        //console.log("enableChallenges=" + enableChallenges);
+                        if (!enableChallenges)
+                        {
+                           if (item['id'] == 'challenges')
+                           {
+                              data.splice(index, 1);
+                              if (index == i)
+                              {
+                                 i--;
+                              }
+                           }
                         }
                      }
                   }
-                  if (Ext.isDefined(enableChallenges))
+                  //
+                  // MobileWeb do not support Referrals and Transfers
+                  //
+                  else if (_application.getProfileInstances()[0].getName().match(/mobileWeb/i))
                   {
-                     console.log("enableChallenges=" + enableChallenges);
-                     if (!enableChallenges)
+                     switch (item['id'])
                      {
-                        if (item['id'] == 'challenges')
+                        case 'transfer':
+                        case 'referrals' :
                         {
                            data.splice(index, 1);
+                           if (index == i)
+                           {
+                              i--;
+                           }
+                           break;
                         }
                      }
                   }

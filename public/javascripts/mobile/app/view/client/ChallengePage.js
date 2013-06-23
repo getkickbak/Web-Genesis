@@ -150,7 +150,8 @@ Ext.define('Genesis.view.client.ChallengePage',
       element.addCls('x-item-selected');
 
       var data = Ext.create('Genesis.model.Challenge', Ext.decode(decodeURIComponent(e.delegatedTarget.getAttribute('data'))));
-      _application.getController('client' + '.Challenges').fireEvent('itemTap', data);
+      var mobileWebClient = _application.getProfileInstances()[0].getName().match(/mobileWeb/i);
+      _application.getController(((mobileWebClient) ? 'MobileWebClient' : 'MobileClient') + '.Challenges').fireEvent('itemTap', data);
    },
    cleanView : function()
    {
@@ -160,6 +161,31 @@ Ext.define('Genesis.view.client.ChallengePage',
    _createView : function(carousel, items)
    {
       var me = this, itemsPerPage = 6;
+
+      //
+      // Disable unsupported features on MobileWeb
+      //
+      if (_application.getProfileInstances()[0].getName().match(/mobileWeb/i))
+      {
+         for (var i = 0; i < items.length; i++)
+         {
+            var item = items[i];
+            switch (item.get('type').value)
+            {
+               case 'photo':
+               case 'referral' :
+               {
+                  var index = items.indexOf(item);
+                  items.splice(index, 1);
+                  if (index == i)
+                  {
+                     i--;
+                  }
+                  break;
+               }
+            }
+         }
+      }
 
       if (Ext.os.is('iOS'))
       {

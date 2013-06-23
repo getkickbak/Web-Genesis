@@ -19,7 +19,7 @@ var retrieveReceipts = function()
    }
 };
 
-Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Receipt', 'Ext.device.Connection', 'Genesis.controller.ControllerBase'], function()
+Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Receipt', 'Genesis.controller.ControllerBase'], function()
 {
    var db = Genesis.db.getLocalDB();
    if (db['receiptFilters'])
@@ -212,7 +212,8 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
       if (posEnabled && Ext.Viewport)
       {
          i = i || 0;
-         if (!wssocket && Ext.device.Connection.isOnline())
+         if (!wssocket && //
+         ((Genesis.fn.isNative() && Ext.device.Connection.isOnline()) || (navigator.onLine)))
          {
             var ws = WebSocket.prototype;
             var url = ws.scheme + ws.host + ':' + ws.port + "/pos";

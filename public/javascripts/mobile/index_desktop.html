@@ -26,16 +26,7 @@
       min-width: 1025px // big landscape tablets, laptops, and desktops
       min-width: 1281px // hi-res laptops and desktops
       -->
-      <link rel="stylesheet" type="text/css" media="only screen and (min-width:320px) and (max-width:480px) and (-webkit-max-device-pixel-ratio: 0.99)" href="resources/css/android-phone-lhdpi.css">
-      <link rel="stylesheet" type="text/css" media="only screen and (min-width:320px) and (max-width:480px) and (-webkit-device-pixel-ratio: 1.0)" href="resources/css/android-phone-mxhdpi.css">
-      <link rel="stylesheet" type="text/css" media="only screen and (min-width:320px) and (max-width:480px) and (-webkit-max-device-pixel-ratio: 1.99)" href="resources/css/android-phone-lhdpi.css">
-      <link rel="stylesheet" type="text/css" media="only screen and (min-width:320px) and (max-width:480px) and (-webkit-min-device-pixel-ratio: 2.0)" href="resources/css/android-phone-mxhdpi.css">
-      <link rel="stylesheet" type="text/css" media="only screen and (min-width:320px) and (max-width:480px)" href="resources/css/android-phone-lhdpi.css">
-      <link rel="stylesheet" type="text/css" media="only screen and (min-width:481px) and (max-width:640px)" href="resources/css/android-phone-lhdpi.css">
-      <link rel="stylesheet" type="text/css" media="only screen and (min-width:641px) and (max-width:960px)" href="resources/css/android-phone-lhdpi.css">
-      <link rel="stylesheet" type="text/css" media="only screen and (min-width:961px) and (max-width:1024px)" href="resources/css/android-phone-lhdpi.css">
-      <link rel="stylesheet" type="text/css" media="only screen and (min-width:1025px) and (max-width:1280px)" href="resources/css/android-phone-lhdpi.css">
-      <link rel="stylesheet" type="text/css" media="only screen and (min-width:1281px)" href="resources/css/android-phone-lhdpi.css">
+      <link href="resources/css/iphone.css" type="text/css">
       <!--
       <link rel="stylesheet" href="resources/css/iphone.css" type="text/css">
       <link media="screen and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" rel="stylesheet" href="resources/css/iphone5.css" type="text/css">
@@ -51,8 +42,8 @@
       <script type="text/javascript" src="../lib/touch-2.1.1/sencha-touch-all-debug.js"></script>
       <!--
       Phone Gap Libs
+      <script type="text/javascript" src="lib/cordova-2.8.1.ios.js"></script>
       -->
-      <script type="text/javascript" src="lib/cordova-2.6.0.ios.js"></script>
       <script type="text/javascript">
          var backBtnCallbackListFn = [];
          var phoneGapAvailable = false;
@@ -96,16 +87,15 @@
           }
           */
       </script>
-      <script type="text/javascript" src="../lib/core/base64Binary.js"></script>
-      <script type="text/javascript" src="lib/core/barcodescanner.js"></script>
-      <script type="text/javascript" src="lib/core/EmailComposer.js"></script>
-      <script type="text/javascript" src="lib/core/QRCodeReader.js"></script>
+      <script type="text/javascript" src="lib/core/FacebookConnect.js"></script>
+      <script type="text/javascript" src="lib/core/ProximityID.js"></script>
       <!--
       <script type="text/javascript" src="lib/FileTransfer.js"></script>
       -->
       <!--
       SenchaTouch Libs
       -->
+      <script type="text/javascript" src="lib/core/Genesis.js"></script>
       <script type="text/javascript" src="lib/core/Overrides.js"></script>
       <!-- View Widgets -->
       <script type="text/javascript" src="app/profile/Desktop.js"></script>
@@ -174,6 +164,7 @@
       <script type="text/javascript" src="app/controller/client/Viewport.js"></script>
       <script type="text/javascript" src="app/controller/client/Checkins.js"></script>
       <script type="text/javascript" src="app/controller/client/Challenges.js"></script>
+      <script type="text/javascript" src="app/controller/mobileClient/Challenges.js"></script>
       <script type="text/javascript" src="app/controller/client/Merchants.js"></script>
       <script type="text/javascript" src="app/controller/client/Badges.js"></script>
       <script type="text/javascript" src="app/controller/client/JackpotWinners.js"></script>

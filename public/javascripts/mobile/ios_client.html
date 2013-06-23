@@ -1,13 +1,10 @@
 <!DOCTYPE HTML>
 <html manifest="" lang="en-US">
    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-touch-fullscreen" content="yes" />
-        <meta name="format-detection" content="telephone=no" />
-        <meta name="format-detection" content="address=no" />
-        <meta name="format-detection" content="email=no" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+      <meta name="format-detection" content="telephone=no" />
+      <meta name="format-detection" content="address=no" />
+      <meta name="format-detection" content="email=no" />
+      <meta name="apple-mobile-web-app-status-bar-style" content="black" />
       <meta charset="UTF-8">
       <title>KickBak</title>
       <style type="text/css">
@@ -54,46 +51,6 @@
          }
          }
       </style>
-      <script type="text/javascript">
-         var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false, phoneGapAvailable = false;
-         var debugMode = true, serverHost, merchantMode = false, appName = 'GetKickBak', _application;
-         
-         if (debugMode)
-         {
-            //serverHost = 'http://192.168.0.52:3000';
-            //serverHost = 'http://192.168.0.46:3000';
-            //serverHost = 'http://76.10.173.153';
-            serverHost = 'http://www.dev1getkickbak.com';
-            //serverHost = 'http://www.devgetkickbak.com';
-         }
-         else
-         {
-            serverHost = 'http://www.getkickbak.com';            
-         }
-
-         // If you want to prevent dragging, uncomment this section
-         /*
-          function preventBehavior(e)
-          {
-          e.preventDefault();
-          };
-          document.addEventListener("touchmove", preventBehavior, false);
-          */
-
-         /* If you are supporting your own protocol, the var invokeString will contain any arguments to the app launch.
-          see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
-          for more details -jm */
-         /*
-          function handleOpenURL(url)
-          {
-          // TODO: do something with the url passed in.
-          }
-          */
-         /* When this function is called, PhoneGap has been initialized and is ready to roll */
-         /* If you are supporting your own protocol, the var invokeString will contain any arguments to the app launch.
-          see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
-          for more details -jm */
-      </script>
       <!-- The line below must be kept intact for Sencha Command to build your application -->
       <script id="microloader" type="text/javascript" src="../touch/microloader/development.js"></script>
    </head>

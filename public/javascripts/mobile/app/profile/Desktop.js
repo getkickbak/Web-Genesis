@@ -37,6 +37,3 @@ Ext.define('Genesis.device.notification.Desktop',
       console.log("Beep " + times + " times.")
    }
 });
-
-QRCodeReader.prototype.scanType = "Default";
-console.debug("QRCode Scanner Mode[" + QRCodeReader.prototype.scanType + "]");

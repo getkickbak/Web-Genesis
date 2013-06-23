@@ -106,7 +106,7 @@
 	/**
 	* Extra resources to be copied along when build
 	*/
-	"resources": ["resources/themes/images/v1", "resources/css", "resources/audio", "app/store", "channel.html", "term_of_service.htm", "privacy.htm", "program_rules.htm"],
+	"resources": ["resources/themes/images/v1", "resources/css", "resources/icons", "resources/audio", "app/store", "channel.html", "term_of_service.htm", "privacy.htm", "program_rules.htm"],
 
 	/**
 	* File / directory name matchers to ignore when copying to the builds, must be valid regular expressions

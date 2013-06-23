@@ -1,6 +1,6 @@
 // add back button listener
 var onBackKeyDown = Ext.emptyFn;
-Ext.require(['Ext.device.Connection', 'Genesis.controller.ControllerBase'], function()
+Ext.require(['Genesis.controller.ControllerBase'], function()
 {
    onBackKeyDown = function(e)
    {

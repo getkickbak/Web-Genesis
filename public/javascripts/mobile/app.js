@@ -1,3 +1,42 @@
+var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false, phoneGapAvailable = false;
+var debugMode = true, serverHost, merchantMode = false, appName = 'GetKickBak', _application;
+
+if (debugMode)
+{
+   //serverHost = 'http://192.168.0.52:3000';
+   //serverHost = 'http://192.168.0.46:3000';
+   //serverHost = 'http://76.10.173.153';
+   serverHost = 'http://www.dev1getkickbak.com';
+   //serverHost = 'http://www.devgetkickbak.com';
+}
+else
+{
+   serverHost = 'http://www.getkickbak.com';
+}
+
+// If you want to prevent dragging, uncomment this section
+/*
+function preventBehavior(e)
+{
+e.preventDefault();
+};
+document.addEventListener("touchmove", preventBehavior, false);
+*/
+
+/* If you are supporting your own protocol, the var invokeString will contain any arguments to the app launch.
+see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
+for more details -jm */
+/*
+function handleOpenURL(url)
+{
+// TODO: do something with the url passed in.
+}
+*/
+/* When this function is called, PhoneGap has been initialized and is ready to roll */
+/* If you are supporting your own protocol, the var invokeString will contain any arguments to the app launch.
+see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
+for more details -jm */
+
 /*
 This file is generated and updated by Sencha Cmd. You can edit this file as
 needed for your application, but these edits will have to be merged by
@@ -13,6 +52,7 @@ will need to resolve manually.
 // DO NOT DELETE - this directive is required for Sencha Cmd packages to work.
 //@require @packageOverrides
 
+//@require lib/core/Genesis.js
 //@require lib/core/Overrides.js
 
 //<debug>
@@ -80,15 +120,14 @@ var appLaunchCallbackFn = function()
          autoMaximize : true
       },
       name : 'Genesis',
-      //profiles : ['Iphone'],
-      requires : ['Ext.MessageBox', 'Ext.device.Connection', 'Ext.device.Notification', //
-      'Ext.device.Geolocation', 'Ext.device.Orientation'],
+      profiles : ['MobileWebClient'],
+      requires : ['Ext.MessageBox', 'Ext.device.Notification', 'Ext.device.Geolocation', 'Ext.device.Orientation'],
       views : ['ViewBase', 'Document', 'client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions',
       // //
       'client.AccountsTransfer', 'client.SettingsPage', 'client.CheckinExplore', 'LoginPage', 'SignInPage', //
       'client.MainPage', 'widgets.client.RedeemItemDetail', 'client.Badges', 'client.JackpotWinners', 'client.MerchantAccount', //
       'client.MerchantDetails', 'client.Accounts', 'client.Prizes', 'Viewport'],
-      controllers : ['client.Challenges', 'client.Rewards', 'client.Redemptions', 'client.Viewport', 'client.MainPage', //
+      controllers : ['mobileWebClient.Challenges', 'client.Rewards', 'client.Redemptions', 'client.Viewport', 'client.MainPage', //
       'client.Badges', 'client.Merchants', 'client.Accounts', 'client.Settings', 'client.Checkins', 'client.JackpotWinners', //
       'client.Prizes'],
       launch : function()
@@ -105,13 +144,26 @@ var appLaunchCallbackFn = function()
          console.log("Ext App Launch")
          _appLaunch();
       },
+      isIconPrecomposed : true,
+      icon :
+      {
+         57 : 'resources/icons/icon.png',
+         72 : 'resources/icons/icon@72.png',
+         114 : 'resources/icons/icon@2x.png',
+         144 : 'resources/icons/icon@144.png'
+      },
       onUpdated : function()
       {
-         Ext.Msg.confirm("Application Update", "This application has just successfully been updated to the latest version. Reload now?", function(buttonId)
+         Ext.device.Notification.show(
          {
-            if (buttonId === 'yes')
+            title : 'Application Update',
+            message : "This application has just successfully been updated to the latest version. Reload now?",
+            callback : function(buttonId)
             {
-               window.location.reload();
+               if (buttonId === 'yes')
+               {
+                  window.location.reload();
+               }
             }
          });
       }
@@ -128,11 +180,9 @@ Ext.onReady(function()
       if (Ext.device)
       {
          console.log("Phone is Online" + ", " + //
-         Ext.device.Connection.__proto__.$className + ", " + //
-         "devicePixelRatio - " + window.devicePixelRatio + ", " + //
-         'Connection type: [' + Ext.device.Connection.getType() + ']');
+         "devicePixelRatio - " + window.devicePixelRatio + ", " + ']');
          //console.debug('Checking for Network Conncetivity for [' + location.origin + ']');
-         if (!Ext.device.Connection.isOnline())
+         if (!navigator.onLine)
          {
             _onGotoMain();
          }
@@ -143,7 +193,7 @@ Ext.onReady(function()
    {
       if (Ext.device)
       {
-         if (!Ext.device.Connection.isOnline())
+         if (!navigator.onLine)
          {
             _onGotoMain();
          }
@@ -158,81 +208,63 @@ Ext.onReady(function()
 // **************************************************************************
 // Bootup Sequence
 // **************************************************************************
-(function()
+var host = "/javascripts/build/Genesis/testing/";
+var resolution = function()
 {
-   var host = "/javascripts/build/Genesis/testing/";
-   var resolution = function()
-   {
-      return (((window.screen.height >= 641) && ((window.devicePixelRatio == 1.0) || (window.devicePixelRatio >= 2.0))) ? 'mxhdpi' : 'lhdpi');
-   };
+   return (((window.screen.height >= 641) && ((window.devicePixelRatio == 1.0) || (window.devicePixelRatio >= 2.0))) ? 'mxhdpi' : 'lhdpi');
+};
 
-   if (Ext.os.is('Tablet'))
+if (Ext.os.is('Tablet'))
+{
+   if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
    {
-      if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
-      {
-         Genesis.fn.checkloadjscssfile(host + "resources/css/ipad.css?v=" + Genesis.constants.clientVersion, "css", appLaunchCallbackFn);
-      }
-      else
-      //if (Ext.os.is('Android'))
-      {
-         switch (resolution())
-         {
-            case 'lhdpi' :
-            {
-               Genesis.fn.checkloadjscssfile(host + "resources/css/android-tablet-lhdpi.css?v=" + Genesis.constants.clientVersion, "css", appLaunchCallbackFn);
-               break;
-            }
-            case 'mxhdpi' :
-            {
-               Genesis.fn.checkloadjscssfile(host + "resources/css/android-tablet-mxhdpi.css?v=" + Genesis.constants.clientVersion, "css", appLaunchCallbackFn);
-               break;
-            }
-         }
-      }
+      Genesis.fn.checkloadjscssfile(host + "resources/css/ipad.css?v=" + Genesis.constants.clientVersion, "css", Ext.emptyFn);
    }
    else
+   //if (Ext.os.is('Android'))
    {
-      if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
+      switch (resolution())
       {
-         if (Ext.os.is('iPhone5'))
+         case 'lhdpi' :
          {
-            var flag = 0x00;
-            Genesis.fn.checkloadjscssfile(host + "resources/css/iphone.css?v=" + Genesis.constants.clientVersion, "css", function()
-            {
-               if ((flag |= 0x01) == 0x11)
-               {
-                  appLaunchCallbackFn();
-               }
-            });
-            Genesis.fn.checkloadjscssfile(host + "resources/css/iphone5.css?v=" + Genesis.constants.clientVersion, "css", function()
-            {
-               if ((flag |= 0x10) == 0x11)
-               {
-                  appLaunchCallbackFn();
-               }
-            });
+            Genesis.fn.checkloadjscssfile(host + "resources/css/android-tablet-lhdpi.css?v=" + Genesis.constants.clientVersion, "css", Ext.emptyFn);
+            break;
          }
-         else
+         case 'mxhdpi' :
          {
-            Genesis.fn.checkloadjscssfile(host + "resources/css/iphone.css?v=" + Genesis.constants.clientVersion, "css", appLaunchCallbackFn);
-         }
-      }
-      else//
-      //if (Ext.os.is('Android'))
-      {
-         switch (resolution())
-         {
-            case 'lhdpi' :
-            {
-               Genesis.fn.checkloadjscssfile(host + "resources/css/android-phone-lhdpi.css?v=" + Genesis.constants.clientVersion, "css", appLaunchCallbackFn);
-               break;
-            }
-            case 'mxhdpi' :
-            {
-               Genesis.fn.checkloadjscssfile(host + "resources/css/android-phone-mxhdpi.css?v=" + Genesis.constants.clientVersion, "css", appLaunchCallbackFn);
-               break;
-            }
+            Genesis.fn.checkloadjscssfile(host + "resources/css/android-tablet-mxhdpi.css?v=" + Genesis.constants.clientVersion, "css", Ext.emptyFn);
+            break;
          }
       }
    }
-})();
+}
+else
+{
+   if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
+   {
+      Genesis.fn.checkloadjscssfile(host + "resources/css/iphone.css?v=" + Genesis.constants.clientVersion, "css", Ext.emptyFn);
+      if (Ext.os.is('iPhone5'))
+      {
+         Genesis.fn.checkloadjscssfile(host + "resources/css/iphone5.css?v=" + Genesis.constants.clientVersion, "css", Ext.emptyFn);
+      }
+   }
+   else//
+   //if (Ext.os.is('Android'))
+   {
+      switch (resolution())
+      {
+         case 'lhdpi' :
+         {
+            Genesis.fn.checkloadjscssfile(host + "resources/css/android-phone-lhdpi.css?v=" + Genesis.constants.clientVersion, "css", Ext.emptyFn);
+            break;
+         }
+         case 'mxhdpi' :
+         {
+            Genesis.fn.checkloadjscssfile(host + "resources/css/android-phone-mxhdpi.css?v=" + Genesis.constants.clientVersion, "css", Ext.emptyFn);
+            break;
+         }
+      }
+   }
+}
+
+appLaunchCallbackFn();

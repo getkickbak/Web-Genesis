@@ -176,7 +176,7 @@ Ext.define('Genesis.view.client.Referrals',
    },
    onItemTap : function(e, target, delegate, eOpts)
    {
-      _application.getController('client.Challenges').fireEvent('referralsItemTap', e.delegatedTarget.getAttribute('data'));
+      _application.getController('mobileClient.Challenges').fireEvent('referralsItemTap', e.delegatedTarget.getAttribute('data'));
    },
    inheritableStatics :
    {

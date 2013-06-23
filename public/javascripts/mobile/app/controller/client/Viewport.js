@@ -294,7 +294,7 @@ Ext.define('Genesis.controller.client.Viewport',
                   var venue = me.getViewPortCntlr().getVenue();
                   var venueId = venue.getId();
                   var items = venue.challenges().getRange();
-                  var controller = app.getController('client.Challenges');
+                  var controller = app.getController('mobileClient' + '.Challenges');
                   //var list = controller.getReferralsPage().query('list')[0];
 
                   for (var i = 0; i < items.length; i++)

@@ -2,7 +2,7 @@ window.plugins = window.plugins ||
 {
 };
 
-if (phoneGapAvailable)
+if (window.cordova || window.Cordova || window.PhoneGap)
 {
    (function(cordova)
    {

@@ -213,13 +213,14 @@
             Ext.Ajax.setDisableCaching(false);
             Ext.application(
             {
+               requires : ['Ext.MessageBox', 'Ext.device.Notification', 'Ext.device.Camera', 'Ext.device.Geolocation', 'Ext.device.Orientation'],
                profiles : ['Android'],
                views : ['Document', 'client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions', //
                'client.AccountsTransfer', 'client.SettingsPage', //
                'client.CheckinExplore', 'LoginPage', 'SignInPage', 'client.MainPage', 'widgets.client.RedeemItemDetail', 'client.Badges', 'client.JackpotWinners', 'client.MerchantAccount',
                // //
                'client.MerchantDetails', 'client.Accounts', 'client.Prizes', 'Viewport'],
-               controllers : ['client.Challenges', 'client.Rewards', 'client.Redemptions', //
+               controllers : ['mobileClient.Challenges', 'client.Rewards', 'client.Redemptions', //
                'client.Viewport', 'client.MainPage', 'client.Badges', 'client.Merchants', 'client.Accounts', 'client.Settings', 'client.Checkins', 'client.JackpotWinners', 'client.Prizes'],
                launch : function()
                {

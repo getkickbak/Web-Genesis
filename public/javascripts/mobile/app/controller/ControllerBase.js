@@ -501,7 +501,10 @@ Ext.define('Genesis.controller.ControllerBase',
    onLocationUpdate : Ext.emptyFn,
    onOpenPage : function(feature, subFeature, cb, eOpts, eInfo)
    {
-      if ((appName == 'GetKickBak') && !Ext.device.Connection.isOnline() && (feature != 'MainPage'))
+      if ((appName == 'GetKickBak') && //
+      //((Genesis.fn.isNative() && !Ext.device.Connection.isOnline()) || (!navigator.onLine)) && //
+      !navigator.onLine && //
+      (feature != 'MainPage'))
       {
          var viewport = me.getViewPortCntlr();
          if (!offlineDialogShown)
@@ -595,7 +598,7 @@ Ext.define('Genesis.controller.ControllerBase',
                {
                   Ext.defer(function()
                   {
-                     me.fireEvent('openpage', 'client.Challenges', 'referrals', success);
+                     me.fireEvent('openpage', 'mobileClient.Challenges', 'referrals', success);
                   }, 1, me);
                }
                else
@@ -1142,25 +1145,25 @@ Ext.define('Genesis.controller.ControllerBase',
 
       console.debug('Getting GeoLocation ...');
       /*
-      if (!Genesis.fn.isNative())
-      {
-         me.fireEvent('locationupdate',
-         {
-            coords :
-            {
-               getLatitude : function()
-               {
-                  return "-50.000000";
-               },
-               getLongitude : function()
-               {
-                  return '50.000000';
-               }
-            }
-         });
-         return;
-      }
-      */
+       if (!Genesis.fn.isNative())
+       {
+       me.fireEvent('locationupdate',
+       {
+       coords :
+       {
+       getLatitude : function()
+       {
+       return "-50.000000";
+       },
+       getLongitude : function()
+       {
+       return '50.000000';
+       }
+       }
+       });
+       return;
+       }
+       */
       var successCallback = function(geo, eOpts)
       {
          if (!geo)
