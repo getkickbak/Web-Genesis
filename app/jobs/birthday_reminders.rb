@@ -24,7 +24,7 @@ module BirthdayReminders
         users = User.all(:status => :active, User.profile.birthday => 7.day.from_now, :offset => start, :limit => max)
         users = User.all
         users.each do |user|
-          customers = Customer.all(:fields => [:merchant_id], :user => user)
+          customers = Customer.all(:fields => [:merchant_id], :user => user, :status => :active, :order => [:update_ts.desc])
           if customers.length > 0
             merchant_ids = []
             customers.each do |customer|

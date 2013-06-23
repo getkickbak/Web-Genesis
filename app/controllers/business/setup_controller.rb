@@ -41,6 +41,7 @@ module Business
           end
         end       
       else
+        build_checklist
         respond_to do |format|
           format.html { render :action => "index" }
         #format.xml  { render :xml => @deal.errors, :status => :unprocessable_entity }
@@ -75,7 +76,10 @@ module Business
     end
     
     def has_badges?
-      MerchantToBadge.count(:merchant => current_merchant) > 0 ? true : false  
+      if current_merchant.custom_badges
+        return MerchantToBadge.count(:merchant => current_merchant) > 0 ? true : false  
+      end
+      return true
     end
     
     def has_venues?

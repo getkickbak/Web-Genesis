@@ -5,7 +5,7 @@
 	</head>
 	<body>
 		<div>
-			<table cellspacing="0" cellpadding="0" width="507" border="0" align="center" bgcolor="#ffffff" style="font-size:12px;color:#444;font-family:arial,sans-serif">
+			<table cellspacing="0" cellpadding="0" width="589" border="0" align="center" bgcolor="#ffffff" style="font-size:12px;color:#444;font-family:arial,sans-serif">
 				<tbody>
 					<tr>
 						<td align="left">
@@ -28,7 +28,7 @@
 									<b>Hi <%= @user.name.split(' ')[0] %>,</b>
 									<br>
 									<br>
-									Your KICKBAK account balances as of <%= Date.today.strftime("%b %d, %Y") %> are: 
+									Your KICKBAK account balances as of <%= Date.today.strftime("%b %d, %Y") %> are:
 									<br>
 									<br>
 									<table width="100%" border="0" cellpadding="0" cellspacing="0">
@@ -36,39 +36,39 @@
 										<% n = @customers.length / per_row %>
 										<% n = (@customers.length % per_row) > 0 ? n+1 : n %>
 										<% for i in 0..n-1 %>
-										<tr>
+										<tr style="border-spacing: 0px;">
 											<% for x in 0..per_row-1 %>
 											<% if (y = i*per_row+x) < @customers.length %>
 											<% customer = @customers[y] %>
-											<td style="border-top: 1px solid #c1c1c1;border-left: 1px solid #c1c1c1;border-right: 1px solid #c1c1c1;">
-												<table width="100%" border="0" cellpadding="0" cellspacing="0">
+											<td width="33.3%" style="padding: 10px;border-spacing: 0px;">
+												<table width="100%" border="0" cellpadding="0" cellspacing="0" style="border: 1px solid #c1c1c1;padding: 9px;">
 													<tr>
-														<td width ="150">
-															<%= link_to image_tag(customer.merchant.photo.thumbnail_ios_large.url), business_profile_url(customer.merchant) %>
+														<td>
+															<%= link_to image_tag(customer.merchant.photo.thumbnail_ios_large.url, :style => "width: 144px;border-bottom-width: 0px;"), business_profile_url(customer.merchant) %>
 														</td>
 													</tr>
 													<tr>
-														<td style="padding:10px 10px 5px 10px;width:100%;">
+														<td>
 															<table width="100%" border="0" cellpadding="0" cellspacing="0">
 																<tr>
-																	<td colspan="2"><%= customer.merchant.name %></td>
+																	<td colspan="2" style="padding: 10px 0;"><%= link_to customer.merchant.name, business_profile_url(customer.merchant), :style => "font-weight: bold;font-size: 12px;text-decoration: none;" %></td>
 																</tr>
 																<tr>
 																	<% if customer.merchant.features_config.enable_prizes %>
-																	<td style="border-right: 1px solid #c1c1c1;">
+																	<td style="border-right: 1px solid #c1c1c1;padding-right: 10px;">
 																		<table width="100%" border="0" cellpadding="0" cellspacing="0">
 																			<tr>
-																				<td><%= customer.points %></td>
+																				<td style="font-weight: bold;font-size: 16px;"><%= customer.points %></td>
 																			</tr>
 																			<tr>
 																				<td>Points</td>
 																			</tr>
 																		</table>	
 																	</td>
-																	<td>
+																	<td style="padding-left: 10px;">
 																		<table width="100%" border="0" cellpadding="0" cellspacing="0">
 																			<tr>
-																				<td><%= customer.prize_points %></td>
+																				<td style="font-weight: bold;font-size: 16px;"><%= customer.prize_points %></td>
 																			</tr>
 																			<tr>
 																				<td>Prize Points</td>
@@ -79,7 +79,7 @@
 																	<td colspan="2">
 																		<table width="100%" border="0" cellpadding="0" cellspacing="0">
 																			<tr>
-																				<td><%= customer.points %></td>
+																				<td style="font-weight: bold;font-size: 16px;"><%= customer.points %></td>
 																			</tr>
 																			<tr>
 																				<td>Points</td>
@@ -93,23 +93,15 @@
 													</tr>
 												</table>
 											</td>
-											<% if x < per_row-1 %>
-											<td width="10"><td>
-											<% end %>
 											<% else %>
-											<td></td>
+											<td width="33.3%"></td>
 											<% end %>
 											<% end %>
 										</tr>
-										<% if i < n-1 %>
-										<tr>
-											<td style="padding-top: 10px;">&nbsp;</td>
-										</tr>
-										<% end %>
 										<% end %>
 									</table>
-									<div style="clear:both;">
-										<br>
+									<br>
+									<div style="padding: 20px 10px;background-color: #f3f3f4;">
 										Find out what you can <a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= new_user_session_url %>">redeem</a> now!
 									</div>
 									<br>

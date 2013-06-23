@@ -21,7 +21,7 @@ module AccountBalanceSummaries
         start = i*max
         users = User.all(:status => :active, :offset => start, :limit => max)
         users.each do |user|
-          customers = Customer.all(:user => user)
+          customers = Customer.all(:user => user, :status => :active, :order => [:update_ts.desc])
           UserMailer.account_balance_summary_email(customers, user).deliver
         end
       end
