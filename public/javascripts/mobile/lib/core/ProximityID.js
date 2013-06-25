@@ -156,7 +156,10 @@ else
          if (me.audio)
          {
             me.audio.play();
-            win(me.freqs);
+            win(
+            {
+               freqs : me.freqs
+            });
          }
          else
          {
