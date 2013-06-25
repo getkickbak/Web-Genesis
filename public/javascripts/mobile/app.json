@@ -36,18 +36,19 @@
 	*                                      // These files will not be copied into the build directory or referenced
 	*                                      // in the generate app.json manifest for the micro loader.
 	*
-	*      }
+	*      }	
 	*/		
 	"js": [
 		{
-         "path": "../lib/gibberish-aes.min.js",
-         "update": "full"
-      }, {
-         "path": "lib/core/FacebookConnect.js",
-         "update": "delta"
+         "path": "http://www.getkickbak.com/javascripts/lib/touch-2.1.1/sencha-touch-all.js",
+         "remote" : true,
+         "update" : "full"
       }, {
          "path": "../touch/sencha-touch.js",
          "x-bootstrap": true
+      }, {
+         "path": "../lib/gibberish-aes.min.js",
+         "update": "full"
       }, {
          "path": "mcore.js",
          "update": "delta"
@@ -119,9 +120,15 @@
 	*/
 	"archivePath": "../build/Genesis/archive",
 
-	/**
-	* Uniquely generated id for this application, used as prefix for localStorage keys.
-	* Normally you should never change this value.
-	*/
-   "id": "b0849797-063d-44af-b2cc-99480c66be86"
+    /**
+     * List of package names to require for the cmd build process
+     */
+    "requires": [
+    ],
+
+    /**
+     * Uniquely generated id for this application, used as prefix for localStorage keys.
+     * Normally you should never change this value.
+     */
+    "id": "b0849797-063d-44af-b2cc-99480c66be86"
 }

@@ -7,7 +7,7 @@ Ext.define('Genesis.controller.ViewportBase',
    },
    config :
    {
-      models : ['Customer', 'Checkin', 'Venue', 'frontend.LicenseKey'],
+      models : ['Customer', 'Checkin', 'Venue', 'Genesis.model.frontend.LicenseKey'],
       sound_files : null,
       refs :
       {

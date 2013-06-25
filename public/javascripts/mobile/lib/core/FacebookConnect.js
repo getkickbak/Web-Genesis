@@ -33,7 +33,7 @@ __initFb__ = function()
       {
          var me = this;
 
-         me.appId = (debugMode) ? 477780595628080 : 197968780267830;
+         me.appId = (Genesis.constants.debugMode()) ? 477780595628080 : 197968780267830;
          console.log("FacebookConnect::initialize");
       },
       /**
@@ -51,7 +51,7 @@ __initFb__ = function()
           return window.location.protocol + "//" + window.location.host + window.location.pathname
           }
           */
-         return (((debugMode) ? serverHost : 'http://m.getkickbak.com') + "/");
+         return (((Genesis.constants.debugMode()) ? Genesis.constants.serverHost() : 'http://m.getkickbak.com') + "/");
       },
       /**
        * The Facebook authentication URL.

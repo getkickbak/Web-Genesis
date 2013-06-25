@@ -12,7 +12,7 @@ Ext.define('Genesis.controller.client.JackpotWinners',
       {
          'jackpotWinners/:id' : 'mainPage'
       },
-      models : ['frontend.JackpotWinner'],
+      models : ['Genesis.model.frontend.JackpotWinner'],
       refs :
       {
          // Main Page

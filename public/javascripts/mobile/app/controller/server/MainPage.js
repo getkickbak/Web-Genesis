@@ -4,7 +4,7 @@ Ext.define('Genesis.controller.server.MainPage',
    xtype : 'mainPageCntlr',
    config :
    {
-      models : ['frontend.MainPage', 'CustomerReward'],
+      models : ['Genesis.model.frontend.MainPage', 'CustomerReward'],
       refs :
       {
          // Main Page

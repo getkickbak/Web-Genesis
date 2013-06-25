@@ -5,7 +5,7 @@ Ext.define('Genesis.controller.MainPageBase',
    config :
    {
       csrfTokenRecv : false,
-      models : ['frontend.MainPage', 'frontend.Signin', 'frontend.Account', 'Customer', 'User', 'Merchant', 'CustomerReward'],
+      models : ['Customer', 'User', 'Merchant', 'CustomerReward', 'Genesis.model.frontend.MainPage', 'Genesis.model.frontend.Signin', 'Genesis.model.frontend.Account'],
       after :
       {
          'mainPage' : ''

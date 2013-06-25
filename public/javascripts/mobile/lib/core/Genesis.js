@@ -487,6 +487,14 @@ Genesis.constants =
    //minDistance : 100000 * 1000,
    createAccountMsg : 'Create user account using Facebook Profile information',
    spinnerDom : '<div class="x-loading-spinner-outer"><div class="x-loading-spinner"><span class="x-loading-top"></span><span class="x-loading-right"></span><span class="x-loading-bottom"></span><span class="x-loading-left"></span></div></div>',
+   debugMode : function()
+   {
+      return debugMode;
+   },
+   serverHost : function()
+   {
+      return serverHost;
+   },
    init : function()
    {
       var me = this, ratio = 1.14;
@@ -584,17 +592,14 @@ Genesis.constants =
 // **************************************************************************
 Genesis.fn =
 {
-   systemTime : (new Date()).getTime(),
-   clientTime : (new Date()).getTime(),
-   weekday : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-   // **************************************************************************
-   // Date Time
-   // **************************************************************************
    isNative : function()
    {
       //return Ext.isDefined(cordova);
       return phoneGapAvailable;
    },
+   // **************************************************************************
+   // Dynamic CSS/JS loading
+   // **************************************************************************
    filesadded : [], //list of files already added
    checkloadjscssfile : function(filename, filetype, cb)
    {
@@ -707,14 +712,15 @@ Genesis.fn =
          /* apply only if the css is completely loded in DOM */
          try
          {
-            var url = (document.styleSheets[b].href) ? document.styleSheets[b].href.replace('http://192.168.0.52:3000', '') : '';
-
+            var url = (document.styleSheets[b].href) ? document.styleSheets[b].href.replace(location.origin, '') : '';
+            console.debug("url = " + url);
             //if (url.search(href) < 0)
             if (url != href)
             {
                for (var i = 0; i < document.styleSheets.length; i++)
                {
-                  url = (document.styleSheet[i].href) ? document.styleSheet[i].href.replace('http://192.168.0.52:3000', '') : '';
+                  url = (document.styleSheet[i].href) ? document.styleSheet[i].href.replace(location.origin, '') : '';
+                  console.debug("url = " + url);
                   //if (url.search(href) >= 0)
                   if (url == href)
                   {
@@ -982,6 +988,12 @@ Genesis.fn =
          }
       }
    },
+   // **************************************************************************
+   // Date Time
+   // **************************************************************************
+   systemTime : (new Date()).getTime(),
+   clientTime : (new Date()).getTime(),
+   weekday : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
    convertDateCommon : function(v, dateFormat, noConvert)
    {
       var date;
@@ -1141,6 +1153,9 @@ Genesis.fn =
    {
       return (this.systemTime - this.clientTime) + currentDate;
    },
+   // **************************************************************************
+   // PX and EM Calculations
+   // **************************************************************************
    addUnit : function(unit)
    {
       return unit + 'px';
@@ -1158,6 +1173,9 @@ Genesis.fn =
    {
       return ((px / Genesis.constants.fontSize / fontsize) + (em / fontsize));
    },
+   // **************************************************************************
+   // File IO
+   // **************************************************************************
    failFileHandler : function(error)
    {
       var errorCode =
@@ -1308,6 +1326,9 @@ Genesis.fn =
 
       return ((id) ? me.privKey[id] : me.privKey);
    },
+   // **************************************************************************
+   // Proximity ID API Utilities
+   // **************************************************************************
    printProximityConfig : function()
    {
       var c = Genesis.constants;

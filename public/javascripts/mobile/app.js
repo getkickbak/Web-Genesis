@@ -1,5 +1,5 @@
-var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false, phoneGapAvailable = false;
-var debugMode = true, serverHost, merchantMode = false, appName = 'GetKickBak', _application;
+var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false, phoneGapAvailable = false, merchantMode = false, appName = 'GetKickBak', _application;
+var debugMode = false, serverHost;
 
 if (debugMode)
 {
@@ -108,6 +108,9 @@ function _appLaunch()
       Ext.create('Genesis.view.Viewport');
       //this.redirectTo('');
       console.log("Launched App");
+
+      // Destroy the #appLoadingIndicator element
+      Ext.fly('appLoadingIndicator').destroy();
    }
 };
 
@@ -147,6 +150,8 @@ var appLaunchCallbackFn = function()
       isIconPrecomposed : true,
       icon :
       {
+         36 : 'resources/icons/icon36.png',
+         48 : 'resources/icons/icon48.png',
          57 : 'resources/icons/icon.png',
          72 : 'resources/icons/icon@72.png',
          114 : 'resources/icons/icon@2x.png',
@@ -208,7 +213,7 @@ Ext.onReady(function()
 // **************************************************************************
 // Bootup Sequence
 // **************************************************************************
-var host = "/javascripts/build/Genesis/testing/";
+var host = "/javascripts/build/Genesis/" + ((debugMode) ? "testing" : "production") + "/";
 var resolution = function()
 {
    return (((window.screen.height >= 641) && ((window.devicePixelRatio == 1.0) || (window.devicePixelRatio >= 2.0))) ? 'mxhdpi' : 'lhdpi');

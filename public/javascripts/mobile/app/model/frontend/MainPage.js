@@ -1,6 +1,7 @@
 Ext.define('Genesis.model.frontend.MainPage',
 {
    extend : 'Ext.data.Model',
+   alternateClassName : 'MainPage',
    id : 'MainPage',
    config :
    {

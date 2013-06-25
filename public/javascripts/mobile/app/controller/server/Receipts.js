@@ -336,7 +336,7 @@ Ext.define('Genesis.controller.server.Receipts',
    xtype : 'serverreceiptsCntlr',
    config :
    {
-      models : ['Venue', 'frontend.Receipt', 'frontend.Table'],
+      models : ['Venue', 'Genesis.model.frontend.Receipt', 'Genesis.model.frontend.Table'],
       refs :
       {
          posMode : 'serversettingspageview togglefield[tag=posMode]',
