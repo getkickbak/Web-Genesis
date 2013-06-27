@@ -1,5 +1,5 @@
 var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false, phoneGapAvailable = false, merchantMode = false, appName = 'GetKickBak', _application;
-var debugMode = false, serverHost;
+var debugMode = true, serverHost;
 
 if (debugMode)
 {
