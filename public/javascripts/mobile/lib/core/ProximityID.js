@@ -131,7 +131,8 @@ else
                }
                val /= me.freqs.length;
 
-               config['data'][i] = Math.round((Genesis.constants.s_vol / 100) * ((me.SHORT_MAX + 1) + (val * me.SHORT_MAX)));
+               var s_vol = (Ext.os.is('Desktop')) ? (Genesis.constants.s_vol / 100) : 1.0;
+               config['data'][i] = Math.round(s_vol * ((me.SHORT_MAX + 1) + (val * me.SHORT_MAX)));
             }
             me.audio = new Audio(new RIFFWAVE(config).dataURI);
             if ( typeof me.audio.loop == 'boolean')

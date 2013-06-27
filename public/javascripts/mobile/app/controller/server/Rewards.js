@@ -312,11 +312,8 @@ Ext.define('Genesis.controller.server.Rewards',
       viewport.popUpInProgress = false;
       me._actions.hide();
       viewport.setActiveController(null);
-      if (me.scanTask)
-      {
-         clearInterval(me.scanTask);
-         me.scanTask = null;
-      }
+      clearInterval(me.scanTask);
+      me.scanTask = null;
       //
       // Stop receiving ProximityID
       //
@@ -551,24 +548,6 @@ Ext.define('Genesis.controller.server.Rewards',
       }
       viewport.popUpInProgress = true;
       me._actions.show();
-      /*
-       Ext.device.Notification.show(
-       {
-       title : me.earnPtsTitle,
-       message : (Genesis.fn.isNative()) ? me.lookingForMobileDeviceMsg() : me.genQRCodeMsg,
-       ignoreOnHide : true,
-       buttons : [
-       {
-       text : me.mobilePhoneInputMsg,
-       itemId : 'manual'
-       },
-       {
-       text : 'Cancel',
-       itemId : 'cancel'
-       }],
-       callback : me.rewardItemCb
-       });
-       */
       if (Genesis.fn.isNative())
       {
          me.getLocalID(function(ids)
@@ -588,14 +567,6 @@ Ext.define('Genesis.controller.server.Rewards',
          }, Ext.bind(me.onRewardItem, me, arguments));
          viewport.setActiveController(me);
       }
-      /*
-       else
-       {
-       me.rewardItemFn(
-       {
-       }, false);
-       }
-       */
    },
    // --------------------------------------------------------------------------
    // Amount Tab

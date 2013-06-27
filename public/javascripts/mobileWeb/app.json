@@ -130,9 +130,15 @@
 	*/
 	"archivePath": "archive",
 
-	/**
-	* Uniquely generated id for this application, used as prefix for localStorage keys.
-	* Normally you should never change this value.
-	*/
-	"id": "2efe81a4-13c9-4f04-ab1f-2ceead0cce05"
+    /**
+     * List of package names to require for the cmd build process
+     */
+    "requires": [
+    ],
+
+    /**
+     * Uniquely generated id for this application, used as prefix for localStorage keys.
+     * Normally you should never change this value.
+     */
+    "id": "2efe81a4-13c9-4f04-ab1f-2ceead0cce05"
 }

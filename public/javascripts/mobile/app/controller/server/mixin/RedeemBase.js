@@ -111,6 +111,34 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
          'height' : Genesis.fn.addUnit(qrcodeMeta[2] * 1.25)
       });
    },
+   redeemItemCb : function(b)
+   {
+      var me = this, viewport = me.getViewPortCntlr();
+      
+      viewport.popUpInProgress = false;
+      me._actions.hide();
+      viewport.setActiveController(null);
+      clearInterval(me.scanTask);
+      me.scanTask = null;
+      //
+      // Stop receiving ProximityID
+      //
+      if (Genesis.fn.isNative())
+      {
+         window.plugins.proximityID.stop();
+      }
+
+      if (b && (b.toLowerCase() == 'manual'))
+      {
+         Ext.Viewport.setMasked(null);
+         me.onEnterPhoneNum();
+      }
+      else if (!me.dismissDialog)
+      {
+         Ext.Viewport.setMasked(null);
+         me.onDoneTap();
+      }
+   },
    onRedeemItem : function(btn, venue, view)
    {
       var me = this, identifiers = null;
@@ -124,41 +152,12 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
       }
       var message = me.lookingForMobileDeviceMsg();
       var proxy = store.getProxy();
-      var callback = function(b)
-      {
-         viewport.popUpInProgress = false;
-         me._actions.hide();
-         viewport.setActiveController(null);
-         if (me.scanTask)
-         {
-            clearInterval(me.scanTask);
-            me.scanTask = null;
-         }
-         //
-         // Stop receiving ProximityID
-         //
-         if (Genesis.fn.isNative())
-         {
-            window.plugins.proximityID.stop();
-         }
-
-         if (b && (b.toLowerCase() == 'manual'))
-         {
-            Ext.Viewport.setMasked(null);
-            me.onEnterPhoneNum();
-         }
-         else if (!me.dismissDialog)
-         {
-            Ext.Viewport.setMasked(null);
-            me.onDoneTap();
-         }
-      };
 
       me.dismissDialog = false;
       me.redeemItemFn = function(p, closeDialog)
       {
          me.dismissDialog = closeDialog;
-         callback();
+         me.redeemItemCb();
          Ext.Viewport.setMasked(
          {
             xtype : 'loadmask',
@@ -236,14 +235,14 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
                text : me.mobilePhoneInputMsg,
                ui : 'action',
                height : '3em',
-               handler : Ext.bind(callback, me, ['manual'])
+               handler : Ext.bind(me.redeemItemCb, me, ['manual'])
             },
             {
                margin : '0.5 0 0 0',
                text : 'Cancel',
                ui : 'cancel',
                height : '3em',
-               handler : Ext.bind(callback, me, ['cancel'])
+               handler : Ext.bind(me.redeemItemCb, me, ['cancel'])
             }]
          });
          Ext.Viewport.add(me._actions);
@@ -251,24 +250,6 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
       viewport.popUpInProgress = true;
       me._actions.show();
 
-      /*
-       Ext.device.Notification.show(
-       {
-       title : me.getRedeemPopupTitle(),
-       message : message,
-       ignoreOnHide : true,
-       buttons : [
-       {
-       text : me.mobilePhoneInputMsg,
-       itemId : 'manual'
-       },
-       {
-       text : 'Cancel',
-       itemId : 'cancel'
-       }],
-       callback : callback
-       });
-       */
       if (Genesis.fn.isNative())
       {
          me.getLocalID(function(idx)
@@ -289,12 +270,6 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
          }, Ext.bind(me.onRedeemItem, me, arguments));
          viewport.setActiveController(me);
       }
-      /*
-       else
-       {
-       me.redeemItemFn(params, false);
-       }
-       */
    },
    onRedeemItemTap : function(b, e, eOpts, eInfo)
    {

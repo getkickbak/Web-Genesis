@@ -21,6 +21,10 @@ Ext.define('Genesis.controller.ControllerBase',
    lostNetworkConnectionMsg : 'You have lost network connectivity',
    networkErrorMsg : 'Error Connecting to Sever',
    noPeerDiscoveredMsg : 'No Peers were discovered',
+   noPeerIdFoundMsg : function(msg)
+   {
+      return ("No ID Found! ErrorCode(" + msg + ")");
+   },
    notAtVenuePremise : 'You must be inside the Merchant\'s premises to continue.',
    errorLoadingAccountProfileMsg : 'Error Loading Account Profile',
    lostPosConnectionMsg : 'Reestablishing connection to POS ...',
@@ -748,42 +752,15 @@ Ext.define('Genesis.controller.ControllerBase',
 
       me.scanTaskWait = false;
       me.scanTask = null;
-      var scan = function()
-      {
-         me.scanTaskWait = false;
-         window.plugins.proximityID.scan(function(result)
-         {
-            clearInterval(me.scanTask);
-            me.scanTask = null;
-            window.plugins.proximityID.stop();
-            var identifiers = Genesis.fn.processRecvLocalID(result);
-            if (identifiers['message'])
-            {
-               me.self.playSoundFile(viewport.sound_files['nfcEnd']);
-               success(identifiers);
-            }
-         }, function(error)
-         {
-            clearInterval(me.scanTask);
-            me.scanTask = null;
-            window.plugins.proximityID.stop();
-            Ext.device.Notification.show(
-            {
-               title : 'Local Identity',
-               message : "No ID Found! ErrorCode(" + Ext.encode(error) + ")",
-               buttons : ['Dismiss']
-            });
-            me.self.playSoundFile(viewport.sound_files['nfcError']);
-            console.log('Error Code[' + Ext.encode(error) + ']');
-            fail();
-         }, c.numSamples, c.conseqMissThreshold, c.magThreshold, c.sigOverlapRatio);
-      }
+
       //create the delayed task instance with our callback
       me.scanTask = setInterval(function()
       {
          if (!me.scanTaskWait)
          {
             me.scanTaskWait = true;
+            clearInterval(me.scanTask);
+            me.scanTask = null;
             me.self.playSoundFile(viewport.sound_files['nfcError']);
             window.plugins.proximityID.stop();
             Ext.device.Notification.show(
@@ -795,8 +772,6 @@ Ext.define('Genesis.controller.ControllerBase',
                {
                   if (btn.toLowerCase() != 'try again')
                   {
-                     clearInterval(me.scanTask);
-                     me.scanTask = null;
                      fail();
                   }
                   else
@@ -807,7 +782,33 @@ Ext.define('Genesis.controller.ControllerBase',
             });
          }
       }, c.proximityRxTimeout);
-      scan();
+
+      window.plugins.proximityID.scan(function(result)
+      {
+         clearInterval(me.scanTask);
+         me.scanTask = null;
+         window.plugins.proximityID.stop();
+         var identifiers = Genesis.fn.processRecvLocalID(result);
+         if (identifiers['message'])
+         {
+            me.self.playSoundFile(viewport.sound_files['nfcEnd']);
+            success(identifiers);
+         }
+      }, function(error)
+      {
+         clearInterval(me.scanTask);
+         me.scanTask = null;
+         window.plugins.proximityID.stop();
+         Ext.device.Notification.show(
+         {
+            title : 'Local Identity',
+            message : me.noPeerIdFoundMsg(Ext.encode(error)),
+            buttons : ['Dismiss']
+         });
+         me.self.playSoundFile(viewport.sound_files['nfcError']);
+         console.log('Error Code[' + Ext.encode(error) + ']');
+         fail();
+      }, c.numSamples, c.conseqMissThreshold, c.magThreshold, c.sigOverlapRatio);
 
       return me.scanTask;
    },
