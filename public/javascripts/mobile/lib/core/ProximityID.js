@@ -246,7 +246,6 @@ else
          {
             // Connect the node to a destination, i.e. the audio output.
             me.node.connect(me.context.destination);
-            me.node.noteOn(0);
             win(
             {
                freqs : me.freqs
