@@ -129,7 +129,7 @@ else
             if (!me.context)
             {
                me.context = new webkitAudioContext();
-               me.gainNode = context.createGain();
+               me.gainNode = me.context.createGain();
                me.gainNode.connect(context.destination);
             }
 
@@ -140,7 +140,7 @@ else
             
             for ( i = 0; i < me.freqs.length; i++)
             {
-               var osc = me.oscillators[i] = context.createOscillator();
+               var osc = me.oscillators[i] = me.context.createOscillator();
                osc.type = 0;
                osc.frequency.value = me.freqs[i];
                osc.connect(me.gainNode);
