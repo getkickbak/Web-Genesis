@@ -73,7 +73,29 @@ else
       freqs : null,
       init : function(s_vol_ratio, r_vol_ratio)
       {
-         this.bw = (this.hiFreq - this.loFreq) / this.NUM_SIGNALS;
+         var me = this;
+         me.bw = (me.hiFreq - me.loFreq) / me.NUM_SIGNALS;
+         if (Ext.os.is('iOS'))
+         {
+            //
+            // IOS bug fix
+            //
+            var callback = function(e)
+            {
+               me.duration = 0.25 * 44100;
+               me.preLoadSend(function()
+               {
+                  me.duration = 20 * 44100;
+                  console.debug("Initialized Proximity API");
+               }, Ext.emptyFn);
+               document.body.removeEventListener("touchstart", callback, false);
+            }
+            document.body.addEventListener("touchstart", callback, false);
+         }
+         else
+         {
+            console.debug("Initialized Proximity API");
+         }
       },
       preLoadSend : function(win, fail)
       {
@@ -89,6 +111,23 @@ else
          };
 
          me.freqs = [];
+
+         if (!me.audio)
+         {
+            me.audio = Ext.get('proximityID').dom;
+            if ( typeof me.audio.loop == 'boolean')
+            {
+               me.audio.loop = true;
+            }
+            else
+            {
+               me.audio.addEventListener('ended', function()
+               {
+                  this.currentTime = 0;
+                  this.play();
+               }, false);
+            }
+         }
          //
          // To give loading mask a chance to render
          //
@@ -134,22 +173,8 @@ else
                var s_vol = (Ext.os.is('Desktop')) ? (Genesis.constants.s_vol / 100) : 1.0;
                config['data'][i] = Math.round(s_vol * ((me.SHORT_MAX + 1) + (val * me.SHORT_MAX)));
             }
-            me.audio = Ext.get('proximityID').dom;
             me.audio.src = new RIFFWAVE(config).dataURI;
             //me.audio = new Audio(new RIFFWAVE(config).dataURI);
-            if ( typeof me.audio.loop == 'boolean')
-            {
-               me.audio.loop = true;
-            }
-            else
-            {
-               me.audio.addEventListener('ended', function()
-               {
-                  this.currentTime = 0;
-                  this.play();
-               }, false);
-            }
-
             win();
          }, 0.25 * 1000, this);
       },
@@ -176,7 +201,6 @@ else
          {
             me.audio.pause();
             me.audio.currentTime = 0;
-            delete me.audio;
          }
       },
       setVolume : function(vol)
