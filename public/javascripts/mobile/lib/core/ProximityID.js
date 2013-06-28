@@ -205,7 +205,7 @@ else
             for (var i = 0; i < me.freqs.length; i++)
             {
 
-               me.oscillators[i].noteOn && me.oscillators[ii].noteOn(0);
+               me.oscillators[i].noteOn && me.oscillators[i].noteOn(0);
             }
             win(
             {
