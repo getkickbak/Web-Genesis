@@ -130,7 +130,7 @@ else
             {
                me.context = new webkitAudioContext();
                me.gainNode = me.context.createGain();
-               me.gainNode.connect(context.destination);
+               me.gainNode.connect(me.context.destination);
             }
 
             getFreqs();
