@@ -129,7 +129,7 @@ else
             if (!me.context)
             {
                me.context = new webkitAudioContext();
-               me.gainNode = me.context.createGain();
+               me.gainNode = me.context.createGainNode();
                me.gainNode.connect(me.context.destination);
             }
 
