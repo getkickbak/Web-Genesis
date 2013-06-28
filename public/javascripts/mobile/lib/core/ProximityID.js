@@ -75,27 +75,15 @@ else
       {
          var me = this;
          me.bw = (me.hiFreq - me.loFreq) / me.NUM_SIGNALS;
-         if (Ext.os.is('iOS'))
+         //
+         // Use Web Audio
+         //
+         if (Ext.os.is('iOS') && Ext.os.version.gtEq(6))
          {
-            //
-            // IOS bug fix
-            //
-            var callback = function(e)
-            {
-               me.duration = 0.25 * 44100;
-               me.preLoadSend(function()
-               {
-                  me.duration = 20 * 44100;
-                  console.debug("Initialized Proximity API");
-               }, Ext.emptyFn);
-               document.body.removeEventListener("touchstart", callback, false);
-            }
-            document.body.addEventListener("touchstart", callback, false);
+            // Create the audio context
+            me.context = new webkitAudioContext();
          }
-         else
-         {
-            console.debug("Initialized Proximity API");
-         }
+         console.debug("Initialized Proximity API");
       },
       preLoadSend : function(win, fail)
       {
@@ -110,28 +98,7 @@ else
             data : []
          };
 
-         me.freqs = [];
-
-         if (!me.audio)
-         {
-            me.audio = Ext.get('proximityID').dom;
-            if ( typeof me.audio.loop == 'boolean')
-            {
-               me.audio.loop = true;
-            }
-            else
-            {
-               me.audio.addEventListener('ended', function()
-               {
-                  this.currentTime = 0;
-                  this.play();
-               }, false);
-            }
-         }
-         //
-         // To give loading mask a chance to render
-         //
-         Ext.defer(function()
+         var getFreqs = function()
          {
             do
             {
@@ -158,25 +125,106 @@ else
                   }
                }
             } while (stay);
+         };
 
-            for ( i = 0; i < me.duration; i++)
+         me.freqs = [];
+         if (Ext.os.is('iOS') && Ext.os.version.gtEq(6))
+         {
+            //
+            // To give loading mask a chance to render
+            //
+            Ext.defer(function()
             {
-               var val = 0.0;
-               // convert to 16 bit pcm sound array
-               // assumes the sample buffer is normalised.
-               for ( j = 0; j < me.freqs.length; j++)
-               {
-                  val += Math.sin(2 * Math.PI * me.freqs[j] * i / me.sampleRate);
-               }
-               val /= me.freqs.length;
+               // Number of samples to generate on each call to generateAudio.
+               // Legal values are 256, 512, 1024, 2048, 4096, 8192, 16384.
+               const BUFFER_SIZE = 16384;
 
-               var s_vol = (Ext.os.is('Desktop')) ? (Genesis.constants.s_vol / 100) : 1.0;
-               config['data'][i] = Math.round(s_vol * ((me.SHORT_MAX + 1) + (val * me.SHORT_MAX)));
-            }
-            me.audio.src = new RIFFWAVE(config).dataURI;
-            //me.audio = new Audio(new RIFFWAVE(config).dataURI);
-            win();
-         }, 0.25 * 1000, this);
+               // Number of output channels. We want stereo, hence 2 (though 1 also works??).
+               const NUM_OUTPUTS = 1;
+
+               // We only want to *generate* audio, so our node has no inputs.
+               //const NUM_INPUTS = 0; Results in horrible noise in Safari 6
+               const NUM_INPUTS = 1;
+
+               me.currentPhase = [];
+               me.phaseIncrement = [];
+               // Create a source node
+               me.node = context.createJavaScriptNode(BUFFER_SIZE, NUM_INPUTS, NUM_OUTPUTS);
+               
+               getFreqs();
+               for ( i = 0; i < (me.freqs.length - 1); i++)
+               {
+                  me.currentPhase[i] = 0.0;
+                  me.phaseIncrement[i] = 2 * Math.PI * me.freqs[i] / me.sampleRate;
+               }
+               me.node.onaudioprocess = function(e)
+               {
+                  // Get the left and right output buffers
+                  var left = e.outputBuffer.getChannelData(0);
+                  var right = e.outputBuffer.getChannelData(1);
+
+                  // For each output sample
+                  var numSamples = right.length;
+                  for (var i = 0; i < numSamples; i++)
+                  {
+                     var val = 0.0;
+                     for ( j = 0; j < me.freqs.length; j++)
+                     {
+                        var s_vol = (Ext.os.is('Desktop')) ? (Genesis.constants.s_vol / 100) : 1.0;
+                        val += s_vol * Math.sin(me.currentPhase[j]);
+                        // Increment the phase
+                        me.currentPhase[j] += me.phaseIncrement[j];
+                     }
+                     // Get a sine wave value
+                     val /= me.freqs.length;
+
+                     // Put it in the left and right buffer
+                     left[i] = val;
+                     right[i] = val;
+                  }
+               };
+               win();
+            }, 0.25 * 1000, this);
+         }
+         else
+         {
+            //
+            // To give loading mask a chance to render
+            //
+            Ext.defer(function()
+            {
+               getFreqs();
+
+               for ( i = 0; i < me.duration; i++)
+               {
+                  var val = 0.0;
+                  // convert to 16 bit pcm sound array
+                  // assumes the sample buffer is normalised.
+                  for ( j = 0; j < me.freqs.length; j++)
+                  {
+                     val += Math.sin(2 * Math.PI * me.freqs[j] * i / me.sampleRate);
+                  }
+                  val /= me.freqs.length;
+
+                  var s_vol = (Ext.os.is('Desktop')) ? (Genesis.constants.s_vol / 100) : 1.0;
+                  config['data'][i] = Math.round(s_vol * ((me.SHORT_MAX + 1) + (val * me.SHORT_MAX)));
+               }
+               me.audio = new Audio(new RIFFWAVE(config).dataURI);
+               if ( typeof me.audio.loop == 'boolean')
+               {
+                  me.audio.loop = true;
+               }
+               else
+               {
+                  me.audio.addEventListener('ended', function()
+                  {
+                     this.currentTime = 0;
+                     this.play();
+                  }, false);
+               }
+               win();
+            }, 0.25 * 1000, this);
+         }
       },
       send : function(win, fail)
       {
@@ -184,6 +232,15 @@ else
          if (me.audio)
          {
             me.audio.play();
+            win(
+            {
+               freqs : me.freqs
+            });
+         }
+         else if (me.context)
+         {
+            // Connect the node to a destination, i.e. the audio output.
+            me.node.connect(me.context.destination);
             win(
             {
                freqs : me.freqs
@@ -201,6 +258,11 @@ else
          {
             me.audio.pause();
             me.audio.currentTime = 0;
+            delete me.audio;
+         }
+         else if (me.context)
+         {
+            me.node.disconnect();
          }
       },
       setVolume : function(vol)
@@ -209,6 +271,9 @@ else
          if (me.audio)
          {
             me.audio.volume = vol / 100;
+         }
+         else if (me.context)
+         {
          }
       }
    };
