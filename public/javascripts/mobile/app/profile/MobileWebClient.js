@@ -9,17 +9,3 @@ Ext.define('Genesis.profile.MobileWebClient',
       return true;
    }
 }); 
-
-//---------------------------------------------------------------------------------------------------------------------------------
-// Ext.device.notification.PhoneGap
-//---------------------------------------------------------------------------------------------------------------------------------
-Ext.define('Genesis.device.notification.Sencha',
-{
-   override : 'Ext.device.notification.Sencha',
-   beep : function(times)
-   {
-   },
-   vibrate : function(duration)
-   {
-   }
-});

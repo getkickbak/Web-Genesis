@@ -3911,10 +3911,8 @@ Ext.define('Ext.device.notification.Simulator',
          fn : callback
       });
    },
-   vibrate : function()
-   {
-      navigator.notification.vibrate(2000);
-   },
+   beep : Ext.emptyFn,
+   vibrate : Ext.emptyFn,
    dismiss : function()
    {
       var msg = this.msg
