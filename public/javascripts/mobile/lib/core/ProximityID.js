@@ -77,14 +77,6 @@ else
       {
          var me = this;
          me.bw = (me.hiFreq - me.loFreq) / me.NUM_SIGNALS;
-         //
-         // Use Web Audio
-         //
-         if (Ext.isDefined(webkitAudioContext))
-         {
-            // Create the audio context
-            me.context = new webkitAudioContext();
-         }
          console.debug("Initialized Proximity API");
       },
       preLoadSend : function(win, fail)
@@ -130,8 +122,17 @@ else
          };
 
          me.freqs = [];
-         if (me.context)
+         //
+         // Use Web Audio
+         //
+         if (Ext.isDefined(webkitAudioContext))
          {
+            // Create the audio context
+            if (!me.context)
+            {
+               me.context = new webkitAudioContext();
+               me.context.createGainNode();
+            }
             //
             // To give loading mask a chance to render
             //
