@@ -161,10 +161,10 @@ else
                {
                   // Get the left and right output buffers
                   var left = e.outputBuffer.getChannelData(0);
-                  var right = e.outputBuffer.getChannelData(1);
+                  //var right = e.outputBuffer.getChannelData(1);
 
                   // For each output sample
-                  var numSamples = right.length;
+                  var numSamples = left.length;
                   for (var i = 0; i < numSamples; i++)
                   {
                      var val = 0.0;
@@ -180,7 +180,7 @@ else
 
                      // Put it in the left and right buffer
                      left[i] = val;
-                     right[i] = val;
+                     //right[i] = val;
                   }
                };
                win();
