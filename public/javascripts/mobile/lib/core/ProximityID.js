@@ -157,6 +157,7 @@ else
                   me.currentPhase[i] = 0.0;
                   me.phaseIncrement[i] = 2 * Math.PI * me.freqs[i] / me.sampleRate;
                }
+               var s_vol = (Ext.os.is('Desktop')) ? (Genesis.constants.s_vol / 100) : 1.0;
                me.node.onaudioprocess = function(e)
                {
                   // Get the left and right output buffers
@@ -165,12 +166,12 @@ else
 
                   // For each output sample
                   var numSamples = left.length;
-                  for (var i = 0; i < numSamples; i++)
+
+                  for (var s = 0; s < numSamples; s++)
                   {
                      var val = 0.0;
-                     for ( j = 0; j < me.freqs.length; j++)
+                     for (var j = 0; j < me.freqs.length; j++)
                      {
-                        var s_vol = (Ext.os.is('Desktop')) ? (Genesis.constants.s_vol / 100) : 1.0;
                         val += s_vol * Math.sin(me.currentPhase[j]);
                         // Increment the phase
                         me.currentPhase[j] += me.phaseIncrement[j];
@@ -179,9 +180,10 @@ else
                      val /= me.freqs.length;
 
                      // Put it in the left and right buffer
-                     left[i] = val;
+                     left[s] = val;
                      //right[i] = val;
                   }
+                  console.debug("Injected " + numSamples + " Buffers");
                };
                win();
             }, 0.25 * 1000, this);
