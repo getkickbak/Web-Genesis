@@ -149,8 +149,8 @@ else
                me.currentPhase = [];
                me.phaseIncrement = [];
                // Create a source node
-               me.node = context.createJavaScriptNode(BUFFER_SIZE, NUM_INPUTS, NUM_OUTPUTS);
-               
+               me.node = me.context.createJavaScriptNode(BUFFER_SIZE, NUM_INPUTS, NUM_OUTPUTS);
+
                getFreqs();
                for ( i = 0; i < (me.freqs.length - 1); i++)
                {
@@ -263,6 +263,7 @@ else
          else if (me.context)
          {
             me.node.disconnect();
+            delete me.node;
          }
       },
       setVolume : function(vol)
