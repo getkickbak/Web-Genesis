@@ -61,10 +61,8 @@ else
 {
    window.plugins.proximityID =
    {
-      //loFreq : 17000.0,
-      //hiFreq : 20000.0,
-      loFreq : 7000.0,
-      hiFreq : 10000.0,
+      loFreq : 17000.0,
+      hiFreq : 20000.0,
       FREQ_GAP : 500.0,
       NUM_SIGNALS : 3,
       SHORT_MAX : parseInt(0xFFFF / 2),
@@ -136,7 +134,9 @@ else
                var s_vol = (Ext.os.is('Desktop')) ? (Genesis.constants.s_vol / 100) : 1.0;
                config['data'][i] = Math.round(s_vol * ((me.SHORT_MAX + 1) + (val * me.SHORT_MAX)));
             }
-            me.audio = new Audio(new RIFFWAVE(config).dataURI);
+            me.audio = Ext.get('proximityID').dom;
+            me.audio.src = new RIFFWAVE(config).dataURI;
+            //me.audio = new Audio(new RIFFWAVE(config).dataURI);
             if ( typeof me.audio.loop == 'boolean')
             {
                me.audio.loop = true;
