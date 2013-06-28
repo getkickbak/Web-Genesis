@@ -136,7 +136,7 @@ else
             //
             // To give loading mask a chance to render
             //
-            Ext.defer(function()
+            //Ext.defer(function()
             {
                // Number of samples to generate on each call to generateAudio.
                // Legal values are 256, 512, 1024, 2048, 4096, 8192, 16384.
@@ -206,7 +206,8 @@ else
                   }
                };
                wait();
-            }, 0.25 * 1000, this);
+            }
+            //, 0.25 * 1000, this);
          }
          else
          {
