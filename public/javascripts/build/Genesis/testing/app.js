@@ -8372,11 +8372,15 @@ Ext.define('Genesis.controller.client.Rewards',
       }
       else if (prc)
       {
-         var app = me.getApplication(), controller = app.getController('client.Prizes');
+         var app = me.getApplication(), controller = app.getController('client' + '.Prizes');
          controller.fireEvent('prizecheck', metaData);
       }
+      //
+      // Default Action is go back to Merchant Page after earning rewards
+      //
       else if (rc)
       {
+         me.goToMerchantMain(true);
       }
 
       return false;
