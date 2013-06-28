@@ -733,6 +733,7 @@ Ext.define('Genesis.controller.ViewportBase',
       }
       else
       {
+         /*
          var elem = Ext.get(sound_file);
          if (elem)
          {
@@ -741,6 +742,7 @@ Ext.define('Genesis.controller.ViewportBase',
                me.sound_files[tag].successCallback();
             }, false);
          }
+         */
       }
 
       me.sound_files[tag] =

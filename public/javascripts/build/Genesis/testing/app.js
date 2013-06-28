@@ -4518,8 +4518,12 @@ Ext.define('Genesis.controller.ControllerBase',
          }
          else
          {
-            sound_file['successCallback'] = successCallback || Ext.emptyFn;
-            Ext.get(sound_file['name']).dom.play();
+            if (successCallback)
+            {
+               successCallback();
+            }
+            //sound_file['successCallback'] = successCallback || Ext.emptyFn;
+            //Ext.get(sound_file['name']).dom.play();
          }
       },
       stopSoundFile : function(sound_file)
@@ -4539,9 +4543,11 @@ Ext.define('Genesis.controller.ControllerBase',
          }
          else
          {
-            var sound = Ext.get(sound_file['name']).dom;
-            sound.pause();
-            sound.currentTime = 0;
+            /*
+             var sound = Ext.get(sound_file['name']).dom;
+             sound.pause();
+             sound.currentTime = 0;
+             */
          }
       },
       encryptFromParams : function(params, mode)
@@ -11060,6 +11066,7 @@ Ext.define('Genesis.controller.ViewportBase',
       }
       else
       {
+         /*
          var elem = Ext.get(sound_file);
          if (elem)
          {
@@ -11068,6 +11075,7 @@ Ext.define('Genesis.controller.ViewportBase',
                me.sound_files[tag].successCallback();
             }, false);
          }
+         */
       }
 
       me.sound_files[tag] =
