@@ -200,7 +200,7 @@ else
                freqs : me.freqs
             });
          }
-         else if (me.node)
+         else if (me.oscillators)
          {
             for (var i = 0; i < me.freqs.length; i++)
             {
