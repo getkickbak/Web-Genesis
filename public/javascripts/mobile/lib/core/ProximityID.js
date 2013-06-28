@@ -189,7 +189,23 @@ else
                   }
                   console.debug("Injected " + numSamples + " Buffers");
                };
-               win();
+               var count = 0;
+
+               function wait()
+               {
+                  if (me.context.currentTime === 0)
+                  {
+                     // Not ready yet.
+                     ++count;
+                     setTimeout(wait, 100);
+                  }
+                  else
+                  {
+                     // Ready. Pass on the valid audio context.
+                     win();
+                  }
+               };
+               wait();
             }, 0.25 * 1000, this);
          }
          else
