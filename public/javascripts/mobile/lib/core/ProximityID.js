@@ -137,7 +137,8 @@ else
             var s_vol = (Ext.os.is('Desktop')) ? (Genesis.constants.s_vol / 100) : 1.0;
             // Reduce the volume.
             me.gainNode.gain.value = s_vol;
-            
+
+            me.oscillators = [];
             for ( i = 0; i < me.freqs.length; i++)
             {
                var osc = me.oscillators[i] = me.context.createOscillator();
