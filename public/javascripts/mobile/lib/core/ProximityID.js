@@ -78,7 +78,7 @@ else
          //
          // Use Web Audio
          //
-         if (Ext.os.is('iOS') && Ext.os.version.gtEq(6))
+         if (Ext.isDefined(webkitAudioContext))
          {
             // Create the audio context
             me.context = new webkitAudioContext();
@@ -128,7 +128,7 @@ else
          };
 
          me.freqs = [];
-         if (Ext.os.is('iOS') && Ext.os.version.gtEq(6))
+         if (me.context)
          {
             //
             // To give loading mask a chance to render
@@ -152,10 +152,11 @@ else
                me.node = me.context.createJavaScriptNode(BUFFER_SIZE, NUM_INPUTS, NUM_OUTPUTS);
 
                getFreqs();
-               for ( i = 0; i < (me.freqs.length - 1); i++)
+               for ( i = 0; i < me.freqs.length; i++)
                {
                   me.currentPhase[i] = 0.0;
                   me.phaseIncrement[i] = 2 * Math.PI * me.freqs[i] / me.sampleRate;
+                  console.debug("Freq " + me.freqs[i]);
                }
                var s_vol = (Ext.os.is('Desktop')) ? (Genesis.constants.s_vol / 100) : 1.0;
                me.node.onaudioprocess = function(e)
@@ -172,7 +173,7 @@ else
                      var val = 0.0;
                      for (var j = 0; j < me.freqs.length; j++)
                      {
-                        val += s_vol * Math.sin(me.currentPhase[j]);
+                        val += Math.sin(me.currentPhase[j]);
                         // Increment the phase
                         me.currentPhase[j] += me.phaseIncrement[j];
                      }
@@ -180,7 +181,7 @@ else
                      val /= me.freqs.length;
 
                      // Put it in the left and right buffer
-                     left[s] = val;
+                     left[s] = s_vol * val;
                      //right[i] = val;
                   }
                   console.debug("Injected " + numSamples + " Buffers");
@@ -239,7 +240,7 @@ else
                freqs : me.freqs
             });
          }
-         else if (me.context)
+         else if (me.node)
          {
             // Connect the node to a destination, i.e. the audio output.
             me.node.connect(me.context.destination);
@@ -262,7 +263,7 @@ else
             me.audio.currentTime = 0;
             delete me.audio;
          }
-         else if (me.context)
+         else if (me.node)
          {
             me.node.disconnect();
             delete me.node;
