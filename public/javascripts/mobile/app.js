@@ -109,6 +109,20 @@ function _appLaunch()
       //this.redirectTo('');
       console.log("Launched App");
 
+      if (Ext.os.is('Phone'))
+      {
+         Ext.Viewport.on('orientationchange', function(v, newOrientation, width, height, eOpts)
+         {
+            Ext.getBody().setStyle(
+            {
+               "-webkit-transform" : (newOrientation != Ext.Viewport.PORTRAIT) ? "rotate(-90deg)" : ""
+            });
+         });
+         Ext.getBody().setStyle(
+         {
+            "-webkit-transition" : "all 1s ease-in-out"
+         });
+      }
       // Destroy the #appLoadingIndicator element
       Ext.fly('appLoadingIndicator').destroy();
    }
@@ -116,20 +130,6 @@ function _appLaunch()
 
 var appLaunchCallbackFn = function()
 {
-   if (Ext.os.is('Phone'))
-   {
-      Ext.Viewport.on('orientationchange', function(v, newOrientation, width, height, eOpts)
-      {
-         Ext.getBody().setStyle(
-         {
-            "-webkit-transform" : (newOrientation != Ext.Viewport.PORTRAIT) ? "rotate(-90deg)" : ""
-         });
-      });
-      Ext.getBody().setStyle(
-      {
-         "-webkit-transition" : "all 1s ease-in-out"
-      });
-   }
    Ext.application(
    {
       viewport :
