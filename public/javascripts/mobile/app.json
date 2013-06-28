@@ -44,11 +44,12 @@
          "remote" : true,
          "update" : "full"
       }, {
+         "path": "http://files.getkickbak.com/mobileWeb/build/KickBak/production/lib/gibberish-aes.min.js",
+         "remote" : true,
+         "update": "full"
+      }, {
          "path": "../touch/sencha-touch.js",
          "x-bootstrap": true
-      }, {
-         "path": "../lib/gibberish-aes.min.js",
-         "update": "full"
       }, {
          "path": "mcore.js",
          "update": "delta"
