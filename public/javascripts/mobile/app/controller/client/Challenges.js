@@ -77,6 +77,92 @@ Ext.define('Genesis.controller.client.Challenges',
       //
       me.getChallengePage();
    },
+   challengeItemFn : function(params, id, type, venueId, qrcode, position)
+   {
+      var me = this, viewport = me.getViewPortCntlr(), params, customerId = viewport.getCustomer().getId();
+      //
+      // With or without Geolocation support
+      //
+      if (!venueId)
+      {
+         //
+         // We cannot use short cut method unless we have either GeoLocation or VenueId
+         //
+         /*
+          if (!position)
+          {
+          //
+          // Stop broadcasting now ...
+          //
+          if (me.identifiers)
+          {
+          me.identifiers['cancelFn']();
+          }
+          Ext.Viewport.setMasked(null);
+          Ext.device.Notification.show(
+          {
+          title : 'Rewards',
+          message : me.cannotDetermineLocationMsg,
+          buttons : ['Dismiss']
+          });
+          return;
+          }
+          */
+      }
+      else
+      {
+         params = Ext.apply(params,
+         {
+            venue_id : venueId
+         });
+      }
+
+      if (qrcode)
+      {
+         params = Ext.apply(params,
+         {
+            data : qrcode
+         });
+      }
+      else
+      {
+         params = Ext.apply(params,
+         {
+            data : me.self.encryptFromParams(
+            {
+               'frequency' : me.identifiers['localID']
+            })
+         });
+      }
+
+      console.debug("Transmitting Completing Challenge ID(" + id + ")");
+      Challenge.load(id,
+      {
+         jsonData :
+         {
+         },
+         params : params,
+         callback : function(record, operation)
+         {
+            var metaData = Challenge.getProxy().getReader().metaData;
+            console.log('Challenge Completed(' + operation.wasSuccessful() + ')');
+            //
+            // Stop broadcasting now ...
+            //
+            if (me.identifiers)
+            {
+               me.identifiers['cancelFn']();
+            }
+            Ext.Viewport.setMasked(null);
+
+            if (operation.wasSuccessful() && metaData)
+            {
+               Ext.device.Notification.beep();
+               me.fireEvent('challengecomplete', type, qrcode, venueId, customerId, position);
+            }
+         }
+      });
+   },
    // --------------------------------------------------------------------------
    // Event Handlers
    // --------------------------------------------------------------------------
@@ -390,105 +476,18 @@ Ext.define('Genesis.controller.client.Challenges',
    },
    completeChallenge : function(qrcode, position, eOpts, eInfo)
    {
-      var me = this, viewport = me.getViewPortCntlr(), identifiers = null, _params;
-      var db = Genesis.db.getLocalDB(), venue = viewport.getVenue(), venueId = venue.getId();
-      var customerId = viewport.getCustomer().getId();
+      var me = this, viewport = me.getViewPortCntlr(), params, db = Genesis.db.getLocalDB(), venue = viewport.getVenue(), venueId = venue.getId();
 
-      me.challengeItemFn = function(params, id, type)
-      {
-         //
-         // With or without Geolocation support
-         //
-         if (!venueId)
-         {
-            //
-            // We cannot use short cut method unless we have either GeoLocation or VenueId
-            //
-            /*
-             if (!position)
-             {
-             //
-             // Stop broadcasting now ...
-             //
-             if (identifiers)
-             {
-             identifiers['cancelFn']();
-             }
-             Ext.Viewport.setMasked(null);
-             Ext.device.Notification.show(
-             {
-             title : 'Rewards',
-             message : me.cannotDetermineLocationMsg,
-             buttons : ['Dismiss']
-             });
-             return;
-             }
-             */
-         }
-         else
-         {
-            params = Ext.apply(params,
-            {
-               venue_id : venueId
-            });
-         }
-
-         if (qrcode)
-         {
-            params = Ext.apply(params,
-            {
-               data : qrcode
-            });
-         }
-         else
-         {
-            params = Ext.apply(params,
-            {
-               data : me.self.encryptFromParams(
-               {
-                  'frequency' : identifiers['localID']
-               })
-            });
-         }
-
-         console.log("Completing Challenge ID(" + id + ")");
-         Challenge.load(id,
-         {
-            jsonData :
-            {
-            },
-            params : params,
-            callback : function(record, operation)
-            {
-               var metaData = Challenge.getProxy().getReader().metaData;
-               console.log('Challenge Completed(' + operation.wasSuccessful() + ')');
-               //
-               // Stop broadcasting now ...
-               //
-               if (identifiers)
-               {
-                  identifiers['cancelFn']();
-               }
-               Ext.Viewport.setMasked(null);
-
-               if (operation.wasSuccessful() && metaData)
-               {
-                  Ext.device.Notification.beep();
-                  me.fireEvent('challengecomplete', type, qrcode, venueId, customerId, position);
-               }
-            }
-         });
-      };
-
+      me.identifiers = null;
       if (me.selectedItem)
       {
-         _params =
+         params =
          {
             venue_id : venueId
          }
          if (position)
          {
-            _params = Ext.apply(_params,
+            params = Ext.apply(params,
             {
                latitude : position.coords.getLatitude(),
                longitude : position.coords.getLongitude()
@@ -505,7 +504,7 @@ Ext.define('Genesis.controller.client.Challenges',
 
          me.broadcastLocalID(function(idx)
          {
-            identifiers = idx;
+            me.identifiers = idx;
             Ext.Viewport.setMasked(
             {
                xtype : 'mask',
@@ -542,7 +541,7 @@ Ext.define('Genesis.controller.client.Challenges',
                }
             });
             console.log("Broadcast underway ...");
-            me.challengeItemFn(_params, me.selectedItem.getId(), me.selectedItem.get('type').value);
+            me.challengeItemFn(params, me.selectedItem.getId(), me.selectedItem.get('type').value, venueId, qrcode, position);
          }, function()
          {
             Ext.Viewport.setMasked(null);

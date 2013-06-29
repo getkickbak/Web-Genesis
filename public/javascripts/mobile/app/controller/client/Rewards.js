@@ -143,6 +143,115 @@ Ext.define('Genesis.controller.client.Rewards',
       //
       this.getRewards();
    },
+   rewardItemFn : function(notUseGeolocation)
+   {
+      var me = this, viewport = me.getViewPortCntlr();
+      //
+      // Not ready to process data
+      //
+      if (me.identifiers == null)
+      {
+         return;
+      }
+
+      var db = Genesis.db.getLocalDB(), position = viewport.getLastPosition(), localID = me.identifiers['localID'];
+      var venue = viewport.getVenue(), venueId = (notUseGeolocation) ? venue.getId() : null;
+      var reader = PurchaseReward.getProxy().getReader();
+      var params =
+      {
+      }, privKey;
+
+      //
+      // With or without Geolocation support
+      //
+      if (!venueId)
+      {
+         //
+         // We cannot use short cut method unless we have either GeoLocation or VenueId
+         //
+         if (!position)
+         {
+            //
+            // Stop broadcasting now ...
+            //
+            if (me.identifiers)
+            {
+               me.identifiers['cancelFn']();
+            }
+            Ext.Viewport.setMasked(null);
+            Ext.device.Notification.show(
+            {
+               title : 'Rewards',
+               message : me.cannotDetermineLocationMsg,
+               buttons : ['Dismiss']
+            });
+            return;
+         }
+
+         params = Ext.apply(params,
+         {
+            data : me.self.encryptFromParams(
+            {
+               'frequency' : localID
+            }, 'reward'),
+            //'data' : me.qrcode,
+            'latitude' : position.coords.getLatitude(),
+            'longitude' : position.coords.getLongitude()
+         });
+      }
+      else
+      {
+         params = Ext.apply(params,
+         {
+            data : me.self.encryptFromParams(
+            {
+               'frequency' : localID
+            }, 'reward'),
+            venue_id : venueId
+         });
+      }
+      //
+      // Triggers PrizeCheck and MetaDataChange
+      // - subject CustomerReward also needs to be reset to ensure property processing of objects
+      //
+      console.debug("Transmitting Reward Points Request ...");
+      PurchaseReward['setEarnPointsURL']();
+      reader.setRootProperty('');
+      reader.buildExtractors();
+      PurchaseReward.load(1,
+      {
+         jsonData :
+         {
+         },
+         doNotRetryAttempt : true,
+         params : params,
+         callback : function(record, operation)
+         {
+            reader.setRootProperty('data');
+            reader.buildExtractors();
+            //
+            // Stop broadcasting now ...
+            //
+            if (me.identifiers)
+            {
+               me.identifiers['cancelFn']();
+            }
+            Ext.Viewport.setMasked(null);
+
+            if (operation.wasSuccessful())
+            {
+               Ext.device.Notification.beep();
+               //Genesis.db.removeLocalDBAttrib('last_check_in');
+
+               //
+               // Refresh screen on first visit
+               //
+               me.fireEvent('triggerCallbacksChain');
+            }
+         }
+      });
+      delete me.qrcode;
+   },
    // --------------------------------------------------------------------------
    // Event Handlers
    // --------------------------------------------------------------------------
@@ -185,7 +294,7 @@ Ext.define('Genesis.controller.client.Rewards',
    onLocationUpdate : function(position)
    {
       var me = this;
-      me.rewardItemFn();
+      me.rewardItemFn(false);
    },
    onPromoteItemTap : function(b, e, eOpts, eInfo)
    {
@@ -368,200 +477,84 @@ Ext.define('Genesis.controller.client.Rewards',
       var me = this, task, viewport = me.getViewPortCntlr();
 
       me.identifiers = null;
-      me.rewardItemFn = function()
+
+      var db = Genesis.db.getLocalDB(), venue = viewport.getVenue(), venueId, position = viewport.getLastPosition();
+
+      if (!position || (position['coords'] && (position['coords'].getTimestamp() < (new Date()).addMinutes(-5).getTime())))
       {
-         //
-         // Not ready to process data
-         //
-         if (me.identifiers == null)
-         {
-            return;
-         }
-
-         var db = Genesis.db.getLocalDB(), position = viewport.getLastPosition(), localID = me.identifiers['localID'];
-         var venue = viewport.getVenue(), venueId = (notUseGeolocation) ? venue.getId() : null;
-         var reader = PurchaseReward.getProxy().getReader();
-         var params =
-         {
-         }, privKey;
-
-         //
-         // With or without Geolocation support
-         //
-         if (!venueId)
-         {
-            //
-            // We cannot use short cut method unless we have either GeoLocation or VenueId
-            //
-            if (!position)
-            {
-               //
-               // Stop broadcasting now ...
-               //
-               if (me.identifiers)
-               {
-                  me.identifiers['cancelFn']();
-               }
-               Ext.Viewport.setMasked(null);
-               Ext.device.Notification.show(
-               {
-                  title : 'Rewards',
-                  message : me.cannotDetermineLocationMsg,
-                  buttons : ['Dismiss']
-               });
-               return;
-            }
-
-            params = Ext.apply(params,
-            {
-               data : me.self.encryptFromParams(
-               {
-                  'frequency' : localID
-               }, 'reward'),
-               //'data' : me.qrcode,
-               'latitude' : position.coords.getLatitude(),
-               'longitude' : position.coords.getLongitude()
-            });
-         }
-         else
-         {
-            params = Ext.apply(params,
-            {
-               data : me.self.encryptFromParams(
-               {
-                  'frequency' : localID
-               }, 'reward'),
-               venue_id : venueId
-            });
-         }
-         //
-         // Triggers PrizeCheck and MetaDataChange
-         // - subject CustomerReward also needs to be reset to ensure property processing of objects
-         //
-         PurchaseReward['setEarnPointsURL']();
-         reader.setRootProperty('');
-         reader.buildExtractors();
-         PurchaseReward.load(1,
-         {
-            jsonData :
-            {
-            },
-            doNotRetryAttempt : true,
-            params : params,
-            callback : function(record, operation)
-            {
-               reader.setRootProperty('data');
-               reader.buildExtractors();
-               //
-               // Stop broadcasting now ...
-               //
-               if (me.identifiers)
-               {
-                  me.identifiers['cancelFn']();
-               }
-               Ext.Viewport.setMasked(null);
-
-               if (operation.wasSuccessful())
-               {
-                  Ext.device.Notification.beep();
-                  //Genesis.db.removeLocalDBAttrib('last_check_in');
-
-                  //
-                  // Refresh screen on first visit
-                  //
-                  me.fireEvent('triggerCallbacksChain');
-               }
-            }
-         });
-         delete me.qrcode;
-      };
-
-      //if (Genesis.fn.isNative())
+         viewport.setLastPosition(null);
+      }
+      //
+      // Get GeoLocation and frequency markers
+      //
+      if (!notUseGeolocation)
       {
-         var db = Genesis.db.getLocalDB(), venue = viewport.getVenue(), venueId, position = viewport.getLastPosition();
+         venueId = -1;
+         privKey = Genesis.fn.privKey =
+         {
+            'venueId' : venueId,
+            'venue' : Genesis.constants.debugVenuePrivKey
+         };
+         privKey['r' + venueId] = privKey['p' + venueId] = db['csrf_code'];
+         me.getGeoLocation();
+      }
+      else
+      {
+         venueId = venue.getId();
+         privKey = Genesis.fn.privKey =
+         {
+            'venueId' : venueId,
+            'venue' : venue.get('name')
+         };
+         privKey['r' + venueId] = privKey['p' + venueId] = db['csrf_code'];
+      }
 
-         if (!position || (position['coords'] && (position['coords'].getTimestamp() < (new Date()).addMinutes(-5).getTime())))
+      me.broadcastLocalID(function(idx)
+      {
+         me.identifiers = idx;
+         Ext.Viewport.setMasked(
          {
-            viewport.setLastPosition(null);
-         }
-         //
-         // Get GeoLocation and frequency markers
-         //
-         if (!notUseGeolocation)
-         {
-            venueId = -1;
-            privKey = Genesis.fn.privKey =
+            xtype : 'mask',
+            cls : 'transmit-mask',
+            html : me.lookingForMerchantDeviceMsg(),
+            listeners :
             {
-               'venueId' : venueId,
-               'venue' : Genesis.constants.debugVenuePrivKey
-            };
-            privKey['r' + venueId] = privKey['p' + venueId] = db['csrf_code'];
-            me.getGeoLocation();
-         }
-         else
-         {
-            venueId = venue.getId();
-            privKey = Genesis.fn.privKey =
-            {
-               'venueId' : venueId,
-               'venue' : venue.get('name')
-            };
-            privKey['r' + venueId] = privKey['p' + venueId] = db['csrf_code'];
-         }
-
-         me.broadcastLocalID(function(idx)
-         {
-            me.identifiers = idx;
-            Ext.Viewport.setMasked(
-            {
-               xtype : 'mask',
-               cls : 'transmit-mask',
-               html : me.lookingForMerchantDeviceMsg(),
-               listeners :
+               'tap' : function(b, e, eOpts)
                {
-                  'tap' : function(b, e, eOpts)
+                  //
+                  // Stop broadcasting now ...
+                  //
+                  if (!Ext.get(Ext.DomQuery.select('.x-innerhtml',b.element.dom)[0]).getPageBox(true).isOutOfBound(
                   {
-                     //
-                     // Stop broadcasting now ...
-                     //
-                     if (!Ext.get(Ext.DomQuery.select('.x-innerhtml',b.element.dom)[0]).getPageBox(true).isOutOfBound(
+                     x : e.pageX,
+                     y : e.pageY
+                  }))
+                  {
+                     Ext.Ajax.abort();
+                     if (me.identifiers)
                      {
-                        x : e.pageX,
-                        y : e.pageY
-                     }))
-                     {
-                        Ext.Ajax.abort();
-                        if (me.identifiers)
-                        {
-                           me.identifiers['cancelFn']();
-                        }
-                        Ext.Viewport.setMasked(null);
-                        Ext.device.Notification.show(
-                        {
-                           title : 'Rewards',
-                           message : me.transactionCancelledMsg,
-                           buttons : ['Dismiss']
-                        });
+                        me.identifiers['cancelFn']();
                      }
+                     Ext.Viewport.setMasked(null);
+                     Ext.device.Notification.show(
+                     {
+                        title : 'Rewards',
+                        message : me.transactionCancelledMsg,
+                        buttons : ['Dismiss']
+                     });
                   }
                }
-            });
-            console.log("Broadcast underway ...");
-            if (notUseGeolocation || viewport.getLastPosition())
-            {
-               me.rewardItemFn();
             }
-         }, function()
-         {
-            Ext.Viewport.setMasked(null);
          });
-      }
-      /*
-       else
-       {
-       me.scanQRCode();
-       }
-       */
+         console.log("Broadcast underway ...");
+         if (notUseGeolocation || viewport.getLastPosition())
+         {
+            me.rewardItemFn(notUseGeolocation);
+         }
+      }, function()
+      {
+         Ext.Viewport.setMasked(null);
+      });
    },
    onEarnPts : function(notUseGeolocation)
    {
@@ -579,49 +572,6 @@ Ext.define('Genesis.controller.client.Rewards',
       }
       else
       {
-         var send = function()
-         {
-            var viewport = me.getViewPortCntlr();
-            if (!me._actions)
-            {
-               me._actions = Ext.create('Genesis.view.widgets.PopupItemDetail',
-               {
-                  iconType : 'prizewon',
-                  icon : 'phoneInHand',
-                  title : me.showToServerMsg(),
-                  buttons : [
-                  {
-                     margin : '0 0 0.5 0',
-                     text : 'Proceed',
-                     ui : 'action',
-                     height : '3em',
-                     handler : function()
-                     {
-                        viewport.popUpInProgress = false;
-                        me._actions.hide();
-                        //var earnPts = Ext.bind(me.onEarnPtsSC, me);
-                        //me.checkReferralPrompt(earnPts, earnPts);
-                        me.fireEvent('rewarditem', notUseGeolocation);
-                     }
-                  },
-                  {
-                     margin : '0.5 0 0 0',
-                     text : 'Cancel',
-                     ui : 'cancel',
-                     height : '3em',
-                     handler : function()
-                     {
-                        viewport.popUpInProgress = false;
-                        me._actions.hide();
-                     }
-                  }]
-               });
-               Ext.Viewport.add(me._actions);
-            }
-            viewport.popUpInProgress = true;
-            me._actions.show();
-         };
-
          Ext.Viewport.setMasked(
          {
             xtype : 'loadmask',
@@ -631,7 +581,48 @@ Ext.define('Genesis.controller.client.Rewards',
          window.plugins.proximityID.preLoadSend(function()
          {
             Ext.Viewport.setMasked(null);
-            Ext.defer(send, 0.25 * 1000, me);
+            Ext.defer(function()
+            {
+               var viewport = me.getViewPortCntlr();
+               if (!me._actions)
+               {
+                  me._actions = Ext.create('Genesis.view.widgets.PopupItemDetail',
+                  {
+                     iconType : 'prizewon',
+                     icon : 'phoneInHand',
+                     title : me.showToServerMsg(),
+                     buttons : [
+                     {
+                        margin : '0 0 0.5 0',
+                        text : 'Proceed',
+                        ui : 'action',
+                        height : '3em',
+                        handler : function()
+                        {
+                           viewport.popUpInProgress = false;
+                           me._actions.hide();
+                           //var earnPts = Ext.bind(me.onEarnPtsSC, me);
+                           //me.checkReferralPrompt(earnPts, earnPts);
+                           me.fireEvent('rewarditem', notUseGeolocation);
+                        }
+                     },
+                     {
+                        margin : '0.5 0 0 0',
+                        text : 'Cancel',
+                        ui : 'cancel',
+                        height : '3em',
+                        handler : function()
+                        {
+                           viewport.popUpInProgress = false;
+                           me._actions.hide();
+                        }
+                     }]
+                  });
+                  Ext.Viewport.add(me._actions);
+               }
+               viewport.popUpInProgress = true;
+               me._actions.show();
+            }, 0.25 * 1000, me);
          });
       }
    },

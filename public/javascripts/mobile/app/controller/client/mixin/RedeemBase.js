@@ -99,6 +99,95 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
          'Post was not published to Facebook.');
       }
    },
+   redeemItemFn : function(params, view)
+   {
+      var me = this, proxy = CustomerReward.getProxy(), item = view.getInnerItems()[0], storeName = me.getRedeemStore(), store = Ext.StoreMgr.get(storeName);
+      //
+      // Updating Server ...
+      //
+      console.debug("Transmitting Redeem Points Request ...");
+      if (me.getSRedeemBtn())
+      {
+         me.getSRedeemBtn()['hide']();
+      }
+      CustomerReward[me.getRedeemPointsFn()](item.getData().getId());
+      store.load(
+      {
+         addRecords : true, //Append data
+         scope : me,
+         //timeout : 30*1000,
+         jsonData :
+         {
+         },
+         doNotRetryAttempt : true,
+         params : params,
+         callback : function(records, operation)
+         {
+            //
+            // Stop broadcasting now ...
+            //
+            if (me.identifiers)
+            {
+               me.identifiers['cancelFn']();
+            }
+            Ext.Viewport.setMasked(null);
+
+            if (operation.wasSuccessful())
+            {
+               Ext.device.Notification.beep();
+
+               //Update on Facebook
+               /*
+                if ((db['currFbId'] > 0) && ( typeof (FB) != "undefined"))
+                {
+                Genesis.fb.facebook_onLogin(function(params)
+                {
+                if (params)
+                {
+                var redeemItem = store.getById(item.getData().getId());
+                Ext.Viewport.setMasked(null);
+                me.updatingRedemptionOnFacebook(redeemItem);
+                }
+                //}, false, me.updateOnFbMsg);
+                }, false);
+                }
+                */
+
+               Ext.device.Notification.show(
+               {
+                  title : me.getRedeemPopupTitle(),
+                  message : me.redeemSuccessfulMsg,
+                  buttons : ['OK'],
+                  callback : function()
+                  {
+                     me.onDoneTap();
+                  }
+               });
+            }
+            else
+            {
+               if (me.getSRedeemBtn())
+               {
+                  me.getSRedeemBtn()['show']();
+               }
+               //proxy._errorCallback = Ext.bind(me.onDoneTap, me);
+               proxy.supressErrorsPopup = true;
+               Ext.device.Notification.show(
+               {
+                  title : me.getRedeemPopupTitle(),
+                  message : me.redeemFailedMsg,
+                  buttons : ['Dismiss'],
+                  callback : function()
+                  {
+                     proxy.supressErrorsCallbackFn();
+                     me.onDoneTap();
+                  }
+               });
+            }
+         }
+      });
+   },
+
    // --------------------------------------------------------------------------
    // Event Handlers
    // --------------------------------------------------------------------------
@@ -127,167 +216,68 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
    // --------------------------------------------------------------------------
    onRedeemItem : function(btn, venue, view)
    {
-      var me = this, FB = window.plugins.facebookConnect, identifiers = null, proxy = CustomerReward.getProxy();
-      var venueId = (venue) ? venue.getId() : 0, item = view.getInnerItems()[0], db = Genesis.db.getLocalDB();
-      var storeName = me.getRedeemStore(), store = Ext.StoreMgr.get(storeName);
-      var params =
+      var me = this, FB = window.plugins.facebookConnect, venueId = (venue) ? venue.getId() : 0, db = Genesis.db.getLocalDB(), params =
       {
          venue_id : venueId
       };
-      me.redeemItemFn = function(params)
+      var privKey = Genesis.fn.privKey =
       {
-         //
-         // Updating Server ...
-         //
-         console.debug("Updating Server ...");
-         if (me.getSRedeemBtn())
+         'venueId' : venueId,
+         'venue' : venue.get('name')
+      };
+      privKey['r' + venueId] = privKey['p' + venueId] = db['csrf_code'];
+
+      me.identifiers = null;
+      me.broadcastLocalID(function(ids)
+      {
+         me.identifiers = ids;
+         Ext.Viewport.setMasked(
          {
-            me.getSRedeemBtn()['hide']();
-         }
-         CustomerReward[me.getRedeemPointsFn()](item.getData().getId());
-         store.load(
-         {
-            addRecords : true, //Append data
-            scope : me,
-            //timeout : 30*1000,
-            jsonData :
+            xtype : 'mask',
+            cls : 'transmit-mask',
+            html : me.lookingForMerchantDeviceMsg(),
+            listeners :
             {
-            },
-            doNotRetryAttempt : true,
-            params : params,
-            callback : function(records, operation)
-            {
-               //
-               // Stop broadcasting now ...
-               //
-               if (identifiers)
+               'tap' : function(b, e, eOpts)
                {
-                  identifiers['cancelFn']();
-               }
-               Ext.Viewport.setMasked(null);
-
-               if (operation.wasSuccessful())
-               {
-                  Ext.device.Notification.beep();
-
-                  //Update on Facebook
-                  /*
-                   if ((db['currFbId'] > 0) && ( typeof (FB) != "undefined"))
-                   {
-                   Genesis.fb.facebook_onLogin(function(params)
-                   {
-                   if (params)
-                   {
-                   var redeemItem = store.getById(item.getData().getId());
-                   Ext.Viewport.setMasked(null);
-                   me.updatingRedemptionOnFacebook(redeemItem);
-                   }
-                   //}, false, me.updateOnFbMsg);
-                   }, false);
-                   }
-                   */
-
-                  Ext.device.Notification.show(
+                  //
+                  // Stop broadcasting now ...
+                  //
+                  if (!Ext.get(Ext.DomQuery.select('.x-innerhtml',b.element.dom)[0]).getPageBox(true).isOutOfBound(
                   {
-                     title : me.getRedeemPopupTitle(),
-                     message : me.redeemSuccessfulMsg,
-                     buttons : ['OK'],
-                     callback : function()
+                     x : e.pageX,
+                     y : e.pageY
+                  }))
+                  {
+                     Ext.Ajax.abort();
+                     if (me.identifiers)
                      {
-                        me.onDoneTap();
+                        me.identifiers['cancelFn']();
                      }
-                  });
-               }
-               else
-               {
-                  if (me.getSRedeemBtn())
-                  {
-                     me.getSRedeemBtn()['show']();
+                     Ext.Viewport.setMasked(null);
+                     me.onDoneTap();
+                     Ext.device.Notification.show(
+                     {
+                        title : me.getRedeemPopupTitle(),
+                        message : me.transactionCancelledMsg,
+                        buttons : ['Dismiss']
+                     });
                   }
-                  //proxy._errorCallback = Ext.bind(me.onDoneTap, me);
-                  proxy.supressErrorsPopup = true;
-                  Ext.device.Notification.show(
-                  {
-                     title : me.getRedeemPopupTitle(),
-                     message : me.redeemFailedMsg,
-                     buttons : ['Dismiss'],
-                     callback : function()
-                     {
-                        proxy.supressErrorsCallbackFn();
-                        me.onDoneTap();
-                     }
-                  });
                }
             }
          });
-      };
-
-      //if (Genesis.fn.isNative())
-      {
-         var privKey = Genesis.fn.privKey =
+         console.log("Broadcast underway ...");
+         me.redeemItemFn(Ext.apply(params,
          {
-            'venueId' : venueId,
-            'venue' : venue.get('name')
-         };
-         privKey['r' + venueId] = privKey['p' + venueId] = db['csrf_code'];
-
-         me.broadcastLocalID(function(ids)
-         {
-            identifiers = ids;
-            Ext.Viewport.setMasked(
+            data : me.self.encryptFromParams(
             {
-               xtype : 'mask',
-               cls : 'transmit-mask',
-               html : me.lookingForMerchantDeviceMsg(),
-               listeners :
-               {
-                  'tap' : function(b, e, eOpts)
-                  {
-                     //
-                     // Stop broadcasting now ...
-                     //
-                     if (!Ext.get(Ext.DomQuery.select('.x-innerhtml',b.element.dom)[0]).getPageBox(true).isOutOfBound(
-                     {
-                        x : e.pageX,
-                        y : e.pageY
-                     }))
-                     {
-                        Ext.Ajax.abort();
-                        if (me.identifiers)
-                        {
-                           me.identifiers['cancelFn']();
-                        }
-                        Ext.Viewport.setMasked(null);
-                        me.onDoneTap();
-                        Ext.device.Notification.show(
-                        {
-                           title : me.getRedeemPopupTitle(),
-                           message : me.transactionCancelledMsg,
-                           buttons : ['Dismiss']
-                        });
-                     }
-                  }
-               }
-            });
-            console.log("Broadcast underway ...");
-            me.redeemItemFn(Ext.apply(params,
-            {
-               data : me.self.encryptFromParams(
-               {
-                  'frequency' : identifiers['localID']
-               }, 'reward')
-            }));
-         }, function()
-         {
-            Ext.Viewport.setMasked(null);
-         });
-      }
-      /*
-      else
+               'frequency' : me.identifiers['localID']
+            }, 'reward')
+         }), view);
+      }, function()
       {
-         me.redeemItemFn(params);
-      }
-      */
+         Ext.Viewport.setMasked(null);
+      });
    },
    onRedeemItemTap : function(b, e, eOpts, eInfo)
    {
