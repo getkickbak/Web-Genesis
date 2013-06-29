@@ -21224,7 +21224,7 @@ var appLaunchCallbackFn = function()
 
 Ext.onReady(function()
 {
-   console.debug = (debugMode) ? Ext.emptyFn : console.debug || console.log;
+   console.debug = (!debugMode) ? Ext.emptyFn : console.debug || console.log;
    console.warn = console.warn || console.debug;
 
    document.addEventListener("online", function()

@@ -181,7 +181,7 @@
             document.addEventListener("deviceready", function()
             {
                navigator.splashscreen.show();
-               console.debug = (debugMode) ? Ext.emptyFn : console.debug || console.log;
+               console.debug = (!debugMode) ? Ext.emptyFn : console.debug || console.log;
                console.warn = console.warn || console.debug;
 
                console.debug("PhoneGap App Launch");
