@@ -167,7 +167,7 @@ Ext.define('Genesis.controller.server.Challenges',
          //
          // Updating Server ...
          //
-         console.log("Updating Server with EarnPoints information ... dismissDialog(" + me.dismissDialog + ")");
+         console.debug("Updating Server with EarnPoints information ... dismissDialog(" + me.dismissDialog + ")");
          Challenge['setCompleteMerchantChallengeURL']();
          Challenge.load(1,
          {

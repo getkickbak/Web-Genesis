@@ -33,7 +33,7 @@ Ext.define('Genesis.view.Viewport',
          nfc.isEnabled(function()
          {
             Genesis.constants.isNfcEnabled = true;
-            console.log('NFC is enabled on this device');
+            console.debug('NFC is enabled on this device');
          });
       }
       /*

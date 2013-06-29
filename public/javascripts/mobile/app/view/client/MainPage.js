@@ -225,7 +225,7 @@ Ext.define('Genesis.view.client.MainPage',
                }
             }
          }
-         console.log("MainPage Icons Not changed.");
+         console.debug("MainPage Icons Not changed.");
       }
 
       this.callParent(arguments);

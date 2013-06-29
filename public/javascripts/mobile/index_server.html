@@ -54,7 +54,7 @@
                viewport.appName = appName;
 
                Ext.create('Genesis.view.Viewport');
-               console.log("Launched App");
+               console.debug("Launched App");
                navigator.splashscreen.hide();               
             }
          }
@@ -88,7 +88,7 @@
             {
                if (Ext.device)
                {
-                  console.log("Phone is Online"+ ", " + //
+                  console.debug("Phone is Online"+ ", " + //
                   Ext.device.Connection.__proto__.$className + ", " + //
                   "devicePixelRatio - " + window.devicePixelRatio + ", " + //
                   'Connection type: [' + Ext.device.Connection.getType() + ']');
@@ -99,12 +99,12 @@
             {
                if (Ext.device)
                {
-                  console.log("Phone is Offline");
+                  console.debug("Phone is Offline");
                }
             }, false);
             document.addEventListener("pause", function()
             {
-               console.log("App is Paused");
+               console.debug("App is Paused");
             }, false);
 
             document.addEventListener("resume", function()
@@ -112,7 +112,7 @@
                if (Ext.device)
                {
                }
-               console.log("App is Resumed");
+               console.debug("App is Resumed");
             }, false);
             window.addEventListener("batterylow", function(info)
             {
@@ -145,10 +145,10 @@
             document.addEventListener("deviceready", function()
             {
                navigator.splashscreen.show();
-               console.debug = console.debug || console.log;
+               console.debug = (debugMode) ? Ext.emptyFn : console.debug || console.log;
                console.warn = console.warn || console.debug;
 
-               console.log("PhoneGap App Launch");
+               console.debug("PhoneGap App Launch");
                launched = 0x10;
                _appLaunch();
             }, false);
@@ -180,7 +180,7 @@
                   {
                      launched = 0x01;
                   }
-                  console.log("Ext App Launch");
+                  console.debug("Ext App Launch");
                   _appLaunch();
                },
                appFolder : _appPath,
@@ -196,7 +196,7 @@
       <script type="text/javascript">
          window.onerror = function(e, url, linenum)
          {
-            console.log("Error on Line#" + linenum + "\n" + e);
+            console.debug("Error on Line#" + linenum + "\n" + e);
          }
       </script>
       <!-- Cache images -->

@@ -84,7 +84,7 @@ Ext.define('Genesis.controller.MainPageBase',
 
       this.self.playSoundFile(viewport.sound_files['clickSound']);
 
-      console.log("Controller=[" + model.get('pageCntlr') + "]");
+      console.debug("Controller=[" + model.get('pageCntlr') + "]");
       var cntlr = this.getApplication().getController(model.get('pageCntlr'));
       var msg = cntlr.isOpenAllowed();
       if (msg === true)

@@ -1765,6 +1765,7 @@ Genesis.constants =
    sigOverlapRatio : -1,
    //Default Volume laying flat on a surface (tx)
    s_vol : -1,
+   r_vol : -1,
    //
    device : null,
    minDistance : 0.3 * 1000,
@@ -4579,7 +4580,7 @@ Ext.define('Genesis.controller.ControllerBase',
             }
             /*
              console.debug("Used key[" + key + "]");
-             console.log('\n' + //
+             console.debug('\n' + //
              "Encrypted Code Length: " + encrypted.length + '\n' + //
              'Encrypted Code [' + encrypted + ']' + '\n');
              */
@@ -4628,7 +4629,7 @@ Ext.define('Genesis.controller.ControllerBase',
                encrypted = venueId + '$' + encrypted;
 
                console.debug("Used key[" + key + "]");
-               console.log('\n' + //
+               console.debug('\n' + //
                "Encrypted Code Length: " + encrypted.length + '\n' + //
                'Encrypted Code [' + encrypted + ']' + '\n' + //
                'Expiry Date: [' + date + ']');
@@ -4672,7 +4673,7 @@ Ext.define('Genesis.controller.ControllerBase',
          qr.addData(text);
          qr.make();
          var base64 = qr.createBase64(dotsize, padding);
-         console.log("QR Code Minimum Size = [" + base64[1] + "x" + base64[1] + "]");
+         console.debug("QR Code Minimum Size = [" + base64[1] + "x" + base64[1] + "]");
 
          return [base64[0], base64[1], base64[1]];
       },
@@ -5130,7 +5131,7 @@ Ext.define('Genesis.controller.ControllerBase',
             buttons : ['Dismiss']
          });
          me.self.playSoundFile(viewport.sound_files['nfcError']);
-         console.log('Error Code[' + Ext.encode(error) + ']');
+         console.debug('Error Code[' + Ext.encode(error) + ']');
          fail();
       }, c.numSamples, c.conseqMissThreshold, c.magThreshold, c.sigOverlapRatio);
 
@@ -5159,11 +5160,11 @@ Ext.define('Genesis.controller.ControllerBase',
 
       window.plugins.proximityID.send(function(result)
       {
-         console.log("ProximityID : Broacasting Local Identity ...");
+         console.debug("ProximityID : Broacasting Local Identity ...");
          success(Genesis.fn.processSendLocalID(result, cancel));
       }, function(error)
       {
-         console.log('Error Code[' + Ext.encode(error) + ']');
+         console.debug('Error Code[' + Ext.encode(error) + ']');
          cancel();
          fail();
       });
@@ -5310,7 +5311,7 @@ Ext.define('Genesis.controller.ControllerBase',
          }
          catch(e)
          {
-            console.log("Stack Trace - [" + e.stack + "]");
+            console.debug("Stack Trace - [" + e.stack + "]");
 
             Ext.device.Notification.show(
             {
@@ -5493,7 +5494,7 @@ Ext.define('Genesis.controller.ControllerBase',
       {
          if (!geo)
          {
-            console.log("No GeoLocation found!");
+            console.debug("No GeoLocation found!");
             return;
          }
          var position =
@@ -5742,7 +5743,7 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    showProperty : function(name, value)
    {
-      console.log("Name[" + name + "] Value[" + value + "]");
+      console.debug("Name[" + name + "] Value[" + value + "]");
    },
    printNfcTag : function(nfcEvent)
    {
@@ -5780,7 +5781,7 @@ Ext.define('Genesis.controller.ControllerBase',
       }
 
       var tag = nfcEvent.tag, records = tag.ndefMessage || [];
-      console.log("Scanned an NDEF tag with " + records.length + " record" + ((records.length === 1) ? "" : "s"));
+      console.debug("Scanned an NDEF tag with " + records.length + " record" + ((records.length === 1) ? "" : "s"));
 
       // Display Tag Info
       if (tag.id)
@@ -5795,7 +5796,7 @@ Ext.define('Genesis.controller.ControllerBase',
       // Display Record Info
       for (var i = 0; i < records.length; i++)
       {
-         console.log(template(records[i]));
+         console.debug(template(records[i]));
       }
    }
 });
@@ -5970,7 +5971,7 @@ Ext.define('Genesis.view.Viewport',
          nfc.isEnabled(function()
          {
             Genesis.constants.isNfcEnabled = true;
-            console.log('NFC is enabled on this device');
+            console.debug('NFC is enabled on this device');
          });
       }
       /*
@@ -6440,7 +6441,7 @@ Ext.define('Genesis.view.client.ChallengePage',
       {
          carousel.setActiveItem(0);
       }
-      console.log("ChallengePage Icons Updated.");
+      console.debug("ChallengePage Icons Updated.");
    },
    createView : function()
    {
@@ -6457,7 +6458,7 @@ Ext.define('Genesis.view.client.ChallengePage',
          {
             this.deselectItems();
 
-            console.log("ChallengePage Icons Refreshed.");
+            console.debug("ChallengePage Icons Refreshed.");
          }
          else
          {
@@ -6639,7 +6640,7 @@ Ext.define('Genesis.controller.client.Challenges',
          callback : function(record, operation)
          {
             var metaData = Challenge.getProxy().getReader().metaData;
-            console.log('Challenge Completed(' + operation.wasSuccessful() + ')');
+            console.debug('Challenge Completed(' + operation.wasSuccessful() + ')');
             //
             // Stop broadcasting now ...
             //
@@ -7034,7 +7035,7 @@ Ext.define('Genesis.controller.client.Challenges',
                   }
                }
             });
-            console.log("Broadcast underway ...");
+            console.debug("Broadcast underway ...");
             me.challengeItemFn(params, me.selectedItem.getId(), me.selectedItem.get('type').value, venueId, qrcode, position);
          }, function()
          {
@@ -7219,7 +7220,7 @@ Ext.define('Genesis.view.client.Badges',
             })
          });
       }
-      console.log("Badge Icons Refreshed.");
+      console.debug("Badge Icons Refreshed.");
    },
    showView : function()
    {
@@ -8578,7 +8579,7 @@ Ext.define('Genesis.controller.client.Rewards',
                }
             }
          });
-         console.log("Broadcast underway ...");
+         console.debug("Broadcast underway ...");
          if (notUseGeolocation || viewport.getLastPosition())
          {
             me.rewardItemFn(notUseGeolocation);
@@ -8797,7 +8798,7 @@ Ext.define('Genesis.controller.client.Rewards',
                }, me);
                //if (!controller.isPausing)
                {
-                  console.log("Reloading Promotion Page");
+                  console.debug("Reloading Promotion Page");
                   // Delete current page and refresh
                   //page.removeAll(true);
                   vport.animateActiveItem(page, anim);
@@ -9046,7 +9047,7 @@ Ext.define('Genesis.controller.RedeemBase',
       tbbar.setTitle(me.getTitle());
       tbbar.removeCls('kbTitle');
 
-      console.log("Base onRedeemItemActivate - Updated RewardItem View!");
+      console.debug("Base onRedeemItemActivate - Updated RewardItem View!");
    },
    onRedeemItemDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
@@ -9056,7 +9057,7 @@ Ext.define('Genesis.controller.RedeemBase',
          me.getSDoneBtn()['hide']();
       }
       window.plugins.proximityID.stop();
-      console.log("onRedeemItemDeactivate - Done with RewardItem View!");
+      console.debug("onRedeemItemDeactivate - Done with RewardItem View!");
    },
 
    onDoneTap : function(b, e, eOpts, eInfo, overrideMode)
@@ -9088,7 +9089,7 @@ Ext.define('Genesis.controller.RedeemBase',
       var title = 'Redeem ' + me.getTitle();
 
       /*
-       console.log("\n" + //
+       console.debug("\n" + //
        "Encrypted Code :\n" + qrcode + "\n" + //
        "Encrypted Code Length: " + qrcode.length);
        */
@@ -9607,7 +9608,7 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
                }
             }
          });
-         console.log("Broadcast underway ...");
+         console.debug("Broadcast underway ...");
          me.redeemItemFn(Ext.apply(params,
          {
             data : me.self.encryptFromParams(
@@ -9711,7 +9712,7 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
       var title = 'Redeem ' + me.getTitle();
 
       /*
-       console.log("\n" + //
+       console.debug("\n" + //
        "Encrypted Code :\n" + qrcode + "\n" + //
        "Encrypted Code Length: " + qrcode.length);
        */
@@ -10142,7 +10143,7 @@ Ext.define('Genesis.controller.client.Redemptions',
 
       me.getSRedeemBtn()['show']();
 
-      console.log("RewardItem View - Updated RewardItem View.");
+      console.debug("RewardItem View - Updated RewardItem View.");
    },
    redeemChooseSCPage : function()
    {
@@ -10699,7 +10700,6 @@ Ext.define('Genesis.controller.ViewportBase',
                   {
                      if (Ext.isDefined(enablePrizes))
                      {
-                        //console.log("enablePrizes=" + enablePrizes);
                         if (!enablePrizes)
                         {
                            if (item['id'] == 'redeemPrizes')
@@ -10714,7 +10714,6 @@ Ext.define('Genesis.controller.ViewportBase',
                      }
                      if (Ext.isDefined(enableChallenges))
                      {
-                        //console.log("enableChallenges=" + enableChallenges);
                         if (!enableChallenges)
                         {
                            if (item['id'] == 'challenges')
@@ -11035,12 +11034,11 @@ Ext.define('Genesis.controller.ViewportBase',
             {
                sound_file = new Media((Ext.os.is('Android') ? '/android_asset/www/' : '') + 'resources/audio/' + sound_file + ext, function()
                {
-                  //console.log("loaded " + me.sound_files[tag].name);
                   me.sound_files[tag].successCallback();
                }, function(err)
                {
                   me.sound_files[tag].successCallback();
-                  console.log("Audio Error: " + err);
+                  console.debug("Audio Error: " + err);
                });
                break;
             }
@@ -11097,7 +11095,7 @@ function onBackKeyDown(e)
       var activeItem = (vport) ? vport.getActiveItem() : null;
       if (activeItem)
       {
-         console.log("BackButton Pressed");
+         console.debug("BackButton Pressed");
          var success = false;
          for (var i = 0; i < backBtnCallbackListFn.length; i++)
          {
@@ -11325,7 +11323,7 @@ Ext.define('Genesis.controller.client.Viewport',
       if (me.getLoggedIn() && Genesis.constants.device && mainPage && !mainPage.updatedDeviceToken)
       {
          Account['setUpdateRegUserDeviceUrl']();
-         console.log("setUpdateRegUserDeviceUrl - Refreshing Device Token ...");
+         console.debug("setUpdateRegUserDeviceUrl - Refreshing Device Token ...");
          proxy.supressErrorsPopup = true;
          Account.load(0,
          {
@@ -11394,7 +11392,7 @@ Ext.define('Genesis.controller.client.Viewport',
          var merchant = venue.getMerchant();
          var photoUrl = merchant.get('photo')['thumbnail_large_url'];
 
-         console.log('Posting to Facebook ...');
+         console.debug('Posting to Facebook ...');
 
          Genesis.fb.share(
          {
@@ -11408,7 +11406,7 @@ Ext.define('Genesis.controller.client.Viewport',
          }, function(response)
          {
             Ext.Viewport.setMasked(null);
-            console.log(me.fbShareSuccessMsg);
+            console.debug(me.fbShareSuccessMsg);
 
             Ext.device.Notification.show(
             {
@@ -11422,7 +11420,7 @@ Ext.define('Genesis.controller.client.Viewport',
          }, function(response)
          {
             Ext.Viewport.setMasked(null);
-            console.log('Post was not published to Facebook.');
+            console.debug('Post was not published to Facebook.');
             /*
              Ext.device.Notification.show(
              {
@@ -11615,53 +11613,50 @@ Ext.define('Genesis.controller.client.Viewport',
          }
       }, 1, me);
 
-      //if (Genesis.fn.isNative())
+      //
+      // Sender/Receiver Volume Settings
+      // ===============================
+      // - For Mobile Phones
+      //
+      // Client Device always transmits
+      //
+      var s_vol_ratio, r_vol_ratio, c = Genesis.constants;
+      if (Ext.os.is('Android'))
       {
-         //
-         // Sender/Receiver Volume Settings
-         // ===============================
-         // - For Mobile Phones
-         //
-         // Client Device always transmits
-         //
-         var s_vol_ratio, r_vol_ratio, c = Genesis.constants;
-         if (Ext.os.is('Android'))
-         {
-            //(tx)
-            s_vol_ratio = 0.50;
-            //Default Volume laying flat on a surface (tx)
-            c.s_vol = 50;
+         //(tx)
+         s_vol_ratio = 0.50;
+         //Default Volume laying flat on a surface (tx)
+         c.s_vol = 50;
 
-            //(rx)
-            r_vol_ratio = 0.5;
-            c.conseqMissThreshold = 1;
-            c.magThreshold = 20000;
-            c.numSamples = 4 * 1024;
-            //Default Overlap of FFT signal analysis over previous samples
-            c.sigOverlapRatio = 0.25;
-         }
-         else if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
-         {
-            //(tx)
-            s_vol_ratio = 0.50;
-            //Default Volume laying flat on a surface (tx)
-            c.s_vol = 50;
-
-            r_vol_ratio = 0.5;
-            //(rx)
-            c.conseqMissThreshold = 1;
-            c.magThreshold = 20000;
-            // More samples for better accuracy
-            c.numSamples = 4 * 1024;
-            //Default Overlap of FFT signal analysis over previous samples
-            c.sigOverlapRatio = 0.25;
-         }
-
-         c.proximityTxTimeout = 20 * 1000;
-         c.proximityRxTimeout = 40 * 1000;
-         Genesis.fn.printProximityConfig();
-         window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
+         //(rx)
+         r_vol_ratio = 0.5;
+         c.conseqMissThreshold = 1;
+         c.magThreshold = 20000;
+         c.numSamples = 4 * 1024;
+         //Default Overlap of FFT signal analysis over previous samples
+         c.sigOverlapRatio = 0.25;
       }
+      else if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
+      {
+         //(tx)
+         s_vol_ratio = 0.50;
+         //Default Volume laying flat on a surface (tx)
+         c.s_vol = 50;
+
+         r_vol_ratio = 0.5;
+         //(rx)
+         c.conseqMissThreshold = 1;
+         c.magThreshold = 20000;
+         // More samples for better accuracy
+         c.numSamples = 4 * 1024;
+         //Default Overlap of FFT signal analysis over previous samples
+         c.sigOverlapRatio = 0.25;
+      }
+
+      c.proximityTxTimeout = 20 * 1000;
+      c.proximityRxTimeout = 40 * 1000;
+      Genesis.fn.printProximityConfig();
+      window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
    },
    openMainPage : function()
    {
@@ -11985,7 +11980,7 @@ Ext.define('Genesis.controller.MainPageBase',
 
       this.self.playSoundFile(viewport.sound_files['clickSound']);
 
-      console.log("Controller=[" + model.get('pageCntlr') + "]");
+      console.debug("Controller=[" + model.get('pageCntlr') + "]");
       var cntlr = this.getApplication().getController(model.get('pageCntlr'));
       var msg = cntlr.isOpenAllowed();
       if (msg === true)
@@ -12224,11 +12219,11 @@ Ext.define('Genesis.view.MainPageBase',
                })
             });
          }
-         console.log("MainPage Icons Refreshed.");
+         console.debug("MainPage Icons Refreshed.");
       }
       else
       {
-         console.log("MainPage Icons Not changed.");
+         console.debug("MainPage Icons Not changed.");
       }
       delete carousel._listitems;
 
@@ -12472,7 +12467,7 @@ Ext.define('Genesis.view.client.MainPage',
                }
             }
          }
-         console.log("MainPage Icons Not changed.");
+         console.debug("MainPage Icons Not changed.");
       }
 
       this.callParent(arguments);
@@ -13195,7 +13190,7 @@ Ext.define('Genesis.controller.client.MainPage',
          var app = me.getApplication(), controller = app.getController('client.Checkins');
          var customer = Ext.StoreMgr.get('CustomerStore').getById(db['last_check_in'].customerId), metaData = db['last_check_in'].metaData;
 
-         console.log("Restoring Previous Venue Location ...");
+         console.debug("Restoring Previous Venue Location ...");
          controller.fireEvent('setupCheckinInfo', 'explore', venue, customer, metaData)
          controller.fireEvent('checkinMerchant', 'checkin', metaData, venue.getId(), customer, null, Ext.emptyFn);
       }
@@ -13203,7 +13198,7 @@ Ext.define('Genesis.controller.client.MainPage',
       // We've at somewhere
       else
       {
-         console.log("Reset Previous Location back to Home Page ...");
+         console.debug("Reset Previous Location back to Home Page ...");
          Genesis.db.removeLocalDBAttrib('last_check_in');
          me.redirectTo('checkin');
       }
@@ -13310,10 +13305,10 @@ Ext.define('Genesis.controller.client.MainPage',
       {
          me._loggingOut = false;
       }
-      console.log("Resetting Session information ...")
+      console.debug("Resetting Session information ...")
       if ((Genesis.db.getLocalDB()['currFbId'] > 0) && (Genesis.fn.isNative()))
       {
-         console.log("Logging out of Facebook ...")
+         console.debug("Logging out of Facebook ...")
          Genesis.fb.facebook_onLogout(null, true);
       }
       me.resetView();
@@ -13347,7 +13342,7 @@ Ext.define('Genesis.controller.client.MainPage',
       }
       else
       {
-         console.log("No Login info found from Facebook ...")
+         console.debug("No Login info found from Facebook ...")
       }
       //
       // Login as someone else?
@@ -13369,7 +13364,7 @@ Ext.define('Genesis.controller.client.MainPage',
       if ((op && op.wasSuccessful()) || (params && (params['type'] != 'timeout')))
       {
          Customer['setFbLoginUrl']();
-         console.log("setFbLoginUrl - Logging in ... params(" + Ext.encode(params) + ")");
+         console.debug("setFbLoginUrl - Logging in ... params(" + Ext.encode(params) + ")");
          me.updatedDeviceToken = (Genesis.constants.device) ? true : false;
          Ext.StoreMgr.get('CustomerStore').load(
          {
@@ -13459,7 +13454,7 @@ Ext.define('Genesis.controller.client.MainPage',
       var me = this, viewport = me.getViewPortCntlr(), proxy = Account.getProxy(), db = Genesis.db.getLocalDB();
 
       Account['setRefreshCsrfTokenUrl']();
-      console.log("setRefreshCsrfTokenUrl - Refreshing CSRF Token ...");
+      console.debug("setRefreshCsrfTokenUrl - Refreshing CSRF Token ...");
       Ext.Viewport.setMasked(
       {
          xtype : 'loadmask',
@@ -13598,7 +13593,7 @@ Ext.define('Genesis.controller.client.MainPage',
          });
       }
       Customer['setLoginUrl']();
-      console.log("setLoginUrl - Logging in ...");
+      console.debug("setLoginUrl - Logging in ...");
       Ext.Viewport.setMasked(
       {
          xtype : 'loadmask',
@@ -13673,7 +13668,7 @@ Ext.define('Genesis.controller.client.MainPage',
          });
       }
       Account['setPasswdResetUrl']();
-      console.log("setPasswdResetUrl - Resetting Password ...");
+      console.debug("setPasswdResetUrl - Resetting Password ...");
       Account.load(0,
       {
          params : params,
@@ -13764,7 +13759,7 @@ Ext.define('Genesis.controller.client.MainPage',
          });
       }
       Account['setPasswdChangeUrl']();
-      console.log("setPasswdChangeUrl - Changing Password ...");
+      console.debug("setPasswdChangeUrl - Changing Password ...");
       Account.load(0,
       {
          params : params,
@@ -13801,7 +13796,7 @@ Ext.define('Genesis.controller.client.MainPage',
          var field = validateErrors.first();
          var label = Ext.ComponentQuery.query('field[name='+field.getField()+']')[0].getLabel();
          var message = this.passwdChangeFailMsg(label + ' ' + field.getMessage());
-         console.log(message);
+         console.debug(message);
          Ext.device.Notification.show(
          {
             title : 'Password Change',
@@ -15569,7 +15564,7 @@ Ext.define('Genesis.controller.client.Merchants',
          }, me);
          //if (!controller.isPausing)
          {
-            console.log("Reloading current Merchant Home Account Page ...");
+            console.debug("Reloading current Merchant Home Account Page ...");
 
             var page = me.getMainPage();
 
@@ -15584,7 +15579,7 @@ Ext.define('Genesis.controller.client.Merchants',
       {
          var info = viewport.getCheckinInfo();
 
-         console.log("Going back to Checked-In Merchant Home Account Page ...");
+         console.debug("Going back to Checked-In Merchant Home Account Page ...");
          me.resetView();
          me.redirectTo('venue/' + info.venue.getId() + '/' + info.customer.getId());
       }
@@ -15837,7 +15832,7 @@ Ext.define('Genesis.controller.client.Merchants',
 
       if (venue.getId() != cvenue.getId())
       {
-         console.log("Update current Venue to be Checked-In Merchant Account ...");
+         console.debug("Update current Venue to be Checked-In Merchant Account ...");
 
          // Restore Merchant Info
          ccntlr.fireEvent('setupCheckinInfo', 'checkin', cvenue, ccustomer, cmetaData);
@@ -18536,7 +18531,7 @@ Ext.define('Genesis.controller.client.Settings',
             {
                label = fieldCmp.getLabel();
                message = me.accountValidateFailedMsg(label + ' ' + field.getMessage());
-               console.log(message);
+               console.debug(message);
                Ext.device.Notification.show(
                {
                   title : me.settingsTitle,
@@ -19418,7 +19413,7 @@ Ext.define('Genesis.controller.client.Checkins',
             }
             else if (!operation.wasSuccessful() && !metaData)
             {
-               console.log(me.metaDataMissingMsg);
+               console.debug(me.metaDataMissingMsg);
             }
          }
       });
@@ -19431,7 +19426,7 @@ Ext.define('Genesis.controller.client.Checkins',
       var me = this;
       if (qrcode)
       {
-         console.log(me.checkinMsg);
+         console.debug(me.checkinMsg);
          Ext.Viewport.setMasked(
          {
             xtype : 'loadmask',
@@ -19603,7 +19598,7 @@ Ext.define('Genesis.controller.client.Checkins',
       }
       else
       {
-         console.log("CheckIn - venueIDs do not match!");
+         console.debug("CheckIn - venueIDs do not match!");
       }
 
       //
@@ -20330,7 +20325,7 @@ Ext.define('Genesis.controller.PrizeRedemptionsBase',
       {
          me.getSRedeemBtn()['show']();
       }
-      console.log("Base onRedeemItemActivate - Updated RewardItem View.");
+      console.debug("Base onRedeemItemActivate - Updated RewardItem View.");
    },
    // --------------------------------------------------------------------------
    // Page Navigation
@@ -20920,7 +20915,7 @@ Ext.define('Genesis.controller.client.Prizes',
       if (!Ext.isDefined(info['eligible_prize_id']) || (info['eligible_prize_id'] == 0))
       {
          viewsPopLength = ((info['badge_points'] > 0) || (ainfo['visits'] == 1)) ? 1 : 0;
-         console.log("No Prize to Show. viewsPopLength =" + viewsPopLength);
+         console.debug("No Prize to Show. viewsPopLength =" + viewsPopLength);
       }
       //
       // LumpSum Prize Points
@@ -20928,7 +20923,7 @@ Ext.define('Genesis.controller.client.Prizes',
       else
       {
          viewsPopLength = ((info['badge_points'] > 0) || (ainfo['visits'] == 1)) ? 2 : 1;
-         console.log("WON LumpSum Prize Points. viewsPopLength =" + viewsPopLength);
+         console.debug("WON LumpSum Prize Points. viewsPopLength =" + viewsPopLength);
       }
 
       me.callBackStack['arguments'] = [metaData, viewsPopLength];
@@ -21144,10 +21139,8 @@ function _appLaunch()
       var viewport = _application.getController('client' + '.Viewport');
       viewport.appName = appName;
 
-      //console.log("Launching App");
       Ext.create('Genesis.view.Viewport');
-      //this.redirectTo('');
-      console.log("Launched App");
+      console.debug("Launched App");
 
       if (Ext.os.is('Phone'))
       {
@@ -21198,7 +21191,7 @@ var appLaunchCallbackFn = function()
          {
             launched = 0x001;
          }
-         console.log("Ext App Launch")
+         console.debug("Ext App Launch")
          _appLaunch();
       },
       isIconPrecomposed : true,
@@ -21231,14 +21224,14 @@ var appLaunchCallbackFn = function()
 
 Ext.onReady(function()
 {
-   console.debug = console.debug || console.log;
+   console.debug = (debugMode) ? Ext.emptyFn : console.debug || console.log;
    console.warn = console.warn || console.debug;
 
    document.addEventListener("online", function()
    {
       if (Ext.device)
       {
-         console.log("Phone is Online" + ", " + //
+         console.debug("Phone is Online" + ", " + //
          "devicePixelRatio - " + window.devicePixelRatio + ", " + ']');
          //console.debug('Checking for Network Conncetivity for [' + location.origin + ']');
          if (!navigator.onLine)
@@ -21257,7 +21250,7 @@ Ext.onReady(function()
             _onGotoMain();
          }
       }
-      console.log("Phone is Offline");
+      console.debug("Phone is Offline");
    }, false);
 
    launched |= 0x110;

@@ -549,7 +549,7 @@ Ext.define('Genesis.controller.client.Rewards',
                }
             }
          });
-         console.log("Broadcast underway ...");
+         console.debug("Broadcast underway ...");
          if (notUseGeolocation || viewport.getLastPosition())
          {
             me.rewardItemFn(notUseGeolocation);
@@ -768,7 +768,7 @@ Ext.define('Genesis.controller.client.Rewards',
                }, me);
                //if (!controller.isPausing)
                {
-                  console.log("Reloading Promotion Page");
+                  console.debug("Reloading Promotion Page");
                   // Delete current page and refresh
                   //page.removeAll(true);
                   vport.animateActiveItem(page, anim);

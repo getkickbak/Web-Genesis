@@ -261,7 +261,7 @@ Ext.define('Genesis.controller.ControllerBase',
             }
             /*
              console.debug("Used key[" + key + "]");
-             console.log('\n' + //
+             console.debug('\n' + //
              "Encrypted Code Length: " + encrypted.length + '\n' + //
              'Encrypted Code [' + encrypted + ']' + '\n');
              */
@@ -310,7 +310,7 @@ Ext.define('Genesis.controller.ControllerBase',
                encrypted = venueId + '$' + encrypted;
 
                console.debug("Used key[" + key + "]");
-               console.log('\n' + //
+               console.debug('\n' + //
                "Encrypted Code Length: " + encrypted.length + '\n' + //
                'Encrypted Code [' + encrypted + ']' + '\n' + //
                'Expiry Date: [' + date + ']');
@@ -354,7 +354,7 @@ Ext.define('Genesis.controller.ControllerBase',
          qr.addData(text);
          qr.make();
          var base64 = qr.createBase64(dotsize, padding);
-         console.log("QR Code Minimum Size = [" + base64[1] + "x" + base64[1] + "]");
+         console.debug("QR Code Minimum Size = [" + base64[1] + "x" + base64[1] + "]");
 
          return [base64[0], base64[1], base64[1]];
       },
@@ -812,7 +812,7 @@ Ext.define('Genesis.controller.ControllerBase',
             buttons : ['Dismiss']
          });
          me.self.playSoundFile(viewport.sound_files['nfcError']);
-         console.log('Error Code[' + Ext.encode(error) + ']');
+         console.debug('Error Code[' + Ext.encode(error) + ']');
          fail();
       }, c.numSamples, c.conseqMissThreshold, c.magThreshold, c.sigOverlapRatio);
 
@@ -841,11 +841,11 @@ Ext.define('Genesis.controller.ControllerBase',
 
       window.plugins.proximityID.send(function(result)
       {
-         console.log("ProximityID : Broacasting Local Identity ...");
+         console.debug("ProximityID : Broacasting Local Identity ...");
          success(Genesis.fn.processSendLocalID(result, cancel));
       }, function(error)
       {
-         console.log('Error Code[' + Ext.encode(error) + ']');
+         console.debug('Error Code[' + Ext.encode(error) + ']');
          cancel();
          fail();
       });
@@ -992,7 +992,7 @@ Ext.define('Genesis.controller.ControllerBase',
          }
          catch(e)
          {
-            console.log("Stack Trace - [" + e.stack + "]");
+            console.debug("Stack Trace - [" + e.stack + "]");
 
             Ext.device.Notification.show(
             {
@@ -1175,7 +1175,7 @@ Ext.define('Genesis.controller.ControllerBase',
       {
          if (!geo)
          {
-            console.log("No GeoLocation found!");
+            console.debug("No GeoLocation found!");
             return;
          }
          var position =
@@ -1424,7 +1424,7 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    showProperty : function(name, value)
    {
-      console.log("Name[" + name + "] Value[" + value + "]");
+      console.debug("Name[" + name + "] Value[" + value + "]");
    },
    printNfcTag : function(nfcEvent)
    {
@@ -1462,7 +1462,7 @@ Ext.define('Genesis.controller.ControllerBase',
       }
 
       var tag = nfcEvent.tag, records = tag.ndefMessage || [];
-      console.log("Scanned an NDEF tag with " + records.length + " record" + ((records.length === 1) ? "" : "s"));
+      console.debug("Scanned an NDEF tag with " + records.length + " record" + ((records.length === 1) ? "" : "s"));
 
       // Display Tag Info
       if (tag.id)
@@ -1477,7 +1477,7 @@ Ext.define('Genesis.controller.ControllerBase',
       // Display Record Info
       for (var i = 0; i < records.length; i++)
       {
-         console.log(template(records[i]));
+         console.debug(template(records[i]));
       }
    }
 });

@@ -75,9 +75,7 @@
                var viewport = _application.getController('client' + '.Viewport');
                viewport.appName = appName;
 
-               //console.log("Launching App");
                Ext.create('Genesis.view.Viewport');
-               //this.redirectTo('');
                console.log("Launched App");
                navigator.splashscreen.hide();
                initPushwoosh();
@@ -131,7 +129,7 @@
             {
                if (Ext.device)
                {
-                  console.log("Phone is Online" + ", "+ //
+                  console.debug("Phone is Online" + ", "+ //
                   Ext.device.Connection.__proto__.$className + ", " + //
                   "devicePixelRatio - " + window.devicePixelRatio + ", " + //
                   'Connection type: [' + Ext.device.Connection.getType() + ']');
@@ -151,7 +149,7 @@
                   {
                      _onGotoMain();
                   }
-                  console.log("Phone is Offline");
+                  console.debug("Phone is Offline");
                }
             }, false);
             document.addEventListener("pause", function()
@@ -159,7 +157,7 @@
                if (_application && (launched == 0x111) && !pausedDisabled)
                {
                   _application.getController('client' + '.Viewport').persistSyncStores();
-                  console.log("App is Paused");
+                  console.debug("App is Paused");
                }
             }, false);
 
@@ -178,17 +176,17 @@
                         //_onGotoMainCallBackFn();
                      }
                   }
-                  console.log("App is Resumed");
+                  console.debug("App is Resumed");
               }
             }, false);
 
             document.addEventListener("deviceready", function()
             {
                //navigator.splashscreen.show();
-               console.debug = console.debug || console.log;
+               console.debug = (debugMode) ? Ext.emptyFn : console.debug || console.log;
                console.warn = console.warn || console.debug;
 
-               console.log("PhoneGap App Launch");
+               console.debug("PhoneGap App Launch");
                launched = 0x110;
                _appLaunch();
                document.addEventListener("backbutton", onBackKeyDown, false);
@@ -233,7 +231,7 @@
                   {
                      launched = 0x001;
                   }
-                  console.log("Ext App Launch")
+                  console.debug("Ext App Launch")
                   _appLaunch();
                },
                appFolder : _appPath,
@@ -251,7 +249,7 @@
       <script type="text/javascript">
          window.onerror = function(msg, url, linenum)
          {
-            console.log("Error on Line#" + linenum + "\n" + msg);
+            console.debug("Error on Line#" + linenum + "\n" + msg);
          }
       </script>
       <!-- Cache images -->

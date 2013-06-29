@@ -61,7 +61,7 @@ Ext.define('Genesis.controller.client.Redemptions',
 
       me.getSRedeemBtn()['show']();
 
-      console.log("RewardItem View - Updated RewardItem View.");
+      console.debug("RewardItem View - Updated RewardItem View.");
    },
    redeemChooseSCPage : function()
    {

@@ -167,7 +167,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
          //
          // Update Server
          //
-         console.log("Updating Server with Redeem information ... dismissDialog(" + me.dismissDialog + ")");
+         console.debug("Updating Server with Redeem information ... dismissDialog(" + me.dismissDialog + ")");
 
          CustomerReward[me.getRedeemPointsFn()](item.getData().getId());
 
@@ -322,7 +322,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
    onRedeemItemShowView : function(activeItem)
    {
       var me = this;
-      console.log("onRedeemItemShowView - RedeemMode[" + me.getRedeemMode() + "]");
+      console.debug("onRedeemItemShowView - RedeemMode[" + me.getRedeemMode() + "]");
    },
    onRedeemItemActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
@@ -337,7 +337,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
       //
       me.getAuthText()[(me.getRedeemMode() == 'authReward') ? 'show' : 'hide']();
 
-      console.log("RewardItem View - Updated RewardItem View.");
+      console.debug("RewardItem View - Updated RewardItem View.");
    }
    // --------------------------------------------------------------------------
    // Page Navigation

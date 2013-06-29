@@ -112,11 +112,11 @@ Ext.define('Genesis.view.MainPageBase',
                })
             });
          }
-         console.log("MainPage Icons Refreshed.");
+         console.debug("MainPage Icons Refreshed.");
       }
       else
       {
-         console.log("MainPage Icons Not changed.");
+         console.debug("MainPage Icons Not changed.");
       }
       delete carousel._listitems;
 

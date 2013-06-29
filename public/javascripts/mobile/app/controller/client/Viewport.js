@@ -23,7 +23,7 @@ function onBackKeyDown(e)
       var activeItem = (vport) ? vport.getActiveItem() : null;
       if (activeItem)
       {
-         console.log("BackButton Pressed");
+         console.debug("BackButton Pressed");
          var success = false;
          for (var i = 0; i < backBtnCallbackListFn.length; i++)
          {
@@ -251,7 +251,7 @@ Ext.define('Genesis.controller.client.Viewport',
       if (me.getLoggedIn() && Genesis.constants.device && mainPage && !mainPage.updatedDeviceToken)
       {
          Account['setUpdateRegUserDeviceUrl']();
-         console.log("setUpdateRegUserDeviceUrl - Refreshing Device Token ...");
+         console.debug("setUpdateRegUserDeviceUrl - Refreshing Device Token ...");
          proxy.supressErrorsPopup = true;
          Account.load(0,
          {
@@ -320,7 +320,7 @@ Ext.define('Genesis.controller.client.Viewport',
          var merchant = venue.getMerchant();
          var photoUrl = merchant.get('photo')['thumbnail_large_url'];
 
-         console.log('Posting to Facebook ...');
+         console.debug('Posting to Facebook ...');
 
          Genesis.fb.share(
          {
@@ -334,7 +334,7 @@ Ext.define('Genesis.controller.client.Viewport',
          }, function(response)
          {
             Ext.Viewport.setMasked(null);
-            console.log(me.fbShareSuccessMsg);
+            console.debug(me.fbShareSuccessMsg);
 
             Ext.device.Notification.show(
             {
@@ -348,7 +348,7 @@ Ext.define('Genesis.controller.client.Viewport',
          }, function(response)
          {
             Ext.Viewport.setMasked(null);
-            console.log('Post was not published to Facebook.');
+            console.debug('Post was not published to Facebook.');
             /*
              Ext.device.Notification.show(
              {
@@ -541,53 +541,50 @@ Ext.define('Genesis.controller.client.Viewport',
          }
       }, 1, me);
 
-      //if (Genesis.fn.isNative())
+      //
+      // Sender/Receiver Volume Settings
+      // ===============================
+      // - For Mobile Phones
+      //
+      // Client Device always transmits
+      //
+      var s_vol_ratio, r_vol_ratio, c = Genesis.constants;
+      if (Ext.os.is('Android'))
       {
-         //
-         // Sender/Receiver Volume Settings
-         // ===============================
-         // - For Mobile Phones
-         //
-         // Client Device always transmits
-         //
-         var s_vol_ratio, r_vol_ratio, c = Genesis.constants;
-         if (Ext.os.is('Android'))
-         {
-            //(tx)
-            s_vol_ratio = 0.50;
-            //Default Volume laying flat on a surface (tx)
-            c.s_vol = 50;
+         //(tx)
+         s_vol_ratio = 0.50;
+         //Default Volume laying flat on a surface (tx)
+         c.s_vol = 50;
 
-            //(rx)
-            r_vol_ratio = 0.5;
-            c.conseqMissThreshold = 1;
-            c.magThreshold = 20000;
-            c.numSamples = 4 * 1024;
-            //Default Overlap of FFT signal analysis over previous samples
-            c.sigOverlapRatio = 0.25;
-         }
-         else if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
-         {
-            //(tx)
-            s_vol_ratio = 0.50;
-            //Default Volume laying flat on a surface (tx)
-            c.s_vol = 50;
-
-            r_vol_ratio = 0.5;
-            //(rx)
-            c.conseqMissThreshold = 1;
-            c.magThreshold = 20000;
-            // More samples for better accuracy
-            c.numSamples = 4 * 1024;
-            //Default Overlap of FFT signal analysis over previous samples
-            c.sigOverlapRatio = 0.25;
-         }
-
-         c.proximityTxTimeout = 20 * 1000;
-         c.proximityRxTimeout = 40 * 1000;
-         Genesis.fn.printProximityConfig();
-         window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
+         //(rx)
+         r_vol_ratio = 0.5;
+         c.conseqMissThreshold = 1;
+         c.magThreshold = 20000;
+         c.numSamples = 4 * 1024;
+         //Default Overlap of FFT signal analysis over previous samples
+         c.sigOverlapRatio = 0.25;
       }
+      else if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
+      {
+         //(tx)
+         s_vol_ratio = 0.50;
+         //Default Volume laying flat on a surface (tx)
+         c.s_vol = 50;
+
+         r_vol_ratio = 0.5;
+         //(rx)
+         c.conseqMissThreshold = 1;
+         c.magThreshold = 20000;
+         // More samples for better accuracy
+         c.numSamples = 4 * 1024;
+         //Default Overlap of FFT signal analysis over previous samples
+         c.sigOverlapRatio = 0.25;
+      }
+
+      c.proximityTxTimeout = 20 * 1000;
+      c.proximityRxTimeout = 40 * 1000;
+      Genesis.fn.printProximityConfig();
+      window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
    },
    openMainPage : function()
    {

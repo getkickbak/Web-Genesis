@@ -45,7 +45,7 @@ Ext.define('Genesis.controller.client.Settings',
             {
                label = fieldCmp.getLabel();
                message = me.accountValidateFailedMsg(label + ' ' + field.getMessage());
-               console.log(message);
+               console.debug(message);
                Ext.device.Notification.show(
                {
                   title : me.settingsTitle,

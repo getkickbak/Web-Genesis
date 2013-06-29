@@ -398,7 +398,7 @@ Ext.define('Genesis.controller.server.Rewards',
       });
       //Ext.device.Notification.dismiss();
 
-      console.log("Updating Server with Reward information ... dismissDialog(" + me.dismissDialog + ")");
+      console.debug("Updating Server with Reward information ... dismissDialog(" + me.dismissDialog + ")");
       PurchaseReward['setMerchantEarnPointsURL']();
       PurchaseReward.load(1,
       {

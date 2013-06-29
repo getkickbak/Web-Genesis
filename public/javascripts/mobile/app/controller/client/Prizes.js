@@ -487,7 +487,7 @@ Ext.define('Genesis.controller.client.Prizes',
       if (!Ext.isDefined(info['eligible_prize_id']) || (info['eligible_prize_id'] == 0))
       {
          viewsPopLength = ((info['badge_points'] > 0) || (ainfo['visits'] == 1)) ? 1 : 0;
-         console.log("No Prize to Show. viewsPopLength =" + viewsPopLength);
+         console.debug("No Prize to Show. viewsPopLength =" + viewsPopLength);
       }
       //
       // LumpSum Prize Points
@@ -495,7 +495,7 @@ Ext.define('Genesis.controller.client.Prizes',
       else
       {
          viewsPopLength = ((info['badge_points'] > 0) || (ainfo['visits'] == 1)) ? 2 : 1;
-         console.log("WON LumpSum Prize Points. viewsPopLength =" + viewsPopLength);
+         console.debug("WON LumpSum Prize Points. viewsPopLength =" + viewsPopLength);
       }
 
       me.callBackStack['arguments'] = [metaData, viewsPopLength];

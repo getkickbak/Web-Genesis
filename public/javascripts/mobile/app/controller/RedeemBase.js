@@ -215,7 +215,7 @@ Ext.define('Genesis.controller.RedeemBase',
       tbbar.setTitle(me.getTitle());
       tbbar.removeCls('kbTitle');
 
-      console.log("Base onRedeemItemActivate - Updated RewardItem View!");
+      console.debug("Base onRedeemItemActivate - Updated RewardItem View!");
    },
    onRedeemItemDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
@@ -225,7 +225,7 @@ Ext.define('Genesis.controller.RedeemBase',
          me.getSDoneBtn()['hide']();
       }
       window.plugins.proximityID.stop();
-      console.log("onRedeemItemDeactivate - Done with RewardItem View!");
+      console.debug("onRedeemItemDeactivate - Done with RewardItem View!");
    },
 
    onDoneTap : function(b, e, eOpts, eInfo, overrideMode)
@@ -257,7 +257,7 @@ Ext.define('Genesis.controller.RedeemBase',
       var title = 'Redeem ' + me.getTitle();
 
       /*
-       console.log("\n" + //
+       console.debug("\n" + //
        "Encrypted Code :\n" + qrcode + "\n" + //
        "Encrypted Code Length: " + qrcode.length);
        */

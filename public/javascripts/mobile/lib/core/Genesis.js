@@ -481,6 +481,7 @@ Genesis.constants =
    sigOverlapRatio : -1,
    //Default Volume laying flat on a surface (tx)
    s_vol : -1,
+   r_vol : -1,
    //
    device : null,
    minDistance : 0.3 * 1000,

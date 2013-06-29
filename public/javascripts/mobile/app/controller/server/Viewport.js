@@ -310,7 +310,7 @@ Ext.define('Genesis.controller.server.Viewport',
             else if (!operation.wasSuccessful() && !metaData)
             {
                proxy.supressErrorsPopup = true;
-               console.log(me.setupInfoMissingMsg);
+               console.debug(me.setupInfoMissingMsg);
             }
             me.initNotification(me.setupInfoMissingMsg);
          }
@@ -329,8 +329,8 @@ Ext.define('Genesis.controller.server.Viewport',
          nfc.removeNdefListener(me._mimeTypeCallback, function()
          //nfc.removeMimeTypeListener(Genesis.constants.appMimeType, me._mimeTypeCallback, function()
          {
-            console.log("Removed NDEF Listener for NFC detection ...");
-            //console.log("Removed MimeType[" + Genesis.constants.appMimeType + "] for NFC detection ...");
+            console.debug("Removed NDEF Listener for NFC detection ...");
+            //console.debug("Removed MimeType[" + Genesis.constants.appMimeType + "] for NFC detection ...");
          });
          delete me._mimeTypeCallback;
       }
@@ -356,14 +356,14 @@ Ext.define('Genesis.controller.server.Viewport',
          nfc.addNdefListener(me._mimeTypeCallback, function()
          //nfc.addMimeTypeListener(Genesis.constants.appMimeType, me._mimeTypeCallback, function()
          {
-            console.log("Listening for tags with NDEF type");
-            //console.log("Listening for tags with mime type " + Genesis.constants.appMimeType);
+            console.debug("Listening for tags with NDEF type");
+            //console.debug("Listening for tags with mime type " + Genesis.constants.appMimeType);
          }, function()
          {
             console.warn('Failed to register NDEF type with NFC');
          });
-         //console.log("Added NDEF Tags for NFC detection ...");
-         //console.log("Added MimeType[" + Genesis.constants.appMimeType + "] for NFC detection ...");
+         //console.debug("Added NDEF Tags for NFC detection ...");
+         //console.debug("Added MimeType[" + Genesis.constants.appMimeType + "] for NFC detection ...");
       }
 
       return controller;

@@ -381,7 +381,6 @@ Ext.define('Genesis.controller.ViewportBase',
                   {
                      if (Ext.isDefined(enablePrizes))
                      {
-                        //console.log("enablePrizes=" + enablePrizes);
                         if (!enablePrizes)
                         {
                            if (item['id'] == 'redeemPrizes')
@@ -396,7 +395,6 @@ Ext.define('Genesis.controller.ViewportBase',
                      }
                      if (Ext.isDefined(enableChallenges))
                      {
-                        //console.log("enableChallenges=" + enableChallenges);
                         if (!enableChallenges)
                         {
                            if (item['id'] == 'challenges')
@@ -717,12 +715,11 @@ Ext.define('Genesis.controller.ViewportBase',
             {
                sound_file = new Media((Ext.os.is('Android') ? '/android_asset/www/' : '') + 'resources/audio/' + sound_file + ext, function()
                {
-                  //console.log("loaded " + me.sound_files[tag].name);
                   me.sound_files[tag].successCallback();
                }, function(err)
                {
                   me.sound_files[tag].successCallback();
-                  console.log("Audio Error: " + err);
+                  console.debug("Audio Error: " + err);
                });
                break;
             }

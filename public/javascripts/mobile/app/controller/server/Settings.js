@@ -219,10 +219,10 @@ Ext.define('Genesis.controller.server.Settings',
             /*
              nfc.addTagDiscoveredListener(me.writeTag, function()
              {
-             console.log("Listening for NDEF tags");
+             console.debug("Listening for NDEF tags");
              }, function()
              {
-             console.log("Failed to Listen for NDEF tags");
+             console.debug("Failed to Listen for NDEF tags");
              });
              */
 
@@ -260,10 +260,10 @@ Ext.define('Genesis.controller.server.Settings',
          /*
           nfc.removeTagDiscoveredListener(me.writeTag, function()
           {
-          console.log("Stopped Listening for NDEF tags");
+          console.debug("Stopped Listening for NDEF tags");
           }, function()
           {
-          console.log("Failed to stop Listen for NDEF tags");
+          console.debug("Failed to stop Listen for NDEF tags");
           });
           */
       };
@@ -274,7 +274,7 @@ Ext.define('Genesis.controller.server.Settings',
       }), //record = ndef.mimeMediaRecord(mimeType, nfc.stringToBytes(payload));
       record = ndef.textRecord(payload);
 
-      console.log("Writing [" + payload + "] to TAG ...");
+      console.debug("Writing [" + payload + "] to TAG ...");
       nfc.write([record], function()
       {
          Ext.device.Notification.show(

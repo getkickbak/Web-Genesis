@@ -174,7 +174,7 @@ Ext.define('Genesis.controller.client.Checkins',
             }
             else if (!operation.wasSuccessful() && !metaData)
             {
-               console.log(me.metaDataMissingMsg);
+               console.debug(me.metaDataMissingMsg);
             }
          }
       });
@@ -187,7 +187,7 @@ Ext.define('Genesis.controller.client.Checkins',
       var me = this;
       if (qrcode)
       {
-         console.log(me.checkinMsg);
+         console.debug(me.checkinMsg);
          Ext.Viewport.setMasked(
          {
             xtype : 'loadmask',
@@ -359,7 +359,7 @@ Ext.define('Genesis.controller.client.Checkins',
       }
       else
       {
-         console.log("CheckIn - venueIDs do not match!");
+         console.debug("CheckIn - venueIDs do not match!");
       }
 
       //

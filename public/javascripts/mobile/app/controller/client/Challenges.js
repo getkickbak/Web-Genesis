@@ -145,7 +145,7 @@ Ext.define('Genesis.controller.client.Challenges',
          callback : function(record, operation)
          {
             var metaData = Challenge.getProxy().getReader().metaData;
-            console.log('Challenge Completed(' + operation.wasSuccessful() + ')');
+            console.debug('Challenge Completed(' + operation.wasSuccessful() + ')');
             //
             // Stop broadcasting now ...
             //
@@ -540,7 +540,7 @@ Ext.define('Genesis.controller.client.Challenges',
                   }
                }
             });
-            console.log("Broadcast underway ...");
+            console.debug("Broadcast underway ...");
             me.challengeItemFn(params, me.selectedItem.getId(), me.selectedItem.get('type').value, venueId, qrcode, position);
          }, function()
          {

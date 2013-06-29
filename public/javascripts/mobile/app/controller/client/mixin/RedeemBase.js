@@ -266,7 +266,7 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
                }
             }
          });
-         console.log("Broadcast underway ...");
+         console.debug("Broadcast underway ...");
          me.redeemItemFn(Ext.apply(params,
          {
             data : me.self.encryptFromParams(
@@ -370,7 +370,7 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
       var title = 'Redeem ' + me.getTitle();
 
       /*
-       console.log("\n" + //
+       console.debug("\n" + //
        "Encrypted Code :\n" + qrcode + "\n" + //
        "Encrypted Code Length: " + qrcode.length);
        */

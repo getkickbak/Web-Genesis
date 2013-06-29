@@ -106,10 +106,8 @@ function _appLaunch()
       var viewport = _application.getController('client' + '.Viewport');
       viewport.appName = appName;
 
-      //console.log("Launching App");
       Ext.create('Genesis.view.Viewport');
-      //this.redirectTo('');
-      console.log("Launched App");
+      console.debug("Launched App");
 
       if (Ext.os.is('Phone'))
       {
@@ -160,7 +158,7 @@ var appLaunchCallbackFn = function()
          {
             launched = 0x001;
          }
-         console.log("Ext App Launch")
+         console.debug("Ext App Launch")
          _appLaunch();
       },
       isIconPrecomposed : true,
@@ -193,14 +191,14 @@ var appLaunchCallbackFn = function()
 
 Ext.onReady(function()
 {
-   console.debug = console.debug || console.log;
+   console.debug = (debugMode) ? Ext.emptyFn : console.debug || console.log;
    console.warn = console.warn || console.debug;
 
    document.addEventListener("online", function()
    {
       if (Ext.device)
       {
-         console.log("Phone is Online" + ", " + //
+         console.debug("Phone is Online" + ", " + //
          "devicePixelRatio - " + window.devicePixelRatio + ", " + ']');
          //console.debug('Checking for Network Conncetivity for [' + location.origin + ']');
          if (!navigator.onLine)
@@ -219,7 +217,7 @@ Ext.onReady(function()
             _onGotoMain();
          }
       }
-      console.log("Phone is Offline");
+      console.debug("Phone is Offline");
    }, false);
 
    launched |= 0x110;

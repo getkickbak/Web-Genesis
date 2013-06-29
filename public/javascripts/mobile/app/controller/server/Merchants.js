@@ -138,7 +138,7 @@ Ext.define('Genesis.controller.server.Merchants',
             'tagID' : null
          }
       };
-      console.log("Retrieving Customer Account for ID[" + nfcResult.id + "] tagID[" + nfcResult.result['tagID'] + '], venueId[' + venueId + ']');
+      console.debug("Retrieving Customer Account for ID[" + nfcResult.id + "] tagID[" + nfcResult.result['tagID'] + '], venueId[' + venueId + ']');
 
       var params =
       {
@@ -206,7 +206,7 @@ Ext.define('Genesis.controller.server.Merchants',
       }, me);
       //if (!controller.isPausing)
       {
-         console.log("Reloading current Merchant Home Account Page ...");
+         console.debug("Reloading current Merchant Home Account Page ...");
 
          var page = me.getMainPage();
 
@@ -265,7 +265,7 @@ Ext.define('Genesis.controller.server.Merchants',
          bar.setTitle(vrecord.get('name'));
       }, 1, me);
 
-      console.log("TagID[" + me.tagID + "] Account Info [" + Ext.encode(me.account) + "]");
+      console.debug("TagID[" + me.tagID + "] Account Info [" + Ext.encode(me.account) + "]");
    },
    onMainDeactivate : function(oldActiveItem, c, activeItem, eOpts)
    {

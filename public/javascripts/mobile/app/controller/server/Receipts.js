@@ -699,7 +699,7 @@ Ext.define('Genesis.controller.server.Receipts',
       var me = this, displayMode = Genesis.db.getLocalDB["displayMode"];
 
       info = info || me._statusInfo;
-      console.log("Device is " + ((info.isPlugged) ? "Plugged" : "Unplugged") + ", Battery " + info.level + "%");
+      console.debug("Device is " + ((info.isPlugged) ? "Plugged" : "Unplugged") + ", Battery " + info.level + "%");
 
       var plugStatusChanged = me._statusInfo.isPlugged !== info.isPlugged;
 
@@ -847,7 +847,7 @@ Ext.define('Genesis.controller.server.Receipts',
             'ids' : ids
          });
 
-         console.log("Successfully DISCARDED " + receipts.length + " Receipt(s) sent to Server");
+         console.debug("Successfully DISCARDED " + receipts.length + " Receipt(s) sent to Server");
       }
 
       params['data'] = me.self.encryptFromParams(params['data']);
@@ -872,11 +872,11 @@ Ext.define('Genesis.controller.server.Receipts',
                   'ids' : ids
                });
 
-               console.log("Successfully Uploaded " + receipts.length + " Receipt(s) to Server");
+               console.debug("Successfully Uploaded " + receipts.length + " Receipt(s) to Server");
             }
             else
             {
-               console.log("Error Uploading Receipt information to Server");
+               console.debug("Error Uploading Receipt information to Server");
                proxy.supressErrorsPopup = true;
                proxy.quiet = false;
                //

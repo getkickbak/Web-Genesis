@@ -265,7 +265,7 @@ Ext.define('Genesis.controller.client.Merchants',
          }, me);
          //if (!controller.isPausing)
          {
-            console.log("Reloading current Merchant Home Account Page ...");
+            console.debug("Reloading current Merchant Home Account Page ...");
 
             var page = me.getMainPage();
 
@@ -280,7 +280,7 @@ Ext.define('Genesis.controller.client.Merchants',
       {
          var info = viewport.getCheckinInfo();
 
-         console.log("Going back to Checked-In Merchant Home Account Page ...");
+         console.debug("Going back to Checked-In Merchant Home Account Page ...");
          me.resetView();
          me.redirectTo('venue/' + info.venue.getId() + '/' + info.customer.getId());
       }
@@ -533,7 +533,7 @@ Ext.define('Genesis.controller.client.Merchants',
 
       if (venue.getId() != cvenue.getId())
       {
-         console.log("Update current Venue to be Checked-In Merchant Account ...");
+         console.debug("Update current Venue to be Checked-In Merchant Account ...");
 
          // Restore Merchant Info
          ccntlr.fireEvent('setupCheckinInfo', 'checkin', cvenue, ccustomer, cmetaData);

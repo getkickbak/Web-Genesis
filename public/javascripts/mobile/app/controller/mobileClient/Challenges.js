@@ -198,7 +198,7 @@ Ext.define('Genesis.controller.mobileClient.Challenges',
                Ext.Viewport.setMasked(null);
                if (metaData && metaData['photo_url'] && metaData['upload_token'])
                {
-                  console.log("Uploading to Facebook using upload_token[" + metaData['upload_token'] + "]...");
+                  console.debug("Uploading to Facebook using upload_token[" + metaData['upload_token'] + "]...");
 
                   me.redirectTo('photoUpload');
                }
@@ -868,7 +868,7 @@ Ext.define('Genesis.controller.mobileClient.Challenges',
             xtype : 'loadmask',
             message : me.cameraAccessMsg
          });
-         console.log("Accessing Camera Plugin(" + sourceType + ") ...");
+         console.debug("Accessing Camera Plugin(" + sourceType + ") ...");
 
          Ext.device.Camera.capture(
          {
@@ -898,7 +898,7 @@ Ext.define('Genesis.controller.mobileClient.Challenges',
       var me = this, fb = Genesis.fb, photoAction = me.getChallengePage().photoAction;
 
       photoAction.hide();
-      console.log("Checking for Facebook Plugin(" + sourceType + ") ...");
+      console.debug("Checking for Facebook Plugin(" + sourceType + ") ...");
       if (Genesis.fn.isNative())
       {
          me.fn = Ext.bind(me.onFacebookPhotoCallback, me, [sourceType], true);
@@ -990,7 +990,7 @@ Ext.define('Genesis.controller.mobileClient.Challenges',
              */
          }, function(response)
          {
-            console.log("FacebookConnect.requestWithGraphPath: Post ID - " + Ext.encode(response));
+            console.debug("FacebookConnect.requestWithGraphPath: Post ID - " + Ext.encode(response));
             me.fireEvent('fbphotouploadcomplete');
          }, function(response)
          {

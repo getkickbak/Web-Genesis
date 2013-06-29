@@ -252,7 +252,7 @@ Ext.define('Genesis.view.client.ChallengePage',
       {
          carousel.setActiveItem(0);
       }
-      console.log("ChallengePage Icons Updated.");
+      console.debug("ChallengePage Icons Updated.");
    },
    createView : function()
    {
@@ -269,7 +269,7 @@ Ext.define('Genesis.view.client.ChallengePage',
          {
             this.deselectItems();
 
-            console.log("ChallengePage Icons Refreshed.");
+            console.debug("ChallengePage Icons Refreshed.");
          }
          else
          {

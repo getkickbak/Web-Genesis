@@ -289,7 +289,7 @@ Ext.define('Genesis.controller.client.MainPage',
          var app = me.getApplication(), controller = app.getController('client.Checkins');
          var customer = Ext.StoreMgr.get('CustomerStore').getById(db['last_check_in'].customerId), metaData = db['last_check_in'].metaData;
 
-         console.log("Restoring Previous Venue Location ...");
+         console.debug("Restoring Previous Venue Location ...");
          controller.fireEvent('setupCheckinInfo', 'explore', venue, customer, metaData)
          controller.fireEvent('checkinMerchant', 'checkin', metaData, venue.getId(), customer, null, Ext.emptyFn);
       }
@@ -297,7 +297,7 @@ Ext.define('Genesis.controller.client.MainPage',
       // We've at somewhere
       else
       {
-         console.log("Reset Previous Location back to Home Page ...");
+         console.debug("Reset Previous Location back to Home Page ...");
          Genesis.db.removeLocalDBAttrib('last_check_in');
          me.redirectTo('checkin');
       }
@@ -404,10 +404,10 @@ Ext.define('Genesis.controller.client.MainPage',
       {
          me._loggingOut = false;
       }
-      console.log("Resetting Session information ...")
+      console.debug("Resetting Session information ...")
       if ((Genesis.db.getLocalDB()['currFbId'] > 0) && (Genesis.fn.isNative()))
       {
-         console.log("Logging out of Facebook ...")
+         console.debug("Logging out of Facebook ...")
          Genesis.fb.facebook_onLogout(null, true);
       }
       me.resetView();
@@ -441,7 +441,7 @@ Ext.define('Genesis.controller.client.MainPage',
       }
       else
       {
-         console.log("No Login info found from Facebook ...")
+         console.debug("No Login info found from Facebook ...")
       }
       //
       // Login as someone else?
@@ -463,7 +463,7 @@ Ext.define('Genesis.controller.client.MainPage',
       if ((op && op.wasSuccessful()) || (params && (params['type'] != 'timeout')))
       {
          Customer['setFbLoginUrl']();
-         console.log("setFbLoginUrl - Logging in ... params(" + Ext.encode(params) + ")");
+         console.debug("setFbLoginUrl - Logging in ... params(" + Ext.encode(params) + ")");
          me.updatedDeviceToken = (Genesis.constants.device) ? true : false;
          Ext.StoreMgr.get('CustomerStore').load(
          {
@@ -553,7 +553,7 @@ Ext.define('Genesis.controller.client.MainPage',
       var me = this, viewport = me.getViewPortCntlr(), proxy = Account.getProxy(), db = Genesis.db.getLocalDB();
 
       Account['setRefreshCsrfTokenUrl']();
-      console.log("setRefreshCsrfTokenUrl - Refreshing CSRF Token ...");
+      console.debug("setRefreshCsrfTokenUrl - Refreshing CSRF Token ...");
       Ext.Viewport.setMasked(
       {
          xtype : 'loadmask',
@@ -692,7 +692,7 @@ Ext.define('Genesis.controller.client.MainPage',
          });
       }
       Customer['setLoginUrl']();
-      console.log("setLoginUrl - Logging in ...");
+      console.debug("setLoginUrl - Logging in ...");
       Ext.Viewport.setMasked(
       {
          xtype : 'loadmask',
@@ -767,7 +767,7 @@ Ext.define('Genesis.controller.client.MainPage',
          });
       }
       Account['setPasswdResetUrl']();
-      console.log("setPasswdResetUrl - Resetting Password ...");
+      console.debug("setPasswdResetUrl - Resetting Password ...");
       Account.load(0,
       {
          params : params,
@@ -858,7 +858,7 @@ Ext.define('Genesis.controller.client.MainPage',
          });
       }
       Account['setPasswdChangeUrl']();
-      console.log("setPasswdChangeUrl - Changing Password ...");
+      console.debug("setPasswdChangeUrl - Changing Password ...");
       Account.load(0,
       {
          params : params,
@@ -895,7 +895,7 @@ Ext.define('Genesis.controller.client.MainPage',
          var field = validateErrors.first();
          var label = Ext.ComponentQuery.query('field[name='+field.getField()+']')[0].getLabel();
          var message = this.passwdChangeFailMsg(label + ' ' + field.getMessage());
-         console.log(message);
+         console.debug(message);
          Ext.device.Notification.show(
          {
             title : 'Password Change',

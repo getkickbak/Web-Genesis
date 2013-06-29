@@ -75,6 +75,8 @@ else
       {
          var me = this;
          me.bw = (me.hiFreq - me.loFreq) / me.NUM_SIGNALS;
+         Genesis.constants.s_vol = s_vol_ratio * 100;
+         Genesis.constants.r_vol = r_vol_ratio * 100;
          console.debug("Initialized Proximity API");
       },
       preLoadSend : function(win, fail)
@@ -147,6 +149,7 @@ else
                osc.connect(me.gainNode);
             }
 
+            console.debug("Gain : " + s_vol);
             win();
          }
          else
@@ -184,6 +187,7 @@ else
                      this.play();
                   }, false);
                }
+               console.debug("Gain : " + s_vol);
                win();
             }, 0.25 * 1000, this);
          }
@@ -203,7 +207,6 @@ else
          {
             for (var i = 0; i < me.freqs.length; i++)
             {
-
                me.oscillators[i].noteOn && me.oscillators[i].noteOn(0);
             }
             win(
@@ -243,6 +246,8 @@ else
          }
          else if (me.context)
          {
+            // Set the volume.
+            me.gainNode.gain.value = Math.max(0, vol / 100);
          }
       }
    };

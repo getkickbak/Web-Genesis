@@ -130,7 +130,7 @@ Ext.define('Genesis.view.client.Badges',
             })
          });
       }
-      console.log("Badge Icons Refreshed.");
+      console.debug("Badge Icons Refreshed.");
    },
    showView : function()
    {
