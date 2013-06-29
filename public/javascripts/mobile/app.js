@@ -232,7 +232,7 @@ var resolution = function()
 {
    return (((window.screen.height >= 641) && ((window.devicePixelRatio == 1.0) || (window.devicePixelRatio >= 2.0))) ? 'mxhdpi' : 'lhdpi');
 };
-var imagePath = "resources/themes/images/v1/", images = [new Image(400, 400)], prefix;
+var imagePath = host + "resources/themes/images/v1/", images = [new Image(400, 400)], prefix;
 
 if (Ext.os.is('Tablet'))
 {
