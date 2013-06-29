@@ -123,7 +123,7 @@ else
          //
          // Use Web Audio
          //
-         if (Ext.isDefined(webkitAudioContext))
+         if ( typeof (webkitAudioContext) != 'undefined')
          {
             // Create the audio context
             if (!me.context)
