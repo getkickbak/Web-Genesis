@@ -21044,8 +21044,10 @@ Ext.define('Genesis.view.client.UploadPhotosPage',
    }
 });
 
-var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false, phoneGapAvailable = false, merchantMode = false, appName = 'GetKickBak', _application;
+var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false, phoneGapAvailable = false, merchantMode = false, appName = 'GetKickBak';
 var debugMode = true, serverHost;
+
+window._application = null;
 
 if (debugMode)
 {
