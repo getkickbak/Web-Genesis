@@ -90,6 +90,7 @@ else
             data : []
          };
 
+         var s_vol = Genesis.constants.s_vol / 100;
          var getFreqs = function()
          {
             do
@@ -134,7 +135,6 @@ else
             }
 
             getFreqs();
-            var s_vol = (Ext.os.is('Desktop')) ? (Genesis.constants.s_vol / 100) : 1.0;
             // Reduce the volume.
             me.gainNode.gain.value = s_vol;
 
@@ -169,7 +169,6 @@ else
                   }
                   val /= me.freqs.length;
 
-                  var s_vol = (Ext.os.is('Desktop')) ? (Genesis.constants.s_vol / 100) : 1.0;
                   config['data'][i] = Math.round(s_vol * ((me.SHORT_MAX + 1) + (val * me.SHORT_MAX)));
                }
                me.audio = new Audio(new RIFFWAVE(config).dataURI);
