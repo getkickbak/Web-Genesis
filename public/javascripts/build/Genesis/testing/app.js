@@ -10574,7 +10574,7 @@ Ext.define('Genesis.controller.ViewportBase',
                //
                // Trigger Facebook Login reminder
                //
-               if ((db['enableFB'] && (db['currFbId'] > 0)) || db['disableFBReminderMsg'] || !Genesis.fn.isNative())
+               if ((db['enableFB'] && (db['currFbId'] > 0)) || db['disableFBReminderMsg'])
                {
                   me.redirectTo('checkin');
                }
