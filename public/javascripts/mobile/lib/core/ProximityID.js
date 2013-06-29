@@ -67,7 +67,7 @@ else
       NUM_SIGNALS : 3,
       SHORT_MAX : parseInt(0xFFFF / 2),
       sampleRate : 44100,
-      duration : 5 * 44100,
+      duration : 1 * 44100,
       bw : 0,
       audio : null,
       freqs : null,
