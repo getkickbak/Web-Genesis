@@ -13213,7 +13213,7 @@ Ext.define('Genesis.controller.client.MainPage',
    // --------------------------------------------------------------------------
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      if (Ext.os.is('Android'))
+      if (Ext.os.is('Android') && Genesis.fn.isNative())
       {
          navigator.splashscreen.hide();
       }
