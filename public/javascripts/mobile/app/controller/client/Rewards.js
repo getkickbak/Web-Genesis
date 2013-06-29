@@ -496,7 +496,10 @@ Ext.define('Genesis.controller.client.Rewards',
             'venue' : Genesis.constants.debugVenuePrivKey
          };
          privKey['r' + venueId] = privKey['p' + venueId] = db['csrf_code'];
-         me.getGeoLocation();
+         if (!viewport.getLastPosition())
+         {
+            me.getGeoLocation();
+         }
       }
       else
       {

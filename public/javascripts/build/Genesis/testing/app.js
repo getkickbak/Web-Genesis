@@ -8525,7 +8525,10 @@ Ext.define('Genesis.controller.client.Rewards',
             'venue' : Genesis.constants.debugVenuePrivKey
          };
          privKey['r' + venueId] = privKey['p' + venueId] = db['csrf_code'];
-         me.getGeoLocation();
+         if (!viewport.getLastPosition())
+         {
+            me.getGeoLocation();
+         }
       }
       else
       {
@@ -21267,16 +21270,19 @@ var resolution = function()
 {
    return (((window.screen.height >= 641) && ((window.devicePixelRatio == 1.0) || (window.devicePixelRatio >= 2.0))) ? 'mxhdpi' : 'lhdpi');
 };
+var imagePath = "resources/themes/images/v1/", images = [new Image(400, 400)], prefix;
 
 if (Ext.os.is('Tablet'))
 {
    if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
    {
+      prefix = imagePath + "ios";
       Genesis.fn.checkloadjscssfile(host + "resources/css/ipad.css?v=" + Genesis.constants.clientVersion, "css", Ext.emptyFn);
    }
    else
    //if (Ext.os.is('Android'))
    {
+      prefix = imagePath + "android/" + resolution();
       switch (resolution())
       {
          case 'lhdpi' :
@@ -21296,6 +21302,7 @@ else
 {
    if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
    {
+      prefix = imagePath + "ios";
       Genesis.fn.checkloadjscssfile(host + "resources/css/iphone.css?v=" + Genesis.constants.clientVersion, "css", Ext.emptyFn);
       if (Ext.os.is('iPhone5'))
       {
@@ -21305,6 +21312,7 @@ else
    else//
    //if (Ext.os.is('Android'))
    {
+      prefix = imagePath + "android/" + resolution();
       switch (resolution())
       {
          case 'lhdpi' :
@@ -21320,6 +21328,7 @@ else
       }
    }
 }
+images[0].src = prefix + "/prizewon/transmit.png";
 
 appLaunchCallbackFn();
 
