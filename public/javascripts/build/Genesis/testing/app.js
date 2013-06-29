@@ -2768,7 +2768,7 @@ Genesis.db =
    },
    openDatabase : function()
    {
-      return openDatabase('KickBak', '1.0', 'KickBakDB', 5 * 1024 * 1024);
+      return openDatabase('KickBak', '1.0', 'KickBakDB', 2 * 1024 * 1024);
    },
    //
    // Referral DB
