@@ -201,7 +201,7 @@ else
                   val /= me.freqs.length;
 
                   val = Math.round(s_vol * ((me.SHORT_MAX + 1) + (val * me.SHORT_MAX)));
-                  data[i] = (canPlayAudio) ? val : u16ToLow(val);
+                  data[i] = (canPlayAudio) ? val : u16ToHigh(val);
                }
 
                //
