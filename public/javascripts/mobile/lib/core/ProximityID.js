@@ -126,7 +126,7 @@ else
          //
          // Use Web Audio
          //
-         if ( typeof (webkitAudioContext) != 'undefined')
+         if (( typeof (webkitAudioContext) != 'undefined') && !debugMode)
          {
             // Create the audio context
             if (!me.context)
@@ -155,29 +155,29 @@ else
          else
          {
             //
+            // Browser support WAV files
+            //
+            var hdrLen, data, canPlayAudio = (new Audio()).canPlayType('audio/wav; codecs=1') && !debugMode;
+            if (canPlayAudio)
+            {
+               hdrLen = 0;
+               data = config['data'];
+            }
+            //
+            // Convert to OGG first
+            //
+            else
+            {
+               hdrLen = 44 / 2;
+               data = config['data'] = new Int16Array(hdrLen + me.duration);
+            }
+
+            //
             // To give loading mask a chance to render
             //
             Ext.defer(function()
             {
                getFreqs();
-
-               //
-               // Browser support WAV files
-               //
-               var hdrLen, data, canPlayAudio = (new Audio()).canPlayType('audio/wav; codecs=1');
-               if (canPlayAudio)
-               {
-                  hdrLen = 0;
-                  data = config['data'];
-               }
-               //
-               // Convert to OGG first
-               //
-               else
-               {
-                  hdrLen = 44 / 2;
-                  data = config['data'] = new Int16Array(hdrLen + me.duration);
-               }
 
                for ( i = hdrLen; i < me.duration; i++)
                {
@@ -205,15 +205,7 @@ else
                //
                else
                {
-                  var u16ToLow = function(i)
-                  {
-                     return (i & 0xFFFF);
-                  };
-                  var u16ToHigh = function(i)
-                  {
-                     return ((i >> 16) & 0xFFFF);
-                  };
-                  var hdr = (new RIFFWAVE()).Make(data).header;
+                  var hdr = (new RIFFWAVE()).header;
                   // OFFS SIZE NOTES
                   //      chunkId : [0x52, 0x49, 0x46, 0x46], // 0    4    "RIFF" = 0x52494646
                   //      chunkSize : 0, // 4    4    36+SubChunk2Size = 4+(8+SubChunk1Size)+(8+SubChunk2Size)
@@ -262,6 +254,7 @@ else
                   var spxdata = codec.encode(data, true);
                   //Speex.util.play(codec.decode(spxdata));
                   codec.close();
+                  
                   me.audio = new Audio("data:audio/ogg;base64," + base64.encode(spxdata));
                }
 

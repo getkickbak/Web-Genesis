@@ -140,6 +140,7 @@ var RIFFWAVE = function(config)
    };
 
    this.Make();
-   this.MakeData(config['data']);
+   if (config['data'] instanceof Array)
+      this.MakeData(config['data']);
 };
 // end RIFFWAVE
