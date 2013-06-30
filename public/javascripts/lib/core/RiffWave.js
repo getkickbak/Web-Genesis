@@ -122,19 +122,20 @@ var RIFFWAVE = function(config)
    }
 
 
-   this.Make = function()
+   this.Make = function(data)
    {
-      this.header.blockAlign = (this.header.numChannels * this.header.bitsPerSample) >> 3;
-      this.header.byteRate = this.header.blockAlign * this.header.sampleRate;
-      this.header.subChunk2Size = this.data.length * (this.header.bitsPerSample >> 3);
-      this.header.chunkSize = 36 + this.header.subChunk2Size;
-
+      if ((config['data'] instanceof Array) || (( typeof (Int16Array) != 'undefined') && (config['data'] instanceof Int16Array)))
+      {
+         this.data = data;
+         this.header.blockAlign = (this.header.numChannels * this.header.bitsPerSample) >> 3;
+         this.header.byteRate = this.header.blockAlign * this.header.sampleRate;
+         this.header.subChunk2Size = this.data.length * (this.header.bitsPerSample >> 3);
+         this.header.chunkSize = 36 + this.header.subChunk2Size;
+      }
       console.debug("RIFFWAVE - " + Ext.encode(this.header));
    };
    this.MakeData = function(data)
    {
-      if (( data instanceof Array) || (( typeof (Int16Array) != 'undefined') && ( data instanceof Int16Array)))
-         this.data = data;
       this.wav = this.header.chunkId.concat(u32ToArray(this.header.chunkSize), this.header.format, this.header.subChunk1Id, u32ToArray(this.header.subChunk1Size), u16ToArray(this.header.audioFormat), u16ToArray(this.header.numChannels), u32ToArray(this.header.sampleRate), u32ToArray(this.header.byteRate), u16ToArray(this.header.blockAlign), u16ToArray(this.header.bitsPerSample), this.header.subChunk2Id, u32ToArray(this.header.subChunk2Size), (this.header.bitsPerSample == 16) ? split16bitArray(this.data) : this.data);
       this.dataURI = 'data:audio/wav;base64,' + FastBase64.Encode(this.wav);
    };
