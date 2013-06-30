@@ -178,8 +178,8 @@ else
             {
                hdrLen = 44 / 2;
                config['headerOnly'] = true;
-               hdr = (new RIFFWAVE(config)).header;
                data = config['data'] = new Int16Array(hdrLen + me.duration);
+               hdr = (new RIFFWAVE(config)).header;
             }
 
             //
