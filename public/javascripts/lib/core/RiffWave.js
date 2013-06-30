@@ -139,7 +139,7 @@ var RIFFWAVE = function(config)
       this.dataURI = 'data:audio/wav;base64,' + FastBase64.Encode(this.wav);
    };
 
-   if (config['data'] instanceof Array)
+   if ((config['data'] instanceof Array) || (( typeof (Int16Array) != 'undefined') && (config['data'] instanceof Int16Array)))
    {
       this.Make(config['data']);
       if (!config['headerOnly'])
