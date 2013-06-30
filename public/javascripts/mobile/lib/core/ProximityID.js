@@ -121,13 +121,13 @@ else
                }
             } while (stay);
          };
-         var u16ToLow = function(i)
-         {
-            return ((i >> 24) & 0xFF) + (((i >> 16) & 0xFF) << 8);
-         };
          var u16ToHigh = function(i)
          {
-            return ((i >> 8) & 0xFF) + ((i & 0xFF) << 8);
+            return ((((i >> 16) & 0xFF) << 8) + ((i >> 24) & 0xFF));
+         };
+         var u16ToLow = function(i)
+         {
+            return ((i & 0xFF) << 8) + ((i >> 8) & 0xFF);
          };
 
          me.freqs = [];
@@ -201,7 +201,7 @@ else
                   val /= me.freqs.length;
 
                   val = Math.round(s_vol * ((me.SHORT_MAX + 1) + (val * me.SHORT_MAX)));
-                  data[i] = (canPlayAudio) ? val : u16ToHigh(val);
+                  data[i] = (canPlayAudio) ? val : u16ToLow(val);
                }
 
                //
@@ -240,14 +240,14 @@ else
                   data[7] = u16ToLow(hdr.subChunk1Id);
                   data[8] = u16ToHigh(hdr.subChunk1Size);
                   data[9] = u16ToLow(hdr.subChunk1Size);
-                  data[10] = u16ToHigh(hdr.audioFormat);
-                  data[11] = u16ToHigh(hdr.numChannels);
+                  data[10] = u16ToLow(hdr.audioFormat);
+                  data[11] = u16ToLow(hdr.numChannels);
                   data[12] = u16ToHigh(hdr.sampleRate);
                   data[13] = u16ToLow(hdr.sampleRate);
                   data[14] = u16ToHigh(hdr.byteRate);
                   data[15] = u16ToLow(hdr.byteRate);
-                  data[16] = u16ToHigh(hdr.blockAlign);
-                  data[17] = u16ToHigh(hdr.bitsPerSample);
+                  data[16] = u16ToLow(hdr.blockAlign);
+                  data[17] = u16ToLow(hdr.bitsPerSample);
                   data[18] = u16ToHigh(hdr.subChunk2Id);
                   data[19] = u16ToLow(hdr.subChunk2Id);
                   data[20] = u16ToHigh(hdr.subChunk2Size);
