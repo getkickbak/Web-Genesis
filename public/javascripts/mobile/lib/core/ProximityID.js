@@ -123,11 +123,11 @@ else
          };
          var u16ToLow = function(i)
          {
-            return ((i & 0xFF) << 8) + ((i >> 8) & 0xFF);
+            return ((i >> 16) & 0xFFFF);
          };
          var u16ToHigh = function(i)
          {
-            return u16ToLow(i >> 16);
+            return (i & 0xFFFF);
          };
 
          me.freqs = [];
@@ -246,8 +246,8 @@ else
                   data[13] = u16ToLow(hdr.sampleRate);
                   data[14] = u16ToHigh(hdr.byteRate);
                   data[15] = u16ToLow(hdr.byteRate);
-                  data[16] = u16ToLow(hdr.blockAlign);
-                  data[17] = u16ToLow(hdr.bitsPerSample);
+                  data[16] = hdr.blockAlign;
+                  data[17] = hdr.bitsPerSample;
                   data[18] = 0x6164;
                   data[19] = 0x6174;
                   data[20] = u16ToHigh(hdr.subChunk2Size);
