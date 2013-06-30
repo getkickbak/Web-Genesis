@@ -121,13 +121,13 @@ else
                }
             } while (stay);
          };
-         var u16ToHigh = function(i)
-         {
-            return ((((i >> 16) & 0xFF) << 8) + ((i >> 24) & 0xFF));
-         };
          var u16ToLow = function(i)
          {
             return ((i & 0xFF) << 8) + ((i >> 8) & 0xFF);
+         };
+         var u16ToHigh = function(i)
+         {
+            return u16ToLow(i >> 16);
          };
 
          me.freqs = [];
@@ -230,14 +230,14 @@ else
                   //      bitsPerSample : 8, // 34   2    8 bits = 8, 16 bits = 16
                   //      subChunk2Id : [0x64, 0x61, 0x74, 0x61], // 36   4    "data" = 0x64617461
                   //      subChunk2Size : 0 // 40   4    data size = NumSamples*NumChannels*BitsPerSample/8
-                  data[0] = u16ToHigh(hdr.chunkId);
-                  data[1] = u16ToLow(hdr.chunkId);
+                  data[0] = 0x4952;
+                  data[1] = 0x4646;
                   data[2] = u16ToHigh(hdr.chunkSize);
                   data[3] = u16ToLow(hdr.chunkSize);
-                  data[4] = u16ToHigh(hdr.format);
-                  data[5] = u16ToLow(hdr.format);
-                  data[6] = u16ToHigh(hdr.subChunk1Id);
-                  data[7] = u16ToLow(hdr.subChunk1Id);
+                  data[4] = 0x4157;
+                  data[5] = 0x4556;
+                  data[6] = 0x6d66;
+                  data[7] = 0x2074;
                   data[8] = u16ToHigh(hdr.subChunk1Size);
                   data[9] = u16ToLow(hdr.subChunk1Size);
                   data[10] = u16ToLow(hdr.audioFormat);
@@ -248,8 +248,8 @@ else
                   data[15] = u16ToLow(hdr.byteRate);
                   data[16] = u16ToLow(hdr.blockAlign);
                   data[17] = u16ToLow(hdr.bitsPerSample);
-                  data[18] = u16ToHigh(hdr.subChunk2Id);
-                  data[19] = u16ToLow(hdr.subChunk2Id);
+                  data[18] = 0x6164;
+                  data[19] = 0x6174;
                   data[20] = u16ToHigh(hdr.subChunk2Size);
                   data[21] = u16ToLow(hdr.subChunk2Size);
 
