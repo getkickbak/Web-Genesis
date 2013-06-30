@@ -259,11 +259,12 @@ else
                      bits_size : 15
                   })
 
-                  var spxdata = codec.encode(data, true);
+                  data = "data:audio/ogg;base64," + base64.encode(codec.encode(data, true));
                   //Speex.util.play(codec.decode(spxdata));
                   codec.close();
 
-                  me.audio = new Audio("data:audio/ogg;base64," + base64.encode(spxdata));
+                  console.debug("OGG Encode Data :" + data);
+                  me.audio = new Audio(data);
                }
 
                if ( typeof me.audio.loop == 'boolean')
