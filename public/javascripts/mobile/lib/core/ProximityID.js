@@ -165,7 +165,7 @@ else
             //
             // Browser support WAV files
             //
-            var hdrLen, data, canPlayAudio = (new Audio()).canPlayType('audio/wav; codecs=1') && !debugMode;
+            var hdr, hdrLen, data, canPlayAudio = (new Audio()).canPlayType('audio/wav; codecs=1') && !debugMode;
             if (canPlayAudio)
             {
                hdrLen = 0;
@@ -177,6 +177,7 @@ else
             else
             {
                hdrLen = 44 / 2;
+               hdr = (new RIFFWAVE(config)).header;
                data = config['data'] = new Int16Array(hdrLen + me.duration);
             }
 
@@ -213,7 +214,6 @@ else
                //
                else
                {
-                  var hdr = (new RIFFWAVE()).header;
                   // OFFS SIZE NOTES
                   //      chunkId : [0x52, 0x49, 0x46, 0x46], // 0    4    "RIFF" = 0x52494646
                   //      chunkSize : 0, // 4    4    36+SubChunk2Size = 4+(8+SubChunk1Size)+(8+SubChunk2Size)
