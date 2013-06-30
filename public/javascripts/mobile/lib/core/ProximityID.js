@@ -121,6 +121,14 @@ else
                }
             } while (stay);
          };
+         var u16ToLow = function(i)
+         {
+            return (i & 0xFFFF);
+         };
+         var u16ToHigh = function(i)
+         {
+            return ((i >> 16) & 0xFFFF);
+         };
 
          me.freqs = [];
          //
@@ -254,7 +262,7 @@ else
                   var spxdata = codec.encode(data, true);
                   //Speex.util.play(codec.decode(spxdata));
                   codec.close();
-                  
+
                   me.audio = new Audio("data:audio/ogg;base64," + base64.encode(spxdata));
                }
 
