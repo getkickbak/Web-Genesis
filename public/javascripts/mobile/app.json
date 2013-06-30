@@ -48,6 +48,10 @@
          "remote" : true,
          "update": "full"
       }, {
+         "path": "http://files.getkickbak.com/mobileWeb/build/KickBak/production/lib/speex.min.js",
+         "remote" : true,
+         "update": "full"
+      }, {
          "path": "../touch/sencha-touch.js",
          "x-bootstrap": true
       }, {
