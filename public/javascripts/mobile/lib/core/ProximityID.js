@@ -123,11 +123,11 @@ else
          };
          var u16ToLow = function(i)
          {
-            return (i & 0xFFFF);
+            return ((i >> 24) & 0xFF) + (((i >> 16) & 0xFF) << 8);
          };
          var u16ToHigh = function(i)
          {
-            return ((i >> 16) & 0xFFFF);
+            return ((i >> 8) & 0xFF) + ((i & 0xFF) << 8);
          };
 
          me.freqs = [];
