@@ -240,8 +240,8 @@ else
                   data[7] = 0x2074;
                   data[8] = u16ToHigh(hdr.subChunk1Size);
                   data[9] = u16ToLow(hdr.subChunk1Size);
-                  data[10] = u16ToLow(hdr.audioFormat);
-                  data[11] = u16ToLow(hdr.numChannels);
+                  data[10] = hdr.audioFormat;
+                  data[11] = hdr.numChannels;
                   data[12] = u16ToHigh(hdr.sampleRate);
                   data[13] = u16ToLow(hdr.sampleRate);
                   data[14] = u16ToHigh(hdr.byteRate);
