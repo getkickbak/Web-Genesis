@@ -187,7 +187,7 @@ else
             {
                getFreqs();
 
-               for ( i = hdrLen; i < me.duration; i++)
+               for ( i = hdrLen; i < (me.duration + hdrLen); i++)
                {
                   var val = 0.0;
                   // convert to 16 bit pcm sound array
