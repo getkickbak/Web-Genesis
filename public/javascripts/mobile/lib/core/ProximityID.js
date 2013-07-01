@@ -273,7 +273,7 @@ else
                         quality : 2,
                         complexity : 2,
                         bits_size : 15
-                     })
+                     });
                   }
                   console.debug("OGG Binary Data : \n" + //
                   "data[0] = " + data[0] + "\n" + //
