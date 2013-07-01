@@ -300,8 +300,8 @@ else
                   "data[21] = " + data[21] + "\n" + //
                   "");
 
-                  //data = "data:audio/ogg;base64," + base64.encode(String.fromCharCode.apply(null, codec.encode(data, true)));
-                  me.samplesDec = me.codec.decode(codec.encode(data, true));
+                  //data = "data:audio/ogg;base64," + base64.encode(String.fromCharCode.apply(null, me.codec.encode(data, true)));
+                  me.samplesDec = me.codec.decode(me.codec.encode(data, true));
                }
 
                console.debug("Gain : " + s_vol);
@@ -312,20 +312,21 @@ else
       send : function(win, fail)
       {
          var me = this;
-         if (me.audio)
-         {
-            me.audio.play();
-            win(
-            {
-               freqs : me.freqs
-            });
-         }
-         else if (me.oscillators)
+
+         if (me.oscillators)
          {
             for (var i = 0; i < me.freqs.length; i++)
             {
                me.oscillators[i].noteOn && me.oscillators[i].noteOn(0);
             }
+            win(
+            {
+               freqs : me.freqs
+            });
+         }
+         else if (me.audio)
+         {
+            me.audio.play();
             win(
             {
                freqs : me.freqs
@@ -347,19 +348,19 @@ else
       stop : function()
       {
          var me = this;
-         if (me.audio)
-         {
-            me.audio.pause();
-            me.audio.currentTime = 0;
-            delete me.audio;
-         }
-         else if (me.oscillators)
+         if (me.oscillators)
          {
             for (var i = 0; i < me.freqs.length; i++)
             {
                me.oscillators[i].disconnect();
             }
             delete me.oscillators;
+         }
+         else if (me.audio)
+         {
+            me.audio.pause();
+            me.audio.currentTime = 0;
+            delete me.audio;
          }
          else if (me.codecTask)
          {
@@ -371,15 +372,16 @@ else
       setVolume : function(vol)
       {
          var me = this;
-         if (me.audio)
-         {
-            me.audio.volume = vol / 100;
-         }
-         else if (me.context)
+         if (me.context)
          {
             // Set the volume.
             me.gainNode.gain.value = Math.max(0, vol / 100);
          }
+         else if (me.audio)
+         {
+            me.audio.volume = vol / 100;
+         }
+
       }
    };
 }
