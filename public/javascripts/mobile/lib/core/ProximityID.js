@@ -67,7 +67,7 @@ else
       NUM_SIGNALS : 3,
       SHORT_MAX : parseInt(0xFFFF / 2),
       sampleRate : 44100,
-      duration : 1 * 44100,
+      duration : 5 * 44100,
       bw : 0,
       audio : null,
       freqs : null,
@@ -210,6 +210,18 @@ else
                if (canPlayAudio)
                {
                   me.audio = new Audio(new RIFFWAVE(config).dataURI);
+                  if ( typeof me.audio.loop == 'boolean')
+                  {
+                     me.audio.loop = true;
+                  }
+                  else
+                  {
+                     me.audio.addEventListener('ended', function()
+                     {
+                        this.currentTime = 0;
+                        this.play();
+                     }, false);
+                  }
                }
                //
                // Convert to OGG first
@@ -253,14 +265,16 @@ else
                   data[20] = u16ToHigh(hdr.subChunk2Size);
                   data[21] = u16ToLow(hdr.subChunk2Size);
 
-                  var codec = new Speex(
+                  if (!me.codec)
                   {
-                     benchmark : false,
-                     quality : 2,
-                     complexity : 2,
-                     bits_size : 15
-                  })
-
+                     me.codec = new Speex(
+                     {
+                        benchmark : false,
+                        quality : 2,
+                        complexity : 2,
+                        bits_size : 15
+                     })
+                  }
                   console.debug("OGG Binary Data : \n" + //
                   "data[0] = " + data[0] + "\n" + //
                   "data[1] = " + data[1] + "\n" + //
@@ -286,26 +300,10 @@ else
                   "data[21] = " + data[21] + "\n" + //
                   "");
 
-                  data = "data:audio/ogg;base64," + base64.encode(String.fromCharCode.apply(null, codec.encode(data, true)));
-                  //Speex.util.play(codec.decode(spxdata));
-                  codec.close();
-
-                  console.debug("OGG Encode Data :" + data);
-                  me.audio = new Audio(data);
+                  //data = "data:audio/ogg;base64," + base64.encode(String.fromCharCode.apply(null, codec.encode(data, true)));
+                  me.samplesDec = me.codec.decode(codec.encode(data, true));
                }
 
-               if ( typeof me.audio.loop == 'boolean')
-               {
-                  me.audio.loop = true;
-               }
-               else
-               {
-                  me.audio.addEventListener('ended', function()
-                  {
-                     this.currentTime = 0;
-                     this.play();
-                  }, false);
-               }
                console.debug("Gain : " + s_vol);
                win();
             }, 0.25 * 1000, this);
@@ -333,6 +331,14 @@ else
                freqs : me.freqs
             });
          }
+         else if (me.codec)
+         {
+            me.codecTask = setInterval(function()
+            {
+               Speex.util.play(me.samplesDec);
+            }, 5 * 1000);
+            Speex.util.play(me.samplesDec);
+         }
          else
          {
             fail();
@@ -354,6 +360,12 @@ else
                me.oscillators[i].disconnect();
             }
             delete me.oscillators;
+         }
+         else if (me.codecTask)
+         {
+            clearInterval(me.codecTask);
+            delete me.codecTask;
+            //me.codec.close();
          }
       },
       setVolume : function(vol)
