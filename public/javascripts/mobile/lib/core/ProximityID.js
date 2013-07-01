@@ -286,7 +286,7 @@ else
                   "data[21] = " + data[21] + "\n" + //
                   "");
 
-                  data = "data:audio/ogg;base64," + base64.encode(codec.encode(data, true));
+                  data = "data:audio/ogg;base64," + base64.encode(String.fromCharCode.apply(null, codec.encode(data, true)));
                   //Speex.util.play(codec.decode(spxdata));
                   codec.close();
 
