@@ -88,12 +88,12 @@ else
                   {
                      var data = me.sampleConfig['data'];
                      delete me.sampleConfig['data'];
+                     console.debug("MP3 Init");
                      _codec.postMessage(
                      {
                         cmd : 'encode',
                         buf : data
                      });
-                     console.debug("MP3 Init");
                      break;
                   }
                   case 'data' :
