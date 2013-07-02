@@ -258,6 +258,14 @@ else
                //
                else
                {
+                  var u16ToLow = function(i)
+                  {
+                     return ((i >> 16) & 0xFFFF);
+                  };
+                  var u16ToHigh = function(i)
+                  {
+                     return (i & 0xFFFF);
+                  };
                   // OFFS SIZE NOTES
                   //      chunkId : [0x52, 0x49, 0x46, 0x46], // 0    4    "RIFF" = 0x52494646
                   //      chunkSize : 0, // 4    4    36+SubChunk2Size = 4+(8+SubChunk1Size)+(8+SubChunk2Size)
