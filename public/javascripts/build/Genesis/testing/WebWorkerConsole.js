@@ -23,7 +23,7 @@
  * Copyright 2011 by David Flanagan
  * http://creativecommons.org/licenses/by-nc-sa/3.0/
  */
-if (this.console && this.console.log)
+if (self.console && self.console.log)
 {
    if ( typeof (MessageChannel) != 'undefined')
    {
@@ -32,7 +32,7 @@ if (this.console && this.console.log)
       * Worker() constructor so that workers get console.log(), too.
       */
       // Remember the original Worker() constructor
-      this._Worker = Worker;
+      self._Worker = Worker;
 
       // Make this.Worker writable, so we can replace it.
       Object.defineProperty(this, "Worker",
@@ -45,7 +45,7 @@ if (this.console && this.console.log)
       {
          // Create a real Worker object that first loads this file to define
          // console.log() and then loads the requested URL
-         var w = new _Worker("WebWorkerConsole.js");
+         var w = new self._Worker("WebWorkerConsole.js");
 
          // Create a side channel for the worker to send log messages on
          var channel = new MessageChannel();
@@ -83,6 +83,9 @@ else
    {
       if (e.data.split("#")[0] === "console")
       {
+         // Now run the script that was originally passed to Worker()
+         var url = e.data.split("#")[1];
+         
          // Define the console object
          self.console =
          {
@@ -105,14 +108,13 @@ else
             }
          };
 
+         console.debug("URL(" + url + ")");
+         
          // Get rid of this event handler
          onmessage = null;
 
-         // Now run the script that was originally passed to Worker()
-         var url = e.data.split("#")[1];
-         console.debug("URL(" + url + ")");
          // Get the real URL to run
-         importScripts(url);
+         self.importScripts(url);
          // Load and run it now
       }
    }
