@@ -392,6 +392,7 @@ else
             me.audio.pause();
             me.audio.currentTime = 0;
             delete me.audio;
+            delete me.sampleConfig;
          }
       },
       setVolume : function(vol)
