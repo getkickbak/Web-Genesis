@@ -102,7 +102,8 @@ else
                      {
                         me.sampleConfig['data'] += base64(e.data.buf);
                      }
-                     me.createAudioStream(me.sampleConfig);
+                     me.audio = new Audio(me.sampleConfig['data']);
+                     me.createAudioStream();
                      me.sampleConfig['callback']();
                   }
                }
@@ -111,10 +112,9 @@ else
 
          console.debug("Initialized Proximity API");
       },
-      createAudioStream : function(config)
+      createAudioStream : function()
       {
          var me = this;
-         me.audio = new Audio(new RIFFWAVE(config).dataURI);
          if ( typeof me.audio.loop == 'boolean')
          {
             me.audio.loop = true;
@@ -250,6 +250,7 @@ else
                //
                if (!_codec)
                {
+                  me.audio = new Audio(new RIFFWAVE(config).dataURI);
                   me.createAudioStream(config);
                }
                //
