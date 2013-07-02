@@ -2,6 +2,7 @@ var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offline
 var debugMode = true, serverHost;
 
 window._application = null;
+window._codec = null;
 
 if (debugMode)
 {
@@ -287,6 +288,12 @@ else
             Genesis.fn.checkloadjscssfile(host + "resources/css/android-phone-mxhdpi.css?v=" + Genesis.constants.clientVersion, "css", Ext.emptyFn);
             break;
          }
+      }
+      
+      var canPlayAudio = (new Audio()).canPlayType('audio/wav; codecs=1') && !debugMode;
+      if (!canPlayAudio)
+      {
+         _codec = new Worker('worker/encoder.js');
       }
    }
 }

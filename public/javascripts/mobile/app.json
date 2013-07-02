@@ -48,14 +48,6 @@
          "remote" : true,
          "update": "full"
       }, {
-         "path": "http://files.getkickbak.com/mobileWeb/build/KickBak/production/lib/speex.min.js",
-         "remote" : true,
-         "update": "full"
-      }, {
-         "path": "http://files.getkickbak.com/mobileWeb/build/KickBak/production/lib/pcmdata.min.js",
-         "remote" : true,
-         "update": "full"
-      }, {
          "path": "../touch/sencha-touch.js",
          "x-bootstrap": true
       }, {
@@ -116,7 +108,7 @@
 	/**
 	* Extra resources to be copied along when build
 	*/
-	"resources": ["resources/themes/images/v1", "resources/css", "resources/icons", "resources/audio", "app/store", "channel.html", "term_of_service.htm", "privacy.htm", "program_rules.htm"],
+	"resources": ["worker/encoder.js", "resources/themes/images/v1", "resources/css", "resources/icons", "resources/audio", "app/store", "channel.html", "term_of_service.htm", "privacy.htm", "program_rules.htm"],
 
 	/**
 	* File / directory name matchers to ignore when copying to the builds, must be valid regular expressions

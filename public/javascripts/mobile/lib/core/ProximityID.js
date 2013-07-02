@@ -77,7 +77,56 @@ else
          me.bw = (me.hiFreq - me.loFreq) / me.NUM_SIGNALS;
          Genesis.constants.s_vol = s_vol_ratio * 100;
          Genesis.constants.r_vol = r_vol_ratio * 100;
+
+         if (_codec)
+         {
+            _codec.onmessage = function(e)
+            {
+               switch (e.data.cmd)
+               {
+                  case 'data' :
+                  {
+                     if (!me.sampleConfig['data'])
+                     {
+                        me.sampleConfig['data'] += 'data:audio/mp3;base64,' + base64(e.data.buf);
+                     }
+                     else
+                     {
+                        me.sampleConfig['data'] += base64(e.data.buf);
+                     }
+                     break;
+                  }
+                  case  'end' :
+                  {
+                     if (e.data.buf)
+                     {
+                        me.sampleConfig['data'] += base64(e.data.buf);
+                     }
+                     me.createAudioStream(me.sampleConfig);
+                     me.sampleConfig['callback']();
+                  }
+               }
+            };
+         }
+
          console.debug("Initialized Proximity API");
+      },
+      createAudioStream : function(config)
+      {
+         var me = this;
+         me.audio = new Audio(new RIFFWAVE(config).dataURI);
+         if ( typeof me.audio.loop == 'boolean')
+         {
+            me.audio.loop = true;
+         }
+         else
+         {
+            me.audio.addEventListener('ended', function()
+            {
+               this.currentTime = 0;
+               this.play();
+            }, false);
+         }
       },
       preLoadSend : function(win, fail)
       {
@@ -121,14 +170,6 @@ else
                }
             } while (stay);
          };
-         var u16ToLow = function(i)
-         {
-            return ((i >> 16) & 0xFFFF);
-         };
-         var u16ToHigh = function(i)
-         {
-            return (i & 0xFFFF);
-         };
 
          me.freqs = [];
          //
@@ -165,14 +206,14 @@ else
             //
             // Browser support WAV files
             //
-            var hdr, hdrLen, data, canPlayAudio = (new Audio()).canPlayType('audio/wav; codecs=1') && !debugMode;
-            if (canPlayAudio)
+            var hdr, hdrLen, data;
+            if (!_codec)
             {
                hdrLen = 0;
                data = config['data'];
             }
             //
-            // Convert to OGG first
+            // Convert to MP3 first
             //
             else
             {
@@ -207,24 +248,12 @@ else
                //
                // Browser support WAV files
                //
-               if (canPlayAudio)
+               if (!_codec)
                {
-                  me.audio = new Audio(new RIFFWAVE(config).dataURI);
-                  if ( typeof me.audio.loop == 'boolean')
-                  {
-                     me.audio.loop = true;
-                  }
-                  else
-                  {
-                     me.audio.addEventListener('ended', function()
-                     {
-                        this.currentTime = 0;
-                        this.play();
-                     }, false);
-                  }
+                  me.createAudioStream(config);
                }
                //
-               // Convert to OGG first
+               // Convert to MP3 first
                //
                else
                {
@@ -265,17 +294,7 @@ else
                   data[20] = u16ToHigh(hdr.subChunk2Size);
                   data[21] = u16ToLow(hdr.subChunk2Size);
 
-                  if (!me.codec)
-                  {
-                     me.codec = new Speex(
-                     {
-                        benchmark : false,
-                        quality : 2,
-                        complexity : 2,
-                        bits_size : 15
-                     });
-                  }
-                  console.debug("OGG Binary Data : \n" + //
+                  console.debug("MP3 Binary Data : \n" + //
                   "data[0] = " + data[0] + "\n" + //
                   "data[1] = " + data[1] + "\n" + //
                   "data[2] = " + data[2] + "\n" + //
@@ -300,12 +319,31 @@ else
                   "data[21] = " + data[21] + "\n" + //
                   "");
 
-                  //data = "data:audio/ogg;base64," + base64.encode(String.fromCharCode.apply(null, me.codec.encode(data, true)));
-                  me.samplesDec = me.codec.decode(me.codec.encode(data, true));
+                  _codec.postMessage(
+                  {
+                     cmd : 'init',
+                     config :
+                     {
+                        samplerate : me.sampleRate,
+                        bitrate : 128,
+                        mode : 3, // MONO
+                        channels : 1
+                     }
+                  });
+                  delete config['data'];
+                  me.sampleConfig = config;
+                  me.sampleConfig['callback'] = win;
+                  _codec.postMessage(
+                  {
+                     cmd : 'encode',
+                     buf : data
+                  });
+                  _codec.postMessage(
+                  {
+                     cmd : 'finish'
+                  });
                }
-
                console.debug("Gain : " + s_vol);
-               win();
             }, 0.25 * 1000, this);
          }
       },
@@ -332,14 +370,6 @@ else
                freqs : me.freqs
             });
          }
-         else if (me.codec)
-         {
-            me.codecTask = setInterval(function()
-            {
-               Speex.util.play(me.samplesDec);
-            }, 5 * 1000);
-            Speex.util.play(me.samplesDec);
-         }
          else
          {
             fail();
@@ -361,12 +391,6 @@ else
             me.audio.pause();
             me.audio.currentTime = 0;
             delete me.audio;
-         }
-         else if (me.codecTask)
-         {
-            clearInterval(me.codecTask);
-            delete me.codecTask;
-            //me.codec.close();
          }
       },
       setVolume : function(vol)

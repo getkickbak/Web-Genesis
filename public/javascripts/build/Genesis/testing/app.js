@@ -2004,7 +2004,7 @@ Genesis.fn =
             {
                for (var i = 0; i < document.styleSheets.length; i++)
                {
-                  url = (document.styleSheet[i].href) ? document.styleSheet[i].href.replace(location.origin, '') : '';
+                  url = (document.styleSheets[i].href) ? document.styleSheets[i].href.replace(location.origin, '') : '';
                   console.debug("url = " + url);
                   //if (url.search(href) >= 0)
                   if (url == href)
@@ -2026,14 +2026,18 @@ Genesis.fn =
                {
                   this.cssOnReadyStateChange(href);
                   return;
-               }++t;
+               }
+               t++;
                Ext.defer(this.loadjscssfileCallBackFunc, 100, this, [b, t, href]);
                if ((t / 25 > 0) && (t % 25 == 0))
+               {
                   console.debug("IE Exception : Loading [" + href + "] index[" + b + "] try(" + t + ")");
+               }
             }
          }
          catch(e)
-         {++t;
+         {
+            t++;
             if ((t / 25 > 0) && (t % 25 == 0))
             {
                console.debug(printStackTrace(
@@ -21043,6 +21047,7 @@ var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offline
 var debugMode = true, serverHost;
 
 window._application = null;
+window._codec = null;
 
 if (debugMode)
 {
@@ -21320,6 +21325,12 @@ else
             Genesis.fn.checkloadjscssfile(host + "resources/css/android-phone-mxhdpi.css?v=" + Genesis.constants.clientVersion, "css", Ext.emptyFn);
             break;
          }
+      }
+      
+      var canPlayAudio = (new Audio()).canPlayType('audio/wav; codecs=1') && !debugMode;
+      if (!canPlayAudio)
+      {
+         _codec = new Worker('worker/encoder.js');
       }
    }
 }
