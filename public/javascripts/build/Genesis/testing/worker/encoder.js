@@ -1,10 +1,10 @@
 if ( typeof (importScripts) != 'undefined')
 {
-   importScripts('../lib/libmp3lame.min.js');
+   importScripts('../../lib/libmp3lame.min.js');
 }
 else
 {
-   Genesis.fn.checkloadjscssfile('../lib/libmp3lame.min.js', "js", Ext.emptyFn);
+   Genesis.fn.checkloadjscssfile('../../lib/libmp3lame.min.js', "js", Ext.emptyFn);
 }
 
 var mp3codec;
