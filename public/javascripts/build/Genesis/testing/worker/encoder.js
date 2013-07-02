@@ -22,6 +22,10 @@ var init = function(config, scope)
    Lame.set_out_samplerate(mp3codec, config.samplerate || 44100);
    Lame.set_bitrate(mp3codec, config.bitrate || 128);
    Lame.init_params(mp3codec);
+   scope.postMessage(
+   {
+      cmd : 'init'
+   });
 };
 var encode = function(buf, scope)
 {

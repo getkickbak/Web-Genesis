@@ -84,6 +84,18 @@ else
             {
                switch (e.data.cmd)
                {
+                  case 'init' :
+                  {
+                     var data = me.sampleConfig['data'];
+                     delete me.sampleConfig['data'];
+                     _codec.postMessage(
+                     {
+                        cmd : 'encode',
+                        buf : data
+                     });
+                     console.debug("MP3 Init");
+                     break;
+                  }
                   case 'data' :
                   {
                      if (!me.sampleConfig['data'])
@@ -94,9 +106,14 @@ else
                      {
                         me.sampleConfig['data'] += base64(e.data.buf);
                      }
+                     console.debug("MP3 Encode");
+                     _codec.postMessage(
+                     {
+                        cmd : 'finish'
+                     });
                      break;
                   }
-                  case  'end' :
+                  case 'end' :
                   {
                      if (e.data.buf)
                      {
@@ -104,7 +121,9 @@ else
                      }
                      me.audio = new Audio(me.sampleConfig['data']);
                      me.createAudioStream();
+                     console.debug("MP3 Complete");
                      me.sampleConfig['callback']();
+                     delete me.sampleConfig;
                   }
                }
             };
@@ -327,7 +346,8 @@ else
                   "data[20] = " + data[20] + "\n" + //
                   "data[21] = " + data[21] + "\n" + //
                   "");
-
+                  me.sampleConfig = config;
+                  me.sampleConfig['callback'] = win;
                   _codec.postMessage(
                   {
                      cmd : 'init',
@@ -338,18 +358,6 @@ else
                         mode : 3, // MONO
                         channels : 1
                      }
-                  });
-                  delete config['data'];
-                  me.sampleConfig = config;
-                  me.sampleConfig['callback'] = win;
-                  _codec.postMessage(
-                  {
-                     cmd : 'encode',
-                     buf : data
-                  });
-                  _codec.postMessage(
-                  {
-                     cmd : 'finish'
                   });
                }
                console.debug("Gain : " + s_vol);
@@ -400,7 +408,6 @@ else
             me.audio.pause();
             me.audio.currentTime = 0;
             delete me.audio;
-            delete me.sampleConfig;
          }
       },
       setVolume : function(vol)
