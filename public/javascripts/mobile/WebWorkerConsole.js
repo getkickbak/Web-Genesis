@@ -110,6 +110,7 @@ else
 
          // Now run the script that was originally passed to Worker()
          var url = e.data.split("#")[1];
+         console.debug("URL(" + url + ")");
          // Get the real URL to run
          importScripts(url);
          // Load and run it now
