@@ -289,12 +289,13 @@ else
             break;
          }
       }
-      
-      var canPlayAudio = (new Audio()).canPlayType('audio/wav; codecs=1') && !debugMode;
-      if (!canPlayAudio)
-      {
-         _codec = new Worker('worker/encoder.js');
-      }
+
+   }
+   
+   var canPlayAudio = (new Audio()).canPlayType('audio/wav; codecs=1') && !debugMode;
+   if (!canPlayAudio)
+   {
+      _codec = new Worker('worker/encoder.js');
    }
 }
 images[0].src = prefix + "/prizewon/transmit.png";
