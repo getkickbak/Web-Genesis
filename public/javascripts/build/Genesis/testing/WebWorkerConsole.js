@@ -45,13 +45,13 @@ if (this.console && this.console.log)
       {
          // Create a real Worker object that first loads this file to define
          // console.log() and then loads the requested URL
-         var w = new _Worker("WebWorkerConsole.js#" + url);
+         var w = new _Worker("WebWorkerConsole.js");
 
          // Create a side channel for the worker to send log messages on
          var channel = new MessageChannel();
 
          // Send one end of the channel to the worker
-         w.postMessage("console", [channel.port2]);
+         w.postMessage("console" + "#" + url, [channel.port2]);
 
          // And listen for log messages on the other end of the channel
          channel.port1.onmessage = function(e)
@@ -81,7 +81,7 @@ else
     */
    self.onmessage = function(e)
    {
-      if (e.data === "console")
+      if (e.data.split("#")[0] === "console")
       {
          // Define the console object
          self.console =
@@ -109,7 +109,7 @@ else
          onmessage = null;
 
          // Now run the script that was originally passed to Worker()
-         var url = location.hash.substring(1);
+         var url = e.data.split("#")[1];
          // Get the real URL to run
          importScripts(url);
          // Load and run it now
