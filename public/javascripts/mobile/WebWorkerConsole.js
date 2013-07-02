@@ -45,13 +45,13 @@ if (self.console && self.console.log)
       {
          // Create a real Worker object that first loads this file to define
          // console.log() and then loads the requested URL
-         var w = new self._Worker("WebWorkerConsole.js");
+         var w = new self._Worker("WebWorkerConsole.js#" + url);
 
          // Create a side channel for the worker to send log messages on
          var channel = new MessageChannel();
 
          // Send one end of the channel to the worker
-         w.postMessage("console" + "#" + url, [channel.port2]);
+         w.postMessage("console", [channel.port2]);
 
          // And listen for log messages on the other end of the channel
          channel.port1.onmessage = function(e)
@@ -70,23 +70,27 @@ if (self.console && self.console.log)
 }
 else
 {
-   self._importScripts = importScripts;
    /*
-    * If there wasn't a console.log() function defined, then we're in a
-    * Worker created with the wrapped Worker() constructor above, and
-    * we need to define the console.
-    *
-    * Wait until we get the event that delivers the MessagePort sent by the
-    * main thread. Once we get it, we define the console.log() function
-    * and load and run the original file that was passed to the constructor.
-    */
+   * If there wasn't a console.log() function defined, then we're in a
+   * Worker created with the wrapped Worker() constructor above, and
+   * we need to define the console.
+   *
+   * Wait until we get the event that delivers the MessagePort sent by the
+   * main thread. Once we get it, we define the console.log() function
+   * and load and run the original file that was passed to the constructor.
+   */
+
+   // Now run the script that was originally passed to Worker()
+   var url = location.hash.slice(1);
+   // Get the real URL to run
+   importScripts(url);
+   // Load and run it now
+
+   self._onmessage = self.onmessage;
    self.onmessage = function(e)
    {
-      if (e.data.split("#")[0] === "console")
+      if (e.data === "console")
       {
-         // Now run the script that was originally passed to Worker()
-         var url = e.data.split("#")[1];
-         
          // Define the console object
          self.console =
          {
@@ -110,13 +114,10 @@ else
          };
 
          console.debug("URL(" + url + ")");
-         
-         // Get rid of this event handler
-         onmessage = null;
 
-         // Get the real URL to run
-         self._importScripts(url);
-         // Load and run it now
+         // Get rid of this event handler
+         self.onmessage = self._onmessage;
+         delete self._onmessage;
       }
    }
 }
