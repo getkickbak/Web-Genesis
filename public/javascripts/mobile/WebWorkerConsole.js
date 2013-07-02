@@ -70,6 +70,7 @@ if (self.console && self.console.log)
 }
 else
 {
+   self._importScripts = importScripts;
    /*
     * If there wasn't a console.log() function defined, then we're in a
     * Worker created with the wrapped Worker() constructor above, and
@@ -114,7 +115,7 @@ else
          onmessage = null;
 
          // Get the real URL to run
-         self.importScripts(url);
+         self._importScripts(url);
          // Load and run it now
       }
    }
