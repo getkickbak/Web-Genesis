@@ -48,6 +48,9 @@
          "remote" : true,
          "update": "full"
       }, {
+         "path": "WebWorkerConsole.js",
+         "update": "delta"
+      }, {
          "path": "../touch/sencha-touch.js",
          "x-bootstrap": true
       }, {
