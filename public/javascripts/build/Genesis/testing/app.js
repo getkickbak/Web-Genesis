@@ -2065,12 +2065,7 @@ Genesis.fn =
    {
       var src = this.src;
       //Url.decode(this.src);
-      /*
-       if (!Genesis.toontiBaseURL().match(Genesis.baseURL()))
-       {
-       src = src.replace(Genesis.baseURL(), '');
-       }
-       */
+      src = src.replace(location.origin, '');
       if (!error)
       {
          var rs = this.readyState;
@@ -2090,11 +2085,10 @@ Genesis.fn =
          console.debug("Error Loading JS file[" + src + "]");
       }
 
-      var cbList = Genesis.fn.filesadded[src];
+      var i = 0, cbList = Genesis.fn.filesadded[src];
       if (cbList)
       {
          cbList[0] = true;
-         var i = 0;
          /*
           try
           {
