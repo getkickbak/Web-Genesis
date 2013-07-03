@@ -1885,7 +1885,9 @@ Genesis.fn =
    // **************************************************************************
    // Dynamic CSS/JS loading
    // **************************************************************************
-   filesadded : [], //list of files already added
+   filesadded :
+   {
+   }, //list of files already added
    checkloadjscssfile : function(filename, filetype, cb)
    {
       var decodeFilename = Url.decode(filename);
