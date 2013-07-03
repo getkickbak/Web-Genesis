@@ -18,11 +18,11 @@ var encoder_init = function(config, scope)
       };
    }
    encoder_mp3codec = Lame.init();
-   //Lame.set_mode(encoder_mp3codec, config.mode || Lame.JOINT_STEREO);
-   //Lame.set_num_channels(encoder_mp3codec, config.channels || 2);
-   //Lame.set_out_samplerate(encoder_mp3codec, config.samplerate || 44100);
-   //Lame.set_bitrate(encoder_mp3codec, config.bitrate || 128);
-   //Lame.init_params(encoder_mp3codec);
+   Lame.set_mode(encoder_mp3codec, config.mode || Lame.JOINT_STEREO);
+   Lame.set_num_channels(encoder_mp3codec, config.channels || 2);
+   Lame.set_out_samplerate(encoder_mp3codec, config.samplerate || 44100);
+   Lame.set_bitrate(encoder_mp3codec, config.bitrate || 128);
+   Lame.init_params(encoder_mp3codec);
    //console.debug("#MP3 Init");
    scope.postMessage(
    {
@@ -32,7 +32,7 @@ var encoder_init = function(config, scope)
 var encoder_encode = function(buf, scope)
 {
    //console.debug("Encoder Data Buffer Len = " + buf.length);
-   var mp3data = Lame.encode_buffer_ieee_float(encoder_mp3codec, buf, buf);
+   var mp3data = Lame.encode_buffer_ieee_float(encoder_mp3codec, buf, []);
    //console.debug("#MP3 Encode");
    scope.postMessage(
    {
