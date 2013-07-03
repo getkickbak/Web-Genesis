@@ -131,65 +131,70 @@ function _appLaunch()
    }
 };
 
-var appLaunchCallbackFn = function()
+var flag = 0x000;
+var appLaunchCallbackFn = function(val)
 {
-   Ext.application(
+   if ((flag |= val) == 0x111)
    {
-      viewport :
+      Ext.application(
       {
-         autoMaximize : true
-      },
-      name : 'Genesis',
-      profiles : ['MobileWebClient'],
-      requires : ['Ext.MessageBox', 'Ext.device.Notification', 'Ext.device.Geolocation', 'Ext.device.Orientation'],
-      views : ['ViewBase', 'Document', 'client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions',
-      // //
-      'client.AccountsTransfer', 'client.SettingsPage', 'client.CheckinExplore', 'LoginPage', 'SignInPage', //
-      'client.MainPage', 'widgets.client.RedeemItemDetail', 'client.Badges', 'client.JackpotWinners', 'client.MerchantAccount', //
-      'client.MerchantDetails', 'client.Accounts', 'client.Prizes', 'Viewport'],
-      controllers : ['mobileWebClient.Challenges', 'client.Rewards', 'client.Redemptions', 'client.Viewport', 'client.MainPage', //
-      'client.Badges', 'client.Merchants', 'client.Accounts', 'client.Settings', 'client.Checkins', 'client.JackpotWinners', //
-      'client.Prizes'],
-      launch : function()
-      {
-         _application = this;
-         if (launched > 0x000)
+         viewport :
          {
-            launched |= 0x001;
-         }
-         else
+            autoMaximize : true
+         },
+         name : 'Genesis',
+         profiles : ['MobileWebClient'],
+         requires : ['Ext.MessageBox', 'Ext.device.Notification', 'Ext.device.Geolocation', 'Ext.device.Orientation'],
+         views : ['ViewBase', 'Document', 'client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions',
+         // //
+         'client.AccountsTransfer', 'client.SettingsPage', 'client.CheckinExplore', 'LoginPage', 'SignInPage', //
+         'client.MainPage', 'widgets.client.RedeemItemDetail', 'client.Badges', 'client.JackpotWinners', 'client.MerchantAccount', //
+         'client.MerchantDetails', 'client.Accounts', 'client.Prizes', 'Viewport'],
+         controllers : ['mobileWebClient.Challenges', 'client.Rewards', 'client.Redemptions', 'client.Viewport', 'client.MainPage',
+         // //
+         'client.Badges', 'client.Merchants', 'client.Accounts', 'client.Settings', 'client.Checkins', 'client.JackpotWinners', //
+         'client.Prizes'],
+         launch : function()
          {
-            launched = 0x001;
-         }
-         console.debug("Ext App Launch")
-         _appLaunch();
-      },
-      isIconPrecomposed : true,
-      icon :
-      {
-         36 : 'resources/icons/icon36.png',
-         48 : 'resources/icons/icon48.png',
-         57 : 'resources/icons/icon.png',
-         72 : 'resources/icons/icon@72.png',
-         114 : 'resources/icons/icon@2x.png',
-         144 : 'resources/icons/icon@144.png'
-      },
-      onUpdated : function()
-      {
-         Ext.device.Notification.show(
-         {
-            title : 'Application Update',
-            message : "This application has just successfully been updated to the latest version. Reload now?",
-            callback : function(buttonId)
+            _application = this;
+            if (launched > 0x000)
             {
-               if (buttonId === 'yes')
-               {
-                  window.location.reload();
-               }
+               launched |= 0x001;
             }
-         });
-      }
-   });
+            else
+            {
+               launched = 0x001;
+            }
+            console.debug("Ext App Launch")
+            _appLaunch();
+         },
+         isIconPrecomposed : true,
+         icon :
+         {
+            36 : 'resources/icons/icon36.png',
+            48 : 'resources/icons/icon48.png',
+            57 : 'resources/icons/icon.png',
+            72 : 'resources/icons/icon@72.png',
+            114 : 'resources/icons/icon@2x.png',
+            144 : 'resources/icons/icon@144.png'
+         },
+         onUpdated : function()
+         {
+            Ext.device.Notification.show(
+            {
+               title : 'Application Update',
+               message : "This application has just successfully been updated to the latest version. Reload now?",
+               callback : function(buttonId)
+               {
+                  if (buttonId === 'yes')
+                  {
+                     window.location.reload();
+                  }
+               }
+            });
+         }
+      });
+   }
 };
 
 Ext.onReady(function()
@@ -241,7 +246,7 @@ if (Ext.os.is('Tablet'))
    if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
    {
       prefix = imagePath + "ios";
-      Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/ipad.css?v=" + Genesis.constants.clientVersion, "css", Ext.emptyFn);
+      Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/ipad.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x011]));
    }
    else
    //if (Ext.os.is('Android'))
@@ -251,12 +256,12 @@ if (Ext.os.is('Tablet'))
       {
          case 'lhdpi' :
          {
-            Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-tablet-lhdpi.css?v=" + Genesis.constants.clientVersion, "css", Ext.emptyFn);
+            Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-tablet-lhdpi.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x011]));
             break;
          }
          case 'mxhdpi' :
          {
-            Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-tablet-mxhdpi.css?v=" + Genesis.constants.clientVersion, "css", Ext.emptyFn);
+            Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-tablet-mxhdpi.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x011]));
             break;
          }
       }
@@ -267,10 +272,10 @@ else
    if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
    {
       prefix = imagePath + "ios";
-      Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone.css?v=" + Genesis.constants.clientVersion, "css", Ext.emptyFn);
+      Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [(!Ext.os.is('iPhone5')) ? 0x011 : 0x001]));
       if (Ext.os.is('iPhone5'))
       {
-         Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone5.css?v=" + Genesis.constants.clientVersion, "css", Ext.emptyFn);
+         Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone5.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x010]));
       }
    }
    else//
@@ -281,12 +286,12 @@ else
       {
          case 'lhdpi' :
          {
-            Genesis.fn.checkloadjscssfile(host + "resources/css/android-phone-lhdpi.css?v=" + Genesis.constants.clientVersion, "css", Ext.emptyFn);
+            Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-phone-lhdpi.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x011]));
             break;
          }
          case 'mxhdpi' :
          {
-            Genesis.fn.checkloadjscssfile(host + "resources/css/android-phone-mxhdpi.css?v=" + Genesis.constants.clientVersion, "css", Ext.emptyFn);
+            Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-phone-mxhdpi.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x011]));
             break;
          }
       }
@@ -304,14 +309,18 @@ else
          Genesis.fn.checkloadjscssfile("worker/encoder.js", "js", function()
          {
             _codec = new Worker('worker/encoder.js');
+            appLaunchCallbackFn(0x100);
          });
       }
       else
       {
          _codec = new Worker('worker/encoder.js');
+         appLaunchCallbackFn(0x100);
       }
+   }
+   else
+   {
+      appLaunchCallbackFn(0x100);
    }
 }
 images[0].src = prefix + "/prizewon/transmit.png";
-
-appLaunchCallbackFn();
