@@ -209,7 +209,7 @@ else
                   case 'end' :
                   {
                      me.sampleConfig['data'] += String.fromCharCode.apply(null, e.data.buf);
-                     me.sampleConfig['data'] = 'data:audio/mp3;base64,' + base64.encode(me.sampleConfig['data']);
+                     me.sampleConfig['data'] = 'data:audio/mpeg;base64,' + base64.encode(me.sampleConfig['data']);
                      //console.debug("Flushed returned " + e.data.buf.length + "bytes");
                      console.debug("Final MP3 File Length = " + me.sampleConfig['data'].length);
                      me.audio = new Audio(me.sampleConfig['data']);
