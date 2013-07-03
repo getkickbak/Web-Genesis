@@ -3,6 +3,8 @@ var debugMode = true, serverHost;
 
 window._application = null;
 window._codec = null;
+window._hostPathPrefix = "/javascripts/build/Genesis/";
+window._hostPath = _hostPathPrefix + ((debugMode) ? "testing" : "production") + "/";
 
 if (debugMode)
 {
@@ -228,19 +230,18 @@ Ext.onReady(function()
 // **************************************************************************
 // Bootup Sequence
 // **************************************************************************
-var host = "/javascripts/build/Genesis/" + ((debugMode) ? "testing" : "production") + "/";
 var resolution = function()
 {
    return (((window.screen.height >= 641) && ((window.devicePixelRatio == 1.0) || (window.devicePixelRatio >= 2.0))) ? 'mxhdpi' : 'lhdpi');
 };
-var imagePath = host + "resources/themes/images/v1/", images = [new Image(400, 400)], prefix;
+var imagePath = _hostPath + "resources/themes/images/v1/", images = [new Image(400, 400)], prefix;
 
 if (Ext.os.is('Tablet'))
 {
    if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
    {
       prefix = imagePath + "ios";
-      Genesis.fn.checkloadjscssfile(host + "resources/css/ipad.css?v=" + Genesis.constants.clientVersion, "css", Ext.emptyFn);
+      Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/ipad.css?v=" + Genesis.constants.clientVersion, "css", Ext.emptyFn);
    }
    else
    //if (Ext.os.is('Android'))
@@ -250,12 +251,12 @@ if (Ext.os.is('Tablet'))
       {
          case 'lhdpi' :
          {
-            Genesis.fn.checkloadjscssfile(host + "resources/css/android-tablet-lhdpi.css?v=" + Genesis.constants.clientVersion, "css", Ext.emptyFn);
+            Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-tablet-lhdpi.css?v=" + Genesis.constants.clientVersion, "css", Ext.emptyFn);
             break;
          }
          case 'mxhdpi' :
          {
-            Genesis.fn.checkloadjscssfile(host + "resources/css/android-tablet-mxhdpi.css?v=" + Genesis.constants.clientVersion, "css", Ext.emptyFn);
+            Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-tablet-mxhdpi.css?v=" + Genesis.constants.clientVersion, "css", Ext.emptyFn);
             break;
          }
       }
@@ -266,10 +267,10 @@ else
    if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
    {
       prefix = imagePath + "ios";
-      Genesis.fn.checkloadjscssfile(host + "resources/css/iphone.css?v=" + Genesis.constants.clientVersion, "css", Ext.emptyFn);
+      Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone.css?v=" + Genesis.constants.clientVersion, "css", Ext.emptyFn);
       if (Ext.os.is('iPhone5'))
       {
-         Genesis.fn.checkloadjscssfile(host + "resources/css/iphone5.css?v=" + Genesis.constants.clientVersion, "css", Ext.emptyFn);
+         Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone5.css?v=" + Genesis.constants.clientVersion, "css", Ext.emptyFn);
       }
    }
    else//
@@ -300,7 +301,7 @@ else
       //
       if ( typeof (Worker) == 'undefined')
       {
-         Genesis.fn.checkloadjscssfile(host + "worker/encoder.js", "js", function()
+         Genesis.fn.checkloadjscssfile("worker/encoder.js", "js", function()
          {
             _codec = new Worker('worker/encoder.js');
          });
