@@ -306,7 +306,7 @@ else
       //
       if ( typeof (Worker) == 'undefined')
       {
-         Genesis.fn.checkloadjscssfile("worker/encoder.js", "js", function()
+         Genesis.fn.checkloadjscssfile(_hostPath + "worker/encoder.js", "js", function()
          {
             _codec = new Worker('worker/encoder.js');
             appLaunchCallbackFn(0x100);
