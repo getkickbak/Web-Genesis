@@ -2172,17 +2172,20 @@ Genesis.fn =
       }
       else if (filetype == "css")
       {
+         var len = document.styleSheets.length;
+
          // if filename is an external CSS file
          fileref = document.createElement('link')
          fileref.setAttribute("rel", "stylesheet")
          fileref.setAttribute("type", "text/css")
          fileref.setAttribute("media", "screen")
          fileref.setAttribute("href", filename)
-         document.getElementsByTagName("head")[0].appendChild(fileref)
+
+         document.getElementsByTagName("head")[0].appendChild(fileref);
          if (!noCallback)
          {
             // +1 for inline style in webpage
-            Ext.defer(this.loadjscssfileCallBackFunc, 50, this, [(document.styleSheets.length - 1) + 1, 0, filename]);
+            Ext.defer(this.loadjscssfileCallBackFunc, 50, this, [len, 0, filename]);
          }
       }
    },
