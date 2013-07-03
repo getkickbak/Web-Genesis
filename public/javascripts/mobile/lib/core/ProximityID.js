@@ -270,12 +270,12 @@ else
       },
       getFreqs : function()
       {
-         var stay, i;
+         var me = this, stay, i;
 
          do
          {
             stay = false;
-            for (i = 0; i < me.NUM_SIGNALS - 1; i++)
+            for ( i = 0; i < me.NUM_SIGNALS - 1; i++)
             {
                me.freqs[i] = //
                parseInt(Math.random() * me.bw) + //
