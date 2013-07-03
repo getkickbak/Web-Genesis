@@ -10,6 +10,7 @@ else
 var mp3codec;
 var init = function(config, scope)
 {
+   //console.debug("Encoder Init Received " + JSON.stringify(config));
    if (!config)
    {
       config =
@@ -22,7 +23,7 @@ var init = function(config, scope)
    Lame.set_out_samplerate(mp3codec, config.samplerate || 44100);
    Lame.set_bitrate(mp3codec, config.bitrate || 128);
    Lame.init_params(mp3codec);
-   console.debug("#MP3 Init");
+   //console.debug("#MP3 Init");
    scope.postMessage(
    {
       cmd : 'init'
@@ -30,8 +31,9 @@ var init = function(config, scope)
 };
 var encode = function(buf, scope)
 {
+   //console.debug("Encoder Data Buffer Len = " + buf.length);
    var mp3data = Lame.encode_buffer_ieee_float(mp3codec, buf, buf);
-   console.debug("#MP3 Encode");
+   //console.debug("#MP3 Encode");
    scope.postMessage(
    {
       cmd : 'data',
@@ -40,8 +42,9 @@ var encode = function(buf, scope)
 };
 var finish = function(scope)
 {
+   //console.debug("Encoder Finish Message Received");
    var mp3data = Lame.encode_flush(mp3codec);
-   console.debug("#MP3 Complete");
+   //console.debug("#MP3 Complete");
    scope.postMessage(
    {
       cmd : 'end',
