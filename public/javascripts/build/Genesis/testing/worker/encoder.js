@@ -7,8 +7,8 @@ else
    Genesis.fn.checkloadjscssfile('../lib/libmp3lame.min.js', "js", Ext.emptyFn);
 }
 
-var mp3codec;
-var init = function(config, scope)
+var encoder_mp3codec;
+var encoder_init = function(config, scope)
 {
    //console.debug("Encoder Init Received " + JSON.stringify(config));
    if (!config)
@@ -17,22 +17,22 @@ var init = function(config, scope)
       {
       };
    }
-   mp3codec = Lame.init();
-   Lame.set_mode(mp3codec, config.mode || Lame.JOINT_STEREO);
-   Lame.set_num_channels(mp3codec, config.channels || 2);
-   Lame.set_out_samplerate(mp3codec, config.samplerate || 44100);
-   Lame.set_bitrate(mp3codec, config.bitrate || 128);
-   Lame.init_params(mp3codec);
+   encoder_mp3codec = Lame.init();
+   Lame.set_mode(encoder_mp3codec, config.mode || Lame.JOINT_STEREO);
+   Lame.set_num_channels(encoder_mp3codec, config.channels || 2);
+   Lame.set_out_samplerate(encoder_mp3codec, config.samplerate || 44100);
+   Lame.set_bitrate(encoder_mp3codec, config.bitrate || 128);
+   Lame.init_params(encoder_mp3codec);
    //console.debug("#MP3 Init");
    scope.postMessage(
    {
       cmd : 'init'
    });
 };
-var encode = function(buf, scope)
+var encoder_encode = function(buf, scope)
 {
    //console.debug("Encoder Data Buffer Len = " + buf.length);
-   var mp3data = Lame.encode_buffer_ieee_float(mp3codec, buf, buf);
+   var mp3data = Lame.encode_buffer_ieee_float(encoder_mp3codec, buf, []);
    //console.debug("#MP3 Encode");
    scope.postMessage(
    {
@@ -40,18 +40,18 @@ var encode = function(buf, scope)
       buf : mp3data.data
    });
 };
-var finish = function(scope)
+var encoder_finish = function(scope)
 {
    //console.debug("Encoder Finish Message Received");
-   var mp3data = Lame.encode_flush(mp3codec);
+   var mp3data = Lame.encode_flush(encoder_mp3codec);
    //console.debug("#MP3 Complete");
    scope.postMessage(
    {
       cmd : 'end',
       buf : mp3data.data
    });
-   Lame.close(mp3codec);
-   mp3codec = null;
+   Lame.close(encoder_mp3codec);
+   encoder_mp3codec = null;
 };
 
 //
@@ -81,38 +81,40 @@ if (( typeof (Worker) == 'undefined') && ( typeof (Ext) != 'undefined'))
          {
             case 'init' :
             {
-               inti(data.config, this.responseHandler);
+               encoder_init(data.config, this.responseHandler);
                break;
             }
             case 'encode' :
             {
-               encode(data.buf, this.responseHandler);
+               encoder_encode(data.buf, this.responseHandler);
                break;
             }
             case 'finish' :
             {
-               finish(this.responseHandler);
+               encoder_finish(this.responseHandler);
                break;
             }
          }
       },
       onmessage : Ext.emptyFn
    });
-};
-
-onmessage = function(e)
+}
+else
 {
-   var data = e.data;
-   switch (data.cmd)
+   onmessage = function(e)
    {
-      case 'init':
-         init(data.config, self);
-         break;
-      case 'encode':
-         encode(data.buf, self);
-         break;
-      case 'finish':
-         finish(self);
-         break;
-   }
-};
+      var data = e.data;
+      switch (data.cmd)
+      {
+         case 'init':
+            encoder_init(data.config, self);
+            break;
+         case 'encode':
+            encoder_encode(data.buf, self);
+            break;
+         case 'finish':
+            encoder_finish(self);
+            break;
+      }
+   };
+}
