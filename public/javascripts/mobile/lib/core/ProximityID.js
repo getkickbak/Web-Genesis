@@ -78,8 +78,8 @@ else
          var me = this;
 
          me.bw = (me.hiFreq - me.loFreq) / me.NUM_SIGNALS;
-         Genesis.constants.s_vol = s_vol_ratio * 100;
-         Genesis.constants.r_vol = r_vol_ratio * 100;
+         Genesis.constants.s_vol = s_vol_ratio * 100 * 0.8; // Reduce volume by 20%
+         Genesis.constants.r_vol = r_vol_ratio * 100 * 0.8;
          if (_codec)
          {
             _codec.onmessage = function(e)
