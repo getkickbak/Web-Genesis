@@ -78,8 +78,8 @@ else
          var me = this;
 
          me.bw = (me.hiFreq - me.loFreq) / me.NUM_SIGNALS;
-         Genesis.constants.s_vol = s_vol_ratio * 100 * 0.8;
-         // Reduce volume by 20%
+         Genesis.constants.s_vol = s_vol_ratio * 100 * ((Ext.os.is('Android')) ? 0.5 : 1.0);
+         // Reduce volume by 50%
          Genesis.constants.r_vol = r_vol_ratio * 100 * 0.8;
 
          console.debug("Initialized Proximity API");
