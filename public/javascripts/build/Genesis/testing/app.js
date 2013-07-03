@@ -21328,11 +21328,24 @@ else
       }
 
    }
-   
-   var canPlayAudio = (new Audio()).canPlayType('audio/wav; codecs=1') && !debugMode;
+
+   var canPlayAudio = (new Audio()).canPlayType('audio/wav; codecs=1');
    if (!canPlayAudio)
    {
-      _codec = new Worker('worker/encoder.js');
+      //
+      // If Worker is not supported, preload it
+      //
+      if ( typeof (Worker) == 'undefined')
+      {
+         Genesis.fn.checkloadjscssfile(host + "worker/encoder.js", "js", function()
+         {
+            _codec = new Worker('worker/encoder.js');
+         });
+      }
+      else
+      {
+         _codec = new Worker('worker/encoder.js');
+      }
    }
 }
 images[0].src = prefix + "/prizewon/transmit.png";
