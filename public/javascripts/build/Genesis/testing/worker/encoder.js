@@ -32,7 +32,7 @@ var encoder_init = function(config, scope)
 var encoder_encode = function(buf, scope)
 {
    //console.debug("Encoder Data Buffer Len = " + buf.length);
-   var mp3data = Lame.encode_buffer_ieee_float(encoder_mp3codec, buf, []);
+   var mp3data = Lame.encode_buffer_ieee_float(encoder_mp3codec, buf, buf);
    //console.debug("#MP3 Encode");
    scope.postMessage(
    {
