@@ -369,6 +369,7 @@ else
                   me.audio = new Audio(new RIFFWAVE(config).dataURI);
                   me.createAudioStream(config);
                   console.debug("Gain : " + s_vol);
+                  win();
                }, 0.25 * 1000, this);
             }
             //
