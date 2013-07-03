@@ -109,11 +109,13 @@ else
       createAudioLoop : function()
       {
          var me = this;
-         if ( typeof me.audio.loop == 'boolean')
-         {
-            me.audio.loop = true;
-         }
-         else
+         /*
+          if ( typeof me.audio.loop == 'boolean')
+          {
+          me.audio.loop = true;
+          }
+          else
+          */
          {
             me.audio.addEventListener('ended', function()
             {
@@ -173,7 +175,7 @@ else
          // Browser support WAV files
          //
          me.audio = new Audio(new RIFFWAVE(config).dataURI);
-         me.createAudioLoop(config);
+         me.createAudioLoop();
 
          console.debug("WAV Gain : " + s_vol);
 
@@ -329,7 +331,7 @@ else
             //
             if (!_codec)
             {
-               me.duration = 2 * 44100;
+               me.duration = 1 * 44100;
                Ext.defer(me.audioFnHandler, 0.25 * 1000, me, [config, s_vol, win]);
             }
             //
