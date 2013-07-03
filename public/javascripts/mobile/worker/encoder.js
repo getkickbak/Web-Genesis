@@ -7,9 +7,31 @@ else
    Genesis.fn.checkloadjscssfile(_hostPathPrefix + 'lib/libmp3lame.min.js', "js", Ext.emptyFn);
 }
 
-var encoder_mp3codec;
+var encoder_mp3codec = null;
 var encoder_init = function(config, scope)
 {
+   var wait, _init = function()
+   {
+      //
+      // Wait until Lame is loaded into memory
+      //
+      if ( typeof (Lame) != 'undefined')
+      {
+         encoder_mp3codec = Lame.init();
+         Lame.set_mode(encoder_mp3codec, config.mode || Lame.JOINT_STEREO);
+         Lame.set_num_channels(encoder_mp3codec, config.channels || 2);
+         Lame.set_out_samplerate(encoder_mp3codec, config.samplerate || 44100);
+         Lame.set_bitrate(encoder_mp3codec, config.bitrate || 128);
+         Lame.init_params(encoder_mp3codec);
+         //console.debug("#MP3 Init");
+         scope.postMessage(
+         {
+            cmd : 'init'
+         });
+         clearInterval(wait);
+      }
+   };
+
    //console.debug("Encoder Init Received " + JSON.stringify(config));
    if (!config)
    {
@@ -17,22 +39,14 @@ var encoder_init = function(config, scope)
       {
       };
    }
-   encoder_mp3codec = Lame.init();
-   //Lame.set_mode(encoder_mp3codec, config.mode || Lame.JOINT_STEREO);
-   //Lame.set_num_channels(encoder_mp3codec, config.channels || 2);
-   //Lame.set_out_samplerate(encoder_mp3codec, config.samplerate || 44100);
-   //Lame.set_bitrate(encoder_mp3codec, config.bitrate || 128);
-   //Lame.init_params(encoder_mp3codec);
-   //console.debug("#MP3 Init");
-   scope.postMessage(
-   {
-      cmd : 'init'
-   });
+
+   wait = setInterval(_init, 0.1 * 1000);
+
 };
 var encoder_encode = function(buf, scope)
 {
    //console.debug("Encoder Data Buffer Len = " + buf.length);
-   var mp3data = Lame.encode_buffer_ieee_float(encoder_mp3codec, buf, buf);
+   var mp3data = Lame.encode_buffer_ieee_float(encoder_mp3codec, buf, []);
    //console.debug("#MP3 Encode");
    scope.postMessage(
    {

@@ -310,17 +310,20 @@ else
          {
             _codec = new Worker('worker/encoder.js');
             appLaunchCallbackFn(0x100);
+            console.debug("Enable MP3 Encoder");
          });
       }
       else
       {
          _codec = new Worker('worker/encoder.js');
          appLaunchCallbackFn(0x100);
+         console.debug("Enable MP3 Encoder");
       }
    }
    else
    {
       appLaunchCallbackFn(0x100);
+      console.debug("Enable WAV/WebAudio Encoder");
    }
 }
 images[0].src = prefix + "/prizewon/transmit.png";
