@@ -229,17 +229,21 @@ else
             if (!_codec)
             {
                hdrLen = 0;
-               data = config['data'];
+               data = config['data'] = [];
             }
             //
             // Convert to MP3 first
             //
             else
             {
-               hdrLen = 44 / 2;
-               config['headerOnly'] = true;
-               data = config['data'] = new Int16Array(hdrLen + me.duration);
-               hdr = (new RIFFWAVE(config)).header;
+               /*
+                hdrLen = 44 / 2;
+                config['headerOnly'] = true;
+                data = config['data'] = new Int16Array(hdrLen + me.duration);
+                hdr = (new RIFFWAVE(config)).header;
+                */
+               hdrLen = 0;
+               data = config['data'] = [];
             }
 
             //
@@ -277,75 +281,77 @@ else
                //
                else
                {
-                  var u16ToLow = function(i)
-                  {
-                     return ((i >> 16) & 0xFFFF);
-                  };
-                  var u16ToHigh = function(i)
-                  {
-                     return (i & 0xFFFF);
-                  };
-                  // OFFS SIZE NOTES
-                  //      chunkId : [0x52, 0x49, 0x46, 0x46], // 0    4    "RIFF" = 0x52494646
-                  //      chunkSize : 0, // 4    4    36+SubChunk2Size = 4+(8+SubChunk1Size)+(8+SubChunk2Size)
-                  //      format : [0x57, 0x41, 0x56, 0x45], // 8    4    "WAVE" = 0x57415645
-                  //      subChunk1Id : [0x66, 0x6d, 0x74, 0x20], // 12   4    "fmt " = 0x666d7420
-                  //      subChunk1Size : 16, // 16   4    16 for PCM
-                  //      audioFormat : 1, // 20   2    PCM = 1
-                  //      numChannels : 1, // 22   2    Mono = 1, Stereo = 2...
-                  //      sampleRate : 8000, // 24   4    8000, 44100...
-                  //      byteRate : 0, // 28   4    SampleRate*NumChannels*BitsPerSample/8
-                  //      blockAlign : 0, // 32   2    NumChannels*BitsPerSample/8
-                  //      bitsPerSample : 8, // 34   2    8 bits = 8, 16 bits = 16
-                  //      subChunk2Id : [0x64, 0x61, 0x74, 0x61], // 36   4    "data" = 0x64617461
-                  //      subChunk2Size : 0 // 40   4    data size = NumSamples*NumChannels*BitsPerSample/8
-                  data[0] = 0x4952;
-                  data[1] = 0x4646;
-                  data[2] = u16ToHigh(hdr.chunkSize);
-                  data[3] = u16ToLow(hdr.chunkSize);
-                  data[4] = 0x4157;
-                  data[5] = 0x4556;
-                  data[6] = 0x6d66;
-                  data[7] = 0x2074;
-                  data[8] = u16ToHigh(hdr.subChunk1Size);
-                  data[9] = u16ToLow(hdr.subChunk1Size);
-                  data[10] = hdr.audioFormat;
-                  data[11] = hdr.numChannels;
-                  data[12] = u16ToHigh(hdr.sampleRate);
-                  data[13] = u16ToLow(hdr.sampleRate);
-                  data[14] = u16ToHigh(hdr.byteRate);
-                  data[15] = u16ToLow(hdr.byteRate);
-                  data[16] = hdr.blockAlign;
-                  data[17] = hdr.bitsPerSample;
-                  data[18] = 0x6164;
-                  data[19] = 0x6174;
-                  data[20] = u16ToHigh(hdr.subChunk2Size);
-                  data[21] = u16ToLow(hdr.subChunk2Size);
+                  /*
+                   var u16ToLow = function(i)
+                   {
+                   return ((i >> 16) & 0xFFFF);
+                   };
+                   var u16ToHigh = function(i)
+                   {
+                   return (i & 0xFFFF);
+                   };
+                   // OFFS SIZE NOTES
+                   //      chunkId : [0x52, 0x49, 0x46, 0x46], // 0    4    "RIFF" = 0x52494646
+                   //      chunkSize : 0, // 4    4    36+SubChunk2Size = 4+(8+SubChunk1Size)+(8+SubChunk2Size)
+                   //      format : [0x57, 0x41, 0x56, 0x45], // 8    4    "WAVE" = 0x57415645
+                   //      subChunk1Id : [0x66, 0x6d, 0x74, 0x20], // 12   4    "fmt " = 0x666d7420
+                   //      subChunk1Size : 16, // 16   4    16 for PCM
+                   //      audioFormat : 1, // 20   2    PCM = 1
+                   //      numChannels : 1, // 22   2    Mono = 1, Stereo = 2...
+                   //      sampleRate : 8000, // 24   4    8000, 44100...
+                   //      byteRate : 0, // 28   4    SampleRate*NumChannels*BitsPerSample/8
+                   //      blockAlign : 0, // 32   2    NumChannels*BitsPerSample/8
+                   //      bitsPerSample : 8, // 34   2    8 bits = 8, 16 bits = 16
+                   //      subChunk2Id : [0x64, 0x61, 0x74, 0x61], // 36   4    "data" = 0x64617461
+                   //      subChunk2Size : 0 // 40   4    data size = NumSamples*NumChannels*BitsPerSample/8
+                   data[0] = 0x4952;
+                   data[1] = 0x4646;
+                   data[2] = u16ToHigh(hdr.chunkSize);
+                   data[3] = u16ToLow(hdr.chunkSize);
+                   data[4] = 0x4157;
+                   data[5] = 0x4556;
+                   data[6] = 0x6d66;
+                   data[7] = 0x2074;
+                   data[8] = u16ToHigh(hdr.subChunk1Size);
+                   data[9] = u16ToLow(hdr.subChunk1Size);
+                   data[10] = hdr.audioFormat;
+                   data[11] = hdr.numChannels;
+                   data[12] = u16ToHigh(hdr.sampleRate);
+                   data[13] = u16ToLow(hdr.sampleRate);
+                   data[14] = u16ToHigh(hdr.byteRate);
+                   data[15] = u16ToLow(hdr.byteRate);
+                   data[16] = hdr.blockAlign;
+                   data[17] = hdr.bitsPerSample;
+                   data[18] = 0x6164;
+                   data[19] = 0x6174;
+                   data[20] = u16ToHigh(hdr.subChunk2Size);
+                   data[21] = u16ToLow(hdr.subChunk2Size);
 
-                  console.debug("MP3 Binary Data : \n" + //
-                  "data[0] = " + data[0] + "\n" + //
-                  "data[1] = " + data[1] + "\n" + //
-                  "data[2] = " + data[2] + "\n" + //
-                  "data[3] = " + data[3] + "\n" + //
-                  "data[4] = " + data[4] + "\n" + //
-                  "data[5] = " + data[5] + "\n" + //
-                  "data[6] = " + data[6] + "\n" + //
-                  "data[7] = " + data[7] + "\n" + //
-                  "data[8] = " + data[8] + "\n" + //
-                  "data[9] = " + data[9] + "\n" + //
-                  "data[10] = " + data[10] + "\n" + //
-                  "data[11] = " + data[11] + "\n" + //
-                  "data[12] = " + data[12] + "\n" + //
-                  "data[13] = " + data[13] + "\n" + //
-                  "data[14] = " + data[14] + "\n" + //
-                  "data[15] = " + data[15] + "\n" + //
-                  "data[16] = " + data[16] + "\n" + //
-                  "data[17] = " + data[17] + "\n" + //
-                  "data[18] = " + data[18] + "\n" + //
-                  "data[19] = " + data[19] + "\n" + //
-                  "data[20] = " + data[20] + "\n" + //
-                  "data[21] = " + data[21] + "\n" + //
-                  "");
+                   console.debug("MP3 Binary Data : \n" + //
+                   "data[0] = " + data[0] + "\n" + //
+                   "data[1] = " + data[1] + "\n" + //
+                   "data[2] = " + data[2] + "\n" + //
+                   "data[3] = " + data[3] + "\n" + //
+                   "data[4] = " + data[4] + "\n" + //
+                   "data[5] = " + data[5] + "\n" + //
+                   "data[6] = " + data[6] + "\n" + //
+                   "data[7] = " + data[7] + "\n" + //
+                   "data[8] = " + data[8] + "\n" + //
+                   "data[9] = " + data[9] + "\n" + //
+                   "data[10] = " + data[10] + "\n" + //
+                   "data[11] = " + data[11] + "\n" + //
+                   "data[12] = " + data[12] + "\n" + //
+                   "data[13] = " + data[13] + "\n" + //
+                   "data[14] = " + data[14] + "\n" + //
+                   "data[15] = " + data[15] + "\n" + //
+                   "data[16] = " + data[16] + "\n" + //
+                   "data[17] = " + data[17] + "\n" + //
+                   "data[18] = " + data[18] + "\n" + //
+                   "data[19] = " + data[19] + "\n" + //
+                   "data[20] = " + data[20] + "\n" + //
+                   "data[21] = " + data[21] + "\n" + //
+                   "");
+                   */
                   me.sampleConfig = config;
                   me.sampleConfig['callback'] = win;
                   _codec.postMessage(
