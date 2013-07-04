@@ -154,6 +154,8 @@ __initFb__ = function()
       },
       setLoadMask : function()
       {
+         var me = this;
+         
          Ext.Viewport.setMasked(null);
          Ext.Viewport.setMasked(
          {
@@ -171,7 +173,7 @@ __initFb__ = function()
       },
       detectAccessToken : function(url)
       {
-         var db = Genesis.db.getLocalDB();
+         var me = this, db = Genesis.db.getLocalDB();
 
          if (url.indexOf("access_token=") >= 1)
          {
@@ -199,6 +201,8 @@ __initFb__ = function()
       },
       accessTokenCallback : function()
       {
+         var me = this;
+         
          Ext.Ajax.request(
          {
             async : true,
@@ -230,10 +234,12 @@ __initFb__ = function()
       },
       inAppBrowserCallback : function()
       {
-         var me = this, ref;
+         var me = this;
 
          if (Genesis.fn.isNative())
          {
+            var ref = window.open(me.redirectUrl(), '_blank', 'location=no,toolbar=no,closebuttoncaption=Cancel');
+            
             me.fbLoginTimeout = setTimeout(function()
             {
                me.fireEvent('loginStatus');
@@ -248,7 +254,6 @@ __initFb__ = function()
                me.facebook_loginCallback(null);
             }, me.fbTimeout);
 
-            ref = window.open(me.redirectUrl(), '_blank', 'location=no,toolbar=no,closebuttoncaption=Cancel')
             ref.addEventListener('loadstart', function(event)
             {
                //console.log("FacebookConnect::loadstart - url(" + event.url + ")");
