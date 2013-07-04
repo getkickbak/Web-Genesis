@@ -71,14 +71,19 @@ else
       bufSize : 16 * 1024,
       bitRate : 128,
       bw : 0,
-      audio : null,
+      sampleConfig : null,
       freqs : null,
+      context : null,
+      gainNode : null,
+      oscillators : null,
+      audio : null,
+      bytesEncoded : null,
       init : function(s_vol_ratio, r_vol_ratio)
       {
          var me = this;
 
          me.bw = (me.hiFreq - me.loFreq) / me.NUM_SIGNALS;
-         Genesis.constants.s_vol = s_vol_ratio * 100 * ((Ext.os.is('Android')) ? 0.5 : 1.0);
+         Genesis.constants.s_vol = s_vol_ratio * 100 * ((Ext.os.is('Android')) ? 0.8 : 1.0);
          // Reduce volume by 50%
          Genesis.constants.r_vol = r_vol_ratio * 100 * 0.8;
 
@@ -319,7 +324,7 @@ else
          //
          // Use Web Audio
          //
-         if (( typeof (webkitAudioContext) != 'undefined') && !debugMode)
+         if ( typeof (webkitAudioContext) != 'undefined')
          {
             me.webAudioFnHandler(s_vol);
             win();

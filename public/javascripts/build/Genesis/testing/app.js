@@ -11074,59 +11074,77 @@ Ext.define('Genesis.controller.ViewportBase',
 });
 
 // add back button listener
-function onBackKeyDown(e)
+var onBackKeyDown = Ext.emptyFn;
+Ext.require(['Genesis.controller.ControllerBase'], function()
 {
-   var viewport = _application.getController('client' + '.Viewport');
-
-   //e.preventDefault();
-
-   //
-   // Disable BackKey if something is in progress or application is not instantiated
-   //
-   if (!_application || Ext.Viewport.getMasked() || !viewport || viewport.popViewInProgress)
+   if (!Genesis.fn.isNative())
    {
-      return;
-   }
-   else if (Ext.device.Notification.msg && !Ext.device.Notification.msg.isHidden())
-   {
-      Ext.device.Notification.dismiss();
-      return;
-   }
-   else if (!viewport.popUpInProgress)
-   {
-      var vport = viewport.getViewport();
-      var activeItem = (vport) ? vport.getActiveItem() : null;
-      if (activeItem)
+      window.onhashchange = function()
       {
-         console.debug("BackButton Pressed");
-         var success = false;
-         for (var i = 0; i < backBtnCallbackListFn.length; i++)
+         if (location.hash != _application.getHistory().getToken())
          {
-            success = backBtnCallbackListFn[i](activeItem);
-            if (success)
-            {
-               break;
-            }
-         }
-         if (!success)
-         {
-            var backButton = activeItem.query('button[tag=back]')[0];
-            var closeButton = activeItem.query('button[tag=close]')[0];
-            if ((backButton && !backButton.isHidden()) || //
-            (closeButton && !closeButton.isHidden()))
-            {
-               viewport.self.playSoundFile(viewport.sound_files['clickSound']);
-               viewport.popView();
-            }
-         }
-         else
-         {
-            viewport.self.playSoundFile(viewport.sound_files['clickSound']);
-            navigator.app.exitApp();
+            location.hash = _application.getHistory().getToken();
          }
       }
    }
-};
+   else
+   {
+      // add back button listener
+      function onBackKeyDown(e)
+      {
+         var viewport = _application.getController('client' + '.Viewport');
+
+         //e.preventDefault();
+
+         //
+         // Disable BackKey if something is in progress or application is not instantiated
+         //
+         if (!_application || Ext.Viewport.getMasked() || !viewport || viewport.popViewInProgress)
+         {
+            return;
+         }
+         else if (Ext.device.Notification.msg && !Ext.device.Notification.msg.isHidden())
+         {
+            Ext.device.Notification.dismiss();
+            return;
+         }
+         else if (!viewport.popUpInProgress)
+         {
+            var vport = viewport.getViewport();
+            var activeItem = (vport) ? vport.getActiveItem() : null;
+            if (activeItem)
+            {
+               console.debug("BackButton Pressed");
+               var success = false;
+               for (var i = 0; i < backBtnCallbackListFn.length; i++)
+               {
+                  success = backBtnCallbackListFn[i](activeItem);
+                  if (success)
+                  {
+                     break;
+                  }
+               }
+               if (!success)
+               {
+                  var backButton = activeItem.query('button[tag=back]')[0];
+                  var closeButton = activeItem.query('button[tag=close]')[0];
+                  if ((backButton && !backButton.isHidden()) || //
+                  (closeButton && !closeButton.isHidden()))
+                  {
+                     viewport.self.playSoundFile(viewport.sound_files['clickSound']);
+                     viewport.popView();
+                  }
+               }
+               else
+               {
+                  viewport.self.playSoundFile(viewport.sound_files['clickSound']);
+                  navigator.app.exitApp();
+               }
+            }
+         }
+      };
+   }
+});
 
 Ext.define('Genesis.controller.client.Viewport',
 {
