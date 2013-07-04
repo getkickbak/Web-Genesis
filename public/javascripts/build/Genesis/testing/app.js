@@ -11084,66 +11084,67 @@ Ext.require(['Genesis.controller.ControllerBase'], function()
          if (location.hash != _application.getHistory().getToken())
          {
             location.hash = _application.getHistory().getToken();
+            //
+            // No need to differentiate between fwd/back, we are a single page app!
+            //
+            onBackKeyDown();
          }
       }
    }
-   else
+   // add back button listener
+   function onBackKeyDown(e)
    {
-      // add back button listener
-      function onBackKeyDown(e)
+      var viewport = _application.getController('client' + '.Viewport');
+
+      //e.preventDefault();
+
+      //
+      // Disable BackKey if something is in progress or application is not instantiated
+      //
+      if (!_application || Ext.Viewport.getMasked() || !viewport || viewport.popViewInProgress)
       {
-         var viewport = _application.getController('client' + '.Viewport');
-
-         //e.preventDefault();
-
-         //
-         // Disable BackKey if something is in progress or application is not instantiated
-         //
-         if (!_application || Ext.Viewport.getMasked() || !viewport || viewport.popViewInProgress)
+         return;
+      }
+      else if (Ext.device.Notification.msg && !Ext.device.Notification.msg.isHidden())
+      {
+         Ext.device.Notification.dismiss();
+         return;
+      }
+      else if (!viewport.popUpInProgress)
+      {
+         var vport = viewport.getViewport();
+         var activeItem = (vport) ? vport.getActiveItem() : null;
+         if (activeItem)
          {
-            return;
-         }
-         else if (Ext.device.Notification.msg && !Ext.device.Notification.msg.isHidden())
-         {
-            Ext.device.Notification.dismiss();
-            return;
-         }
-         else if (!viewport.popUpInProgress)
-         {
-            var vport = viewport.getViewport();
-            var activeItem = (vport) ? vport.getActiveItem() : null;
-            if (activeItem)
+            console.debug("BackButton Pressed");
+            var success = false;
+            for (var i = 0; i < backBtnCallbackListFn.length; i++)
             {
-               console.debug("BackButton Pressed");
-               var success = false;
-               for (var i = 0; i < backBtnCallbackListFn.length; i++)
+               success = backBtnCallbackListFn[i](activeItem);
+               if (success)
                {
-                  success = backBtnCallbackListFn[i](activeItem);
-                  if (success)
-                  {
-                     break;
-                  }
-               }
-               if (!success)
-               {
-                  var backButton = activeItem.query('button[tag=back]')[0];
-                  var closeButton = activeItem.query('button[tag=close]')[0];
-                  if ((backButton && !backButton.isHidden()) || //
-                  (closeButton && !closeButton.isHidden()))
-                  {
-                     viewport.self.playSoundFile(viewport.sound_files['clickSound']);
-                     viewport.popView();
-                  }
-               }
-               else
-               {
-                  viewport.self.playSoundFile(viewport.sound_files['clickSound']);
-                  navigator.app.exitApp();
+                  break;
                }
             }
+            if (!success)
+            {
+               var backButton = activeItem.query('button[tag=back]')[0];
+               var closeButton = activeItem.query('button[tag=close]')[0];
+               if ((backButton && !backButton.isHidden()) || //
+               (closeButton && !closeButton.isHidden()))
+               {
+                  viewport.self.playSoundFile(viewport.sound_files['clickSound']);
+                  viewport.popView();
+               }
+            }
+            else
+            {
+               viewport.self.playSoundFile(viewport.sound_files['clickSound']);
+               navigator.app.exitApp();
+            }
          }
-      };
-   }
+      }
+   };
 });
 
 Ext.define('Genesis.controller.client.Viewport',
