@@ -17,6 +17,7 @@ window._application = null;
 window.appName = 'KickBak';
 window._hostPathPrefix = "/javascripts/build/Genesis/";
 window._hostPath = _hostPathPrefix + ((debugMode) ? "testing" : "production") + "/";
+_filesAssetCount+=3;
 
 /*
 This file is generated and updated by Sencha Cmd. You can edit this file as

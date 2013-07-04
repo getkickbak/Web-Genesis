@@ -180,11 +180,11 @@ __initFb__ = function()
             var params = Ext.Object.fromQueryString(url.split("#")[1]);
             if (params['state'] == appName)
             {
-               //console.log("FacebookConnect::authDialog = " + Ext.encode(params));
+               //console.debug("FacebookConnect::authDialog = " + Ext.encode(params));
                me.code = db['access_token'] = params['access_token'];
                db['fbExpiresIn'] = (new Date(Date.now() + Number(params['expires_in']))).getTime();
-               //console.log("FacebookConnect::access_token=" + db['access_token']);
-               //console.log("FacebookConnect::fbExpiresIn=" + db['fbExpiresIn']);
+               //console.debug("FacebookConnect::access_token=" + db['access_token']);
+               //console.debug("FacebookConnect::fbExpiresIn=" + db['fbExpiresIn']);
                Genesis.db.setLocalDB(db);
 
                if (!Genesis.fn.isNative())
@@ -224,7 +224,7 @@ __initFb__ = function()
                }
                else
                {
-                  console.log("Error Logging into Facebook\n" + //
+                  console.debug("Error Logging into Facebook\n" + //
                   'Return ' + Ext.encode(response));
                   me.facebook_loginCallback(null);
                }
@@ -256,7 +256,7 @@ __initFb__ = function()
 
             ref.addEventListener('loadstart', function(event)
             {
-               //console.log("FacebookConnect::loadstart - url(" + event.url + ")");
+               //console.debug("FacebookConnect::loadstart - url(" + event.url + ")");
                if (event.url.match(me.currentLocation()))
                {
                   me.detectAccessToken(event.url);
@@ -268,7 +268,7 @@ __initFb__ = function()
             });
             ref.addEventListener('loadstop', function(event)
             {
-               //console.log("FacebookConnect::loadstop - url(" + event.url + ")");
+               //console.debug("FacebookConnect::loadstop - url(" + event.url + ")");
             });
             ref.addEventListener('exit', function(event)
             {
@@ -301,7 +301,7 @@ __initFb__ = function()
          // Check for cancellation/error
          if (!res || res.cancelled || res.error || (res.status != 'connected'))
          {
-            console.log("FacebookConnect.login:failedWithError:" + ((res) ? res.message : 'None'));
+            console.debug("FacebookConnect.login:failedWithError:" + ((res) ? res.message : 'None'));
             if (!me.cb || !me.cb['supress'])
             {
                Ext.device.Notification.show(
@@ -364,8 +364,8 @@ __initFb__ = function()
                   {
                      var db = Genesis.db.getLocalDB(), facebook_id = response.id;
 
-                     //console.log("facebookConnect.login/me:[" + Ext.encode(response) + "]");
-                     console.log("Session ID[" + facebook_id + "]");
+                     //console.debug("facebookConnect.login/me:[" + Ext.encode(response) + "]");
+                     console.debug("Session ID[" + facebook_id + "]");
                      db['currFbId'] = facebook_id;
                      db['fbAccountId'] = response.email;
                      rc = db['fbResponse'] = me.createFbResponse(response);
@@ -373,7 +373,7 @@ __initFb__ = function()
                      Genesis.db.setLocalDB(db);
                      db = Genesis.db.getLocalDB();
 
-                     console.log('You\`ve logged into Facebook! ' + '\n' + //
+                     console.debug('You\`ve logged into Facebook! ' + '\n' + //
                      'Email(' + rc['email'] + ')' + '\n' + //
                      'auth_code(' + db['auth_code'] + ')' + '\n' + //
                      'ID(' + facebook_id + ')' + '\n');
@@ -434,7 +434,7 @@ __initFb__ = function()
 
          cb = cb || Ext.emptyFn;
 
-         console.log("facebook_onLogout");
+         console.debug("facebook_onLogout");
          try
          {
             var db = Genesis.db.getLocalDB();
@@ -549,7 +549,7 @@ __initFb__ = function()
                                     }
                                     else
                                     {
-                                       //console.log("XType:" + activeItem.getXTypes())
+                                       //console.debug("XType:" + activeItem.getXTypes())
                                     }
                                  }
                               });
@@ -633,7 +633,7 @@ __initFb__ = function()
                   }
                   else
                   {
-                     console.log("Error Logging into Facebook\n" + //
+                     console.debug("Error Logging into Facebook\n" + //
                      'Status code ' + Ext.encode(response.responseText));
                      fail(res);
                   }

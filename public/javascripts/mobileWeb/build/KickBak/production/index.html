@@ -1,58 +1,86 @@
 <!DOCTYPE HTML>
 <html manifest="cache.appcache" lang="en-US">
-	<head>
-        <meta name="format-detection" content="telephone=no" />
-        <meta name="format-detection" content="address=no" />
-        <meta name="format-detection" content="email=no" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-		<meta charset="UTF-8">
-		<title>KickBak</title>
-		<style type="text/css">
-			/**
-			 * Example of an initial loading indicator.
-			 * It is recommended to keep this as minimal as possible to provide instant feedback
-			 * while other resources are still being loaded for the first time
-			 */
-			html, body {
-				height:100%;
-				/*background-color:#1985D0;*/
-				background-color:#0A78BE;
-			}
-			#appLoadingIndicator {
-				position:absolute;
-				top:50%;
-				margin-top:-15px;
-				text-align:center;
-				width:100%;
-				height:30px;
-				-webkit-animation-name:appLoadingIndicator;
-				-webkit-animation-duration:0.5s;
-				-webkit-animation-iteration-count:infinite;
-				-webkit-animation-direction:linear;
-			}
-			#appLoadingIndicator> * {
-				background-color:#FFFFFF;
-				display:inline-block;
-				height:30px;
-				-webkit-border-radius:15px;
-				margin:0 5px;
-				width:30px;
-				opacity:0.8;
-			}
-			@-webkit-keyframes appLoadingIndicator{
-			0% {
-			opacity: 0.8
-			}
-			50% {
-			opacity: 0
-			}
-			100% {
-			opacity: 0.8
-			}
-			}
-		</style>
-		<!-- The line below must be kept intact for Sencha Command to build your application -->
-		<script type="text/javascript">(function(l){function s(b){function d(a,b){var c=a.length,d,e;for(d=0;d<c;d++){e=a[d];var h=a,j=d,f=void 0;"string"==typeof e&&(e={path:e});e.shared?(e.version=e.shared,f=e.shared+e.path):(B.href=e.path,f=B.href);e.uri=f;e.key=i+"-"+f;g[f]=e;h[j]=e;e.type=b;e.index=d;e.collection=a;e.ready=!1;e.evaluated=!1}return a}var c;"string"==typeof b?(c=b,b=C(c)):c=JSON.stringify(b);var i=b.id,j=i+"-"+D+p,g={};this.key=j;this.css=d(b.css,"css");this.js=d(b.js,"js");window.Ext||(window.Ext={});n.microloaded=
+   <head>
+      <meta name="apple-itunes-app" content="app-id=537476722">
+      <meta name="format-detection" content="telephone=no" />
+      <meta name="format-detection" content="address=no" />
+      <meta name="format-detection" content="email=no" />
+      <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+      <meta charset="UTF-8">
+      <title>KickBak</title>
+      <style type="text/css">
+         /**
+          * Example of an initial loading indicator.
+          * It is recommended to keep this as minimal as possible to provide instant feedback
+          * while other resources are still being loaded for the first time
+          */
+         html, body {
+            height:100%;
+            /*background-color:#1985D0;*/
+            background-color:#0A78BE;
+         }
+         #appLoadingIndicator {
+            position:absolute;
+            top:50%;
+            margin-top:4em;
+            text-align:center;
+            width:100%;
+            height:30px;
+            -webkit-animation-name:appLoadingIndicator;
+            -webkit-animation-duration:0.5s;
+            -webkit-animation-iteration-count:infinite;
+            -webkit-animation-direction:linear;
+         }
+         #appLoadingIndicator> * {
+            background-color:#FFFFFF;
+            display:inline-block;
+            height:30px;
+            -webkit-border-radius:15px;
+            margin:0 5px;
+            width:30px;
+            opacity:0.8;
+         }
+         @-webkit-keyframes appLoadingIndicator{
+         0% {
+         opacity: 0.8
+         }
+         50% {
+         opacity: 0
+         }
+         100% {
+         opacity: 0.8
+         }
+         }
+      </style>
+      <script type="text/javascript">
+         var _filesAssetCount = 0;
+         var _totalAssetCount = 3; 
+         (function()
+         {
+            // Update Page Loading progress every sec
+            var loadingPct = document.getElementById("loadingPct");
+            var lastCount = 0, task = setInterval(function()
+            {               
+               if (_filesAssetCount >= _totalAssetCount)
+               {
+                  clearInterval(task);
+                  loadingPct = null;
+               }
+               else if (lastCount != _filesAssetCount)
+               {
+                  var percentage = Math.round(_filesAssetCount / _totalAssetCount * 100);
+
+                  lastCount = _filesAssetCount;
+                  if (loadingPct)
+                  {
+                     loadingPct.innerText = percentage + '%';
+                  }
+               }
+            }, 0.1 * 1000);
+         })();
+      </script>
+      <!-- The line below must be kept intact for Sencha Command to build your application -->
+      <script type="text/javascript">(function(l){function s(b){function d(a,b){var c=a.length,d,e;for(d=0;d<c;d++){e=a[d];var h=a,j=d,f=void 0;"string"==typeof e&&(e={path:e});e.shared?(e.version=e.shared,f=e.shared+e.path):(B.href=e.path,f=B.href);e.uri=f;e.key=i+"-"+f;g[f]=e;h[j]=e;e.type=b;e.index=d;e.collection=a;e.ready=!1;e.evaluated=!1}return a}var c;"string"==typeof b?(c=b,b=C(c)):c=JSON.stringify(b);var i=b.id,j=i+"-"+D+p,g={};this.key=j;this.css=d(b.css,"css");this.js=d(b.js,"js");window.Ext||(window.Ext={});n.microloaded=
 !0;var f=window.Ext.filterPlatform=function(a){function b(a){var c=/Mobile(\/|\s)/.test(a);return/(iPhone|iPod)/.test(a)||!/(Silk)/.test(a)&&/(Android)/.test(a)&&(/(Android 2)/.test(a)||c)||/(BlackBerry|BB)/.test(a)&&c||/(Windows Phone)/.test(a)}function d(a){return!b(a)&&(/iPad/.test(a)||/Android/.test(a)||/(RIM Tablet OS)/.test(a)||/MSIE 10/.test(a)&&/; Touch/.test(a))}var c=false,e=navigator.userAgent,h,g,a=[].concat(a);h=window.location.search.substr(1).split("&");g={};var f;for(f=0;f<h.length;f++){var i=
 h[f].split("=");g[i[0]]=i[1]}if(h=g.platform)return a.indexOf(h)!=-1;h=0;for(g=a.length;h<g;h++){switch(a[h]){case "phone":c=b(e);break;case "tablet":c=d(e);break;case "desktop":c=!b(e)&&!d(e);break;case "ios":c=/(iPad|iPhone|iPod)/.test(e);break;case "android":c=/(Android|Silk)/.test(e);break;case "blackberry":c=/(BlackBerry|BB)/.test(e);break;case "safari":c=/Safari/.test(e)&&!/(BlackBerry|BB)/.test(e);break;case "chrome":c=/Chrome/.test(e);break;case "ie10":c=/MSIE 10/.test(e)}if(c)return true}return false};
 this.css=this.css.filter(function(a){var b=a.platform;if(b){if(f(b)){n.theme={name:a.theme||"Default"};return true}a.filtered=true;return false}return true});this.js=this.js.filter(function(a){var b=a.platform;if(b&&!f(b)){a.filtered=true;return false}return true});this.assets=this.css.concat(this.js);this.getAsset=function(a){return g[a]};this.store=function(){t(j,c)}}function x(b,d){var c=document.createElement("meta");c.setAttribute("name",b);c.setAttribute("content",d);u.appendChild(c)}function q(b,
@@ -65,14 +93,17 @@ function(b){i(a,b)})}var d=b.getAsset(a.uri),e=a.path,f=a.update;!d||!f||null===
 k.UPDATEREADY)m();else if(k.status==k.CHECKING||k.status==k.DOWNLOADING)k.onupdateready=m,k.onnoupdate=k.onobsolete=function(){j()};!1!==navigator.onLine?e():z("online",e,!1)}var j=b.assets,g=j.length,f;r=b;z("message",G,!1);0==g?i():j.forEach(function(a){var b=w(a.key);null===b?F(a,function(b){a.remote||t(a.key,b);d(a,b)},function(){d(a,"")}):d(a,b)})}function K(b){if(navigator.userAgent.match(/IEMobile\/10\.0/)){var d=document.createElement("style");d.appendChild(document.createTextNode("@media screen and (orientation: portrait) {@-ms-viewport {width: 320px !important;}}@media screen and (orientation: landscape) {@-ms-viewport {width: 560px !important;}}"));
 document.getElementsByTagName("head")[0].appendChild(d)}d=/MSIE 10/.test(navigator.userAgent)?/complete|loaded/:/interactive|complete|loaded/;null!==m.readyState.match(d)?y(b):z("DOMContentLoaded",function(){navigator.standalone?setTimeout(function(){setTimeout(function(){y(b)},1)},1):setTimeout(function(){y(b)},1)},!1)}var E=function(){},v=[],m=l.document,u=m.head,z=l.addEventListener,J=l.removeEventListener,C=JSON.parse,B=m.createElement("a"),A=m.location,D=A.origin+A.pathname+A.search,p="app.json",
 I=!1,r,k,o;try{o=l.localStorage,k=l.applicationCache}catch(N){}if("undefined"===typeof n)var n=l.Ext={};n.blink=function(b){var d=w(b.id+"-"+D+p);x("viewport","width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no");x("apple-mobile-web-app-capable","yes");x("apple-touch-fullscreen","yes");d?(b=new s(d),K(b)):q(p,function(c){b=new s(c);b.store();K(b)})}})(this);;Ext.blink({"id":"2efe81a4-13c9-4f04-ab1f-2ceead0cce05"})</script>
-	</head>
-	<body>
-        <div id="fb-root"></div>
-		<div id="appLoadingIndicator">
-			<div></div>
-			<div></div>
-			<div></div>
-		</div>
-		<div class="clientPhotoCache"></div>
-	</body>
+   </head>
+   <body>
+      <div id="fb-root"></div>
+      <div id="loadingPct" style="font-size:6em;font-weight:bold;position:absolute;top:50%;margin-top: -1.125em;color: black;text-align: center;width: 100%;width: 100;color:#FFFFFF;">0%</div>
+      <div id="appLoadingIndicator">
+         <div></div>
+         <div></div>
+         <div></div>
+      </div>
+      <div class="clientPhotoCache"></div>
+      <p style="display:none;">
+      </p>
+   </body>
 </html>
