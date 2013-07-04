@@ -25,7 +25,7 @@
  */
 if (self.console && self.console.log)
 {
-   _totalAssetCount++;
+   _filesAssetCount++;
    if ( typeof (MessageChannel) != 'undefined')
    {
       /*

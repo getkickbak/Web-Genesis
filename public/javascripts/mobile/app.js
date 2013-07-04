@@ -245,7 +245,7 @@ var resolution = function()
 };
 var imagePath = _hostPath + "resources/themes/images/v1/", images = [new Image(400, 400)], prefix;
 
-_totalAssetCount++;
+_filesAssetCount++;
 if (Ext.os.is('Tablet'))
 {
    if (Ext.os.is('iOS') || Ext.os.is('Desktop'))

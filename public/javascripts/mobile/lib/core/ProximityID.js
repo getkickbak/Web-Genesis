@@ -59,7 +59,7 @@ if (window.cordova || window.Cordova || window.PhoneGap)
 }
 else
 {
-   _totalAssetCount++;
+   _filesAssetCount++;
 
    window.plugins.proximityID =
    {
