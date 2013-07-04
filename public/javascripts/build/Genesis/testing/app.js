@@ -11081,9 +11081,9 @@ Ext.require(['Genesis.controller.ControllerBase'], function()
    {
       window.onhashchange = function()
       {
-         if (location.hash != _application.getHistory().getToken())
+         if (location.hash != ('#' + _application.getHistory().getToken()))
          {
-            location.hash = _application.getHistory().getToken();
+            location.hash = '#' + _application.getHistory().getToken();
             //
             // No need to differentiate between fwd/back, we are a single page app!
             //
