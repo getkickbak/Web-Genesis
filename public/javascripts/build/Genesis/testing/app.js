@@ -21190,6 +21190,7 @@ function _appLaunch()
       }
       // Destroy the #appLoadingIndicator element
       Ext.fly('appLoadingIndicator').destroy();
+      Ext.fly('loadingPct').destroy();
    }
 };
 

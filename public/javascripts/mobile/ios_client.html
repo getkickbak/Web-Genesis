@@ -52,20 +52,6 @@
          }
          }
       </style>
-      <!-- The line below must be kept intact for Sencha Command to build your application -->
-      <script id="microloader" type="text/javascript" src="../touch/microloader/development.js"></script>
-   </head>
-   <body>
-      <div id="fb-root"></div>
-      <div id="loadingPct" style="font-size:8em;font-weight:bold;position:absolute;top:50%;margin-top: -0.75em;color: black;text-align: center;width: 100%;width: 100;color:#FFFFFF;">0%</div>
-      <div id="appLoadingIndicator">
-         <div></div>
-         <div></div>
-         <div></div>
-      </div>
-      <div class="clientPhotoCache"></div>
-      <p style="display:none;">
-      </p>
       <script type="text/javascript">
          var _filesAssetCount = 0;
          const _totalAssetCount = 4; 
@@ -81,16 +67,30 @@
                else if (lastCount != _filesAssetCount)
                {
                   var percentage = Math.round(_filesAssetCount / _totalAssetCount * 100);
+                  var loadingPct = document.getElementById("loadingPct");
 
-                  console.debug("Page Loading at " + percentage + "%");                  
                   lastCount = _filesAssetCount;
-                  //
-                  // Update Process
-                  //
-                  document.getElementById("loadingPct").innerHTML = percentage + '%';
+                  if (loadingPct)
+                  {
+                     loadingPct.innerHTML = percentage + '%';
+                  }
                }
             }, 0.25 * 1000);
          })();
       </script>
+      <!-- The line below must be kept intact for Sencha Command to build your application -->
+      <script id="microloader" type="text/javascript" src="../touch/microloader/development.js"></script>
+   </head>
+   <body>
+      <div id="fb-root"></div>
+      <div id="loadingPct" style="font-size:8em;font-weight:bold;position:absolute;top:50%;margin-top: -0.75em;color: black;text-align: center;width: 100%;width: 100;color:#FFFFFF;">0%</div>
+      <div id="appLoadingIndicator">
+         <div></div>
+         <div></div>
+         <div></div>
+      </div>
+      <div class="clientPhotoCache"></div>
+      <p style="display:none;">
+      </p>
    </body>
 </html>
