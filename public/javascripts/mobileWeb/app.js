@@ -1,3 +1,23 @@
+var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false, serverHost, __init__, merchantMode = false;
+var debugMode = false;
+if (debugMode)
+{
+   //serverHost = 'http://192.168.0.52:3000';
+   //serverHost = 'http://192.168.0.46:3000';
+   //serverHost = 'http://76.10.173.153';
+   serverHost = 'http://www.dev1getkickbak.com';
+   //serverHost = 'http://www.devgetkickbak.com';
+}
+else
+{
+   serverHost = 'http://m.getkickbak.com';
+}
+
+window._application = null;
+window.appName = 'KickBak';
+window._hostPathPrefix = "/javascripts/build/Genesis/";
+window._hostPath = _hostPathPrefix + ((debugMode) ? "testing" : "production") + "/";
+
 /*
 This file is generated and updated by Sencha Cmd. You can edit this file as
 needed for your application, but these edits will have to be merged by
@@ -12,6 +32,21 @@ will need to resolve manually.
 
 // DO NOT DELETE - this directive is required for Sencha Cmd packages to work.
 //@require @packageOverrides
+
+if ( typeof (KickBak) == 'undefined')
+{
+   KickBak = Genesis =
+   {
+   };
+
+}
+else
+{
+   Genesis = KickBak;
+}
+
+
+//@require ../lib/core/Genesis.js
 
 //<debug>
 Ext.Loader.setPath(

@@ -43,18 +43,9 @@
 			"path": "touch/sencha-touch.js",
 			"x-bootstrap": true
 		}, {
-			"path": "lib/core/Overrides.js",
-			"update": "delta"
-		}, {
-			"path": "../lib/core/date.js",
-			"update": "full"
-		}, {
-			"path": "lib/core/FacebookConnect.js",
-			"update": "delta"
-		}, {
-			"path": "../lib/gibberish-aes.min.js",
-			"update": "full"
-		}, {
+         "path": "mcore.js",
+         "update": "delta"
+      }, {
 			"path": "app.js",
 			"bundle": true,  /* Indicates that all class dependencies are concatenated into this file when build */
 			"update": "delta"
@@ -103,7 +94,7 @@
 		/**
 		* List of items in the CACHE MANIFEST section
 		*/
-		"cache": ["index.html", "channel.html", "https://connect.facebook.net/en_US/all.js"],
+		"cache": ["index.html", "channel.html"],
 		/**
 		* List of items in the NETWORK section
 		*/

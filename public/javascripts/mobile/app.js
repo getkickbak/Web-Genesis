@@ -59,7 +59,7 @@ will need to resolve manually.
 // DO NOT DELETE - this directive is required for Sencha Cmd packages to work.
 //@require @packageOverrides
 
-//@require lib/core/Genesis.js
+//@require ../lib/core/Genesis.js
 //@require lib/core/Overrides.js
 
 //<debug>
