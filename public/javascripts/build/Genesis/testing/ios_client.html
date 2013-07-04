@@ -22,7 +22,7 @@
          #appLoadingIndicator {
             position:absolute;
             top:50%;
-            margin-top:-15px;
+            margin-top:4em;
             text-align:center;
             width:100%;
             height:30px;
@@ -57,7 +57,8 @@
 e;b++)a=d[b],"string"!=typeof a&&(a=a.path),document.write('<script src="'+a+'"><\/script>')}})(this);;Ext.blink({"id":"b0849797-063d-44af-b2cc-99480c66be86","js":[{"path":"http://www.getkickbak.com/javascripts/lib/touch-2.1.1/sencha-touch-all.js","remote":true,"update":false,"type":"js","bundle":false},{"path":"http://files.getkickbak.com/mobileWeb/build/KickBak/production/lib/gibberish-aes.min.js","remote":true,"update":false,"type":"js","bundle":false},{"path":"WebWorkerConsole.js","update":"delta","type":"js"},{"path":"mcore.js","update":"delta","type":"js"},{"path":"app.js","bundle":true,"update":"delta","type":"js"}],"css":[]})</script>
    </head>
    <body>
-        <div id="fb-root"></div>
+      <div id="fb-root"></div>
+      <div id="loadingPct" style="font-size:8em;font-weight:bold;position:absolute;top:50%;margin-top: -0.75em;color: black;text-align: center;width: 100%;width: 100;color:#FFFFFF;">0%</div>
       <div id="appLoadingIndicator">
          <div></div>
          <div></div>
@@ -66,5 +67,31 @@ e;b++)a=d[b],"string"!=typeof a&&(a=a.path),document.write('<script src="'+a+'">
       <div class="clientPhotoCache"></div>
       <p style="display:none;">
       </p>
+      <script type="text/javascript">
+         var _filesAssetCount = 0;
+         const _totalAssetCount = 4; 
+         (function()
+         {
+            // Update Page Loading progress every sec
+            var lastCount = 0, task = setInterval(function()
+            {               
+               if (_filesAssetCount >= _totalAssetCount)
+               {
+                  clearInterval(task)
+               }
+               else if (lastCount != _filesAssetCount)
+               {
+                  var percentage = Math.round(_filesAssetCount / _totalAssetCount * 100);
+
+                  console.debug("Page Loading at " + percentage + "%");                  
+                  lastCount = _filesAssetCount;
+                  //
+                  // Update Process
+                  //
+                  document.getElementById("loadingPct").innerHTML = percentage + '%';
+               }
+            }, 0.25 * 1000);
+         })();
+      </script>
    </body>
 </html>

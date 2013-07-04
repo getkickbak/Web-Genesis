@@ -5,6 +5,7 @@ window._application = null;
 window._codec = null;
 window._hostPathPrefix = "/javascripts/build/Genesis/";
 window._hostPath = _hostPathPrefix + ((debugMode) ? "testing" : "production") + "/";
+_totalAssetCount++;
 
 if (debugMode)
 {
@@ -134,6 +135,7 @@ function _appLaunch()
 var flag = 0x000;
 var appLaunchCallbackFn = function(val)
 {
+   _filesAssetCount++;
    if ((flag |= val) == 0x111)
    {
       Ext.application(
@@ -199,6 +201,8 @@ var appLaunchCallbackFn = function(val)
 
 Ext.onReady(function()
 {
+   _totalAssetCount++;
+
    console.debug = (!debugMode) ? Ext.emptyFn : console.debug || console.log;
    console.warn = console.warn || console.debug;
 
@@ -241,6 +245,7 @@ var resolution = function()
 };
 var imagePath = _hostPath + "resources/themes/images/v1/", images = [new Image(400, 400)], prefix;
 
+_totalAssetCount++;
 if (Ext.os.is('Tablet'))
 {
    if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
@@ -275,6 +280,7 @@ else
       Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [(!Ext.os.is('iPhone5')) ? 0x011 : 0x001]));
       if (Ext.os.is('iPhone5'))
       {
+         _totalAssetCount++;
          Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone5.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x010]));
       }
    }

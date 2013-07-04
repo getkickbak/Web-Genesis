@@ -59,6 +59,8 @@ if (window.cordova || window.Cordova || window.PhoneGap)
 }
 else
 {
+   _totalAssetCount++;
+
    window.plugins.proximityID =
    {
       loFreq : 17000.0,
