@@ -1,8 +1,9 @@
-var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false, phoneGapAvailable = false, merchantMode = false, appName = 'GetKickBak';
+var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false, phoneGapAvailable = false, merchantMode = false;
 var debugMode = true, serverHost;
 
 window._application = null;
 window._codec = null;
+window.appName = 'GetKickBak';
 window._hostPathPrefix = "/javascripts/build/Genesis/";
 window._hostPath = _hostPathPrefix + ((debugMode) ? "testing" : "production") + "/";
 _totalAssetCount++;
