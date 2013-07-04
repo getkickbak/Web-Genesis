@@ -468,6 +468,7 @@ Genesis.constants =
    },
    site : 'www.getkickbak.com',
    photoSite : 'https://s3.amazonaws.com/files.getkickbak.com',
+   resourceSite : "resources/",
    debugVPrivKey : 'oSG8JclEHvRy5ngkb6ehWbb6TTRFXd8t',
    debugRPrivKey : 'oSG8JclEHvRy5ngkb6ehWbb6TTRFXd8t',
    debugVenuePrivKey : 'Debug Venue',
@@ -527,7 +528,7 @@ Genesis.constants =
          }
          me.pushNotifType = 1;
 
-         console.log("Running a iOS System or a Desktop System");
+         console.log("Running a iOS System");
       }
       else if (Ext.os.is('Android') || Ext.os.is('Desktop'))
       {
@@ -561,7 +562,7 @@ Genesis.constants =
          }
          me.pushNotifType = 3;
 
-         console.log("Running a Android System");
+         console.log("Running a Android or Desktop System");
       }
       else
       {

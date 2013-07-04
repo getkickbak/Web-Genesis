@@ -1,4 +1,4 @@
-var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false, serverHost, __init__, merchantMode = false;
+var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false, serverHost, phoneGapAvailable = false, merchantMode = false;
 var debugMode = false;
 if (debugMode)
 {
@@ -17,7 +17,7 @@ window._application = null;
 window.appName = 'KickBak';
 window._hostPathPrefix = "/javascripts/build/Genesis/";
 window._hostPath = _hostPathPrefix + ((debugMode) ? "testing" : "production") + "/";
-_filesAssetCount+=3;
+_filesAssetCount += 3;
 
 /*
 This file is generated and updated by Sencha Cmd. You can edit this file as
@@ -33,20 +33,6 @@ will need to resolve manually.
 
 // DO NOT DELETE - this directive is required for Sencha Cmd packages to work.
 //@require @packageOverrides
-
-if ( typeof (KickBak) == 'undefined')
-{
-   KickBak = Genesis =
-   {
-   };
-
-}
-else
-{
-   Genesis = KickBak;
-}
-
-
 //@require ../lib/core/Genesis.js
 
 //<debug>
@@ -71,14 +57,16 @@ Ext.application(
    //'Ext.device.Camera', 'Ext.device.Communicator', 'Ext.device.Geolocation', 'Ext.device.Orientation'],
    views : ['ViewBase', 'Viewport', 'Document', 'client.SignUpPage'],
    controllers : ['client.Viewport', 'client.SignUp'],
+   isIconPrecomposed : true,
    icon :
    {
-      '57' : 'resources/icons/Icon.png',
-      '72' : 'resources/icons/Icon~ipad.png',
-      '114' : 'resources/icons/Icon@2x.png',
-      '144' : 'resources/icons/Icon~ipad@2x.png'
+      36 : 'resources/icons/icon36.png',
+      48 : 'resources/icons/icon48.png',
+      57 : 'resources/icons/icon.png',
+      72 : 'resources/icons/icon@72.png',
+      114 : 'resources/icons/icon@2x.png',
+      144 : 'resources/icons/icon@144.png'
    },
-   isIconPrecomposed : true,
    startupImage :
    {
       '320x460' : 'resources/startup/320x460.jpg',

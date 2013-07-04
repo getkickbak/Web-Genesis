@@ -1752,6 +1752,7 @@ Genesis.constants =
    },
    site : 'www.getkickbak.com',
    photoSite : 'https://s3.amazonaws.com/files.getkickbak.com',
+   resourceSite : "resources/",
    debugVPrivKey : 'oSG8JclEHvRy5ngkb6ehWbb6TTRFXd8t',
    debugRPrivKey : 'oSG8JclEHvRy5ngkb6ehWbb6TTRFXd8t',
    debugVenuePrivKey : 'Debug Venue',
@@ -1811,7 +1812,7 @@ Genesis.constants =
          }
          me.pushNotifType = 1;
 
-         console.log("Running a iOS System or a Desktop System");
+         console.log("Running a iOS System");
       }
       else if (Ext.os.is('Android') || Ext.os.is('Desktop'))
       {
@@ -1845,7 +1846,7 @@ Genesis.constants =
          }
          me.pushNotifType = 3;
 
-         console.log("Running a Android System");
+         console.log("Running a Android or Desktop System");
       }
       else
       {
@@ -5000,7 +5001,7 @@ Ext.define('Genesis.controller.ControllerBase',
                   width : '100%',
                   flex : 1,
                   style : 'text-align:center;display:inline-table;color:white;font-size:1.1em;',
-                  html : me.fbConnectRequestMsg + '<img width="160" style="margin:0.7em 0;" src="resources/themes/images/v1/facebook_icon.png"/>'
+                  html : me.fbConnectRequestMsg + '<img width="160" style="margin:0.7em 0;" src="' + Genesis.constants.resourceSite + 'images/facebook_icon.png"/>'
                },
                {
                   docked : 'bottom',

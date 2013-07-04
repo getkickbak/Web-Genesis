@@ -46,7 +46,7 @@ Ext.define('KickBak.view.client.SignUpPage',
                xtype : 'togglefield',
                name : 'facebook',
                label : '<img src="' + //
-               KickBak.constants.resourceSite + 'images/' + KickBak.constants.themeName + 'facebook_icon.png" ' + //
+               KickBak.constants.resourceSite + 'images/' + 'facebook_icon.png" ' + //
                'style="height:' + (2.5 / 0.8) + 'em' + ';float:left;margin-right:0.8em;"/> Facebook',
                value : 0
             },
@@ -55,7 +55,7 @@ Ext.define('KickBak.view.client.SignUpPage',
                xtype : 'togglefield',
                name : 'twitter',
                label : '<img src="' + //
-               KickBak.constants.resourceSite + 'images/' + KickBak.constants.themeName + 'twitter_icon.png" ' + //
+               KickBak.constants.resourceSite + 'images/' + 'twitter_icon.png" ' + //
                'style="height:' + (2.5 / 0.8) + 'em' + ';float:left;margin-right:0.8em;"/> Twitter',
                value : 0
             }]
