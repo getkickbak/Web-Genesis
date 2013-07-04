@@ -202,8 +202,6 @@ var appLaunchCallbackFn = function(val)
 
 Ext.onReady(function()
 {
-   _totalAssetCount++;
-
    console.debug = (!debugMode) ? Ext.emptyFn : console.debug || console.log;
    console.warn = console.warn || console.debug;
 
