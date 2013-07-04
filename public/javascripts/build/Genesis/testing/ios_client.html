@@ -58,16 +58,17 @@
          (function()
          {
             // Update Page Loading progress every sec
+            var loadingPct = document.getElementById("loadingPct");
             var lastCount = 0, task = setInterval(function()
             {               
                if (_filesAssetCount >= _totalAssetCount)
                {
-                  clearInterval(task)
+                  clearInterval(task);
+                  loadingPct = null;
                }
                else if (lastCount != _filesAssetCount)
                {
                   var percentage = Math.round(_filesAssetCount / _totalAssetCount * 100);
-                  var loadingPct = document.getElementById("loadingPct");
 
                   lastCount = _filesAssetCount;
                   if (loadingPct)
@@ -75,7 +76,7 @@
                      loadingPct.innerText = percentage + '%';
                   }
                }
-            }, 0.25 * 1000);
+            }, 0.1 * 1000);
          })();
       </script>
       <!-- The line below must be kept intact for Sencha Command to build your application -->
