@@ -165,8 +165,9 @@ __initFb__ = function(_app)
             {
                'tap' : function()
                {
-                  Ext.Viewport.setMasked(null);
+                  app.db.removeLocalDBAttrib('fbLoginInProgress');
                   me.facebook_loginCallback(null);
+                  Ext.Viewport.setMasked(null);
                }
             }
          });

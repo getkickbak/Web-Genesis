@@ -119,7 +119,7 @@
 	* Directory path to store all previous production builds. Note that the content generated inside this directory
 	* must be kept intact for proper generation of deltas between updates
 	*/
-	"archivePath": "archive",
+	"archivePath": "build/archive",
 
     /**
      * List of package names to require for the cmd build process
