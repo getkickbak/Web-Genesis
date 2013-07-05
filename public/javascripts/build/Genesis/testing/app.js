@@ -1290,7 +1290,6 @@ if ( typeof (Genesis) == 'undefined')
    Genesis =
    {
    };
-
 }
 
 window.plugins = window.plugins ||
@@ -13223,7 +13222,7 @@ Ext.define('Genesis.controller.client.MainPage',
    // --------------------------------------------------------------------------
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      if (Ext.os.is('Android') && Genesis.fn.isNative())
+      if (Genesis.fn.isNative())
       {
          navigator.splashscreen.hide();
       }
@@ -21178,6 +21177,7 @@ function _appLaunch()
       }
       // Destroy the #appLoadingIndicator element
       Ext.fly('appLoadingIndicator').destroy();
+      _loadingPct = null;
       Ext.fly('loadingPct').destroy();
    }
 };

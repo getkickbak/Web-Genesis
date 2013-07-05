@@ -53,7 +53,7 @@
          }
       </style>
       <script type="text/javascript">
-         var _filesAssetCount = 0, _totalAssetCount = 4, loadingPct;
+         var _filesAssetCount = 0, _totalAssetCount = 4, _loadingPct;
          (function()
          {
             // Update Page Loading progress every sec
@@ -62,16 +62,16 @@
                if (_filesAssetCount >= _totalAssetCount)
                {
                   clearInterval(task);
-                  loadingPct = null;
+                  _loadingPct = null;
                }
                else if (lastCount != _filesAssetCount)
                {
                   var percentage = Math.round(_filesAssetCount / _totalAssetCount * 100);
 
                   lastCount = _filesAssetCount;
-                  if (loadingPct)
+                  if (_loadingPct)
                   {
-                     loadingPct.innerText = percentage + '%';
+                     _loadingPct.innerText = percentage + '%';
                   }
                }
             }, 0.1 * 1000);
@@ -98,10 +98,9 @@ v("apple-mobile-web-app-capable","yes");v("apple-touch-fullscreen","yes");b?(a=n
          <div></div>
       </div>
       <div class="clientPhotoCache"></div>
-      <p style="display:none;">
+      <p style="display:none;"></p>
       <script type="text/javascript">
-         loadingPct = document.getElementById("loadingPct");
+         _loadingPct = document.getElementById("loadingPct");
       </script>
-      </p>
    </body>
 </html>

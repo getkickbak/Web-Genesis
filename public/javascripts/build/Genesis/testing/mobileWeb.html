@@ -53,27 +53,25 @@
          }
       </style>
       <script type="text/javascript">
-         var _filesAssetCount = 0;
-         var _totalAssetCount = 4; 
+         var _filesAssetCount = 0, _totalAssetCount = 4, _loadingPct;
          (function()
          {
             // Update Page Loading progress every sec
-            var loadingPct = document.getElementById("loadingPct");
             var lastCount = 0, task = setInterval(function()
             {               
                if (_filesAssetCount >= _totalAssetCount)
                {
                   clearInterval(task);
-                  loadingPct = null;
+                  _loadingPct = null;
                }
                else if (lastCount != _filesAssetCount)
                {
                   var percentage = Math.round(_filesAssetCount / _totalAssetCount * 100);
 
                   lastCount = _filesAssetCount;
-                  if (loadingPct)
+                  if (_loadingPct)
                   {
-                     loadingPct.innerText = percentage + '%';
+                     _loadingPct.innerText = percentage + '%';
                   }
                }
             }, 0.1 * 1000);
@@ -92,7 +90,9 @@ e;b++)a=d[b],"string"!=typeof a&&(a=a.path),document.write('<script src="'+a+'">
          <div></div>
       </div>
       <div class="clientPhotoCache"></div>
-      <p style="display:none;">
-      </p>
+      <p style="display:none;"></p>
+      <script type="text/javascript">
+         _loadingPct = document.getElementById("loadingPct");
+      </script>
    </body>
 </html>
