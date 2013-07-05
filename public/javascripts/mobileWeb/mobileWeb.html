@@ -53,7 +53,7 @@
          }
       </style>
       <script type="text/javascript">
-         var _filesAssetCount = 0, _totalAssetCount = 3, _loadingPct; 
+         var _filesAssetCount = 0, _totalAssetCount = 4, _loadingPct;
          (function()
          {
             // Update Page Loading progress every sec
@@ -62,7 +62,7 @@
                if (_filesAssetCount >= _totalAssetCount)
                {
                   clearInterval(task);
-                  loadingPct = null;
+                  _loadingPct = null;
                }
                else if (lastCount != _filesAssetCount)
                {
@@ -78,7 +78,7 @@
          })();
       </script>
       <!-- The line below must be kept intact for Sencha Command to build your application -->
-      <script id="microloader" type="text/javascript" src="touch/microloader/development.js"></script>
+      <script id="microloader" type="text/javascript" src="../touch/microloader/development.js"></script>
    </head>
    <body>
       <div id="fb-root"></div>

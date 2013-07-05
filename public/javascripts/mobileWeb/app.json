@@ -7,7 +7,7 @@
 	/**
 	* The file path to this application's front HTML document, relative to this app.json file
 	*/
-	"indexHtmlPath": "index.html",
+	"indexHtmlPath": "mobileWeb.html",
 
 	/**
 	* The absolute URL to this application in development environment, i.e: the URL to run this application
@@ -94,7 +94,7 @@
 		/**
 		* List of items in the CACHE MANIFEST section
 		*/
-		"cache": ["index.html", "channel.html"],
+		"cache": ["mobileWeb.html"],
 		/**
 		* List of items in the NETWORK section
 		*/
@@ -108,7 +108,7 @@
 	/**
 	* Extra resources to be copied along when build
 	*/
-	"resources": ["resources/images", "resources/icons", "resources/startup", "channel.html", "term_of_service.htm", "privacy.htm", "program_rules.htm"],
+	"resources": ["resources/images", "resources/icons", "resources/startup", "term_of_service.htm", "privacy.htm", "program_rules.htm"],
 
 	/**
 	* File / directory name matchers to ignore when copying to the builds, must be valid regular expressions
