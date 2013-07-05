@@ -114,7 +114,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
    redeemItemCb : function(b)
    {
       var me = this, viewport = me.getViewPortCntlr();
-      
+
       viewport.popUpInProgress = false;
       me._actions.hide();
       viewport.setActiveController(null);
@@ -123,10 +123,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
       //
       // Stop receiving ProximityID
       //
-      if (Genesis.fn.isNative())
-      {
-         window.plugins.proximityID.stop();
-      }
+      window.plugins.proximityID.stop();
 
       if (b && (b.toLowerCase() == 'manual'))
       {

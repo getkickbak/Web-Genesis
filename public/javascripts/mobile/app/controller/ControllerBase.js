@@ -820,12 +820,7 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    broadcastLocalID : function(success, fail)
    {
-      var me = this, c = Genesis.constants, task;
-      me.send_vol = -1;
-      success = success || Ext.emptyFn;
-      fail = fail || Ext.emptyFn;
-
-      var cancel = function()
+      var me = this, c = Genesis.constants, cancel = function()
       {
          Ext.Ajax.abort();
          if (me.send_vol != -1)
@@ -833,11 +828,11 @@ Ext.define('Genesis.controller.ControllerBase',
             window.plugins.proximityID.setVolume(-1);
          }
          window.plugins.proximityID.stop();
-         if (task)
-         {
-            clearInterval(task);
-         }
       };
+
+      me.send_vol = -1;
+      success = success || Ext.emptyFn;
+      fail = fail || Ext.emptyFn;
 
       window.plugins.proximityID.send(function(result)
       {

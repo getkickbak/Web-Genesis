@@ -249,10 +249,7 @@ Ext.define('Genesis.controller.server.Rewards',
    {
       var me = this;
 
-      if (Genesis.fn.isNative())
-      {
-         window.plugins.proximityID.stop();
-      }
+      window.plugins.proximityID.stop();
       me.getViewPortCntlr().setActiveController(null);
       console.debug("Rewards onDeactivate Called. Reset Amount ...");
    },
@@ -317,10 +314,7 @@ Ext.define('Genesis.controller.server.Rewards',
       //
       // Stop receiving ProximityID
       //
-      if (Genesis.fn.isNative())
-      {
-         window.plugins.proximityID.stop();
-      }
+      window.plugins.proximityID.stop();
 
       if (b && (b.toLowerCase() == 'manual'))
       {
