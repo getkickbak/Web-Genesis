@@ -53,12 +53,10 @@
          }
       </style>
       <script type="text/javascript">
-         var _filesAssetCount = 0;
-         var _totalAssetCount = 4; 
+         var _filesAssetCount = 0, _totalAssetCount = 4, loadingPct;
          (function()
          {
             // Update Page Loading progress every sec
-            var loadingPct = document.getElementById("loadingPct");
             var lastCount = 0, task = setInterval(function()
             {               
                if (_filesAssetCount >= _totalAssetCount)
@@ -101,6 +99,9 @@ v("apple-mobile-web-app-capable","yes");v("apple-touch-fullscreen","yes");b?(a=n
       </div>
       <div class="clientPhotoCache"></div>
       <p style="display:none;">
+      <script type="text/javascript">
+         loadingPct = document.getElementById("loadingPct");
+      </script>
       </p>
    </body>
 </html>

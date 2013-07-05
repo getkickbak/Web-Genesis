@@ -86,6 +86,7 @@ Ext.application(
 
       // Destroy the #appLoadingIndicator element
       Ext.fly('appLoadingIndicator').destroy();
+      _loadingPct = null;
       Ext.fly('loadingPct').destroy();
 
       Ext.create('KickBak.view.Viewport');
