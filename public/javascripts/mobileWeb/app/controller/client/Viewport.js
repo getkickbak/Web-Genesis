@@ -437,7 +437,7 @@ Ext.define('KickBak.controller.client.Viewport',
    {
       var me = this;
 
-      __initFb__(KickBak);
+      __initFb__("KickBak");
 
       Ext.apply(KickBak, Genesis);
       Genesis = KickBak;
