@@ -407,7 +407,7 @@ Ext.define('KickBak.controller.client.SignUp',
       {
          KickBak.fb.un('connected', me.updateFBSignUpPopupCallback);
          KickBak.fb.un('unauthorized', me.updateFBSignUpPopupCallback);
-         KickBak.fb.un('exception', me.updateFBSignUpPopupCallback);         
+         KickBak.fb.un('exception', me.updateFBSignUpPopupCallback);
       }
    },
    onToggleTwitter : function(toggle, slider, thumb, newValue, oldValue, eOpts)
@@ -490,6 +490,10 @@ Ext.define('KickBak.controller.client.SignUp',
          KickBak.fb.on('connected', me.updateFBSignUpPopupCallback, me);
          KickBak.fb.on('unauthorized', me.updateFBSignUpPopupCallback, me);
          KickBak.fb.on('exception', me.updateFBSignUpPopupCallback, me);
+      }
+      else if (db['fbResponse'])
+      {
+         me.updateFBSignUpPopupCallback(db['fbResponse'], null);
       }
 
    }
