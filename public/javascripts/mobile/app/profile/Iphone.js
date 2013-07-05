@@ -160,6 +160,3 @@ function initPushwoosh()
 
    //pushNotification.setApplicationIconBadgeNumber(0);
 }
-
-QRCodeReader.prototype.scanType = "Default";
-console.debug("QRCode Scanner Mode[" + QRCodeReader.prototype.scanType + "]");

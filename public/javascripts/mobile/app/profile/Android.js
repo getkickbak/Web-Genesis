@@ -100,6 +100,3 @@ function initPushwoosh()
 
    //pushNotification.unregisterDevice(callback, callback);
 }
-
-QRCodeReader.prototype.scanType = "Default";
-console.debug("QRCode Scanner Mode[" + QRCodeReader.prototype.scanType + "]");

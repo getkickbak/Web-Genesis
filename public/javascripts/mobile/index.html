@@ -75,6 +75,8 @@
                var viewport = _application.getController('client' + '.Viewport');
                viewport.appName = appName;
 
+               QRCodeReader.prototype.scanType = "Default";
+               console.debug("QRCode Scanner Mode[" + QRCodeReader.prototype.scanType + "]");
                Ext.create('Genesis.view.Viewport');
                console.debug("Launched App");
                navigator.splashscreen.hide();
@@ -84,7 +86,7 @@
       </script>
       <script type="text/javascript">
          var launched = 0x000,  pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false, phoneGapAvailable = true;
-         var debugMode = false, serverHost, merchantMode = false, _application, _filesAssetCount;
+         var debugMode = false, serverHost, merchantMode = false, _application, _filesAssetCount = 0;
          var appName = 'GetKickBak', _appPath = "app", _extPath = 'lib/touch-2.1.1/src';
          
          if (debugMode)
@@ -140,7 +142,6 @@
                   }
                }
             }, false);
-
             document.addEventListener("offline", function()
             {
                if (Ext.device)
@@ -160,7 +161,6 @@
                }
                console.debug("App is Paused");
             }, false);
-
             document.addEventListener("resume", function()
             {
                if (Ext.device)
@@ -176,7 +176,6 @@
                }
                console.debug("App is Resumed");
             }, false);
-
             document.addEventListener("deviceready", function()
             {
                navigator.splashscreen.show();

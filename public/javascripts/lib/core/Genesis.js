@@ -6,7 +6,6 @@ if ( typeof (Genesis) == 'undefined')
    Genesis =
    {
    };
-
 }
 
 window.plugins = window.plugins ||
