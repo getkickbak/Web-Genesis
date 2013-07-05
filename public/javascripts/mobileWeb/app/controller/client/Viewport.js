@@ -439,6 +439,9 @@ Ext.define('KickBak.controller.client.Viewport',
 
       __initFb__(KickBak);
 
+      Ext.apply(KickBak, Genesis);
+      Genesis = KickBak;
+
       me.callParent(arguments);
 
       console.log("Client Viewport Init");
