@@ -1,10 +1,10 @@
-__initFb__ = function(_app)
+__initFb__ = function(_app, _appName)
 {
    var app = _app;
    // **************************************************************************
    // Facebook API
    // **************************************************************************
-   Ext.define(app + '.fb',
+   Ext.define(_appName + '.fb',
    {
       mixins : ['Ext.mixin.Observable'],
       singleton : true,

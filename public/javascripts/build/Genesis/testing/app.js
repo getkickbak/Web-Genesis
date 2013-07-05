@@ -11602,7 +11602,7 @@ Ext.define('Genesis.controller.client.Viewport',
    {
       var me = this;
 
-      __initFb__("Genesis");
+      __initFb__(Genesis, "Genesis");
 
       me.callParent(arguments);
 
