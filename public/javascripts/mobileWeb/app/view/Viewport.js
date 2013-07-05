@@ -43,10 +43,6 @@ Ext.define('KickBak.view.Viewport',
        }
        });
        */
-      Ext.defer(function()
-      {
-         _application.getController('client' + '.Viewport').redirectTo('signup');
-      }, 1);
    },
    /**
     * Animates to the supplied activeItem with a specified animation. Currently this only works

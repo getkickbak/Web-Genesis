@@ -327,7 +327,7 @@ Ext.define('KickBak.controller.ControllerBase',
             {
                if (btn.toLowerCase() == 'proceed')
                {
-                  _application.getController('SignUp').fireEvent('upgradeDevice');
+                  _application.getController('client' + '.SignUp').fireEvent('upgradeDevice');
                }
             }
          });

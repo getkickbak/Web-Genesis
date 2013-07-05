@@ -526,20 +526,11 @@ Ext.define('Genesis.controller.client.Viewport',
    {
       var me = this;
 
-      __initFb__();
+      __initFb__(Genesis);
 
       me.callParent(arguments);
 
       console.log("Client Viewport Init");
-      //
-      // Initialize Facebook
-      //
-      /*
-      if (Genesis.fn.isNative())
-      {
-      Genesis.fb.initFb();
-      }
-      */
 
       //
       // Initialize Sound Files, make it non-blocking

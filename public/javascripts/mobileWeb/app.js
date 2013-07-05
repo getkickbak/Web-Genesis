@@ -78,17 +78,22 @@ Ext.application(
    },
    launch : function()
    {
-      // Destroy the #appLoadingIndicator element
-      Ext.fly('appLoadingIndicator').destroy();
       _application = this;
+      var viewport = _application.getController('client' + '.Viewport');
       console.log("Ext App Launch");
 
-      var viewport = _application.getController('client' + '.Viewport');
       viewport.appName = appName;
 
-      //console.log("Launching App");
+      // Destroy the #appLoadingIndicator element
+      Ext.fly('appLoadingIndicator').destroy();
+      Ext.fly('loadingPct').destroy();
+
       Ext.create('KickBak.view.Viewport');
-      //this.redirectTo('');
+
+      if (!Genesis.db.getLocalDB()['fbLoginInProgress'])
+      {
+         Ext.defer(viewport.redirectTo, 1, viewport, ['signup']);
+      }
       console.log("Launched App");
    },
    onUpdated : function()

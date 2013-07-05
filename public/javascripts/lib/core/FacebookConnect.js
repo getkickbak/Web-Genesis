@@ -1,9 +1,10 @@
-__initFb__ = function()
+__initFb__ = function(_app)
 {
+   var app = _app;
    // **************************************************************************
    // Facebook API
    // **************************************************************************
-   Ext.define('Genesis.fb',
+   Ext.define(app + '.fb',
    {
       mixins : ['Ext.mixin.Observable'],
       singleton : true,
@@ -18,7 +19,7 @@ __initFb__ = function()
       //fbConnectReconnectMsg : 'Please confirm to Reconnect to Facebook',
       connectingToFBMsg : function()
       {
-         return ('Connecting to Facebook ...' + Genesis.constants.addCRLF() + '(Tap to Close)');
+         return ('Connecting to Facebook ...' + app.constants.addCRLF() + '(Tap to Close)');
       },
       loggingOutOfFBMsg : 'Logging out of Facebook ...',
       fbConnectFailMsg : 'Error Connecting to Facebook.',
@@ -31,16 +32,15 @@ __initFb__ = function()
       // **************************************************************************
       initialize : function()
       {
-         var me = this, db = Genesis.db.getLocalDB();
+         var me = this, db = app.db.getLocalDB();
 
-         me.appId = (Genesis.constants.debugMode()) ? 477780595628080 : 197968780267830;
+         me.appId = (app.constants.debugMode()) ? 477780595628080 : 197968780267830;
          console.log("FacebookConnect::initialize");
 
-         if (!Genesis.fn.isNative() && db['fbLoginInProgress'])
+         if (!app.fn.isNative() && db['fbLoginInProgress'])
          {
             me.cb = Ext.decode(db['fbLoginInProgress']);
             me.setLoadMask();
-            Genesis.db.removeLocalDBAttrib('fbLoginInProgress');
             me.detectAccessToken(location.href);
          }
       },
@@ -59,7 +59,7 @@ __initFb__ = function()
           return window.location.protocol + "//" + window.location.host + window.location.pathname
           }
           */
-         return (((Genesis.constants.debugMode()) ? Genesis.constants.serverHost() : 'http://m.getkickbak.com') + "/");
+         return (((app.constants.debugMode()) ? app.constants.serverHost() : 'http://m.getkickbak.com') + "/");
       },
       /**
        * The Facebook authentication URL.
@@ -99,7 +99,7 @@ __initFb__ = function()
             birthday : birthday,
             photoURL : this.getFbProfilePhoto(response.id),
             //accessToken : FB.getAuthResponse()['accessToken']
-            accessToken : Genesis.db.getLocalDB()['access_token']
+            accessToken : app.db.getLocalDB()['access_token']
          }
          console.debug("FbResponse - [" + Ext.encode(params) + "]");
 
@@ -107,7 +107,7 @@ __initFb__ = function()
       },
       facebook_onLogin : function(supress, message, activeConnRequired)
       {
-         var me = this, refreshConn = true, db = Genesis.db.getLocalDB();
+         var me = this, refreshConn = true, db = app.db.getLocalDB();
          var connected = (db['currFbId'] > 0) && (parseInt(db['fbExpiresIn']) > 0);
 
          console.debug(//
@@ -145,7 +145,7 @@ __initFb__ = function()
 
          me.setLoadMask();
 
-         Genesis.db.setLocalDBAttrib('fbLoginInProgress', Ext.encode(me.cb));
+         app.db.setLocalDBAttrib('fbLoginInProgress', Ext.encode(me.cb));
          //window.top.location = me.redirectUrl();
          //
          // Open InAppBrowser
@@ -155,7 +155,7 @@ __initFb__ = function()
       setLoadMask : function()
       {
          var me = this;
-         
+
          Ext.Viewport.setMasked(null);
          Ext.Viewport.setMasked(
          {
@@ -173,7 +173,7 @@ __initFb__ = function()
       },
       detectAccessToken : function(url)
       {
-         var me = this, db = Genesis.db.getLocalDB();
+         var me = this, db = app.db.getLocalDB();
 
          if (url.indexOf("access_token=") >= 1)
          {
@@ -185,10 +185,19 @@ __initFb__ = function()
                db['fbExpiresIn'] = (new Date(Date.now() + Number(params['expires_in']))).getTime();
                //console.debug("FacebookConnect::access_token=" + db['access_token']);
                //console.debug("FacebookConnect::fbExpiresIn=" + db['fbExpiresIn']);
-               Genesis.db.setLocalDB(db);
+               app.db.setLocalDB(db);
 
-               if (!Genesis.fn.isNative())
+               if (!app.fn.isNative())
                {
+                  var callback = function()
+                  {
+                     app.db.removeLocalDBAttrib('fbLoginInProgress');
+                     _application.getController('client' + '.Viewport').redirectTo('signup');
+                  };
+                  app.fb.on('connected', callback);
+                  app.fb.on('unauthorized', callback);
+                  app.fb.on('exception', callback);
+
                   //location.hash = "#";
                   me.accessTokenCallback();
                }
@@ -202,12 +211,12 @@ __initFb__ = function()
       accessTokenCallback : function()
       {
          var me = this;
-         
+
          Ext.Ajax.request(
          {
             async : true,
             disableCaching : false,
-            url : 'https://graph.facebook.com/me?access_token=' + Genesis.db.getLocalDB()['access_token'],
+            url : 'https://graph.facebook.com/me?access_token=' + app.db.getLocalDB()['access_token'],
             callback : function(option, success, response)
             {
                if (success || (response.status == 200))
@@ -236,10 +245,10 @@ __initFb__ = function()
       {
          var me = this;
 
-         if (Genesis.fn.isNative())
+         if (app.fn.isNative())
          {
             var ref = window.open(me.redirectUrl(), '_blank', 'location=no,toolbar=no,closebuttoncaption=Cancel');
-            
+
             me.fbLoginTimeout = setTimeout(function()
             {
                me.fireEvent('loginStatus');
@@ -249,7 +258,7 @@ __initFb__ = function()
                   msg : 'The request to Facebook timed out.'
                }, null);
 
-               Genesis.db.removeLocalDBAttrib('fbLoginInProgress');
+               app.db.removeLocalDBAttrib('fbLoginInProgress');
                ref.close();
                me.facebook_loginCallback(null);
             }, me.fbTimeout);
@@ -274,7 +283,7 @@ __initFb__ = function()
             {
                clearTimeout(me.fbLoginTimeout);
                delete me.fbLoginTimeout;
-               Genesis.db.removeLocalDBAttrib('fbLoginInProgress');
+               app.db.removeLocalDBAttrib('fbLoginInProgress');
 
                if (me.code)
                {
@@ -291,7 +300,13 @@ __initFb__ = function()
          }
          else
          {
-            location.href = me.redirectUrl();
+            //
+            // Let code update LocalStorage before leaving site
+            //
+            Ext.defer(function()
+            {
+               location.href = me.redirectUrl();
+            }, 1 * 1000);
          }
       },
       facebook_loginCallback : function(res)
@@ -362,7 +377,7 @@ __initFb__ = function()
                {
                   if (!response.error || (response.id && (response.id > 0)))
                   {
-                     var db = Genesis.db.getLocalDB(), facebook_id = response.id;
+                     var db = app.db.getLocalDB(), facebook_id = response.id;
 
                      //console.debug("facebookConnect.login/me:[" + Ext.encode(response) + "]");
                      console.debug("Session ID[" + facebook_id + "]");
@@ -370,8 +385,8 @@ __initFb__ = function()
                      db['fbAccountId'] = response.email;
                      rc = db['fbResponse'] = me.createFbResponse(response);
 
-                     Genesis.db.setLocalDB(db);
-                     db = Genesis.db.getLocalDB();
+                     app.db.setLocalDB(db);
+                     db = app.db.getLocalDB();
 
                      console.debug('You\`ve logged into Facebook! ' + '\n' + //
                      'Email(' + rc['email'] + ')' + '\n' + //
@@ -402,7 +417,7 @@ __initFb__ = function()
                               if (operation.wasSuccessful())
                               {
                                  Ext.Viewport.setMasked(null);
-                                 Genesis.db.setLocalDBAttrib('enableFB', true);
+                                 app.db.setLocalDBAttrib('enableFB', true);
                               }
                               me.fireEvent('connected', rc, operation);
                            }
@@ -410,7 +425,7 @@ __initFb__ = function()
                      }
                      else
                      {
-                        Genesis.db.setLocalDBAttrib('enableFB', true);
+                        app.db.setLocalDBAttrib('enableFB', true);
                         me.fireEvent('connected', rc, null);
                         delete me.cb;
                      }
@@ -437,13 +452,13 @@ __initFb__ = function()
          console.debug("facebook_onLogout");
          try
          {
-            var db = Genesis.db.getLocalDB();
+            var db = app.db.getLocalDB();
             db['currFbId'] = 0;
             delete db['fbAccountId'];
             delete db['fbResponse'];
             delete db['fbAuthCode'];
             delete db['fbExpiresIn'];
-            Genesis.db.setLocalDB(db);
+            app.db.setLocalDB(db);
             /*
              if (contactFB)
              {
@@ -579,7 +594,7 @@ __initFb__ = function()
                         handler : function()
                         {
                            me.actions.hide();
-                           Genesis.db.setLocalDBAttrib('disableFBReminderMsg', true);
+                           app.db.setLocalDBAttrib('disableFBReminderMsg', true);
 
                            _application.getController('client' + '.Viewport').redirectTo('checkin');
 
@@ -605,7 +620,7 @@ __initFb__ = function()
 
          params = Ext.apply(params,
          {
-            access_token : Genesis.db.getLocalDB()['fbResponse']['accessToken']
+            access_token : app.db.getLocalDB()['fbResponse']['accessToken']
          });
          Ext.Ajax.request(
          {
@@ -668,6 +683,6 @@ __initFb__ = function()
          this._fb_connect();
       }
    });
-   Genesis.fb.initialize();
+   app.fb.initialize();
 }
 
