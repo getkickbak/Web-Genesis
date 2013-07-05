@@ -478,7 +478,12 @@ Ext.define('KickBak.controller.client.SignUp',
    openSignUpPage : function()
    {
       var me = this, db = KickBak.db.getLocalDB();
-      me.updateAccountInfo();
+
+      if (db['fbResponse'])
+      {
+         Ext.Viewport.setMasked(null);
+      }
+      me.updateAccountInfo(db['fbResponse']);
       me.getSignUpPage().query('togglefield[name=facebook]')[0].label.setStyle(
       {
          'line-height' : '2.2em'
@@ -491,11 +496,6 @@ Ext.define('KickBak.controller.client.SignUp',
          KickBak.fb.on('unauthorized', me.updateFBSignUpPopupCallback, me);
          KickBak.fb.on('exception', me.updateFBSignUpPopupCallback, me);
       }
-      else if (db['fbResponse'])
-      {
-         me.updateFBSignUpPopupCallback(db['fbResponse'], null);
-      }
-
    }
    // --------------------------------------------------------------------------
    // Base Class Overrides
