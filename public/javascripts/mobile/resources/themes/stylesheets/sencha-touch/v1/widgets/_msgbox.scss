@@ -8,24 +8,28 @@
 .x-tablet .x-msgbox {
 }
 
-.x-msgbox-plain.x-msgbox .x-msgbox-title {
-  background: $base-color;
-  @include background-image(linear-gradient(-95deg, color-stops(#1BA7DC, #0C5E9A)));
+.x-msgbox-plain.x-msgbox {
+   background:white;
+   .x-msgbox-title {
+      @if $include-border-radius { @include border-radius(1.1em); }
+      background: $base-color;
+      @include background-image(linear-gradient(-95deg, color-stops(#1BA7DC, #0C5E9A)));
 
-  .x-button-label {
-    color: #fff;
-  }
+      .x-button-label {
+         color: #fff;
+      }
 
-  .x-button {
-    border: 2px solid #14699F;
-    background: transparent;
-    background-image: none;
-    @include box-shadow(0 0 0 1px #115986, inset 0 0 0 1px #0C5583, inset 0 1px 0 1px #3283B4);
+      .x-button {
+         border: 2px solid #14699F;
+         background: transparent;
+         background-image: none;
+         @include box-shadow(0 0 0 1px #115986, inset 0 0 0 1px #0C5583, inset 0 1px 0 1px #3283B4);
 
-    &.x-button-pressing {
-      border-color: #0B293B;
-      @include background-image(linear-gradient(top, color-stops(#143141, #245572 10%, #114865)));
-      @include box-shadow(0 0 0 1px #061822, inset 0 0 0 1px #0A202B, inset 0 1px 0 1px #1F2E37);
-    }
-  }
+         &.x-button-pressing {
+            border-color: #0B293B;
+            @include background-image(linear-gradient(top, color-stops(#143141, #245572 10%, #114865)));
+            @include box-shadow(0 0 0 1px #061822, inset 0 0 0 1px #0A202B, inset 0 1px 0 1px #1F2E37);
+         }
+      }
+   }
 }
