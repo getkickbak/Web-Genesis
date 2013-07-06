@@ -11,7 +11,8 @@
 .x-msgbox-plain.x-msgbox {
    background:white;
    .x-msgbox-title {
-      @if $include-border-radius { @include border-radius(1.1em); }
+      margin: -6px -6px 0 -6px;
+      @if $include-border-radius { @include border-radius(1.1em 1.1em 0 0); }
       background: $base-color;
       @include background-image(linear-gradient(-95deg, color-stops(#1BA7DC, #0C5E9A)));
 
