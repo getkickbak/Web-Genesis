@@ -7213,16 +7213,6 @@ Ext.define('Genesis.view.client.Badges',
       }
 
       Genesis.view.ViewBase.prototype.calcCarouselSize.apply(me, [2]);
-      switch (Ext.Viewport.getOrientation())
-      {
-         case 'landscape' :
-         {
-            me.setItemPerPage(Math.ceil(me.getItemPerPage() * 0.4));
-            break;
-         }
-         default:
-            break;
-      }
 
       carousel.removeAll(true);
 
@@ -7272,10 +7262,12 @@ Ext.define('Genesis.view.client.Badges',
    showView : function()
    {
       // Do not add to view, if there's existing items, only re-render on empty views
+      /*
       if (this.getInnerItems().length == 0)
       {
          this.add(this.getPreRender());
       }
+      */
 
       var carousel = this;
       if (carousel.getInnerItems().length > 0)
