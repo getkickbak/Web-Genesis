@@ -39,11 +39,13 @@
    }
 }
 
-.x-android .x-mask.transmit-mask {
-      &:after {
-         background-size : $icon-size*4*1.25 $icon-size*4*1.25;
+.x-android, .x-blackberry {
+   .x-mask.transmit-mask {
+         &:after {
+            background-size : $icon-size*4*1.25 $icon-size*4*1.25;
+         }
+      .x-innerhtml {
       }
-   .x-innerhtml {
    }
 }
 .x-ios, .x-desktop {

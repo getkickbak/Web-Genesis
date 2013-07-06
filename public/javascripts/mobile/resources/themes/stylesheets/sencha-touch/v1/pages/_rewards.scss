@@ -133,6 +133,7 @@
       width:100%;
       @extend .emptyPage;
       background: theme_image($theme-path,  "noprizes" + ".png") center no-repeat;
+      background-size: cover;
       &:before {
          margin-top: -1.0em;
          content:"No Pending Receipts.";

@@ -49,6 +49,7 @@
          right:0;
          @extend .emptyPage;
          background: theme_image($theme-path,  "noaccounts" + ".png") center no-repeat;
+         background-size: cover;
          &:before {
             content:"You have no accounts opened";
          }

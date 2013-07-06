@@ -201,7 +201,7 @@ $itemDescHeightSmall : calc-px-em($icon-size*$icon-multiplier,0em, $smallFontSiz
 //------------------------------------------------------------------------------
 // Android
 //------------------------------------------------------------------------------
-.x-android {
+.x-android, .x-blackberry {
    .merchantMain {
       .prizesWonPanel, .badgeProgressPanel {
          .badgephoto {
