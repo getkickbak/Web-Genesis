@@ -188,7 +188,17 @@ Ext.define('Genesis.view.client.ChallengePage',
          }
       }
 
-      me.calcCarouselSize();
+      switch (Ext.Viewport.getOrientation())
+      {
+         case 'landscape' :
+         {
+            me.setItemPerPage(3);
+            break;
+         }
+         default:
+            me.calcCarouselSize();
+            break;
+      }
 
       carousel.removeAll(true);
       for (var i = 0; i < Math.ceil(items.length / me.getItemPerPage()); i++)

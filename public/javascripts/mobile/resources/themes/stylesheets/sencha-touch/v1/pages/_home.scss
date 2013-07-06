@@ -1,6 +1,27 @@
 //------------------------------------------------------------------------------
 // Icon Select CSS (MainPage Page)
 //------------------------------------------------------------------------------
+.x-landscape .mainMenuSelections {
+   .x-innerhtml {
+      .itemWrapper {
+         width:33.33333%;
+      }
+      & > div:nth-child(3n+1) {
+         clear:both;
+      }
+   }
+}
+.x-portrait .mainMenuSelections {
+   .x-innerhtml {
+      .itemWrapper {        
+         width:50%;
+      }
+      & > div:nth-child(2n+1) {
+         clear:both;
+      }
+   }
+}
+
 .mainMenuSelections {
    padding:$panelGap;
    .x-hasbadge .x-badge {
@@ -15,7 +36,6 @@
       font-size:$normalFontSize*1.25;
       color:$BlackStart;
       .itemWrapper {
-         width:50%;
          height:calc-px-em((1.25*$icon-size*$icon-multiplier), (($panelTopGap*2)+($normalFontSize*1.25*1)), ($normalFontSize*1.25));
          padding:$panelTopGap/2 $panelGap/2;
          text-align:center;
@@ -33,9 +53,6 @@
             padding:$panelTopGap/2 $panelGap/2;
             @if $include-border-radius { @include border-radius($panelBorderRadius); }
          }
-      }
-      & > div:nth-child(2n+1) {
-         clear:both;
       }
    }
 }
