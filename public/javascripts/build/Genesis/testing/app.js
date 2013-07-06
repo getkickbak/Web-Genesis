@@ -6385,7 +6385,7 @@ Ext.define('Genesis.view.client.ChallengePage',
 
       var data = Ext.create('Genesis.model.Challenge', Ext.decode(decodeURIComponent(e.delegatedTarget.getAttribute('data'))));
       var mobileWebClient = _application.getProfileInstances()[0].getName().match(/mobileWeb/i);
-      _application.getController(((mobileWebClient) ? 'MobileWebClient' : 'MobileClient') + '.Challenges').fireEvent('itemTap', data);
+      _application.getController(((mobileWebClient) ? 'mobileWebClient' : 'mobileClient') + '.Challenges').fireEvent('itemTap', data);
    },
    cleanView : function()
    {
