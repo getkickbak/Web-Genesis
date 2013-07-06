@@ -565,7 +565,7 @@ Ext.define('Genesis.controller.client.Viewport',
       // Client Device always transmits
       //
       var s_vol_ratio, r_vol_ratio, c = Genesis.constants;
-      if (Ext.os.is('Android'))
+      if (Ext.os.is('Android') || Ext.os.is('BlackBerry'))
       {
          //(tx)
          s_vol_ratio = 0.50;

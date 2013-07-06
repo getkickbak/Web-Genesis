@@ -57,6 +57,10 @@ Ext.define('Genesis.controller.ControllerBase',
          'Enable Location Services under Main Screen of your phone: \"Settings App >> Privacy >> Location Services >> KICKBAK\"'//
          );
       }
+      else if (Ext.os.is('BlackBerry'))
+      {
+         rc += 'Enable Location Services under Main Screen of your phone: \"Settings App >> Site Permissions\"';
+      }
       else
       {
          rc += 'Enable Location Services under Main Screen of your phone: \"Settings App >> Location Services\"';
@@ -1116,7 +1120,7 @@ Ext.define('Genesis.controller.ControllerBase',
    refreshPage : function(page)
    {
       var me = this, vport = me.getViewport(), controller = vport.getEventDispatcher().controller, anim = new Ext.fx.layout.Card(me.self.animationMode['fade']);
-      
+
       anim.on('animationend', function()
       {
          console.debug("Animation Complete");

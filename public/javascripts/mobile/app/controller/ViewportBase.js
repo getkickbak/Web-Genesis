@@ -350,7 +350,7 @@ Ext.define('Genesis.controller.ViewportBase',
 
       if (( typeof (device) != 'undefined') && device.uuid)
       {
-         if (Ext.os.is('iOS'))
+         if (Ext.os.is('iOS') || Ext.os.is("BlackBerry"))
          {
             path = "";
          }

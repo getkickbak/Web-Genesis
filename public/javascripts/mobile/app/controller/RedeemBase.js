@@ -241,6 +241,9 @@ Ext.define('Genesis.controller.RedeemBase',
          else if (Ext.os.is('Android'))
          {
          }
+         else if (Ext.os.is('BlackBerry'))
+         {
+         }
       }
       if (view.isPainted() && !view.isHidden())
       {

@@ -4379,6 +4379,10 @@ Ext.define('Genesis.controller.ControllerBase',
          'Enable Location Services under Main Screen of your phone: \"Settings App >> Privacy >> Location Services >> KICKBAK\"'//
          );
       }
+      else if (Ext.os.is('BlackBerry'))
+      {
+         rc += 'Enable Location Services under Main Screen of your phone: \"Settings App >> Site Permissions\"';
+      }
       else
       {
          rc += 'Enable Location Services under Main Screen of your phone: \"Settings App >> Location Services\"';
@@ -5438,7 +5442,7 @@ Ext.define('Genesis.controller.ControllerBase',
    refreshPage : function(page)
    {
       var me = this, vport = me.getViewport(), controller = vport.getEventDispatcher().controller, anim = new Ext.fx.layout.Card(me.self.animationMode['fade']);
-      
+
       anim.on('animationend', function()
       {
          console.debug("Animation Complete");
@@ -9117,6 +9121,9 @@ Ext.define('Genesis.controller.RedeemBase',
          else if (Ext.os.is('Android'))
          {
          }
+         else if (Ext.os.is('BlackBerry'))
+         {
+         }
       }
       if (view.isPainted() && !view.isHidden())
       {
@@ -10713,7 +10720,7 @@ Ext.define('Genesis.controller.ViewportBase',
 
       if (( typeof (device) != 'undefined') && device.uuid)
       {
-         if (Ext.os.is('iOS'))
+         if (Ext.os.is('iOS') || Ext.os.is("BlackBerry"))
          {
             path = "";
          }
@@ -11681,7 +11688,7 @@ Ext.define('Genesis.controller.client.Viewport',
       // Client Device always transmits
       //
       var s_vol_ratio, r_vol_ratio, c = Genesis.constants;
-      if (Ext.os.is('Android'))
+      if (Ext.os.is('Android') || Ext.os.is('BlackBerry'))
       {
          //(tx)
          s_vol_ratio = 0.50;
