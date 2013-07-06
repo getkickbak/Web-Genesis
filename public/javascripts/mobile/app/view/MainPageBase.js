@@ -129,10 +129,10 @@ Ext.define('Genesis.view.MainPageBase',
    showView : function()
    {
       var carousel = this.query('carousel')[0];
+      this.callParent(arguments);
       if (carousel.getInnerItems().length > 0)
       {
          carousel.setActiveItem(0);
       }
-      this.callParent(arguments);
    }
 });

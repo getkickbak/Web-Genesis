@@ -6076,7 +6076,10 @@ Ext.define('Genesis.view.Viewport',
 
                if (oldActiveItem)
                {
-                  oldActiveItem.cleanView(activeItem);
+                  if (oldActiveItem != activeItem)
+                  {
+                     oldActiveItem.cleanView(activeItem);
+                  }
 
                   titlebar = oldActiveItem.query('titlebar')[0];
                   if (titlebar)
@@ -6386,7 +6389,7 @@ Ext.define('Genesis.view.client.ChallengePage',
    },
    cleanView : function()
    {
-      //this.removeAll(true);
+      this.removeAll(true);
       this.callParent(arguments);
    },
    removeAll : function(destroy, everything)
@@ -6477,10 +6480,6 @@ Ext.define('Genesis.view.client.ChallengePage',
             })
          });
       }
-      if (carousel.getInnerItems().length > 0)
-      {
-         carousel.setActiveItem(0);
-      }
       console.debug("ChallengePage Icons Updated.");
    },
    createView : function()
@@ -6511,6 +6510,11 @@ Ext.define('Genesis.view.client.ChallengePage',
       }
 
       this.callParent(arguments);
+
+      if (carousel.getInnerItems().length > 0)
+      {
+         carousel.setActiveItem(0);
+      }
       //return Genesis.view.ViewBase.prototype.showView.apply(this, arguments);
    },
    inheritableStatics :
@@ -7199,7 +7203,7 @@ Ext.define('Genesis.view.client.Badges',
    removeAll : function()
    {
       var me = this;
-      
+
       me.setPreRender([]);
       me.callParent(arguments);
    },
@@ -7263,18 +7267,19 @@ Ext.define('Genesis.view.client.Badges',
    {
       // Do not add to view, if there's existing items, only re-render on empty views
       /*
-      if (this.getInnerItems().length == 0)
-      {
-         this.add(this.getPreRender());
-      }
-      */
+       if (this.getInnerItems().length == 0)
+       {
+       this.add(this.getPreRender());
+       }
+       */
 
       var carousel = this;
+      
+      Genesis.view.ViewBase.prototype.showView.apply(this, arguments);
       if (carousel.getInnerItems().length > 0)
       {
          carousel.setActiveItem(0);
       }
-      return Genesis.view.ViewBase.prototype.showView.apply(this, arguments);
    },
    inheritableStatics :
    {
@@ -12301,11 +12306,11 @@ Ext.define('Genesis.view.MainPageBase',
    showView : function()
    {
       var carousel = this.query('carousel')[0];
+      this.callParent(arguments);
       if (carousel.getInnerItems().length > 0)
       {
          carousel.setActiveItem(0);
       }
-      this.callParent(arguments);
    }
 });
 
@@ -14066,10 +14071,6 @@ Ext.define('Genesis.controller.client.Badges',
       {
          var monitors = this.getEventDispatcher().getPublishers()['elementSize'].monitors;
          monitors[activeItem.element.getId()].forceRefresh();
-         if (activeItem.getInnerItems().length > 0)
-         {
-            activeItem.setActiveItem(0);
-         }
          console.debug("Refreshing BadgesPage ...");
       }
    },

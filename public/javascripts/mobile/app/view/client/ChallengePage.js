@@ -156,7 +156,7 @@ Ext.define('Genesis.view.client.ChallengePage',
    },
    cleanView : function()
    {
-      //this.removeAll(true);
+      this.removeAll(true);
       this.callParent(arguments);
    },
    removeAll : function(destroy, everything)
@@ -247,10 +247,6 @@ Ext.define('Genesis.view.client.ChallengePage',
             })
          });
       }
-      if (carousel.getInnerItems().length > 0)
-      {
-         carousel.setActiveItem(0);
-      }
       console.debug("ChallengePage Icons Updated.");
    },
    createView : function()
@@ -281,6 +277,11 @@ Ext.define('Genesis.view.client.ChallengePage',
       }
 
       this.callParent(arguments);
+
+      if (carousel.getInnerItems().length > 0)
+      {
+         carousel.setActiveItem(0);
+      }
       //return Genesis.view.ViewBase.prototype.showView.apply(this, arguments);
    },
    inheritableStatics :

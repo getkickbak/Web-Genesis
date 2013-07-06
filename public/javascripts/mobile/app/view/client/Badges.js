@@ -54,7 +54,7 @@ Ext.define('Genesis.view.client.Badges',
    removeAll : function()
    {
       var me = this;
-      
+
       me.setPreRender([]);
       me.callParent(arguments);
    },
@@ -118,18 +118,19 @@ Ext.define('Genesis.view.client.Badges',
    {
       // Do not add to view, if there's existing items, only re-render on empty views
       /*
-      if (this.getInnerItems().length == 0)
-      {
-         this.add(this.getPreRender());
-      }
-      */
+       if (this.getInnerItems().length == 0)
+       {
+       this.add(this.getPreRender());
+       }
+       */
 
       var carousel = this;
+      
+      Genesis.view.ViewBase.prototype.showView.apply(this, arguments);
       if (carousel.getInnerItems().length > 0)
       {
          carousel.setActiveItem(0);
       }
-      return Genesis.view.ViewBase.prototype.showView.apply(this, arguments);
    },
    inheritableStatics :
    {

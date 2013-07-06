@@ -115,10 +115,6 @@ Ext.define('Genesis.controller.client.Badges',
       {
          var monitors = this.getEventDispatcher().getPublishers()['elementSize'].monitors;
          monitors[activeItem.element.getId()].forceRefresh();
-         if (activeItem.getInnerItems().length > 0)
-         {
-            activeItem.setActiveItem(0);
-         }
          console.debug("Refreshing BadgesPage ...");
       }
    },

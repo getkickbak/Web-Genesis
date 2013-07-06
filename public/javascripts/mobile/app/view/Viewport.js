@@ -97,7 +97,10 @@ Ext.define('Genesis.view.Viewport',
 
                if (oldActiveItem)
                {
-                  oldActiveItem.cleanView(activeItem);
+                  if (oldActiveItem != activeItem)
+                  {
+                     oldActiveItem.cleanView(activeItem);
+                  }
 
                   titlebar = oldActiveItem.query('titlebar')[0];
                   if (titlebar)
