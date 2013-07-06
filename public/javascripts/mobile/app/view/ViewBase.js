@@ -100,19 +100,19 @@ Ext.define('Genesis.view.ViewBase',
    },
    calcCarouselSize : function(factor)
    {
-      var me = this;
+      var me = this, spacingFactor = 50;
 
       factor = factor || 1;
       console.debug("Screen Height[" + window.innerHeight + "], Width[" + window.innerWidth + "]");
-      if (window.innerHeight <= 480)
+      if (window.innerHeight < (480 - spacingFactor))
       {
          me.setItemPerPage(4 * factor);
       }
-      else if (window.innerHeight <= 568)
+      else if (window.innerHeight < (568 - spacingFactor))
       {
          me.setItemPerPage(6 * factor);
       }
-      else if (window.innerHeight < 1024)
+      else if (window.innerHeight < (1024 - spacingFactor))
       {
          me.setItemPerPage(8 * factor);
       }
