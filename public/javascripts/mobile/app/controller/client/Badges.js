@@ -113,16 +113,13 @@ Ext.define('Genesis.controller.client.Badges',
    {
       if (Ext.os.is('Android'))
       {
-         //var carousel = activeItem.query('carousel')[0];
-         //var items = carousel.getInnerItems();
-
+         var monitors = this.getEventDispatcher().getPublishers()['elementSize'].monitors;
+         monitors[activeItem.element.getId()].forceRefresh();
+         if (activeItem.getInnerItems().length > 0)
+         {
+            activeItem.setActiveItem(0);
+         }
          console.debug("Refreshing BadgesPage ...");
-         /*
-          for (var i = 0; i < items.length; i++)
-          {
-          items[i].refresh();
-          }
-          */
       }
    },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
