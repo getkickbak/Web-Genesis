@@ -7193,7 +7193,7 @@ Ext.define('Genesis.view.client.Badges',
     */
    cleanView : function()
    {
-      this.removeAll(true);
+      //this.removeAll(true);
       return Genesis.view.ViewBase.prototype.cleanView.apply(this, arguments);
    },
    removeAll : function()
