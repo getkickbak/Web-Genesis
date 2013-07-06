@@ -51,11 +51,6 @@ Ext.define('Genesis.view.client.Badges',
       this.removeAll(true);
       return Genesis.view.ViewBase.prototype.cleanView.apply(this, arguments);
    },
-   removeAll : function(destroy, everything)
-   {
-      var carousel = this.query('carousel')[0];
-      return carousel.removeAll(true);
-   },
    createView : function()
    {
       var me = this, carousel = this;
