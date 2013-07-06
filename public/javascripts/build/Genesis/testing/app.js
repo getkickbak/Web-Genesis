@@ -5447,7 +5447,7 @@ Ext.define('Genesis.controller.ControllerBase',
 
       //if (!controller.isPausing)
       {
-         console.debug("Reloading current Current Page ...");
+         console.debug("Reloading Current Page ...");
 
          // Delete current page and refresh
          page.removeAll(true);
@@ -6389,6 +6389,11 @@ Ext.define('Genesis.view.client.ChallengePage',
       //this.removeAll(true);
       this.callParent(arguments);
    },
+   removeAll : function(destroy, everything)
+   {
+      var carousel = this.query('carousel')[0];
+      return carousel.removeAll(true);
+   },
    _createView : function(carousel, items)
    {
       var me = this;
@@ -7190,6 +7195,10 @@ Ext.define('Genesis.view.client.Badges',
    {
       this.removeAll(true);
       return Genesis.view.ViewBase.prototype.cleanView.apply(this, arguments);
+   },
+   removeAll : function()
+   {
+      return Genesis.view.ViewBase.prototype.removeAll.apply(this, arguments);
    },
    createView : function()
    {

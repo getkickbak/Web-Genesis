@@ -6,6 +6,12 @@
       .itemWrapper {
          width:25%;
       }
+      & > div:nth-child(2n+1) {
+         clear:none;
+      }
+      & > div:nth-child(3n+1) {
+         clear:none;
+      }
       & > div:nth-child(4n+1) {
          clear:both;
       }
@@ -15,6 +21,9 @@
    .x-innerhtml {
       .itemWrapper {
          width:33.33333%;
+      }
+      & > div:nth-child(2n+1) {
+         clear:none;
       }
       & > div:nth-child(3n+1) {
          clear:both;

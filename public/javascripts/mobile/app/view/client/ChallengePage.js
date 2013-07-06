@@ -159,6 +159,11 @@ Ext.define('Genesis.view.client.ChallengePage',
       //this.removeAll(true);
       this.callParent(arguments);
    },
+   removeAll : function(destroy, everything)
+   {
+      var carousel = this.query('carousel')[0];
+      return carousel.removeAll(true);
+   },
    _createView : function(carousel, items)
    {
       var me = this;

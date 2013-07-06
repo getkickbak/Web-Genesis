@@ -1125,7 +1125,7 @@ Ext.define('Genesis.controller.ControllerBase',
 
       //if (!controller.isPausing)
       {
-         console.debug("Reloading current Current Page ...");
+         console.debug("Reloading Current Page ...");
 
          // Delete current page and refresh
          page.removeAll(true);
