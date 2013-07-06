@@ -86,8 +86,7 @@ Ext.define('Genesis.view.client.MainPage',
                   break;
                }
             }
-            else
-            if (eligibleRewards)
+            else if (eligibleRewards)
             {
                if (customer.get('eligible_for_reward'))
                {
@@ -113,36 +112,7 @@ Ext.define('Genesis.view.client.MainPage',
       var items = Ext.StoreMgr.get('MainPageStore').getRange();
       var list = Ext.Array.clone(items);
 
-      if (Ext.os.is('iOS'))
-      {
-         if (Ext.os.is('iPhone5') || Ext.os.is('iPod5'))
-         {
-            me.setItemPerPage(8);
-         }
-      }
-      else
-      if (Ext.os.is('Android'))
-      {
-         console.debug("Screen Height[" + window.innerHeight + "], Width[" + window.innerWidth + "]");
-         if (!Ext.os.is('Tablet'))
-         {
-            if (window.innerHeight <= 568)
-            {
-               me.setItemPerPage(8);
-            }
-            else
-            {
-               me.setItemPerPage(10);
-            }
-         }
-         else
-         {
-            if (window.innerHeight > 1024)
-            {
-               me.setItemPerPage(8);
-            }
-         }
-      }
+      me.calcCarouselSize();
 
       if (!carousel._listitems)
       {

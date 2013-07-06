@@ -41,7 +41,7 @@ Ext.define('Genesis.view.ViewBase',
                   keyup : function(f, e, eOpts)
                   {
                      var keyCode = e.browserEvent.keyCode, key = String.fromCharCode(keyCode), value = f.getValue();
-                     
+
                      if ((keyCode >= 48 && keyCode <= 90) || //
                      (keyCode >= 106 && keyCode <= 111) || //
                      (keyCode >= 186 && keyCode <= 192) || //
@@ -53,8 +53,7 @@ Ext.define('Genesis.view.ViewBase',
                            {
                               f.setValue(value + "-");
                            }
-                           else
-                           if ((value.length == 4) || (value.length == 8))
+                           else if ((value.length == 4) || (value.length == 8))
                            {
                               var match = value.match(/-/);
                               if (!match)
@@ -98,6 +97,29 @@ Ext.define('Genesis.view.ViewBase',
    {
       this.callParent(arguments);
       this.setPreRender([]);
+   },
+   calcCarouselSize : function(factor)
+   {
+      var me = this;
+
+      factor = factor || 1;
+      console.debug("Screen Height[" + window.innerHeight + "], Width[" + window.innerWidth + "]");
+      if (window.innerHeight <= 480)
+      {
+         me.setItemPerPage(4 * factor);
+      }
+      else if (window.innerHeight <= 568)
+      {
+         me.setItemPerPage(6 * factor);
+      }
+      else if (window.innerHeight < 1024)
+      {
+         me.setItemPerPage(8 * factor);
+      }
+      else
+      {
+         me.setItemPerPage(10 * factor);
+      }
    },
    cleanView : function()
    {

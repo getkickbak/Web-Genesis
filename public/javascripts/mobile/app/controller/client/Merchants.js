@@ -153,8 +153,6 @@ Ext.define('Genesis.controller.client.Merchants',
 
       me.callParent(arguments);
 
-      console.log("Merchants Client Init");
-
       //
       // Preloading Pages to memory
       //
@@ -171,6 +169,23 @@ Ext.define('Genesis.controller.client.Merchants',
          }
          return false;
       });
+
+      Ext.Viewport.on('orientationchange', function(v, newOrientation, width, height, eOpts)
+      {
+         //
+         // Redraw Screen
+         //
+         var mainPage = me.getMain(), vport = me.getViewport(), detailsPage = me.getMerchantDetails();
+         if (mainPage == vport.getActiveItem())
+         {
+            me.refreshPage(mainPage);
+         }
+         else if (detailsPage == vport.getActiveItem())
+         {
+            me.refreshPage(detailsPage);
+         }
+      });
+      console.log("Merchants Client Init");
    },
    // --------------------------------------------------------------------------
    // Merchant Details Page
@@ -246,39 +261,18 @@ Ext.define('Genesis.controller.client.Merchants',
    // --------------------------------------------------------------------------
    checkInAccount : function()
    {
-      var me = this;
-      var viewport = me.getViewPortCntlr();
-      var vport = me.getViewport();
-      var venue = viewport.getVenue();
+      var me = this, page = me.getMainPage();
 
       //
       // Force Page to refresh
       //
-      if (me.getMainPage() == vport.getActiveItem())
+      if (page == vport.getActiveItem())
       {
-         var controller = vport.getEventDispatcher().controller;
-         var anim = new Ext.fx.layout.Card(me.self.animationMode['fade']);
-         anim.on('animationend', function()
-         {
-            console.debug("Animation Complete");
-            anim.destroy();
-         }, me);
-         //if (!controller.isPausing)
-         {
-            console.debug("Reloading current Merchant Home Account Page ...");
-
-            var page = me.getMainPage();
-
-            // Delete current page and refresh
-            page.removeAll(true);
-            vport.animateActiveItem(page, anim);
-            anim.onActiveItemChange(vport.getLayout(), page, page, null, controller);
-            vport.doSetActiveItem(page, null);
-         }
+         me.refreshPage(page);
       }
       else
       {
-         var info = viewport.getCheckinInfo();
+         var viewport = me.getViewPortCntlr(), venue = viewport.getVenue(), info = viewport.getCheckinInfo();
 
          console.debug("Going back to Checked-In Merchant Home Account Page ...");
          me.resetView();
@@ -413,7 +407,7 @@ Ext.define('Genesis.controller.client.Merchants',
       {
          prizeBtn.setVisibility(!features_config || (features_config && features_config['enable_prizes']));
       }
-      
+
       // Update TitleBar
       var bar = activeItem.query('titlebar')[0];
       bar.setTitle(' ');

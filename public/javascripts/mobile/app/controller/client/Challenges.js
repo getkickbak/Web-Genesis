@@ -71,6 +71,21 @@ Ext.define('Genesis.controller.client.Challenges',
    {
       var me = this;
       this.callParent(arguments);
+      
+      if (Ext.os.is('Phone'))
+      {
+         Ext.Viewport.on('orientationchange', function(v, newOrientation, width, height, eOpts)
+         {
+            //
+            // Redraw Screen
+            //
+            var page = me.getChallengePage(), vport = me.getViewport();
+            if (page == vport.getActiveItem())
+            {
+               me.refreshPage(page);
+            }
+         });
+      }
       console.log("Challenge Init");
       //
       // Preload Pages

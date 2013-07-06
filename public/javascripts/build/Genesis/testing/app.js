@@ -5435,6 +5435,27 @@ Ext.define('Genesis.controller.ControllerBase',
    // --------------------------------------------------------------------------
    // Page Navigation Handlers
    // --------------------------------------------------------------------------
+   refreshPage : function(page)
+   {
+      var me = this, vport = me.getViewport(), controller = vport.getEventDispatcher().controller, anim = new Ext.fx.layout.Card(me.self.animationMode['fade']);
+      
+      anim.on('animationend', function()
+      {
+         console.debug("Animation Complete");
+         anim.destroy();
+      }, me);
+
+      //if (!controller.isPausing)
+      {
+         console.debug("Reloading current Current Page ...");
+
+         // Delete current page and refresh
+         page.removeAll(true);
+         vport.animateActiveItem(page, anim);
+         anim.onActiveItemChange(vport.getLayout(), page, page, null, controller);
+         vport.doSetActiveItem(page, null);
+      }
+   },
    resetView : function(view)
    {
       this.fireEvent('resetview');
@@ -5842,7 +5863,7 @@ Ext.define('Genesis.view.ViewBase',
                   keyup : function(f, e, eOpts)
                   {
                      var keyCode = e.browserEvent.keyCode, key = String.fromCharCode(keyCode), value = f.getValue();
-                     
+
                      if ((keyCode >= 48 && keyCode <= 90) || //
                      (keyCode >= 106 && keyCode <= 111) || //
                      (keyCode >= 186 && keyCode <= 192) || //
@@ -5854,8 +5875,7 @@ Ext.define('Genesis.view.ViewBase',
                            {
                               f.setValue(value + "-");
                            }
-                           else
-                           if ((value.length == 4) || (value.length == 8))
+                           else if ((value.length == 4) || (value.length == 8))
                            {
                               var match = value.match(/-/);
                               if (!match)
@@ -5899,6 +5919,29 @@ Ext.define('Genesis.view.ViewBase',
    {
       this.callParent(arguments);
       this.setPreRender([]);
+   },
+   calcCarouselSize : function(factor)
+   {
+      var me = this;
+
+      factor = factor || 1;
+      console.debug("Screen Height[" + window.innerHeight + "], Width[" + window.innerWidth + "]");
+      if (window.innerHeight <= 480)
+      {
+         me.setItemPerPage(4 * factor);
+      }
+      else if (window.innerHeight <= 568)
+      {
+         me.setItemPerPage(6 * factor);
+      }
+      else if (window.innerHeight < 1024)
+      {
+         me.setItemPerPage(8 * factor);
+      }
+      else
+      {
+         me.setItemPerPage(10 * factor);
+      }
    },
    cleanView : function()
    {
@@ -6193,6 +6236,7 @@ Ext.define('Genesis.view.client.ChallengePage',
    config :
    {
       models : ['Challenge'],
+      itemPerPage : 6,
       layout : 'fit',
       cls : 'viewport',
       scrollable : undefined,
@@ -6347,7 +6391,7 @@ Ext.define('Genesis.view.client.ChallengePage',
    },
    _createView : function(carousel, items)
    {
-      var me = this, itemsPerPage = 6;
+      var me = this;
 
       //
       // Disable unsupported features on MobileWeb
@@ -6374,27 +6418,10 @@ Ext.define('Genesis.view.client.ChallengePage',
          }
       }
 
-      if (Ext.os.is('iOS'))
-      {
-         if (Ext.os.is.iPhone5 || Ext.os.is.iPod5)
-         {
-            itemPerPage = 8;
-         }
-      }
-      else if (Ext.os.is('Android') && (window.screen.height > 480))
-      {
-         if (window.screen.height <= 568)
-         {
-            itemPerPage = 8;
-         }
-         else
-         {
-            itemPerPage = 10;
-         }
-      }
+      me.calcCarouselSize();
 
       carousel.removeAll(true);
-      for (var i = 0; i < Math.ceil(items.length / itemsPerPage); i++)
+      for (var i = 0; i < Math.ceil(items.length / me.getItemPerPage()); i++)
       {
          carousel.add(
          {
@@ -6402,7 +6429,7 @@ Ext.define('Genesis.view.client.ChallengePage',
             cls : 'challengeMenuSelections',
             tag : 'challengeMenuSelections',
             scrollable : undefined,
-            data : Ext.Array.pluck(items.slice(i * itemsPerPage, ((i + 1) * itemsPerPage)), 'data'),
+            data : Ext.Array.pluck(items.slice(i * me.getItemPerPage(), ((i + 1) * me.getItemPerPage())), 'data'),
             tpl : Ext.create('Ext.XTemplate',
             // @formatter:off
                '<tpl for=".">',
@@ -6564,6 +6591,21 @@ Ext.define('Genesis.controller.client.Challenges',
    {
       var me = this;
       this.callParent(arguments);
+      
+      if (Ext.os.is('Phone'))
+      {
+         Ext.Viewport.on('orientationchange', function(v, newOrientation, width, height, eOpts)
+         {
+            //
+            // Redraw Screen
+            //
+            var page = me.getChallengePage(), vport = me.getViewport();
+            if (page == vport.getActiveItem())
+            {
+               me.refreshPage(page);
+            }
+         });
+      }
       console.log("Challenge Init");
       //
       // Preload Pages
@@ -7089,12 +7131,13 @@ Ext.define('Genesis.controller.mobileWebClient.Challenges',
 Ext.define('Genesis.view.client.Badges',
 {
    extend :  Ext.Carousel ,
-                                                         
+                                                                                  
    alias : 'widget.clientbadgesview',
    config :
    {
       models : ['Badge'],
       cls : 'viewport',
+      itemPerPage : 12,
       preRender : null,
       direction : 'horizontal',
       items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
@@ -7146,41 +7189,20 @@ Ext.define('Genesis.view.client.Badges',
    {
       var me = this;
       var carousel = this;
-      var itemsPerPage = 12;
-
-      if (Ext.os.is('iOS'))
-      {
-         if (Ext.os.is.iPhone5 || Ext.os.is.iPod5)
-         {
-            itemPerPage = 15;
-         }
-      }
-      else if (Ext.os.is('Android') && (window.screen.height > 480))
-      {
-         if (window.screen.height <= 568)
-         {
-            itemPerPage = 15;
-         }
-         else
-         {
-            itemPerPage = 18;
-         }
-      }
 
       if (!Genesis.view.ViewBase.prototype.createView.apply(this, arguments))
       {
          return;
       }
 
+      Genesis.view.ViewBase.prototype.calcCarouselSize.apply(me, [2]);
+
       carousel.removeAll(true);
 
-      var app = _application;
-      var viewport = app.getController(((merchantMode) ? 'server' : 'client') + '.Viewport');
-      var vport = viewport.getViewport();
-      var items = Ext.StoreMgr.get('BadgeStore').getRange();
-      var list = Ext.Array.clone(items);
+      var app = _application, viewport = app.getController(((merchantMode) ? 'server' : 'client') + '.Viewport');
+      var vport = viewport.getViewport(), items = Ext.StoreMgr.get('BadgeStore').getRange(), list = Ext.Array.clone(items);
 
-      for (var i = 0; i < Math.ceil(list.length / itemsPerPage); i++)
+      for (var i = 0; i < Math.ceil(list.length / me.getItemPerPage()); i++)
       {
          me.getPreRender().push(
          {
@@ -7188,7 +7210,7 @@ Ext.define('Genesis.view.client.Badges',
             cls : 'badgesMenuSelections',
             tag : 'badgesMenuSelections',
             scrollable : undefined,
-            data : Ext.Array.pluck(list.slice(i * itemsPerPage, ((i + 1) * itemsPerPage)), 'data'),
+            data : Ext.Array.pluck(list.slice(i * me.getItemPerPage(), ((i + 1) * me.getItemPerPage())), 'data'),
             tpl : Ext.create('Ext.XTemplate',
             // @formatter:off
             '<tpl for=".">',
@@ -11960,6 +11982,17 @@ Ext.define('Genesis.controller.MainPageBase',
          }
       });
 
+      Ext.Viewport.on('orientationchange', function(v, newOrientation, width, height, eOpts)
+      {
+         //
+         // Redraw Screen
+         //
+         var page = me.getMain(), vport = me.getViewport();
+         if (page == vport.getActiveItem())
+         {
+            me.refreshPage(page);
+         }
+      });
       console.log("MainPageBase Init");
       //
       // Preloading Pages to memory
@@ -12003,8 +12036,7 @@ Ext.define('Genesis.controller.MainPageBase',
          {
             this.redirectTo(model.get('route'));
          }
-         else
-         if (model.get('subFeature'))
+         else if (model.get('subFeature'))
          {
             cntlr.openPage(model.get('subFeature'));
          }
@@ -12342,8 +12374,7 @@ Ext.define('Genesis.view.client.MainPage',
                   break;
                }
             }
-            else
-            if (eligibleRewards)
+            else if (eligibleRewards)
             {
                if (customer.get('eligible_for_reward'))
                {
@@ -12369,36 +12400,7 @@ Ext.define('Genesis.view.client.MainPage',
       var items = Ext.StoreMgr.get('MainPageStore').getRange();
       var list = Ext.Array.clone(items);
 
-      if (Ext.os.is('iOS'))
-      {
-         if (Ext.os.is('iPhone5') || Ext.os.is('iPod5'))
-         {
-            me.setItemPerPage(8);
-         }
-      }
-      else
-      if (Ext.os.is('Android'))
-      {
-         console.debug("Screen Height[" + window.innerHeight + "], Width[" + window.innerWidth + "]");
-         if (!Ext.os.is('Tablet'))
-         {
-            if (window.innerHeight <= 568)
-            {
-               me.setItemPerPage(8);
-            }
-            else
-            {
-               me.setItemPerPage(10);
-            }
-         }
-         else
-         {
-            if (window.innerHeight > 1024)
-            {
-               me.setItemPerPage(8);
-            }
-         }
-      }
+      me.calcCarouselSize();
 
       if (!carousel._listitems)
       {
@@ -14009,6 +14011,17 @@ Ext.define('Genesis.controller.client.Badges',
          }
       });
 
+      Ext.Viewport.on('orientationchange', function(v, newOrientation, width, height, eOpts)
+      {
+         //
+         // Redraw Screen
+         //
+         var mainPage = me.getMain(), vport = me.getViewport();
+         if (mainPage == vport.getActiveItem())
+         {
+            me.refreshPage(mainPage);
+         }
+      });
       console.log("Badges Init");
       //
       // Preloading Pages to memory
@@ -15466,8 +15479,6 @@ Ext.define('Genesis.controller.client.Merchants',
 
       me.callParent(arguments);
 
-      console.log("Merchants Client Init");
-
       //
       // Preloading Pages to memory
       //
@@ -15484,6 +15495,23 @@ Ext.define('Genesis.controller.client.Merchants',
          }
          return false;
       });
+
+      Ext.Viewport.on('orientationchange', function(v, newOrientation, width, height, eOpts)
+      {
+         //
+         // Redraw Screen
+         //
+         var mainPage = me.getMain(), vport = me.getViewport(), detailsPage = me.getMerchantDetails();
+         if (mainPage == vport.getActiveItem())
+         {
+            me.refreshPage(mainPage);
+         }
+         else if (detailsPage == vport.getActiveItem())
+         {
+            me.refreshPage(detailsPage);
+         }
+      });
+      console.log("Merchants Client Init");
    },
    // --------------------------------------------------------------------------
    // Merchant Details Page
@@ -15559,39 +15587,18 @@ Ext.define('Genesis.controller.client.Merchants',
    // --------------------------------------------------------------------------
    checkInAccount : function()
    {
-      var me = this;
-      var viewport = me.getViewPortCntlr();
-      var vport = me.getViewport();
-      var venue = viewport.getVenue();
+      var me = this, page = me.getMainPage();
 
       //
       // Force Page to refresh
       //
-      if (me.getMainPage() == vport.getActiveItem())
+      if (page == vport.getActiveItem())
       {
-         var controller = vport.getEventDispatcher().controller;
-         var anim = new Ext.fx.layout.Card(me.self.animationMode['fade']);
-         anim.on('animationend', function()
-         {
-            console.debug("Animation Complete");
-            anim.destroy();
-         }, me);
-         //if (!controller.isPausing)
-         {
-            console.debug("Reloading current Merchant Home Account Page ...");
-
-            var page = me.getMainPage();
-
-            // Delete current page and refresh
-            page.removeAll(true);
-            vport.animateActiveItem(page, anim);
-            anim.onActiveItemChange(vport.getLayout(), page, page, null, controller);
-            vport.doSetActiveItem(page, null);
-         }
+         me.refreshPage(page);
       }
       else
       {
-         var info = viewport.getCheckinInfo();
+         var viewport = me.getViewPortCntlr(), venue = viewport.getVenue(), info = viewport.getCheckinInfo();
 
          console.debug("Going back to Checked-In Merchant Home Account Page ...");
          me.resetView();
@@ -15726,7 +15733,7 @@ Ext.define('Genesis.controller.client.Merchants',
       {
          prizeBtn.setVisibility(!features_config || (features_config && features_config['enable_prizes']));
       }
-      
+
       // Update TitleBar
       var bar = activeItem.query('titlebar')[0];
       bar.setTitle(' ');
@@ -21161,20 +21168,6 @@ function _appLaunch()
       Ext.create('Genesis.view.Viewport');
       console.debug("Launched App");
 
-      if (Ext.os.is('Phone'))
-      {
-         Ext.Viewport.on('orientationchange', function(v, newOrientation, width, height, eOpts)
-         {
-            Ext.getBody().setStyle(
-            {
-               "-webkit-transform" : (newOrientation != Ext.Viewport.PORTRAIT) ? "rotate(-90deg)" : ""
-            });
-         });
-         Ext.getBody().setStyle(
-         {
-            "-webkit-transition" : "all 1s ease-in-out"
-         });
-      }
       // Destroy the #appLoadingIndicator element
       Ext.fly('appLoadingIndicator').destroy();
       _loadingPct = null;

@@ -6,6 +6,7 @@ Ext.define('Genesis.view.client.ChallengePage',
    config :
    {
       models : ['Challenge'],
+      itemPerPage : 6,
       layout : 'fit',
       cls : 'viewport',
       scrollable : undefined,
@@ -160,7 +161,7 @@ Ext.define('Genesis.view.client.ChallengePage',
    },
    _createView : function(carousel, items)
    {
-      var me = this, itemsPerPage = 6;
+      var me = this;
 
       //
       // Disable unsupported features on MobileWeb
@@ -187,27 +188,10 @@ Ext.define('Genesis.view.client.ChallengePage',
          }
       }
 
-      if (Ext.os.is('iOS'))
-      {
-         if (Ext.os.is.iPhone5 || Ext.os.is.iPod5)
-         {
-            itemPerPage = 8;
-         }
-      }
-      else if (Ext.os.is('Android') && (window.screen.height > 480))
-      {
-         if (window.screen.height <= 568)
-         {
-            itemPerPage = 8;
-         }
-         else
-         {
-            itemPerPage = 10;
-         }
-      }
+      me.calcCarouselSize();
 
       carousel.removeAll(true);
-      for (var i = 0; i < Math.ceil(items.length / itemsPerPage); i++)
+      for (var i = 0; i < Math.ceil(items.length / me.getItemPerPage()); i++)
       {
          carousel.add(
          {
@@ -215,7 +199,7 @@ Ext.define('Genesis.view.client.ChallengePage',
             cls : 'challengeMenuSelections',
             tag : 'challengeMenuSelections',
             scrollable : undefined,
-            data : Ext.Array.pluck(items.slice(i * itemsPerPage, ((i + 1) * itemsPerPage)), 'data'),
+            data : Ext.Array.pluck(items.slice(i * me.getItemPerPage(), ((i + 1) * me.getItemPerPage())), 'data'),
             tpl : Ext.create('Ext.XTemplate',
             // @formatter:off
                '<tpl for=".">',

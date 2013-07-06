@@ -1113,6 +1113,27 @@ Ext.define('Genesis.controller.ControllerBase',
    // --------------------------------------------------------------------------
    // Page Navigation Handlers
    // --------------------------------------------------------------------------
+   refreshPage : function(page)
+   {
+      var me = this, vport = me.getViewport(), controller = vport.getEventDispatcher().controller, anim = new Ext.fx.layout.Card(me.self.animationMode['fade']);
+      
+      anim.on('animationend', function()
+      {
+         console.debug("Animation Complete");
+         anim.destroy();
+      }, me);
+
+      //if (!controller.isPausing)
+      {
+         console.debug("Reloading current Current Page ...");
+
+         // Delete current page and refresh
+         page.removeAll(true);
+         vport.animateActiveItem(page, anim);
+         anim.onActiveItemChange(vport.getLayout(), page, page, null, controller);
+         vport.doSetActiveItem(page, null);
+      }
+   },
    resetView : function(view)
    {
       this.fireEvent('resetview');

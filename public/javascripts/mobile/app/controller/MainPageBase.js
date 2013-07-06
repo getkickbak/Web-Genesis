@@ -50,6 +50,17 @@ Ext.define('Genesis.controller.MainPageBase',
          }
       });
 
+      Ext.Viewport.on('orientationchange', function(v, newOrientation, width, height, eOpts)
+      {
+         //
+         // Redraw Screen
+         //
+         var page = me.getMain(), vport = me.getViewport();
+         if (page == vport.getActiveItem())
+         {
+            me.refreshPage(page);
+         }
+      });
       console.log("MainPageBase Init");
       //
       // Preloading Pages to memory
@@ -93,8 +104,7 @@ Ext.define('Genesis.controller.MainPageBase',
          {
             this.redirectTo(model.get('route'));
          }
-         else
-         if (model.get('subFeature'))
+         else if (model.get('subFeature'))
          {
             cntlr.openPage(model.get('subFeature'));
          }

@@ -1,12 +1,13 @@
 Ext.define('Genesis.view.client.Badges',
 {
    extend : 'Ext.Carousel',
-   requires : ['Ext.dataview.DataView', 'Ext.XTemplate'],
+   requires : ['Ext.dataview.DataView', 'Ext.XTemplate', 'Genesis.view.ViewBase'],
    alias : 'widget.clientbadgesview',
    config :
    {
       models : ['Badge'],
       cls : 'viewport',
+      itemPerPage : 12,
       preRender : null,
       direction : 'horizontal',
       items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
@@ -56,43 +57,21 @@ Ext.define('Genesis.view.client.Badges',
    },
    createView : function()
    {
-      var me = this;
-      var carousel = this;
-      var itemsPerPage = 12;
-
-      if (Ext.os.is('iOS'))
-      {
-         if (Ext.os.is.iPhone5 || Ext.os.is.iPod5)
-         {
-            itemPerPage = 15;
-         }
-      }
-      else if (Ext.os.is('Android') && (window.screen.height > 480))
-      {
-         if (window.screen.height <= 568)
-         {
-            itemPerPage = 15;
-         }
-         else
-         {
-            itemPerPage = 18;
-         }
-      }
+      var me = this, carousel = this;
 
       if (!Genesis.view.ViewBase.prototype.createView.apply(this, arguments))
       {
          return;
       }
 
+      Genesis.view.ViewBase.prototype.calcCarouselSize.apply(me, [2]);
+
       carousel.removeAll(true);
 
-      var app = _application;
-      var viewport = app.getController(((merchantMode) ? 'server' : 'client') + '.Viewport');
-      var vport = viewport.getViewport();
-      var items = Ext.StoreMgr.get('BadgeStore').getRange();
-      var list = Ext.Array.clone(items);
+      var app = _application, viewport = app.getController(((merchantMode) ? 'server' : 'client') + '.Viewport');
+      var vport = viewport.getViewport(), items = Ext.StoreMgr.get('BadgeStore').getRange(), list = Ext.Array.clone(items);
 
-      for (var i = 0; i < Math.ceil(list.length / itemsPerPage); i++)
+      for (var i = 0; i < Math.ceil(list.length / me.getItemPerPage()); i++)
       {
          me.getPreRender().push(
          {
@@ -100,7 +79,7 @@ Ext.define('Genesis.view.client.Badges',
             cls : 'badgesMenuSelections',
             tag : 'badgesMenuSelections',
             scrollable : undefined,
-            data : Ext.Array.pluck(list.slice(i * itemsPerPage, ((i + 1) * itemsPerPage)), 'data'),
+            data : Ext.Array.pluck(list.slice(i * me.getItemPerPage(), ((i + 1) * me.getItemPerPage())), 'data'),
             tpl : Ext.create('Ext.XTemplate',
             // @formatter:off
             '<tpl for=".">',

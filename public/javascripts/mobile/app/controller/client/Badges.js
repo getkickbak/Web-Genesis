@@ -83,6 +83,17 @@ Ext.define('Genesis.controller.client.Badges',
          }
       });
 
+      Ext.Viewport.on('orientationchange', function(v, newOrientation, width, height, eOpts)
+      {
+         //
+         // Redraw Screen
+         //
+         var mainPage = me.getMain(), vport = me.getViewport();
+         if (mainPage == vport.getActiveItem())
+         {
+            me.refreshPage(mainPage);
+         }
+      });
       console.log("Badges Init");
       //
       // Preloading Pages to memory
