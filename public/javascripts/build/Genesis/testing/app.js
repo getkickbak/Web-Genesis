@@ -7183,12 +7183,12 @@ Ext.define('Genesis.view.client.Badges',
    },
    removeAll : function(destroy, everything)
    {
-      return Genesis.view.ViewBase.prototype.removeAll.apply(this, arguments);
+      var carousel = this.query('carousel')[0];
+      return carousel.removeAll(true);
    },
    createView : function()
    {
-      var me = this;
-      var carousel = this;
+      var me = this, carousel = this;
 
       if (!Genesis.view.ViewBase.prototype.createView.apply(this, arguments))
       {
@@ -12191,9 +12191,13 @@ Ext.define('Genesis.view.MainPageBase',
     */
    cleanView : function()
    {
-      var carousel = this.query('carousel')[0];
-      carousel.removeAll(true);
+      this.removeAll(true);
       this.callParent(arguments);
+   },
+   removeAll : function(destroy, everything)
+   {
+      var carousel = this.query('carousel')[0];
+      return carousel.removeAll(true);
    },
    createView : function()
    {

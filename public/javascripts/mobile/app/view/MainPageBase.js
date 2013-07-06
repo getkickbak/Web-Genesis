@@ -38,9 +38,13 @@ Ext.define('Genesis.view.MainPageBase',
     */
    cleanView : function()
    {
-      var carousel = this.query('carousel')[0];
-      carousel.removeAll(true);
+      this.removeAll(true);
       this.callParent(arguments);
+   },
+   removeAll : function(destroy, everything)
+   {
+      var carousel = this.query('carousel')[0];
+      return carousel.removeAll(true);
    },
    createView : function()
    {
