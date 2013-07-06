@@ -53,7 +53,10 @@ Ext.define('Genesis.view.client.Badges',
    },
    removeAll : function()
    {
-      return Genesis.view.ViewBase.prototype.removeAll.apply(this, arguments);
+      var me = this;
+      
+      me.setPreRender([]);
+      me.callParent(arguments);
    },
    createView : function()
    {
@@ -69,7 +72,7 @@ Ext.define('Genesis.view.client.Badges',
       {
          case 'landscape' :
          {
-            me.setItemPerPage(Math.floor(me.getItemPerPage() * 0.4));
+            me.setItemPerPage(Math.ceil(me.getItemPerPage() * 0.4));
             break;
          }
          default:

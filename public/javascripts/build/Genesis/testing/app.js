@@ -6427,7 +6427,7 @@ Ext.define('Genesis.view.client.ChallengePage',
       {
          case 'landscape' :
          {
-            me.setItemPerPage(3);
+            me.setItemPerPage(4);
             break;
          }
          default:
@@ -6447,16 +6447,16 @@ Ext.define('Genesis.view.client.ChallengePage',
             data : Ext.Array.pluck(items.slice(i * me.getItemPerPage(), ((i + 1) * me.getItemPerPage())), 'data'),
             tpl : Ext.create('Ext.XTemplate',
             // @formatter:off
-               '<tpl for=".">',
-                  '<div class="itemWrapper x-hasbadge" data="{[this.encodeData(values)]}">',
-                     '<span class="x-badge round">{[this.getPoints(values)]}</span>',
-                     '<div class="photo">'+
-                        '<img src="{[this.getPhoto(values)]}" />'+
-                     '</div>',
-                     '<div class="photoName">{name}</div>',
+            '<tpl for=".">',
+               '<div class="itemWrapper x-hasbadge" data="{[this.encodeData(values)]}">',
+                  '<span class="x-badge round">{[this.getPoints(values)]}</span>',
+                  '<div class="photo">'+
+                     '<img src="{[this.getPhoto(values)]}" />'+
                   '</div>',
-               '</tpl>',
-               // @formatter:on
+                  '<div class="photoName">{name}</div>',
+               '</div>',
+            '</tpl>',
+            // @formatter:on
             {
                encodeData : function(values)
                {
@@ -7198,7 +7198,10 @@ Ext.define('Genesis.view.client.Badges',
    },
    removeAll : function()
    {
-      return Genesis.view.ViewBase.prototype.removeAll.apply(this, arguments);
+      var me = this;
+      
+      me.setPreRender([]);
+      me.callParent(arguments);
    },
    createView : function()
    {
@@ -7214,7 +7217,7 @@ Ext.define('Genesis.view.client.Badges',
       {
          case 'landscape' :
          {
-            me.setItemPerPage(Math.floor(me.getItemPerPage() * 0.4));
+            me.setItemPerPage(Math.ceil(me.getItemPerPage() * 0.4));
             break;
          }
          default:
