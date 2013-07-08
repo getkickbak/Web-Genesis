@@ -13732,7 +13732,7 @@ Ext.defer(function()
       }
    }
 
-   if (Ext.os.is('Tablet') || Ext.os.is('Desktop'))
+   if (Ext.os.is('Tablet'))
    {
       if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
       {
