@@ -72,6 +72,8 @@ else
       duration : 1 * 44100,
       bufSize : 16 * 1024,
       bitRate : 128,
+      fftSize : 2 * 16 * 1024,
+      bwWidth : (44100 / 2) / (16 * 1024),
       bw : 0,
       sampleConfig : null,
       freqs : null,
@@ -80,6 +82,7 @@ else
       oscillators : null,
       audio : null,
       bytesEncoded : null,
+      unsupportedBrowserMsg : 'This browser does not support our Proximity Scanning feature',
       init : function(s_vol_ratio, r_vol_ratio)
       {
          var me = this;
@@ -381,24 +384,89 @@ else
       },
       scan : function(win, fail, samples, missedThreshold, magThreshold, overlapRatio)
       {
-         var me = this;
+         var me = this, media = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia, context = me.context;
 
-         //
-         // Turn on microphone, listen for frequencies
-         //
-         if (me.audio)
+         if (!me.context)
          {
-            me.audio.play();
-            win(
+            context = me.context = new webkitAudioContext();
+         }
+         if (!me.javascriptNode)
+         {
+            // setup a javascript node
+            me.javascriptNode = context.createJavaScriptNode(me.fftSize, 1, 1);
+            // connect to destination, else it isn't called
+            me.javascriptNode.connect(context.destination);
+            // when the javascript node is called
+            // we use information from the analyzer node
+            // to draw the volume
+            me.javascriptNode.onaudioprocess = function()
             {
-               freqs : me.freqs
+               // get the average, bincount is fftsize / 2
+               var i = 0, array = new Uint32Array(me.analyser.frequencyBinCount), freqs = [];
+
+               analyser.getFloatFrequencyData(array);
+
+               for ( i = 0; i < me.NUM_SIGNALS; i++)
+               {
+                  freqs[i] = 0;
+               }
+               // Find frequency amplitudes between loFreq and highFreq
+               for (var i = Math.floor(me.loFreq / me.bwWidth); i < Math.min(Math.ceil(me.hiFreq / me.bwWidth), array.length); i++)
+               {
+                  if (array[i] > freqs[0])
+                  {
+                     freqs[2] = freqs[1];
+                     freqs[1] = freqs[0];
+                     freqs[0] = array[i];
+                  }
+                  else if (array[i] > freqs[1])
+                  {
+                     freqs[2] = freqs[1];
+                     freqs[1] = array[i];
+                  }
+                  else if (array[i] > freqs[2])
+                  {
+                     freqs[2] = array[i];
+                  }
+               }
+               freqs.sort();
+               for ( i = 0; i < me.NUM_SIGNALS; i++)
+               {
+                  freqs[i] *= me.bwWidth;
+                  freqs[i] = Math.round(freqs[i]);
+               }
+               console.debug("Freqs=" + freqs);
+            }
+            var analyzer = me.analyser = context.createAnalyser();
+            analyser.smoothingTimeConstant = 0;
+            analyser.fftSize = me.fftSize;
+         }
+         if (media)
+         {
+            media(
+            {
+               audio : true
+            }, function(stream)
+            {
+               if (me.microphone)
+               {
+                  me.microphone.disconnect();
+               }
+               me.microphone = context.createMediaStreamSource(stream);
+               me.microphone.connect(me.analyser);
+               // analyser.connect(aCtx.destination);
             });
          }
          else
          {
-            fail();
+            Ext.device.Notification.show(
+            {
+               title : 'Local Identity',
+               message : me.unsupportedBrowserMsg,
+               buttons : ['OK'],
+               callback : Ext.emptyFn
+            });
          }
-         //cordova.exec(win, fail, "ProximityIDPlugin", "scanIdentity", [samples, missedThreshold, magThreshold, overlapRatio]);
       },
       stop : function()
       {
@@ -417,14 +485,23 @@ else
             me.audio.currentTime = 0;
             delete me.audio;
          }
+
+         if (me.microphone)
+         {
+            me.microphone.disconnect();
+            delete me.microphone;
+         }
       },
       setVolume : function(vol)
       {
          var me = this;
          if (me.context)
          {
-            // Set the volume.
-            me.gainNode.gain.value = Math.max(0, vol / 100);
+            if (me.gainNode)
+            {
+               // Set the volume.
+               me.gainNode.gain.value = Math.max(0, vol / 100);
+            }
          }
          else if (me.audio)
          {

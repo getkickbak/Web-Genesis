@@ -51,9 +51,6 @@ if (self.console && self.console.log)
          // Create a side channel for the worker to send log messages on
          var channel = new MessageChannel();
 
-         // Send one end of the channel to the worker
-         w.postMessage("console", [channel.port2]);
-
          // And listen for log messages on the other end of the channel
          channel.port1.onmessage = function(e)
          {
@@ -64,6 +61,10 @@ if (self.console && self.console.log)
             console.log.apply(console, args);
             // Pass the args to the real log
          }
+         
+         // Send one end of the channel to the worker
+         w.postMessage("console", [channel.port2]);
+
          // Return the real Worker object from this fake constructor
          return w;
       }
