@@ -22,18 +22,14 @@
       <script type="text/javascript" src="../lib/core/date.js"></script>
       <script type="text/javascript" src="../lib/core/extras.js"></script>
       <script type="text/javascript" src="../lib/core/RiffWave.js"></script>
-      <script type="text/javascript" src="../lib/core/WebWorkerConsole.js"></script>
       <!-- Debug Javascript on mobile browser -->
       <script type="text/javascript" src="../lib/touch-2.1.1/sencha-touch-all-debug.js"></script>
-      <script type="text/javascript" src="lib/core/WifiConnMgr.js"></script>
-      <script type="text/javascript" src="worker/server.js"></script>
       <!--
       Phone Gap Libs
-      -->
       <script type="text/javascript" src="lib/cordova-2.8.1.android.js"></script>
+      -->
       <script type="text/javascript">
-         var backBtnCallbackListFn = [];
-         var phoneGapAvailable = false;
+         var backBtnCallbackListFn = [], phoneGapAvailable = false, _filesAssetCount = 0;
          var debugMode = true;
          var serverHost;
          //serverHost = 'http://192.168.0.52:3000';
@@ -42,18 +38,7 @@
 		 serverHost = 'http://www.dev1getkickbak.com';
 		 //serverHost = 'http://www.devgetkickbak.com';
 		 //serverHost = 'http://www.getkickbak.com',
-         var merchantMode = true;
-         var appName = 'MerchantKickBak';
-
-         var _appPath = "app", _extPath = '../lib/touch-2.1.1/src';
-
-         var _browser = Ext.browser;
-         if (!!window.isNK)
-         {
-            _browser.setFlag('WebView');
-            _browser.setFlag('Sencha');
-         }
-         _browser.setFlag('PhonGap', false);
+         var merchantMode = true, appName = 'MerKickBak', _appPath = "app", _extPath = '../lib/touch-2.1.1/src';
 
          //
          // Bug fix to prevent bunching up of cls aggregation
@@ -70,14 +55,15 @@
             }
          });
       </script>
-      <script type="text/javascript" src="lib/core/barcodescanner.js"></script>
-      <script type="text/javascript" src="lib/core/QRCodeReader.js"></script>
+      <script type="text/javascript" src="lib/core/ProximityID.js"></script>
+      <script type="text/javascript" src="WebWorkerConsole.js"></script>
       <!--
       <script type="text/javascript" src="lib/FileTransfer.js"></script>
       -->
       <!--
       SenchaTouch Libs
       -->
+      <script type="text/javascript" src="../lib/core/Genesis.js"></script>
       <script type="text/javascript" src="lib/core/Overrides.js"></script>
       <!-- View Widgets -->
       <script type="text/javascript" src="app/profile/Desktop.js"></script>

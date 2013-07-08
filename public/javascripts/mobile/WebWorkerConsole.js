@@ -83,10 +83,6 @@ else
 
    // Now run the script that was originally passed to Worker()
    var url = location.hash.slice(1);
-   // Get the real URL to run
-   importScripts(url);
-   // Load and run it now
-
    self._onmessage = self.onmessage;
    self.onmessage = function(e)
    {
@@ -121,4 +117,6 @@ else
          delete self._onmessage;
       }
    }
+   
+   importScripts(url);
 }
