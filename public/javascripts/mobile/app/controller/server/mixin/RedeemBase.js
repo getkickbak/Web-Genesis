@@ -247,26 +247,23 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
       viewport.popUpInProgress = true;
       me._actions.show();
 
-      if (Genesis.fn.isNative())
+      me.getLocalID(function(idx)
       {
-         me.getLocalID(function(idx)
+         identifiers = idx;
+         me.redeemItemFn(
          {
-            identifiers = idx;
-            me.redeemItemFn(
+            data : me.self.encryptFromParams(
             {
-               data : me.self.encryptFromParams(
-               {
-                  'frequency' : identifiers['localID'],
-                  'expiry_ts' : new Date().addHours(3).getTime()
-               }, 'reward')
-            }, true);
-         }, function()
-         {
-            me._actions.hide();
-            me.onDoneTap();
-         }, Ext.bind(me.onRedeemItem, me, arguments));
-         viewport.setActiveController(me);
-      }
+               'frequency' : identifiers['localID'],
+               'expiry_ts' : new Date().addHours(3).getTime()
+            }, 'reward')
+         }, true);
+      }, function()
+      {
+         me._actions.hide();
+         me.onDoneTap();
+      }, Ext.bind(me.onRedeemItem, me, arguments));
+      viewport.setActiveController(me);
    },
    onRedeemItemTap : function(b, e, eOpts, eInfo)
    {

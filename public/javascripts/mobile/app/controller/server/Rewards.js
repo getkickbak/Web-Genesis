@@ -521,7 +521,7 @@ Ext.define('Genesis.controller.server.Rewards',
             iconType : 'prizewon',
             icon : 'rss',
             //cls : 'viewport',
-            title : (Genesis.fn.isNative()) ? me.lookingForMobileDeviceMsg() : me.genQRCodeMsg,
+            title : me.lookingForMobileDeviceMsg(),
             buttons : [
             {
                margin : '0 0 0.5 0',
@@ -542,25 +542,23 @@ Ext.define('Genesis.controller.server.Rewards',
       }
       viewport.popUpInProgress = true;
       me._actions.show();
-      if (Genesis.fn.isNative())
+      
+      me.getLocalID(function(ids)
       {
-         me.getLocalID(function(ids)
+         identifiers = ids;
+         me.rewardItemFn(
          {
-            identifiers = ids;
-            me.rewardItemFn(
+            data :
             {
-               data :
-               {
-                  'frequency' : identifiers['localID']
-               }
-            }, true);
-         }, function()
-         {
-            me._actions.hide();
-            me.onDoneTap();
-         }, Ext.bind(me.onRewardItem, me, arguments));
-         viewport.setActiveController(me);
-      }
+               'frequency' : identifiers['localID']
+            }
+         }, true);
+      }, function()
+      {
+         me._actions.hide();
+         me.onDoneTap();
+      }, Ext.bind(me.onRewardItem, me, arguments));
+      viewport.setActiveController(me);
    },
    // --------------------------------------------------------------------------
    // Amount Tab

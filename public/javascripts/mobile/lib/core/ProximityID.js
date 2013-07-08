@@ -432,8 +432,7 @@ else
                freqs.sort();
                for ( i = 0; i < me.NUM_SIGNALS; i++)
                {
-                  freqs[i] *= me.bwWidth;
-                  freqs[i] = Math.round(freqs[i]);
+                  freqs[i] = Math.round(freqs[i] * me.bwWidth);
                }
                console.debug("Freqs=" + freqs);
             }
