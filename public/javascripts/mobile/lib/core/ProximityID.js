@@ -379,6 +379,27 @@ else
             fail();
          }
       },
+      scan : function(win, fail, samples, missedThreshold, magThreshold, overlapRatio)
+      {
+         var me = this;
+
+         //
+         // Turn on microphone, listen for frequencies
+         //
+         if (me.audio)
+         {
+            me.audio.play();
+            win(
+            {
+               freqs : me.freqs
+            });
+         }
+         else
+         {
+            fail();
+         }
+         //cordova.exec(win, fail, "ProximityIDPlugin", "scanIdentity", [samples, missedThreshold, magThreshold, overlapRatio]);
+      },
       stop : function()
       {
          var me = this;

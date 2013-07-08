@@ -1,0 +1,98 @@
+<!DOCTYPE HTML>
+<html manifest="" lang="en-US">
+   <head>
+      <meta name="apple-itunes-app" content="app-id=537476722">
+      <meta name="format-detection" content="telephone=no" />
+      <meta name="format-detection" content="address=no" />
+      <meta name="format-detection" content="email=no" />
+      <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+      <meta charset="UTF-8">
+      <title>KickBak</title>
+      <style type="text/css">
+         /**
+          * Example of an initial loading indicator.
+          * It is recommended to keep this as minimal as possible to provide instant feedback
+          * while other resources are still being loaded for the first time
+          */
+         html, body {
+            height:100%;
+            /*background-color:#1985D0;*/
+            background-color:#0A78BE;
+         }
+         #appLoadingIndicator {
+            position:absolute;
+            top:50%;
+            margin-top:4em;
+            text-align:center;
+            width:100%;
+            height:30px;
+            -webkit-animation-name:appLoadingIndicator;
+            -webkit-animation-duration:0.5s;
+            -webkit-animation-iteration-count:infinite;
+            -webkit-animation-direction:linear;
+         }
+         #appLoadingIndicator> * {
+            background-color:#FFFFFF;
+            display:inline-block;
+            height:30px;
+            -webkit-border-radius:15px;
+            margin:0 5px;
+            width:30px;
+            opacity:0.8;
+         }
+         @-webkit-keyframes appLoadingIndicator{
+         0% {
+         opacity: 0.8
+         }
+         50% {
+         opacity: 0
+         }
+         100% {
+         opacity: 0.8
+         }
+         }
+      </style>
+      <script type="text/javascript">
+         var _filesAssetCount = 0, _totalAssetCount = 4, _loadingPct;
+         (function()
+         {
+            // Update Page Loading progress every sec
+            var lastCount = 0, task = setInterval(function()
+            {               
+               if (_filesAssetCount >= _totalAssetCount)
+               {
+                  clearInterval(task);
+                  _loadingPct = null;
+               }
+               else if (lastCount != _filesAssetCount)
+               {
+                  var percentage = Math.round(_filesAssetCount / _totalAssetCount * 100);
+
+                  lastCount = _filesAssetCount;
+                  if (_loadingPct)
+                  {
+                     _loadingPct.innerText = percentage + '%';
+                  }
+               }
+            }, 0.1 * 1000);
+         })();
+      </script>
+      <!-- The line below must be kept intact for Sencha Command to build your application -->
+      <script type="text/javascript">(function(h){function f(c,d){document.write('<meta name="'+c+'" content="'+d+'">')}if("undefined"===typeof g)var g=h.Ext={};g.blink=function(c){var d=c.js||[],c=c.css||[],b,e,a;f("viewport","width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no");f("apple-mobile-web-app-capable","yes");f("apple-touch-fullscreen","yes");b=0;for(e=c.length;b<e;b++)a=c[b],"string"!=typeof a&&(a=a.path),document.write('<link rel="stylesheet" href="'+a+'">');b=0;for(e=d.length;b<
+e;b++)a=d[b],"string"!=typeof a&&(a=a.path),document.write('<script src="'+a+'"><\/script>')}})(this);;Ext.blink({"id":"b0849797-063d-44af-b2cc-99480c66be86","js":[{"path":"http://www.getkickbak.com/javascripts/lib/touch-2.1.1/sencha-touch-all.js","remote":true,"update":false,"type":"js","bundle":false},{"path":"http://files.getkickbak.com/mobileWeb/build/KickBak/production/lib/gibberish-aes.min.js","remote":true,"update":false,"type":"js","bundle":false},{"path":"WebWorkerConsole.js","update":"full","type":"js"},{"path":"worker/server.js","update":"full","type":"js"},{"path":"mcore.js","update":"full","type":"js"},{"path":"app.js","bundle":true,"update":"full","type":"js"}],"css":[]})</script><script type="text/javascript" src="http://www.getkickbak.com/javascripts/lib/touch-2.1.1/sencha-touch-all.js"></script>
+   </head>
+   <body>
+      <div id="fb-root"></div>
+      <div id="loadingPct" style="font-size:6em;font-weight:bold;position:absolute;top:50%;margin-top: -1.125em;color: black;text-align: center;width: 100%;width: 100;color:#FFFFFF;">0%</div>
+      <div id="appLoadingIndicator">
+         <div></div>
+         <div></div>
+         <div></div>
+      </div>
+      <div class="serverPhotoCache"></div>
+      <p style="display:none;"></p>
+      <script type="text/javascript">
+         _loadingPct = document.getElementById("loadingPct");
+      </script>
+   </body>
+</html>

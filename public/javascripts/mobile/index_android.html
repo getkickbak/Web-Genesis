@@ -21,10 +21,6 @@
       <link rel="stylesheet" type="text/css" media="only screen and (min-height:641px) and (-webkit-min-device-pixel-ratio: 2.0)" href="resources/css/android-tablet-mxhdpi.css">
       <!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www
       directory and include it here -->
-      <!--
-      <script src="http://192.168.0.52:8081/target/target-script-min.js#client"></script>
-      Phone Gap Libs
-      -->
       <script type="text/javascript" src="lib/gibberish-aes.min.js"></script>
       <script type="text/javascript" src="lib/cordova-2.8.1.android.js"></script>
       <script type="text/javascript" src="lib/core/PushNotification.js"></script>
@@ -34,39 +30,6 @@
       <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
       -->
       <script type="text/javascript">
-         function _onGotoMainCallBackFn()
-         {
-            Ext.Viewport.setMasked(null);
-            var viewport = _application.getController('client' + '.Viewport');
-            if (viewport)
-            {
-               viewport.resetView();
-               if (viewport.getLoggedIn())
-               {
-                  viewport.redirectTo('checkin');
-               }
-               else
-               {
-                  viewport.redirectTo('login');
-               }
-            }
-            offlineDialogShown = false;
-         }
-
-         function _onGotoMain()
-         {
-            if (!offlineDialogShown)
-            {
-               Ext.device.Notification.show(
-               {
-                  title : 'Network Error',
-                  message : Genesis.controller.ControllerBase.prototype.lostNetworkConnectionMsg,
-                  callback : _onGotoMainCallBackFn
-               });
-            }
-            offlineDialogShown = true;
-         }
-
          function _appLaunch()
          {
             if (launched == 0x111)
@@ -85,8 +48,8 @@
       </script>
       <script type="text/javascript">
          var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false, phoneGapAvailable = true;
-         var debugMode = false, serverHost, merchantMode = false, _application, _filesAssetCount = 0;
-         var appName = 'GetKickBak', _appPath = "app", _extPath = 'lib/touch-2.1.1/src';
+         var appName = 'GetKickBak', _appPath = "app", _extPath = 'lib/touch-2.1.1/src', serverHost, merchantMode = false, _application, _filesAssetCount = 0;
+         var debugMode = false;
          
          if (debugMode)
          {
@@ -183,7 +146,7 @@
 
             document.addEventListener("deviceready", function()
             {
-               //navigator.splashscreen.show();
+               navigator.splashscreen.show();
                console.debug = (!debugMode) ? Ext.emptyFn : console.debug || console.log;
                console.warn = console.warn || console.debug;
 

@@ -625,3 +625,34 @@ Ext.define('Genesis.controller.client.Viewport',
       }
    }
 });
+
+function _onGotoMain()
+{
+   if (!offlineDialogShown)
+   {
+      Ext.device.Notification.show(
+      {
+         title : 'Network Error',
+         message : Genesis.controller.ControllerBase.prototype.lostNetworkConenction,
+         callback : function()
+         {
+            Ext.Viewport.setMasked(null);
+            var viewport = _application.getController('client' + '.Viewport');
+            if (viewport)
+            {
+               viewport.resetView();
+               if (viewport.getLoggedIn())
+               {
+                  viewport.redirectTo('checkin');
+               }
+               else
+               {
+                  viewport.redirectTo('login');
+               }
+            }
+            offlineDialogShown = false;
+         }
+      });
+   }
+   offlineDialogShown = true;
+};

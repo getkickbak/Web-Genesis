@@ -4,7 +4,7 @@ if ( typeof (importScripts) != 'undefined')
 }
 else
 {
-   Genesis.fn.checkloadjscssfile(_hostPathPrefix + 'lib/libmp3lame.min.js', "js", Ext.emptyFn);
+   //Genesis.fn.checkloadjscssfile(_hostPathPrefix + 'lib/libmp3lame.min.js', "js", Ext.emptyFn);
 }
 
 var encoder_mp3codec = null;

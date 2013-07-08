@@ -421,7 +421,7 @@ Ext.define('Genesis.controller.server.Viewport',
          }
       }, 1, me);
 
-      if (Genesis.fn.isNative())
+      //if (Genesis.fn.isNative())
       {
          //
          // Volume Settings
@@ -444,7 +444,7 @@ Ext.define('Genesis.controller.server.Viewport',
          window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
       }
 
-      if (isPosEnabled())
+      if (isPosEnabled() && Genesis.fn.isNative())
       {
          console.debug("Server Viewport - establishPosConn");
          window.plugins.WifiConnMgr.establishPosConn();

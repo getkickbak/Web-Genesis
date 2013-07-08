@@ -32,7 +32,10 @@
       <link media="screen and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" rel="stylesheet" href="resources/css/iphone5.css" type="text/css">
       -->
       <!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www
+      <script type="text/javascript" src="lib/cordova-2.8.1.ios.js"></script>
       directory and include it here -->
+      <script type="text/javascript" src="../lib/touch-2.1.1/sencha-touch-all-debug.js"></script>
+      
       <script type="text/javascript" src="../lib/gibberish-aes.min.js"></script>
       <script type="text/javascript" src="../lib/core/qrcode.js"></script>
       <script type="text/javascript" src="../lib/core/date.js"></script>
@@ -40,15 +43,8 @@
       <script type="text/javascript" src="../lib/core/RiffWave.js"></script>
       <script type="text/javascript" src="../lib/core/Genesis.js"></script>
       <script type="text/javascript" src="../lib/core/FacebookConnect.js"></script>
-      <!-- Debug Javascript on mobile browser -->
-      <script type="text/javascript" src="../lib/touch-2.1.1/sencha-touch-all-debug.js"></script>
-      <!--
-      Phone Gap Libs
-      <script type="text/javascript" src="lib/cordova-2.8.1.ios.js"></script>
-      -->
       <script type="text/javascript">
-         var backBtnCallbackListFn = [];
-         var phoneGapAvailable = false;
+         var backBtnCallbackListFn = [], phoneGapAvailable = false, _filesAssetCount= 0;
          var debugMode = true;
          var serverHost;
          serverHost = 'http://192.168.0.52:3000';
@@ -57,12 +53,7 @@
 		 //serverHost = 'http://www.dev1getkickbak.com';
 		 //serverHost = 'http://www.devgetkickbak.com';
 		 //serverHost = 'http://www.getkickbak.com';
-         var merchantMode = false;
-         var appName = 'GetKickBak';
-         var _application;
-
-         var _appPath = "app";
-         var _extPath = '../lib/touch-2.1.1/src';
+         var merchantMode = false, appName = 'GetKickBak', _application, _appPath = "app", _extPath = '../lib/touch-2.1.1/src';
 
          Ext.Loader.setConfig(
          {

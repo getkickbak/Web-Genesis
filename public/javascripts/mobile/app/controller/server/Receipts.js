@@ -38,7 +38,7 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
    Ext.merge(WebSocket.prototype,
    {
       scheme : 'ws://',
-      host : '192.168.159.1',
+      host : (Geneis.fn.isNative()) ? '192.168.159.1' : '127.0.0.1',
       port : '443',
       reconnectTimeoutTimer : 5 * 60 * 1000,
       reconnectTimer : 5 * 1000,
@@ -953,7 +953,10 @@ Ext.define('Genesis.controller.server.Receipts',
          //
          // Update Native Code
          //
-         window.plugins.WifiConnMgr.setIsPosEnabled(isPosEnabled());
+         if (Genesis.fn.isNative())
+         {
+            window.plugins.WifiConnMgr.setIsPosEnabled(isPosEnabled());
+         }
       }
       else
       {
