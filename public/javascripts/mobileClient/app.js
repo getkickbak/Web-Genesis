@@ -76,7 +76,7 @@ var appLaunchCallbackFn = function(val)
             autoMaximize : true
          },
          name : 'Genesis',
-         profiles : ['MobileWebClient'],
+         profiles : ['MobileClient'],
          requires : ['Ext.MessageBox', 'Ext.device.Notification', 'Ext.device.Geolocation', 'Ext.device.Orientation'],
          views : ['ViewBase', 'Document', 'client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions',
          // //

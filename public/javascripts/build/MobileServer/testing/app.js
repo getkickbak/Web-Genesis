@@ -12379,7 +12379,7 @@ Ext.define('Genesis.controller.server.Viewport',
    }
 });
 
-Ext.define('Genesis.profile.MobileWebServer',
+Ext.define('Genesis.profile.MobileServer',
 {
    extend :  Ext.app.Profile ,
    config :
@@ -13648,7 +13648,7 @@ var appLaunchCallbackFn = function(val)
          {
             autoMaximize : true
          },
-         profiles : ['MobileWebServer'],
+         profiles : ['MobileServer'],
          name : 'Genesis',
          views : ['Document', 'server.Rewards', 'server.Redemptions', 'server.MerchantAccount', 'server.MainPage', //
          'widgets.server.RedeemItemDetail', 'server.SettingsPage', 'server.TagCreatePage', 'Viewport'],

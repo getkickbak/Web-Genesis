@@ -74,7 +74,7 @@ var appLaunchCallbackFn = function(val)
          {
             autoMaximize : true
          },
-         profiles : ['MobileWebServer'],
+         profiles : ['MobileServer'],
          name : 'Genesis',
          views : ['Document', 'server.Rewards', 'server.Redemptions', 'server.MerchantAccount', 'server.MainPage', //
          'widgets.server.RedeemItemDetail', 'server.SettingsPage', 'server.TagCreatePage', 'Viewport'],

@@ -1,4 +1,4 @@
-Ext.define('Genesis.profile.MobileWebClient',
+Ext.define('Genesis.profile.MobileClient',
 {
    extend : 'Ext.app.Profile',
    config :
