@@ -440,6 +440,7 @@ else
             var analyzer = me.analyser = context.createAnalyser();
             analyser.smoothingTimeConstant = 0;
             analyser.fftSize = me.fftSize;
+            console.debug("Local Identity Initialized scanner");
          }
          if (media)
          {
@@ -454,6 +455,7 @@ else
                }
                me.microphone = context.createMediaStreamSource(stream);
                me.microphone.connect(me.analyser);
+               console.debug("Local Identity detecting host ...");
                // analyser.connect(aCtx.destination);
             });
          }
