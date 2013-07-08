@@ -17,29 +17,44 @@
       <link rel="stylesheet" type="text/css" media="only screen and (min-height:641px) and (-webkit-min-device-pixel-ratio: 2.0)" href="resources/css/android-tablet-mxhdpi.css">
       <!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www
       directory and include it here -->
+      <script type="text/javascript">
+         var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false, phoneGapAvailable = false, merchantMode = true, _filesAssetCount = 0;
+         var debugMode = true, serverHost, _appPath = "app", _extPath = '../lib/touch-2.1.1/src';
+
+         window._application = null;
+         window.appName = 'MerKickBak';
+         window._hostPathPrefix = "/javascripts/build/MobileServer/";
+         window._hostPath = _hostPathPrefix + ((debugMode) ? "testing" : "production") + "/";
+         
+         if (debugMode)
+         {
+            //serverHost = 'http://192.168.0.52:3000';
+            //serverHost = 'http://192.168.0.46:3000';
+            //serverHost = 'http://76.10.173.153';
+            serverHost = 'http://www.dev1getkickbak.com';
+            //serverHost = 'http://www.devgetkickbak.com';
+         }
+         else
+         {
+            serverHost = 'http://www.getkickbak.com';
+         }
+      </script>
+      <script type="text/javascript" src="../lib/touch-2.1.1/sencha-touch-all-debug.js"></script>
       <script type="text/javascript" src="../lib/gibberish-aes.min.js"></script>
-      <script type="text/javascript" src="../lib/core/qrcode.js"></script>
+      <script type="text/javascript" src="WebWorkerConsole.js"></script>
+      <script type="text/javascript" src="worker/server.js"></script>
       <script type="text/javascript" src="../lib/core/date.js"></script>
       <script type="text/javascript" src="../lib/core/extras.js"></script>
+      <script type="text/javascript" src="../lib/core/qrcode.js"></script>
       <script type="text/javascript" src="../lib/core/RiffWave.js"></script>
+      <script type="text/javascript" src="../lib/core/FacebookConnect.js"></script>
+      <script type="text/javascript" src="../lib/core/Genesis.js"></script>
       <!-- Debug Javascript on mobile browser -->
-      <script type="text/javascript" src="../lib/touch-2.1.1/sencha-touch-all-debug.js"></script>
       <!--
       Phone Gap Libs
       <script type="text/javascript" src="lib/cordova-2.8.1.android.js"></script>
       -->
       <script type="text/javascript">
-         var backBtnCallbackListFn = [], phoneGapAvailable = false, _filesAssetCount = 0;
-         var debugMode = true;
-         var serverHost;
-         //serverHost = 'http://192.168.0.52:3000';
-         //serverHost = 'http://192.168.0.46:3000';
-		 //serverHost = 'http://76.10.173.153';
-		 serverHost = 'http://www.dev1getkickbak.com';
-		 //serverHost = 'http://www.devgetkickbak.com';
-		 //serverHost = 'http://www.getkickbak.com',
-         var merchantMode = true, appName = 'MerKickBak', _appPath = "app", _extPath = '../lib/touch-2.1.1/src';
-
          //
          // Bug fix to prevent bunching up of cls aggregation
          //
@@ -56,14 +71,6 @@
          });
       </script>
       <script type="text/javascript" src="lib/core/ProximityID.js"></script>
-      <script type="text/javascript" src="WebWorkerConsole.js"></script>
-      <!--
-      <script type="text/javascript" src="lib/FileTransfer.js"></script>
-      -->
-      <!--
-      SenchaTouch Libs
-      -->
-      <script type="text/javascript" src="../lib/core/Genesis.js"></script>
       <script type="text/javascript" src="lib/core/Overrides.js"></script>
       <!-- View Widgets -->
       <script type="text/javascript" src="app/profile/Desktop.js"></script>
@@ -161,7 +168,7 @@
             {
                requires : ['Ext.device.Connection', 'Ext.device.Notification', 'Ext.device.Camera', 'Ext.device.Communicator', 'Ext.device.Geolocation', 'Ext.device.Orientation'],
                profiles : ['Desktop'],
-               views : ['Document', 'server.Rewards', 'server.Redemptions', 'server.MainPage', 'widgets.server.RedeemItemDetail', 'server.SettingsPage', 'server.TagCreatePage', 'Viewport'],
+               views : ['Document', 'server.Rewards', 'server.Redemptions', 'server.MerchantAccount', 'server.MainPage', 'widgets.server.RedeemItemDetail', 'server.SettingsPage', 'server.TagCreatePage', 'Viewport'],
                controllers : ['server.Viewport', 'server.MainPage', 'server.Challenges', 'server.Receipts', 'server.Rewards', 'server.Redemptions', 'server.Merchants',  'server.Settings', 'server.Prizes'],
                stores : [],
                launch : function()
