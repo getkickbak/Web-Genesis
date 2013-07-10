@@ -58,7 +58,7 @@ if (self.console && self.console.log)
             // Array of args to console.log()
             args.unshift(url + ": ");
             // Add an arg to id the worker
-            console.log.apply(console, args);
+            console.debug.apply(console, args);
             // Pass the args to the real log
          }
          
