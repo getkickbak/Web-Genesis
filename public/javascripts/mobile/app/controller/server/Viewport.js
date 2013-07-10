@@ -218,7 +218,7 @@ Ext.define('Genesis.controller.server.Viewport',
             //
             if (!btn || (btn.toLowerCase() == 'restart'))
             {
-               if (!debug)
+               if (!debugMode)
                {
                   if (Genesis.fn.isNative())
                   {
@@ -243,7 +243,7 @@ Ext.define('Genesis.controller.server.Viewport',
                         buttons : ['Restart'],
                         callback : function()
                         {
-                           if (!debug)
+                           if (!debugMode)
                            {
                               //
                               // Restart because we can't continue without Console Setup data

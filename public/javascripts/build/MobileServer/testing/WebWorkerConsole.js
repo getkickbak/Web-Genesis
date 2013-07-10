@@ -84,16 +84,19 @@ else
 
    // Now run the script that was originally passed to Worker()
    var url = location.hash.slice(1);
+   
+   importScripts(url);
+   
    self._onmessage = self.onmessage;
    self.onmessage = function(e)
    {
-      if (e.data === "console")
+      if (e.data == "console")
       {
          // Define the console object
          self.console =
          {
             _port : e.ports[0], // Remember the port we log to
-            log : function log()
+            log : function()
             {
                // Define console.log()
                // Copy the arguments into a real array
@@ -101,7 +104,7 @@ else
                // Send the arguments as a message, over our side channel
                console._port.postMessage(args);
             },
-            debug : function log()
+            debug : function()
             {
                // Define console.log()
                // Copy the arguments into a real array
@@ -118,6 +121,4 @@ else
          delete self._onmessage;
       }
    }
-   
-   importScripts(url);
 }
