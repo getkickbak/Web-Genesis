@@ -423,7 +423,7 @@ else
             if (!me.fftWorker)
             {
                var worker = me.fftWorker = new Worker('worker/fft.js');
-               worker.onmessage = function()
+               worker.onmessage = function(e)
                {
                   var result = eval('[' + e.data + ']')[0];
                   switch (result['cmd'])
