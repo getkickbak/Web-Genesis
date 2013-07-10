@@ -72,10 +72,6 @@ else
       duration : 1 * 44100,
       bufSize : 16 * 1024,
       bitRate : 128,
-      //fftSize : 2 * 16 * 1024,
-      fftSize : 2048,
-      //bwWidth : (44100 / 2) / (16 * 1024),
-      bwWidth : (44100 / 2) / (1 * 1024),
       bw : 0,
       sampleConfig : null,
       freqs : null,
@@ -85,6 +81,17 @@ else
       audio : null,
       bytesEncoded : null,
       unsupportedBrowserMsg : 'This browser does not support our Proximity Scanning feature',
+      convertToMono : function(input)
+      {
+         var me = this;
+         var splitter = me.context.createChannelSplitter(2);
+         var merger = me.context.createChannelMerger(2);
+
+         input.connect(splitter);
+         splitter.connect(merger, 0, 0);
+         splitter.connect(merger, 0, 1);
+         return merger;
+      },
       init : function(s_vol_ratio, r_vol_ratio)
       {
          var me = this;
@@ -392,6 +399,7 @@ else
          {
             context = me.context = new webkitAudioContext();
          }
+
          if (!me.javascriptNode)
          {
             // setup a javascript node
@@ -399,49 +407,52 @@ else
             // when the javascript node is called
             // we use information from the analyser node
             // to draw the volume
-            me.javascriptNode.onaudioprocess = function()
+            me.javascriptNode.onaudioprocess = function(e)
             {
-               // get the average, bincount is fftsize / 2
-               var i = 0, array = new Uint8Array(me.analyser.frequencyBinCount), freqs = [];
+               me.fftWorker.postMessage(
+               {
+                  cmd : 'forward',
+                  buf : e.inputBuffer.getChannelData(0)
+               });
+            };
 
-               me.analyser.getByteFrequencyData(array);
-
-               for ( i = 0; i < me.NUM_SIGNALS; i++)
+            //var analyser = me.analyser = context.createAnalyser();
+            //analyser.smoothingTimeConstant = 0;
+            //analyser.fftSize = me.fftSize;
+            //me.analyser.connect(me.javascriptNode);
+            if (!me.fftWorker)
+            {
+               me.fftWorker = new Worker('worker/fft.js');
+               mw.fftWorker.onmessage = function()
                {
-                  freqs[i] = 0;
-               }
-               // Find frequency amplitudes between loFreq and highFreq
-               for (var i = Math.floor(me.loFreq / me.bwWidth); i < Math.min(Math.ceil(me.hiFreq / me.bwWidth), array.length); i++)
-               //for (var i =0; i < Math.min(Math.ceil(me.hiFreq / me.bwWidth), array.length); i++)
+                  var result = eval('[' + e.data + ']')[0];
+                  switch (result['cmd'])
+                  {
+                     case 'init':
+                     {
+                        console.debug("Local Identity Detector Initialized");
+                        break;
+                     }
+                     case 'forward':
+                     {
+                        console.debug("Local Identity Initialized scanner");
+                        console.debug("Matching Freqs = [" + result['freqs'] + "]");
+                        break;
+                     }
+                  }
+               };
+               me.fftWorker.postMessage(
                {
-                  if (array[i] > freqs[0])
+                  cmd : 'init',
+                  config :
                   {
-                     freqs[2] = freqs[1];
-                     freqs[1] = freqs[0];
-                     freqs[0] = array[i];
+                     sampleRate : me.sampleRate,
+                     fftSize : me.bufSize
                   }
-                  else if (array[i] > freqs[1])
-                  {
-                     freqs[2] = freqs[1];
-                     freqs[1] = array[i];
-                  }
-                  else if (array[i] > freqs[2])
-                  {
-                     freqs[2] = array[i];
-                  }
-               }
-               freqs.sort();
-               for ( i = 0; i < me.NUM_SIGNALS; i++)
-               {
-                  freqs[i] = Math.round(freqs[i] * me.bwWidth);
-               }
-               console.debug("Freqs=" + freqs);
+               });
             }
-            var analyser = me.analyser = context.createAnalyser();
-            analyser.smoothingTimeConstant = 0;
-            analyser.fftSize = me.fftSize;
-            console.debug("Local Identity Initialized scanner");
          }
+
          if (navigator.webkitGetUserMedia)
          {
             navigator.webkitGetUserMedia(
@@ -453,12 +464,12 @@ else
                {
                   me.microphone.disconnect();
                }
+               me.microphone = me.convertToMono(context.createMediaStreamSource(stream));
                // connect to destination, else it isn't called
                me.javascriptNode.connect(me.context.destination);
-               me.microphone = context.createMediaStreamSource(stream);
-               me.microphone.connect(me.analyser);
+               //me.microphone.connect(me.analyser);
+               me.microphone.connect(me.javascriptNode);
                console.debug("Local Identity detecting host ...");
-               // analyser.connect(aCtx.destination);
             });
          }
          else

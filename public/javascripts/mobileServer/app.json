@@ -57,6 +57,9 @@
          "path": "../mobile/worker/server.js",
          "update": "full"
       }, {
+         "path": "../mobile/worker/fft.js",
+         "update": "full"
+      }, {
          "path": "../mobile/mcore.js",
          "update": "full"
       }, {
