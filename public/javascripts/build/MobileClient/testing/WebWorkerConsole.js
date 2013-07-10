@@ -51,9 +51,6 @@ if (self.console && self.console.log)
          // Create a side channel for the worker to send log messages on
          var channel = new MessageChannel();
 
-         // Send one end of the channel to the worker
-         w.postMessage("console", [channel.port2]);
-
          // And listen for log messages on the other end of the channel
          channel.port1.onmessage = function(e)
          {
@@ -64,6 +61,10 @@ if (self.console && self.console.log)
             console.log.apply(console, args);
             // Pass the args to the real log
          }
+         
+         // Send one end of the channel to the worker
+         w.postMessage("console", [channel.port2]);
+
          // Return the real Worker object from this fake constructor
          return w;
       }
@@ -83,20 +84,19 @@ else
 
    // Now run the script that was originally passed to Worker()
    var url = location.hash.slice(1);
-   // Get the real URL to run
+   
    importScripts(url);
-   // Load and run it now
-
+   
    self._onmessage = self.onmessage;
    self.onmessage = function(e)
    {
-      if (e.data === "console")
+      if (e.data == "console")
       {
          // Define the console object
          self.console =
          {
             _port : e.ports[0], // Remember the port we log to
-            log : function log()
+            log : function()
             {
                // Define console.log()
                // Copy the arguments into a real array
@@ -104,7 +104,7 @@ else
                // Send the arguments as a message, over our side channel
                console._port.postMessage(args);
             },
-            debug : function log()
+            debug : function()
             {
                // Define console.log()
                // Copy the arguments into a real array

@@ -12066,14 +12066,31 @@ Ext.define('Genesis.controller.server.Viewport',
    },
    refreshLicenseKey : function(callback, forceRefresh)
    {
-      var me = this;
+      var me = this, uuid;
       callback = callback || Ext.emptyFn;
 
       if (!Genesis.fn.isNative())
       {
-         Genesis.fn.getPrivKey();
-         me.initializeConsole(callback);
-         return;
+         var file = 'licenseKey.txt', request = new XMLHttpRequest();
+
+         //console.debug("Loading LicenseKey.txt ...");
+         request.onreadystatechange = function()
+         {
+            if (request.readyState == 4)
+            {
+               if (request.status == 200 || request.status == 0)
+               {
+                  uuid = request.responseText;
+                  console.debug("Loaded LicenseKey ...");
+               }
+            }
+         };
+         request.open("GET", file, true);
+         request.send(null);
+      }
+      else
+      {
+         uuid = device.uuid;
       }
       me.persistLoadStores(function()
       {
@@ -12096,7 +12113,7 @@ Ext.define('Genesis.controller.server.Viewport',
                },
                params :
                {
-                  'device_id' : device.uuid
+                  'device_id' : uuid
                },
                callback : function(records, operation)
                {
