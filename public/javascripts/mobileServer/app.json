@@ -117,7 +117,7 @@
 	/**
 	* Extra resources to be copied along when build
 	*/
-	"resources": ["../lib/dsp.js", "../lib/core/date.js", "../lib/core/extras.js", "../mobile/resources/themes/images/v1", //
+	"resources": ["../lib/dsp.min.js", "../lib/core/date.js", "../lib/core/extras.js", "../mobile/resources/themes/images/v1", //
 	"../mobile/resources/css", "../mobile/resources/icons", //
 	"../mobile/resources/audio", "../mobile/app/store/mainServerPage.json", "../mobile/term_of_service.htm", //
 	"../mobile/privacy.htm", "../mobile/program_rules.htm"],
