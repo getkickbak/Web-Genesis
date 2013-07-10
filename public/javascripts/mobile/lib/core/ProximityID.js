@@ -422,7 +422,7 @@ else
             //me.analyser.connect(me.javascriptNode);
             if (!me.fftWorker)
             {
-               var worker = me.fftWorker = new Worker('worker/fft.js');
+               var worker = me.fftWorker = new Worker('worker/fft.min.js');
                worker.onmessage = function(e)
                {
                   var result = eval('[' + e.data + ']')[0];

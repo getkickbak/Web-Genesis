@@ -3433,6 +3433,10 @@ Ext.define('Genesis.controller.MainPageBase',
             {
                navigator.app.exitApp();
             }
+            else if (!Genesis.fn.isNative())
+            {
+               window.location.reload();
+            }
             return true;
          }
          return false;
@@ -9364,7 +9368,14 @@ Ext.define('Genesis.controller.server.Receipts',
                //
                // Restart because we can't continue without Console Setup data
                //
-               navigator.app.exitApp();
+               if (Genesis.fn.isNative())
+               {
+                  navigator.app.exitApp();
+               }
+               else
+               {
+                  window.location.reload();
+               }
                break;
             }
             default:
@@ -11691,7 +11702,14 @@ Ext.define('Genesis.controller.server.Settings',
                //
                // Restart because we can't continue without Console Setup data
                //
-               navigator.app.exitApp();
+               if (Genesis.fn.isNative())
+               {
+                  navigator.app.exitApp();
+               }
+               else
+               {
+                  window.location.reload();
+               }
             }
          });
       }, true);

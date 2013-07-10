@@ -78,6 +78,10 @@ Ext.define('Genesis.controller.MainPageBase',
             {
                navigator.app.exitApp();
             }
+            else if (!Genesis.fn.isNative())
+            {
+               window.location.reload();
+            }
             return true;
          }
          return false;

@@ -72,6 +72,10 @@ Ext.require(['Genesis.controller.ControllerBase'], function()
                {
                   navigator.app.exitApp();
                }
+               else
+               {
+                  window.location.reload();
+               }
             }
          }
       }

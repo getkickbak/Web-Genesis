@@ -124,7 +124,14 @@ Ext.define('Genesis.controller.server.Settings',
                //
                // Restart because we can't continue without Console Setup data
                //
-               navigator.app.exitApp();
+               if (Genesis.fn.isNative())
+               {
+                  navigator.app.exitApp();
+               }
+               else
+               {
+                  window.location.reload();
+               }
             }
          });
       }, true);
