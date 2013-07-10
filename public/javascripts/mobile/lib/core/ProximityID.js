@@ -409,7 +409,7 @@ else
             // to draw the volume
             me.javascriptNode.onaudioprocess = function(e)
             {
-               me.fftWorker.postMessage(
+               me.worker.postMessage(
                {
                   cmd : 'forward',
                   buf : e.inputBuffer.getChannelData(0)
@@ -422,8 +422,8 @@ else
             //me.analyser.connect(me.javascriptNode);
             if (!me.fftWorker)
             {
-               me.fftWorker = new Worker('worker/fft.js');
-               mw.fftWorker.onmessage = function()
+               var worker = me.fftWorker = new Worker('worker/fft.js');
+               worker.onmessage = function()
                {
                   var result = eval('[' + e.data + ']')[0];
                   switch (result['cmd'])
@@ -441,7 +441,7 @@ else
                      }
                   }
                };
-               me.fftWorker.postMessage(
+               worker.postMessage(
                {
                   cmd : 'init',
                   config :
