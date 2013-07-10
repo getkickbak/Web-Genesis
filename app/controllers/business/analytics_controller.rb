@@ -320,7 +320,7 @@ module Business
           x = records[:counter]
           inserted = false
           if y == 0
-            previous_challenge_count = challenge_count_sometime_ago[y]
+            previous_challenge_count = challenge_count_sometime_ago[i]
           else  
             previous_challenge_count = challenge_data[i][:data][y-1][1]
           end
@@ -335,7 +335,7 @@ module Business
               inserted = true
               break
             else
-              challenge_data[i][:data][y] << previous_challenge_count  
+              challenge_data[i][:data][y] << previous_challenge_count 
               records[:counter] = x
               inserted = true
               break
