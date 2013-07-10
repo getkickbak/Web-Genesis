@@ -1,8 +1,7 @@
 importScripts('../lib/dsp.min.js');
 
-var fft, sampleRate, fftSize, bwWidth, MAG_THRESHOLD = 0, MATCH_THRESHOLD = 3, ERROR_THRESHOLD = 175,
-// //
-FREQ_GAP = 500.0, NUM_SIGNALS = 3;
+var fft, sampleRate, fftSize, bwWidth, MAG_THRESHOLD = 1e-5, MATCH_THRESHOLD = 3, ERROR_THRESHOLD = 175, //
+loFreq = 17000.0, hiFreq = 20000.0, FREQ_GAP = 500.0, NUM_SIGNALS = 3;
 
 var fft_init = function(config, scope)
 {
@@ -19,16 +18,16 @@ var fft_init = function(config, scope)
 };
 var fft_forward = function(buf, scope)
 {
-   var me = this, i = 0, val, array, freqs = [], fft = me.fft, isNeighbor, foundIndex, _mag;
+   var me = this, i = 0, mag, array, freqs = [], fft = me.fft, isNeighbor, foundIndex, _mag;
 
    fft.forward(buf);
-   mag = fft.spectrum;
+   mags = fft.spectrum;
    // Find frequency amplitudes between loFreq and highFreq
    for ( i = Math.floor(loFreq / bwWidth); i < Math.ceil(hiFreq / bwWidth); i++)
    //for (var i =0; i < Math.min(Math.ceil(me.hiFreq / me.bwWidth), array.length); i++)
    {
-      val = mag[i];
-      if (val <= MAG_THRESHOLD)
+      mag = mags[i];
+      if (mag <= MAG_THRESHOLD)
       {
          continue;
       }
@@ -36,26 +35,34 @@ var fft_forward = function(buf, scope)
       //
       // Sort on Index (asc)
       //
-      freqs.sort(function(i1, i2)
+      foundIndex = null;
+      if (freqs.length > 0)
       {
-         return i1['val'] - i2['val'];
-      });
-
-      //
-      // Find any nearby Index
-      //
-      foundIndex = freqs.binarySearch(
-      {
-         val : val,
-         index : i
-      }, function(i1, i2)
-      {
-         // Are they in the freq neighbourhood?
+         freqs.sort(function(i1, i2)
+         {
+            return i1['index'] - i2['index'];
+         });
          //
-         isNeighbor = Math.abs(i1['index'] - i2['index']) <= ERROR_THRESHOLD;
+         // Find any nearby Index
+         //
+         foundIndex = freqs.binarySearch(
+         {
+            val : mag,
+            index : i
+         }, function(i1, i2)
+         {
+            // Are they in the freq neighbourhood?
+            //
+            isNeighbor = (Math.abs(i1['index'] - i2['index']) <= ERROR_THRESHOLD);
 
-         return (isNeighbor) ? 0 : (i1['index'] - i2['index']);
-      });
+            return (isNeighbor) ? 0 : (i1['index'] - i2['index']);
+         });
+      }
+
+      if (foundIndex == null)
+      {
+         foundIndex = -1;
+      }
 
       if (foundIndex >= 0)
       {
@@ -63,6 +70,8 @@ var fft_forward = function(buf, scope)
          //
          // Found an existing power even larger than adjacent power values
          //
+         //console.debug("foundIndex=" + foundIndex + ", freqs.length=" + freqs.length + ", mag=" + mag + ", String=" +
+         // JSON.stringify(_mag));
          if (_mag['val'] < mag)
          {
             _mag['val'] = mag;
@@ -71,6 +80,7 @@ var fft_forward = function(buf, scope)
       }
       else
       {
+         //console.debug("Added Mag" + mag + ", index = " + i);
          freqs.push(
          {
             val : mag,

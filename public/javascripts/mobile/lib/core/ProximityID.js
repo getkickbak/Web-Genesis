@@ -72,6 +72,7 @@ else
       duration : 1 * 44100,
       bufSize : 16 * 1024,
       bitRate : 128,
+      MATCH_THRESHOLD : 2,
       bw : 0,
       sampleConfig : null,
       freqs : null,
@@ -393,7 +394,7 @@ else
       },
       scan : function(win, fail, samples, missedThreshold, magThreshold, overlapRatio)
       {
-         var me = this, context = me.context;
+         var me = this, context = me.context, matchCount = 0;
 
          if (!me.context)
          {
@@ -425,7 +426,7 @@ else
                var worker = me.fftWorker = new Worker('worker/fft.min.js');
                worker.onmessage = function(e)
                {
-                  var result = eval('[' + e.data + ']')[0];
+                  var i, result = eval('[' + e.data + ']')[0];
                   switch (result['cmd'])
                   {
                      case 'init':
@@ -437,6 +438,38 @@ else
                      {
                         console.debug("Local Identity Initialized scanner");
                         console.debug("Matching Freqs = [" + result['freqs'] + "]");
+
+                        if (me.freqs)
+                        {
+                           for ( i = 0; i < result['freqs'].length; i++)
+                           {
+                              if (me.freqs[i] != result['freqs'])
+                              {
+                                 break;
+                              }
+                           }
+                           if (i != result['freqs'].length)
+                           {
+                              matchCount = 0;
+                              delete me.freqs;
+                           }
+                           else
+                           {
+                              matchCount++;
+                           }
+                        }
+                        else
+                        {
+                           me.freqs = result['freqs'];
+                        }
+
+                        if (matchCount >= me.MATCH_THRESHOLD)
+                        {
+                           win(
+                           {
+                              freqs : me.freqs
+                           });
+                        }
                         break;
                      }
                   }
@@ -464,6 +497,7 @@ else
                {
                   me.microphone.disconnect();
                }
+               delete me.freqs;
                me.microphone = me.convertToMono(context.createMediaStreamSource(stream));
                // connect to destination, else it isn't called
                me.javascriptNode.connect(me.context.destination);

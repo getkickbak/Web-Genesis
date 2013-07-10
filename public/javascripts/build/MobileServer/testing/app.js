@@ -12064,17 +12064,10 @@ Ext.define('Genesis.controller.server.Viewport',
          console.debug("updateMetaDataInfo Exception - " + e);
       }
    },
-   refreshLicenseKey : function(callback, forceRefresh)
+   getLicenseKey : function(uuid, callback, forceRefresh)
    {
       var me = this;
-      callback = callback || Ext.emptyFn;
 
-      if (!Genesis.fn.isNative())
-      {
-         Genesis.fn.getPrivKey();
-         me.initializeConsole(callback);
-         return;
-      }
       me.persistLoadStores(function()
       {
          var lstore = Ext.StoreMgr.get('LicenseStore');
@@ -12096,7 +12089,7 @@ Ext.define('Genesis.controller.server.Viewport',
                },
                params :
                {
-                  'device_id' : device.uuid
+                  'device_id' : uuid
                },
                callback : function(records, operation)
                {
@@ -12142,6 +12135,35 @@ Ext.define('Genesis.controller.server.Viewport',
          }
       });
    },
+   refreshLicenseKey : function(callback, forceRefresh)
+   {
+      var me = this;
+
+      callback = callback || Ext.emptyFn;
+      if (!Genesis.fn.isNative())
+      {
+         var request = new XMLHttpRequest();
+
+         //console.debug("Loading LicenseKey.txt ...");
+         request.onreadystatechange = function()
+         {
+            if (request.readyState == 4)
+            {
+               if (request.status == 200 || request.status == 0)
+               {
+                  console.debug("Loaded LicenseKey ...");
+                  me.getLicenseKey(request.responseText, callback, forceRefresh);
+               }
+            }
+         };
+         request.open("GET", 'licenseKey.txt', true);
+         request.send(null);
+      }
+      else
+      {
+         me.getLicenseKey(uuid, callback, forceRefresh);
+      }
+   },
    initNotification : function(msg)
    {
       var me = this;
@@ -12158,7 +12180,7 @@ Ext.define('Genesis.controller.server.Viewport',
             //
             if (!btn || (btn.toLowerCase() == 'restart'))
             {
-               if (!debug)
+               if (!debugMode)
                {
                   if (Genesis.fn.isNative())
                   {
@@ -12183,7 +12205,7 @@ Ext.define('Genesis.controller.server.Viewport',
                         buttons : ['Restart'],
                         callback : function()
                         {
-                           if (!debug)
+                           if (!debugMode)
                            {
                               //
                               // Restart because we can't continue without Console Setup data

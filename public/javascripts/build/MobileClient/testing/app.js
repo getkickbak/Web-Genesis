@@ -3433,6 +3433,10 @@ Ext.define('Genesis.controller.MainPageBase',
             {
                navigator.app.exitApp();
             }
+            else if (!Genesis.fn.isNative())
+            {
+               window.location.reload();
+            }
             return true;
          }
          return false;
@@ -17488,6 +17492,10 @@ Ext.require(['Genesis.controller.ControllerBase'], function()
                {
                   navigator.app.exitApp();
                }
+               else
+               {
+                  window.location.reload();
+               }
             }
          }
       }
@@ -18151,7 +18159,7 @@ Ext.define('Genesis.controller.mobileWebClient.Challenges',
    xtype : 'mobileWebClientChallengesCntlr'
 });
 
-Ext.define('Genesis.profile.MobileWebClient',
+Ext.define('Genesis.profile.MobileClient',
 {
    extend :  Ext.app.Profile ,
    config :
@@ -19422,7 +19430,7 @@ var appLaunchCallbackFn = function(val)
             autoMaximize : true
          },
          name : 'Genesis',
-         profiles : ['MobileWebClient'],
+         profiles : ['MobileClient'],
                                                                                                                       
          views : ['ViewBase', 'Document', 'client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions',
          // //
