@@ -4,7 +4,7 @@ var fft, sampleRate, fftSize, bwWidth, MAG_THRESHOLD = 0, MATCH_THRESHOLD = 3, E
 // //
 FREQ_GAP = 500.0, NUM_SIGNALS = 3;
 
-var fft_init = function(config)
+var fft_init = function(config, scope)
 {
    sampleRate = config['sampleRate'], fftSize = config['fftSize'], bwWidth = sampleRate / fftSize;
    //

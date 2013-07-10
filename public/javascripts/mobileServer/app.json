@@ -54,10 +54,10 @@
          "path": "../touch/sencha-touch.js",
          "x-bootstrap": true
       }, {
-         "path": "../mobile/worker/server.js",
+         "path": "../mobile/worker/server.min.js",
          "update": "full"
       }, {
-         "path": "../mobile/worker/fft.js",
+         "path": "../mobile/worker/fft.min.js",
          "update": "full"
       }, {
          "path": "../mobile/mcore.js",
@@ -125,7 +125,7 @@
 	/**
 	* File / directory name matchers to ignore when copying to the builds, must be valid regular expressions
 	*/
-	"ignore": ["\.svn$", "\.git$"],
+	"ignore": ["\.svn$", "\.git$", "\.sass$"],
 
      /**
 	* Directory path to store all previous production builds. Note that the content generated inside this directory
