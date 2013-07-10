@@ -369,52 +369,50 @@ Ext.define('Genesis.controller.server.Viewport',
    {
       var me = this;
 
-      if (!Genesis.fn.isNative())
+      if (Genesis.fn.isNative())
       {
-         return;
-      }
-      if (me._mimeTypeCallback)
-      {
-         nfc.removeNdefListener(me._mimeTypeCallback, function()
-         //nfc.removeMimeTypeListener(Genesis.constants.appMimeType, me._mimeTypeCallback, function()
+         if (me._mimeTypeCallback)
          {
-            console.debug("Removed NDEF Listener for NFC detection ...");
-            //console.debug("Removed MimeType[" + Genesis.constants.appMimeType + "] for NFC detection ...");
-         });
-         delete me._mimeTypeCallback;
-      }
-      if (controller && Genesis.constants.isNfcEnabled)
-      {
-         me._mimeTypeCallback = function(nfcEvent)
-         {
-            var cntlr = me.getActiveController(), result = cntlr.onBeforeNfc(nfcEvent);
-            if (result)
+            nfc.removeNdefListener(me._mimeTypeCallback, function()
+            //nfc.removeMimeTypeListener(Genesis.constants.appMimeType, me._mimeTypeCallback, function()
             {
-               if (cntlr)
+               console.debug("Removed NDEF Listener for NFC detection ...");
+               //console.debug("Removed MimeType[" + Genesis.constants.appMimeType + "] for NFC detection ...");
+            });
+            delete me._mimeTypeCallback;
+         }
+         if (controller && Genesis.constants.isNfcEnabled)
+         {
+            me._mimeTypeCallback = function(nfcEvent)
+            {
+               var cntlr = me.getActiveController(), result = cntlr.onBeforeNfc(nfcEvent);
+               if (result)
                {
-                  console.log("Received Message [" + Ext.encode(result) + "]");
-                  cntlr.onNfc(result);
+                  if (cntlr)
+                  {
+                     console.log("Received Message [" + Ext.encode(result) + "]");
+                     cntlr.onNfc(result);
+                  }
+                  else
+                  {
+                     console.log("Ignored Received Message [" + Ext.encode(result) + "]");
+                  }
                }
-               else
-               {
-                  console.log("Ignored Received Message [" + Ext.encode(result) + "]");
-               }
-            }
-         };
+            };
 
-         nfc.addNdefListener(me._mimeTypeCallback, function()
-         //nfc.addMimeTypeListener(Genesis.constants.appMimeType, me._mimeTypeCallback, function()
-         {
-            console.debug("Listening for tags with NDEF type");
-            //console.debug("Listening for tags with mime type " + Genesis.constants.appMimeType);
-         }, function()
-         {
-            console.warn('Failed to register NDEF type with NFC');
-         });
-         //console.debug("Added NDEF Tags for NFC detection ...");
-         //console.debug("Added MimeType[" + Genesis.constants.appMimeType + "] for NFC detection ...");
+            nfc.addNdefListener(me._mimeTypeCallback, function()
+            //nfc.addMimeTypeListener(Genesis.constants.appMimeType, me._mimeTypeCallback, function()
+            {
+               console.debug("Listening for tags with NDEF type");
+               //console.debug("Listening for tags with mime type " + Genesis.constants.appMimeType);
+            }, function()
+            {
+               console.warn('Failed to register NDEF type with NFC');
+            });
+            //console.debug("Added NDEF Tags for NFC detection ...");
+            //console.debug("Added MimeType[" + Genesis.constants.appMimeType + "] for NFC detection ...");
+         }
       }
-
       return controller;
    },
    // --------------------------------------------------------------------------
@@ -497,6 +495,74 @@ Ext.define('Genesis.controller.server.Viewport',
       {
          console.debug("Server Viewport - establishPosConn");
          window.plugins.WifiConnMgr.establishPosConn();
+      }
+
+      if (!Genesis.fn.isNative())
+      {
+         var ws = WebSocket.prototype;
+         var url = ws.scheme + ws.host + ':' + ws.port + "/nfc";
+         var wssocket = me.wssocket = new WebSocket(url, 'json');
+         wssocket.onopen = function(event)
+         {
+         };
+         wssocket.onmessage = function(event)
+         {
+            // console.debug("wssocket.onmessage - [" + event.data + "]");
+            try
+            {
+               var inputStream = eval('[' + event.data + ']')[0];
+               //inputStream = Ext.decode(event.data);
+
+               var cmd = inputStream['code'];
+               switch (cmd)
+               {
+                  case 'nfc' :
+                  {
+                     //
+                     // Get NFC data from remote call
+                     //
+                     var cntlr = me.getActiveController(), result = Ext.decode(inputStream['data']);
+                     /*
+                      {
+                      result : Ext.decode(text),
+                      id : id
+                      };
+                      */
+                     if (result)
+                     {
+                        if (cntlr)
+                        {
+                           console.log("Received Message [" + Ext.encode(result) + "]");
+                           cntlr.onNfc(result);
+                        }
+                        else
+                        {
+                           console.log("Ignored Received Message [" + Ext.encode(result) + "]");
+                        }
+                     }
+                     break;
+                  }
+                  case '' :
+                  {
+                     break;
+                  }
+                  default:
+                     break;
+               }
+            }
+            catch(e)
+            {
+               console.debug("Exception while parsing NFC Data ...\n" + e);
+            }
+         };
+         wssocket.onerror = function(event)
+         {
+            console.debug("WebSocketServer::onerror");
+         };
+         wssocket.onclose = function(event)
+         {
+            console.debug("WebSocketServer::onclose");
+         };
       }
    }
 });
