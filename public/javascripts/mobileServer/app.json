@@ -54,12 +54,6 @@
          "path": "../touch/sencha-touch.js",
          "x-bootstrap": true
       }, {
-         "path": "../mobile/worker/server.min.js",
-         "update": "full"
-      }, {
-         "path": "../mobile/worker/fft.min.js",
-         "update": "full"
-      }, {
          "path": "../mobile/mcore.js",
          "update": "full"
       }, {
@@ -117,10 +111,12 @@
 	/**
 	* Extra resources to be copied along when build
 	*/
-	"resources": ["licenseKey.txt", "../lib/dsp.min.js", "../lib/core/date.js", "../lib/core/extras.js", "../mobile/resources/themes/images/v1", //
-	"../mobile/resources/css", "../mobile/resources/icons", //
-	"../mobile/resources/audio", "../mobile/app/store/mainServerPage.json", "../mobile/term_of_service.htm", //
-	"../mobile/privacy.htm", "../mobile/program_rules.htm"],
+	"resources": ["licenseKey.txt", //
+	"../mobile/worker/server.min.js", "../mobile/worker/fft.min.js", "../lib/dsp.min.js", //
+	"../lib/core/date.js", "../lib/core/extras.js", //
+	"../mobile/resources/themes/images/v1", "../mobile/resources/css", "../mobile/resources/icons", "../mobile/resources/audio", //
+	"../mobile/app/store/mainServerPage.json", //
+	"../mobile/term_of_service.htm", "../mobile/privacy.htm", "../mobile/program_rules.htm"],
 
 	/**
 	* File / directory name matchers to ignore when copying to the builds, must be valid regular expressions
