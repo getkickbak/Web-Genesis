@@ -409,7 +409,7 @@ else
             // to draw the volume
             me.javascriptNode.onaudioprocess = function(e)
             {
-               me.worker.postMessage(
+               me.fftWorker.postMessage(
                {
                   cmd : 'forward',
                   buf : e.inputBuffer.getChannelData(0)
