@@ -11997,7 +11997,14 @@ Ext.require(['Genesis.controller.ControllerBase'], function()
          else
          {
             viewport.self.playSoundFile(viewport.sound_files['clickSound']);
-            navigator.app.exitApp();
+            if (Genesis.fn.isNative())
+            {
+               navigator.app.exitApp();
+            }
+            else
+            {
+               window.location.reload();
+            }
          }
       }
    };
