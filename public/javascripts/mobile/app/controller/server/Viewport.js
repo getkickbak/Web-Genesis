@@ -218,7 +218,17 @@ Ext.define('Genesis.controller.server.Viewport',
             //
             if (!btn || (btn.toLowerCase() == 'restart'))
             {
-               navigator.app.exitApp();
+               if (!debug)
+               {
+                  if (Genesis.fn.isNative())
+                  {
+                     navigator.app.exitApp();
+                  }
+                  else
+                  {
+                     window.location.reload();
+                  }
+               }
             }
             else
             {
@@ -233,10 +243,20 @@ Ext.define('Genesis.controller.server.Viewport',
                         buttons : ['Restart'],
                         callback : function()
                         {
-                           //
-                           // Restart because we can't continue without Console Setup data
-                           //
-                           navigator.app.exitApp();
+                           if (!debug)
+                           {
+                              //
+                              // Restart because we can't continue without Console Setup data
+                              //
+                              if (Genesis.fn.isNative())
+                              {
+                                 navigator.app.exitApp();
+                              }
+                              else
+                              {
+                                 window.location.reload();
+                              }
+                           }
                         }
                      });
                   }, true);
