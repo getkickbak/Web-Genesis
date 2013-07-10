@@ -12064,34 +12064,10 @@ Ext.define('Genesis.controller.server.Viewport',
          console.debug("updateMetaDataInfo Exception - " + e);
       }
    },
-   refreshLicenseKey : function(callback, forceRefresh)
+   getLicenseKey : function(uuid, callback, forceRefresh)
    {
-      var me = this, uuid;
-      callback = callback || Ext.emptyFn;
+      var me = this;
 
-      if (!Genesis.fn.isNative())
-      {
-         var file = 'licenseKey.txt', request = new XMLHttpRequest();
-
-         //console.debug("Loading LicenseKey.txt ...");
-         request.onreadystatechange = function()
-         {
-            if (request.readyState == 4)
-            {
-               if (request.status == 200 || request.status == 0)
-               {
-                  uuid = request.responseText;
-                  console.debug("Loaded LicenseKey ...");
-               }
-            }
-         };
-         request.open("GET", file, true);
-         request.send(null);
-      }
-      else
-      {
-         uuid = device.uuid;
-      }
       me.persistLoadStores(function()
       {
          var lstore = Ext.StoreMgr.get('LicenseStore');
@@ -12158,6 +12134,35 @@ Ext.define('Genesis.controller.server.Viewport',
             me.initializeConsole(callback);
          }
       });
+   },
+   refreshLicenseKey : function(callback, forceRefresh)
+   {
+      var me = this;
+
+      callback = callback || Ext.emptyFn;
+      if (!Genesis.fn.isNative())
+      {
+         var request = new XMLHttpRequest();
+
+         //console.debug("Loading LicenseKey.txt ...");
+         request.onreadystatechange = function()
+         {
+            if (request.readyState == 4)
+            {
+               if (request.status == 200 || request.status == 0)
+               {
+                  console.debug("Loaded LicenseKey ...");
+                  me.getLicenseKey(request.responseText, callback, forceRefresh);
+               }
+            }
+         };
+         request.open("GET", 'licenseKey.txt', true);
+         request.send(null);
+      }
+      else
+      {
+         me.getLicenseKey(uuid, callback, forceRefresh);
+      }
    },
    initNotification : function(msg)
    {
