@@ -1,5 +1,6 @@
-var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false, merchantMode = true;
+var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false;
 
+window.merchantMode = true;
 window.debugMode = true;
 window.serverHost;
 window._application = null;

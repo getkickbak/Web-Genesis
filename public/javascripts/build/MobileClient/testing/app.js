@@ -19360,8 +19360,9 @@ Ext.define('Genesis.plugin.PullRefresh',
    }
 });
 
-var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false, merchantMode = false;
+var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false;
 
+window.merchantMode = false;
 window.debugMode = true;
 window.serverHost;
 window._application = null;
