@@ -221,7 +221,7 @@ Ext.define('Genesis.controller.server.Viewport',
       }
       else
       {
-         me.getLicenseKey(uuid, callback, forceRefresh);
+         me.getLicenseKey(device.uuid, callback, forceRefresh);
       }
    },
    initNotification : function(msg)
