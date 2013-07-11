@@ -13706,13 +13706,13 @@ Ext.define('Genesis.plugin.PullRefresh',
 
 var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false, merchantMode = true;
 
+window.debugMode = true;
+window.serverHost;
 window._application = null;
 window.appName = 'MerKickBak';
 window._hostPathPrefix = "/javascripts/build/MobileServer/";
 window._hostPath = _hostPathPrefix + ((debugMode) ? "testing" : "production") + "/";
 window.phoneGapAvailable = false;
-window.debugMode = true;
-window.serverHost;
 
 _totalAssetCount++;
 

@@ -1,13 +1,13 @@
 var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false, merchantMode = false;
 
+window.debugMode = true;
+window.serverHost;
 window._application = null;
 window._codec = null;
 window.appName = 'GetKickBak';
 window._hostPathPrefix = "/javascripts/build/MobileClient/";
 window._hostPath = _hostPathPrefix + ((debugMode) ? "testing" : "production") + "/";
 window.phoneGapAvailable = false;
-window.debugMode = true;
-window.serverHost;
 
 _totalAssetCount++;
 

@@ -1,11 +1,11 @@
 var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false, phoneGapAvailable = false, merchantMode = false;
 
+window.debugMode = false;
+window.serverHost;
 window._application = null;
 window.appName = 'KickBak';
 window._hostPathPrefix = "/javascripts/build/Genesis/";
 window._hostPath = _hostPathPrefix + ((debugMode) ? "testing" : "production") + "/";
-window.debugMode = false;
-window.serverHost;
 
 if (debugMode)
 {
