@@ -9291,7 +9291,7 @@ Ext.define('Genesis.controller.server.Receipts',
    },
    initWorker : function(estore)
    {
-      var me = this, worker = me.worker = new Worker('worker/server.min.js');
+      var me = this, worker = me.worker = new Worker('worker/receipt.min.js');
       //worker.postMessage = worker.webkitPostMessage || worker.postMessage;
       worker.onmessage = function(e)
       {

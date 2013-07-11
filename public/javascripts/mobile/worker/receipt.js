@@ -19,14 +19,14 @@ var createReceipts = function(scope)
             }));
          }, function(tx, error)
          {
-            //console.debug("Failed to create KickBak-Receipt Table : " + error.message);
+            console.debug("Failed to create KickBak-Receipt Table : " + error.message);
          });
          //
          // Diagnostic Table
          //
          tx.executeSql(countStatement, [], function(tx, result)
          {
-            //console.debug(result.rows.item(0).cnt + " (TOTAL) EarnedReceipts in KickBak-Receipt DB");
+            console.debug(result.rows.item(0).cnt + " (TOTAL) EarnedReceipts in KickBak-Receipt DB");
          }, function(tx, error)
          {
          });
@@ -35,7 +35,7 @@ var createReceipts = function(scope)
          //
          tx.executeSql(countSyncStatement, [], function(tx, result)
          {
-            //console.debug(result.rows.item(0).cnt + " (SYNC) EarnedReceipts in KickBak-Receipt DB");
+            console.debug(result.rows.item(0).cnt + " (SYNC) EarnedReceipts in KickBak-Receipt DB");
          }, function(tx, error)
          {
          });
@@ -110,7 +110,7 @@ var insertReceipts = function(receipts, scope)
             var receipt = receipts[x];
             var id = receipt['id'];
             receipt = JSON.stringify(receipt);
-            console.debug("Inserting Receipt ID[" + id + "] Content[" + receipt + "]");
+            //console.debug("Inserting Receipt ID[" + id + "] Content[" + receipt + "]");
             tx.executeSql(insertStatement, [id, receipt, 0], function(tx, result)
             {
                var rc = JSON.stringify(

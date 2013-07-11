@@ -112,7 +112,7 @@
 	* Extra resources to be copied along when build
 	*/
 	"resources": ["licenseKey.txt", //
-	"../mobile/worker/server.min.js", "../mobile/worker/fft.min.js", "../lib/dsp.min.js", //
+	"../mobile/worker/receipt.min.js", "../mobile/worker/fft.min.js", "../lib/dsp.min.js", //
 	"../lib/core/date.js", "../lib/core/extras.js", //
 	"../mobile/resources/themes/images/v1", "../mobile/resources/css", "../mobile/resources/icons", "../mobile/resources/audio", //
 	"../mobile/app/store/mainServerPage.json", //
