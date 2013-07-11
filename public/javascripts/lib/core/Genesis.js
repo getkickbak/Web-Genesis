@@ -596,7 +596,7 @@ Genesis.fn =
    isNative : function()
    {
       //return Ext.isDefined(cordova);
-      return phoneGapAvailable;
+      return window.phoneGapAvailable;
    },
    // **************************************************************************
    // Dynamic CSS/JS loading

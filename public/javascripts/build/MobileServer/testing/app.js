@@ -8890,9 +8890,6 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
    WebSocket._connTask = Ext.create('Ext.util.DelayedTask');
    Ext.merge(WebSocket.prototype,
    {
-      scheme : 'ws://',
-      host : (Genesis.fn.isNative()) ? '192.168.159.1' : '127.0.0.1',
-      port : '443',
       reconnectTimeoutTimer : 5 * 60 * 1000,
       reconnectTimer : 5 * 1000,
       createReceipt : function(receiptText)
@@ -9060,7 +9057,7 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
 
    posConnect = function(i)
    {
-      var posEnabled = isPosEnabled();
+      var posEnabled = isPosEnabled(), scheme = 'ws://', host = (Genesis.fn.isNative()) ? '192.168.159.1' : '127.0.0.1', port = '443';
 
       if (posEnabled && Ext.Viewport)
       {
@@ -9069,7 +9066,7 @@ Ext.require(['Genesis.model.frontend.ReceiptItem', 'Genesis.model.frontend.Recei
          ((Genesis.fn.isNative() && Ext.device.Connection.isOnline()) || (navigator.onLine)))
          {
             var ws = WebSocket.prototype;
-            var url = ws.scheme + ws.host + ':' + ws.port + "/pos";
+            var url = scheme + host + ':' + port + "/pos";
             wssocket = new WebSocket(url, 'json');
             //wssocket.binaryType = 'arraybuffer';
             wssocket.onopen = function(event)
@@ -12430,8 +12427,37 @@ Ext.define('Genesis.controller.server.Viewport',
 
       if (!Genesis.fn.isNative())
       {
-         var ws = WebSocket.prototype;
-         var url = ws.scheme + ws.host + ':' + ws.port + "/nfc";
+         Ext.merge(WebSocket.prototype,
+         {
+            onNfc : function(inputStream)
+            {
+               //
+               // Get NFC data from remote call
+               //
+               var cntlr = me.getActiveController(), result = Ext.decode(inputStream['data']);
+               /*
+                {
+                result : Ext.decode(text),
+                id : id
+                };
+                */
+               if (result)
+               {
+                  if (cntlr)
+                  {
+                     console.log("Received Message [" + Ext.encode(result) + "]");
+                     cntlr.onNfc(result);
+                  }
+                  else
+                  {
+                     console.log("Ignored Received Message [" + Ext.encode(result) + "]");
+                  }
+               }
+            }
+         });
+
+         var scheme = 'ws://', host = (Genesis.fn.isNative()) ? '192.168.159.1' : '127.0.0.1', port = '443';
+         var url = scheme + host + ':' + port + "/nfc";
          var wssocket = me.wssocket = new WebSocket(url, 'json');
          wssocket.onopen = function(event)
          {
@@ -12449,28 +12475,7 @@ Ext.define('Genesis.controller.server.Viewport',
                {
                   case 'nfc' :
                   {
-                     //
-                     // Get NFC data from remote call
-                     //
-                     var cntlr = me.getActiveController(), result = Ext.decode(inputStream['data']);
-                     /*
-                      {
-                      result : Ext.decode(text),
-                      id : id
-                      };
-                      */
-                     if (result)
-                     {
-                        if (cntlr)
-                        {
-                           console.log("Received Message [" + Ext.encode(result) + "]");
-                           cntlr.onNfc(result);
-                        }
-                        else
-                        {
-                           console.log("Ignored Received Message [" + Ext.encode(result) + "]");
-                        }
-                     }
+                     wssocket.onNfc(inputStream);
                      break;
                   }
                   case '' :
