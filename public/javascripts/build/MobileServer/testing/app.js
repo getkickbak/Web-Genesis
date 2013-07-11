@@ -7316,7 +7316,7 @@ Ext.define('Genesis.controller.server.Challenges',
    onGenerateQRCode : function(refresh)
    {
       var me = this, identifiers = null, viewport = me.getViewPortCntlr(), proxy = Challenge.getProxy();
-      
+
       me.dismissDialog = false;
       if (!refresh)
       {
@@ -7443,32 +7443,23 @@ Ext.define('Genesis.controller.server.Challenges',
          });
       };
 
-      if (Genesis.fn.isNative())
+      me.getLocalID(function(ids)
       {
-         me.getLocalID(function(ids)
-         {
-            identifiers = ids;
-            me.challengeItemFn(
-            {
-               data :
-               {
-                  'frequency' : identifiers['localID']
-               }
-            }, true);
-         }, function()
-         {
-            viewport.setActiveController(null);
-            Ext.Viewport.setMasked(null);
-            me.popView();
-         }, Ext.bind(me.onGenerateQRCode, me, arguments));
-         viewport.setActiveController(me);
-      }
-      else
-      {
+         identifiers = ids;
          me.challengeItemFn(
          {
-         }, false);
-      }
+            data :
+            {
+               'frequency' : identifiers['localID']
+            }
+         }, true);
+      }, function()
+      {
+         viewport.setActiveController(null);
+         Ext.Viewport.setMasked(null);
+         me.popView();
+      }, Ext.bind(me.onGenerateQRCode, me, arguments));
+      viewport.setActiveController(me);
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides
