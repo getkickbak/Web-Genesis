@@ -358,8 +358,8 @@ Ext.define('Genesis.controller.server.Receipts',
       }
    },
    retrieveReceiptsMsg : 'Retrieving Receipts from POS ...',
-   mobileTimeout : ((debugMode) ? 0.25 : 1) * 60 * 1000,
-   fixedTimeout : ((debugMode) ? 0.25 : 4 * 60) * 60 * 1000,
+   mobileTimeout : 0,
+   fixedTimeout : 0,
    cleanupTimer : 4 * 60 * 60 * 1000,
    batteryTimer : 30 * 1000,
    filter_config :
@@ -386,6 +386,9 @@ Ext.define('Genesis.controller.server.Receipts',
 
       me.callParent(arguments);
 
+      me.mobileTimeout = ((debugMode) ? 0.25 : 1) * 60 * 1000;
+      me.fixedTimeout = ((debugMode) ? 0.25 : 4 * 60) * 60 * 1000;
+      
       console.log("Server Receipts Init");
 
       me.initEvent();
