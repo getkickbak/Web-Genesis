@@ -1572,7 +1572,6 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    notAtVenuePremise : 'You must be inside the Merchant\'s premises to continue.',
    errorLoadingAccountProfileMsg : 'Error Loading Account Profile',
-   lostPosConnectionMsg : 'Reestablishing connection to POS ...',
    invalidTagIdFormatMsg : function(length)
    {
       return 'Invalid ' + length + '-digit Tag ID format (eg. 12345678)';
