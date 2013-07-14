@@ -517,7 +517,7 @@ Ext.define('Genesis.controller.server.Receipts',
 
       db['enablePosIntegration'] = features_config['enable_pos'];
       db['isPosEnabled'] = ((posEnabled === undefined) || (posEnabled));
-      if (isPosEnabled())
+      if (pos.isEnabled())
       {
          var filters = features_config['receipt_filter'] = (features_config['receipt_filter'] ||
          {
