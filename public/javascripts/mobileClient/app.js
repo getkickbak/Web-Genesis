@@ -79,6 +79,11 @@ Ext.Loader.setPath(
    {
       if (error)
       {
+         // Destroy the #appLoadingIndicator element
+         Ext.fly('appLoadingIndicator').destroy();
+         _loadingPct = null;
+         Ext.fly('loadingPct').destroy();
+
          console.log("Error Loading system File.");
          Ext.device.Notification.show(
          {
