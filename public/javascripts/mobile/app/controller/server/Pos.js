@@ -6,21 +6,24 @@ Ext.define('Genesis.controller.server.Pos',
    initReceipt : 0x00,
    lastDisonnectTime : 0,
    scheme : 'ws://',
-   port : '443',
+   hostLocal : '127.0.0.1',
+   hostRemote : '192.168.159.1',
+   portRemote : '443',
+   portLocal : '80',
    wssocket : null,
    lostPosConnectionMsg : 'Reestablishing connection to POS ...',
    init : function(app)
    {
-      var me = this, ws = WebSocket.prototype;
+      var me = this, ws = WebSocket.prototype, isNative = Genesis.fn.isNative();
 
-      me.host = (Genesis.fn.isNative()) ? '192.168.159.1' : '127.0.0.1';
-      me.url = me.scheme + me.host + ':' + me.port + "/pos";
+      me.host = (isNative) ? me.hostRemote : me.hostLocal;
+      me.url = me.scheme + me.host + ':' + ((isNative) ? me.portRemote : me.portLocal) + "/pos";
       me.connTask = Ext.create('Ext.util.DelayedTask');
 
       //
       // For Non-Native environments, we must connect to POS to get NFC tag info regardless
       //
-      if (!Genesis.fn.isNative())
+      if (!isNative)
       {
          me.wssocket = new WebSocket(me.url, 'json');
          //wssocket.binaryType = 'arraybuffer';
