@@ -8266,12 +8266,12 @@ Ext.define('Genesis.controller.server.Pos',
                   }
                }
             });
-            console.debug("Pos::connect(" + url + ")");
+            console.debug("Pos::connect(" + me.url + ")");
          }
          else if (me.wssocket && forced)
          {
             me.wssocket.onopen();
-            console.debug("Pos::connect(" + url + ")");
+            console.debug("Pos::connect(" + me.url + ")");
          }
       }
    },
