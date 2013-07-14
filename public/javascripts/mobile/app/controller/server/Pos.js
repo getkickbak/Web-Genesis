@@ -4,7 +4,7 @@ Ext.define('Genesis.controller.server.Pos',
 {
    extend : 'Ext.app.Controller',
    initReceipt : 0x00,
-   lastDisonnectTime : 0,
+   lastDisconnectTime : 0,
    scheme : 'ws://',
    hostLocal : '127.0.0.1',
    hostRemote : '192.168.159.1',
@@ -58,7 +58,7 @@ Ext.define('Genesis.controller.server.Pos',
             //
             console.debug("WebSocketClient::onopen");
 
-            me.lastDisonnectTime = Genesis.db.getLocalDB()['lastPosDisconnectTime'] || 0;
+            me.lastDisconnectTime = Genesis.db.getLocalDB()['lastPosDisconnectTime'] || 0;
             me.initReceipt |= 0x10;
             Genesis.db.setLocalDBAttrib('lastPosConnectTime', Date.now());
          }

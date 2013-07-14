@@ -287,11 +287,15 @@ Ext.define('Genesis.controller.server.Receipts',
          }
       }, false);
 
-      me.getApplication().getController('server' + '.Receipts').on('onopen', function()
+      me.getApplication().getController('server' + '.Pos').on('onopen', function()
       {
          if (pos.isEnabled())
          {
             me.onRetrieveReceipts();
+         }
+         else
+         {
+            console.debug("POS Receipt Feature is disabled");
          }
       });
       console.debug("Server Receipts : initEvent");
@@ -867,13 +871,15 @@ Ext.define('Genesis.controller.server.Receipts',
    {
       var me = this;
 
+      console.debug("Receipts::onRetrieveReceipts - pos.initReceipt=" + pos.initReceipt);
       if (pos.initReceipt == 0x11)
       {
          var store = Ext.StoreMgr.get('ReceiptStore');
          var db = Genesis.db.getLocalDB(), lastPosConnectTime = db['lastPosConnectTime'] || 0;
 
-         if (((pos.lastDisonnectTime - lastPosConnectTime) > (pos.wssocket.reconnectTimeoutTimer)) || !store || !(store.getAllCount() > 0))
+         if (((pos.lastDisconnectTime - lastPosConnectTime) > (pos.wssocket.reconnectTimeoutTimer)) || !store || !(store.getAllCount() > 0))
          {
+            console.debug(me.retrieveReceiptsMsg);
             Ext.Viewport.setMasked(null);
             Ext.Viewport.setMasked(
             {

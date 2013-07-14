@@ -8112,7 +8112,7 @@ Ext.define('Genesis.controller.server.Pos',
 {
    extend :  Ext.app.Controller ,
    initReceipt : 0x00,
-   lastDisonnectTime : 0,
+   lastDisconnectTime : 0,
    scheme : 'ws://',
    hostLocal : '127.0.0.1',
    hostRemote : '192.168.159.1',
@@ -8166,7 +8166,7 @@ Ext.define('Genesis.controller.server.Pos',
             //
             console.debug("WebSocketClient::onopen");
 
-            me.lastDisonnectTime = Genesis.db.getLocalDB()['lastPosDisconnectTime'] || 0;
+            me.lastDisconnectTime = Genesis.db.getLocalDB()['lastPosDisconnectTime'] || 0;
             me.initReceipt |= 0x10;
             Genesis.db.setLocalDBAttrib('lastPosConnectTime', Date.now());
          }
@@ -9323,11 +9323,15 @@ Ext.define('Genesis.controller.server.Receipts',
          }
       }, false);
 
-      me.getApplication().getController('server' + '.Receipts').on('onopen', function()
+      me.getApplication().getController('server' + '.Pos').on('onopen', function()
       {
          if (pos.isEnabled())
          {
             me.onRetrieveReceipts();
+         }
+         else
+         {
+            console.debug("POS Receipt Feature is disabled");
          }
       });
       console.debug("Server Receipts : initEvent");
@@ -9903,13 +9907,15 @@ Ext.define('Genesis.controller.server.Receipts',
    {
       var me = this;
 
+      console.debug("Receipts::onRetrieveReceipts - pos.initReceipt=" + pos.initReceipt);
       if (pos.initReceipt == 0x11)
       {
          var store = Ext.StoreMgr.get('ReceiptStore');
          var db = Genesis.db.getLocalDB(), lastPosConnectTime = db['lastPosConnectTime'] || 0;
 
-         if (((pos.lastDisonnectTime - lastPosConnectTime) > (pos.wssocket.reconnectTimeoutTimer)) || !store || !(store.getAllCount() > 0))
+         if (((pos.lastDisconnectTime - lastPosConnectTime) > (pos.wssocket.reconnectTimeoutTimer)) || !store || !(store.getAllCount() > 0))
          {
+            console.debug(me.retrieveReceiptsMsg);
             Ext.Viewport.setMasked(null);
             Ext.Viewport.setMasked(
             {
