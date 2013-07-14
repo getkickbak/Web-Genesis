@@ -746,7 +746,7 @@ Genesis.fn =
                   return;
                }
                t++;
-               Ext.defer(this.loadjscssfileCallBackFunc, 100, this, [b, t, href]);
+               Ext.defer(this.loadjscssfileCallBackFunc, 250, this, [b, t, href]);
                if ((t / 25 > 0) && (t % 25 == 0))
                {
                   console.debug("IE Exception : Loading [" + href + "] index[" + b + "] try(" + t + ")");
@@ -764,7 +764,7 @@ Genesis.fn =
                }));
                console.debug("FF Exception : Loading [" + href + "] index[" + b + "] try(" + t + ")");
             }
-            Ext.defer(this.loadjscssfileCallBackFunc, 100, this, [b, t, href]);
+            Ext.defer(this.loadjscssfileCallBackFunc, 250, this, [b, t, href]);
          }
       }
       else
@@ -772,7 +772,7 @@ Genesis.fn =
          //this.removejscssfile(href,"css");
          console.debug("Cannot load [" + href + "], index=[" + b + "]");
          //Cannot load CSS, but we still need to continue processing
-         this.cssOnReadyStateChange(href);
+         this.cssOnReadyStateChange(href, true);
       }
    },
    scriptOnError : function(loadState)
@@ -826,16 +826,14 @@ Genesis.fn =
           debug("Error Calling callback on JS file["+src+"] index["+i+"]\nStack: ===========\n"+e.stack);
           }
           */
-
-         if (Genesis.fn.filesadded[src])
-            delete Genesis.fn.filesadded[src][1];
+         delete cbList[1];
       }
       else
       {
          console.debug("Cannot find callback on JS file[" + src + "] index[" + i + "]");
       }
    },
-   cssOnReadyStateChange : function(href)
+   cssOnReadyStateChange : function(href, error)
    {
       //href = Url.decode(href);
       var cbList = Genesis.fn.filesadded[href];
@@ -843,26 +841,26 @@ Genesis.fn =
       {
          cbList[0] = true;
          var i = 0;
-         try
+         /*
+          try
+          {
+          */
+         for (; i < cbList[1].length; i++)
          {
-            for (; i < cbList[1].length; i++)
-            {
-               cbList[1][i](true);
-            }
+            cbList[1][i](!error);
          }
-         catch (e)
-         {
-            console.debug(printStackTrace(
-            {
-               e : e
-            }));
-            console.debug("Error Calling callback on CSS file[" + href + "] index[" + i + "]\nStack: ===========\n" + e.stack);
-         }
-
-         if (Genesis.fn.filesadded[href])
-         {
-            delete Genesis.fn.filesadded[href][1];
-         }
+         /*
+          }
+          catch (e)
+          {
+          console.debug(printStackTrace(
+          {
+          e : e
+          }));
+          console.debug("Error Calling callback on CSS file[" + href + "] index[" + i + "]\nStack: ===========\n" + e.stack);
+          }
+          */
+         delete cbList[1];
       }
       else
       {
