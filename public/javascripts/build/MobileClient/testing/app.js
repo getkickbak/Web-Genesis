@@ -5465,9 +5465,9 @@ Ext.define('Genesis.controller.ViewportBase',
                      }
                   }
                   //
-                  // MobileWeb do not support Referrals and Transfers
+                  // MobileClient do not support Referrals and Transfers
                   //
-                  else if (_application.getProfileInstances()[0].getName().match(/mobileWeb/i))
+                  else if (_application.getProfileInstances()[0].getName().match(/mobileClient/i))
                   {
                      switch (item['id'])
                      {
@@ -8836,8 +8836,8 @@ Ext.define('Genesis.view.client.ChallengePage',
       element.addCls('x-item-selected');
 
       var data = Ext.create('Genesis.model.Challenge', Ext.decode(decodeURIComponent(e.delegatedTarget.getAttribute('data'))));
-      var mobileWebClient = _application.getProfileInstances()[0].getName().match(/mobileWeb/i);
-      _application.getController(((mobileWebClient) ? 'mobileWebClient' : 'mobileClient') + '.Challenges').fireEvent('itemTap', data);
+      var mobileClient = _application.getProfileInstances()[0].getName().match(/mobileClient/i);
+      _application.getController(((mobileClient) ? 'mobileClient' : 'client') + '.Challenges').fireEvent('itemTap', data);
    },
    cleanView : function()
    {
@@ -8854,9 +8854,9 @@ Ext.define('Genesis.view.client.ChallengePage',
       var me = this;
 
       //
-      // Disable unsupported features on MobileWeb
+      // Disable unsupported features on MobileClient
       //
-      if (_application.getProfileInstances()[0].getName().match(/mobileWeb/i))
+      if (_application.getProfileInstances()[0].getName().match(/mobileClient/i))
       {
          for (var i = 0; i < items.length; i++)
          {
@@ -8989,7 +8989,7 @@ Ext.define('Genesis.view.client.ChallengePage',
    }
 });
 
-Ext.define('Genesis.controller.client.Challenges',
+Ext.define('Genesis.controller.mobileClient.Challenges',
 {
    extend :  Genesis.controller.ControllerBase ,
                            
@@ -9587,6 +9587,75 @@ Ext.define('Genesis.controller.client.Challenges',
    isOpenAllowed : function()
    {
       return true;
+   }
+});
+
+Ext.define('Genesis.view.client.UploadPhotosPage',
+{
+   extend :  Genesis.view.ViewBase ,
+                                                                                                 
+   alias : 'widget.clientuploadphotospageview',
+   scrollable : 'vertical',
+   config :
+   {
+      cls : 'photoUploadPage',
+      layout : 'vbox',
+      items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
+      {
+         title : 'Photo Upload',
+         items : [
+         {
+            align : 'right',
+            tag : 'post',
+            text : 'Post'
+         }]
+      }),
+      // Display Comment
+      {
+         xtype : 'textareafield',
+         labelAlign : 'top',
+         bottom : 0,
+         left : 0,
+         right : 0,
+         name : 'desc',
+         tag : 'desc',
+         cls : 'desc',
+         autoComplete : true,
+         defaultUnit : 'em',
+         //minHeight : '2em',
+         autoCorrect : true,
+         autoCapitalize : true,
+         maxLength : 256,
+         maxRows : 4,
+         placeHolder : 'Please enter your photo description',
+         clearIcon : false
+      }]
+   },
+   showView : function()
+   {
+      this.callParent(arguments);
+
+      console.debug("Rendering [" + this.metaData['photo_url'] + "]");
+      this.query('container[tag=background]')[0].element.dom.style.cssText += 'background-image:url(' + this.metaData['photo_url'] + ');'
+      delete this.metaData;
+   },
+   createView : function()
+   {
+      if (!this.callParent(arguments))
+      {
+         return;
+      }
+
+      this.setPreRender(this.getPreRender().concat([
+      // Uploaded Image
+      photo = Ext.create('Ext.Container',
+      {
+         flex : 1,
+         width : '100%',
+         xtype : 'container',
+         tag : 'background',
+         cls : 'background'
+      })]));
    }
 });
 
@@ -17490,7 +17559,7 @@ Ext.require(['Genesis.controller.ControllerBase'], function()
             {
                viewport.self.playSoundFile(viewport.sound_files['clickSound']);
                //
-               // We have no way to "exit" the app in mobileWeb
+               // We have no way to "exit" the app in mobileClient
                //
                if (Genesis.fn.isNative())
                {
@@ -18084,84 +18153,6 @@ function _onGotoMain()
    }
    offlineDialogShown = true;
 };
-
-Ext.define('Genesis.view.client.UploadPhotosPage',
-{
-   extend :  Genesis.view.ViewBase ,
-                                                                                                 
-   alias : 'widget.clientuploadphotospageview',
-   scrollable : 'vertical',
-   config :
-   {
-      cls : 'photoUploadPage',
-      layout : 'vbox',
-      items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
-      {
-         title : 'Photo Upload',
-         items : [
-         {
-            align : 'right',
-            tag : 'post',
-            text : 'Post'
-         }]
-      }),
-      // Display Comment
-      {
-         xtype : 'textareafield',
-         labelAlign : 'top',
-         bottom : 0,
-         left : 0,
-         right : 0,
-         name : 'desc',
-         tag : 'desc',
-         cls : 'desc',
-         autoComplete : true,
-         defaultUnit : 'em',
-         //minHeight : '2em',
-         autoCorrect : true,
-         autoCapitalize : true,
-         maxLength : 256,
-         maxRows : 4,
-         placeHolder : 'Please enter your photo description',
-         clearIcon : false
-      }]
-   },
-   showView : function()
-   {
-      this.callParent(arguments);
-
-      console.debug("Rendering [" + this.metaData['photo_url'] + "]");
-      this.query('container[tag=background]')[0].element.dom.style.cssText += 'background-image:url(' + this.metaData['photo_url'] + ');'
-      delete this.metaData;
-   },
-   createView : function()
-   {
-      if (!this.callParent(arguments))
-      {
-         return;
-      }
-
-      this.setPreRender(this.getPreRender().concat([
-      // Uploaded Image
-      photo = Ext.create('Ext.Container',
-      {
-         flex : 1,
-         width : '100%',
-         xtype : 'container',
-         tag : 'background',
-         cls : 'background'
-      })]));
-   }
-});
-
-Ext.define('Genesis.controller.mobileWebClient.Challenges',
-{
-   extend :  Genesis.controller.client.Challenges ,
-   inheritableStatics :
-   {
-   },
-   xtype : 'mobileWebClientChallengesCntlr'
-});
 
 Ext.define('Genesis.profile.MobileClient',
 {
@@ -19504,7 +19495,7 @@ will need to resolve manually.
             'client.MainPage', 'widgets.client.RedeemItemDetail', 'client.Badges', 'client.JackpotWinners', 'client.MerchantAccount',
             // //
             'client.MerchantDetails', 'client.Accounts', 'client.Prizes', 'Viewport'],
-            controllers : ['mobileWebClient.Challenges', 'client.Rewards', 'client.Redemptions', 'client.Viewport', 'client.MainPage',
+            controllers : ['mobileClient.Challenges', 'client.Rewards', 'client.Redemptions', 'client.Viewport', 'client.MainPage',
             // //
             'client.Badges', 'client.Merchants', 'client.Accounts', 'client.Settings', 'client.Checkins', 'client.JackpotWinners', //
             'client.Prizes'],

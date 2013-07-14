@@ -68,7 +68,7 @@ Ext.require(['Genesis.controller.ControllerBase'], function()
             {
                viewport.self.playSoundFile(viewport.sound_files['clickSound']);
                //
-               // We have no way to "exit" the app in mobileWeb
+               // We have no way to "exit" the app in mobileClient
                //
                if (Genesis.fn.isNative())
                {

@@ -409,9 +409,9 @@ Ext.define('Genesis.controller.ViewportBase',
                      }
                   }
                   //
-                  // MobileWeb do not support Referrals and Transfers
+                  // MobileClient do not support Referrals and Transfers
                   //
-                  else if (_application.getProfileInstances()[0].getName().match(/mobileWeb/i))
+                  else if (_application.getProfileInstances()[0].getName().match(/mobileClient/i))
                   {
                      switch (item['id'])
                      {

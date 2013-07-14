@@ -43,7 +43,7 @@
          "name": "Receive Referrals",
          "photo_url": "resources/themes/images/{platform_path}/mainicons/referral.png",
          "desc": "Receive Referrals from other KickBak users",
-         "pageCntlr": "mobileClient.Challenges",
+         "pageCntlr": "client.Challenges",
          "subFeature": "referrals"
       }, {
          "id": "settings",
