@@ -19464,11 +19464,11 @@ will need to resolve manually.
          Ext.fly('loadingPct').destroy();
       }
    };
-   var appLaunchCallbackFn = function(error, val)
+   var appLaunchCallbackFn = function(success, val)
    {
-      if (error)
+      if (success)
       {
-         _error = error;
+         _error = success;
       }
 
       _filesAssetCount++;
