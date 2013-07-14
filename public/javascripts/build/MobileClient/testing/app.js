@@ -19429,7 +19429,7 @@ will need to resolve manually.
    Genesis.db.getRedeemIndexDB();
    Genesis.db.getRedeemSortedDB();
 
-   var flag = 0x000;
+   var flag = 0x000, _error = false;
    var appLaunch = function()
    {
       if (launched == 0x111)
@@ -19437,26 +19437,8 @@ will need to resolve manually.
          var viewport = _application.getController('client' + '.Viewport');
          viewport.appName = appName;
 
-         Ext.create('Genesis.view.Viewport');
-         console.debug("Launched App");
-
-         // Destroy the #appLoadingIndicator element
-         Ext.fly('appLoadingIndicator').destroy();
-         _loadingPct = null;
-         Ext.fly('loadingPct').destroy();
-      }
-   };
-   var appLaunchCallbackFn = function(error, val)
-   {
-      if (error)
-      {
-         if (_loadingPct)
+         if (_error)
          {
-            // Destroy the #appLoadingIndicator element
-            Ext.fly('appLoadingIndicator').destroy();
-            _loadingPct = null;
-            Ext.fly('loadingPct').destroy();
-
             console.log("Error Loading system File.");
             Ext.device.Notification.show(
             {
@@ -19470,7 +19452,23 @@ will need to resolve manually.
                }
             });
          }
-         return;
+         else
+         {
+            Ext.create('Genesis.view.Viewport');
+            console.debug("Launched App");
+         }
+
+         // Destroy the #appLoadingIndicator element
+         Ext.fly('appLoadingIndicator').destroy();
+         _loadingPct = null;
+         Ext.fly('loadingPct').destroy();
+      }
+   };
+   var appLaunchCallbackFn = function(error, val)
+   {
+      if (error)
+      {
+         _error = error;
       }
 
       _filesAssetCount++;

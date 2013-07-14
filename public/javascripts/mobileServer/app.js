@@ -54,7 +54,7 @@ Ext.Loader.setPath(
 {
    Genesis.db.getLocalDB();
 
-   var flag = 0x100;
+   var flag = 0x100, _error = false;
    var appLaunch = function()
    {
       if (launched == 0x111)
@@ -62,26 +62,8 @@ Ext.Loader.setPath(
          var viewport = _application.getController('server' + '.Viewport');
          viewport.appName = appName;
 
-         Ext.create('Genesis.view.Viewport');
-         console.debug("Launched App");
-
-         // Destroy the #appLoadingIndicator element
-         Ext.fly('appLoadingIndicator').destroy();
-         _loadingPct = null;
-         Ext.fly('loadingPct').destroy();
-      }
-   };
-   var appLaunchCallbackFn = function(error, val)
-   {
-      if (error)
-      {
-         if (_loadingPct)
+         if (_error)
          {
-            // Destroy the #appLoadingIndicator element
-            Ext.fly('appLoadingIndicator').destroy();
-            _loadingPct = null;
-            Ext.fly('loadingPct').destroy();
-
             console.log("Error Loading system File.");
             Ext.device.Notification.show(
             {
@@ -94,10 +76,27 @@ Ext.Loader.setPath(
                   window.location.reload();
                }
             });
+            return;
          }
-         return;
+         else
+         {
+            Ext.create('Genesis.view.Viewport');
+            console.debug("Launched App");
+         }
+
+         // Destroy the #appLoadingIndicator element
+         Ext.fly('appLoadingIndicator').destroy();
+         _loadingPct = null;
+         Ext.fly('loadingPct').destroy();
       }
-      
+   };
+   var appLaunchCallbackFn = function(error, val)
+   {
+      if (error)
+      {
+         _error = error;
+      }
+
       _filesAssetCount++;
       if ((flag |= val) == 0x111)
       {
