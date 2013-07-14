@@ -14944,7 +14944,7 @@ Ext.define('Genesis.view.client.Prizes',
    {
       defaultItemType : 'prizeptsitem',
       ptsEarnTitleText : 'Prize Points Available',
-      redeemTitleText : 'Prizes available to redeem (Select an item below)',
+      redeemTitleText : 'Choose a Prize to redeem',
       listCls : 'prizesList',
       //scrollable : 'vertical',
       scrollable : undefined,
@@ -15561,7 +15561,7 @@ Ext.define('Genesis.view.client.Redemptions',
    config :
    {
       defaultItemType : 'rewardptsitem',
-      redeemTitleText : 'Rewards available to redeem (Select an item below)',
+      redeemTitleText : 'Rewards available to redeem',
       ptsEarnTitleText : 'Rewards Points Available',
       listCls : 'redemptionsList',
       //scrollable : 'vertical',

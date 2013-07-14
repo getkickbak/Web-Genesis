@@ -6,7 +6,7 @@ Ext.define('Genesis.view.server.Prizes',
    config :
    {
       defaultItemType : 'prizeptsitem',
-      redeemTitleText : 'Prizes available to redeem (Select an item below)',
+      redeemTitleText : 'Choose a Prize to redeem',
       listCls : 'prizesList',
       //scrollable : 'vertical',
       scrollable : undefined,

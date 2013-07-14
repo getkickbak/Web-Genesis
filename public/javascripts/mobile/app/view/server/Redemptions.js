@@ -6,7 +6,7 @@ Ext.define('Genesis.view.server.Redemptions',
    config :
    {
       defaultItemType : 'rewardptsitem',
-      redeemTitleText : 'Rewards available to redeem (Select an item below)',
+      redeemTitleText : 'Choose a Reward to redeem',
       listCls : 'redemptionsList',
       //scrollable : 'vertical',
       scrollable : undefined,
