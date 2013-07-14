@@ -79,22 +79,25 @@ Ext.Loader.setPath(
    {
       if (error)
       {
-         // Destroy the #appLoadingIndicator element
-         Ext.fly('appLoadingIndicator').destroy();
-         _loadingPct = null;
-         Ext.fly('loadingPct').destroy();
-
-         console.log("Error Loading system File.");
-         Ext.device.Notification.show(
+         if (_loadingPct)
          {
-            title : 'KickBak',
-            message : 'Error Connecting to Server.',
-            buttons : ['Retry'],
-            callback : function(buttonId)
+            // Destroy the #appLoadingIndicator element
+            Ext.fly('appLoadingIndicator').destroy();
+            _loadingPct = null;
+            Ext.fly('loadingPct').destroy();
+
+            console.log("Error Loading system File.");
+            Ext.device.Notification.show(
             {
-               window.location.reload();
-            }
-         })
+               title : 'KickBak',
+               message : 'Error Connecting to Server.',
+               buttons : ['Retry'],
+               callback : function(buttonId)
+               {
+                  window.location.reload();
+               }
+            });
+         }
          return;
       }
 
