@@ -95,7 +95,7 @@ Ext.Loader.setPath(
    };
    var appLaunchCallbackFn = function(success, val)
    {
-      if (success)
+      if (!success)
       {
          _error = success;
       }

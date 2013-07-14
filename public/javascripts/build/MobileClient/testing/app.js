@@ -19466,7 +19466,7 @@ will need to resolve manually.
    };
    var appLaunchCallbackFn = function(success, val)
    {
-      if (success)
+      if (!success)
       {
          _error = success;
       }
