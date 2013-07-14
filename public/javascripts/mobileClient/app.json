@@ -83,14 +83,27 @@
 	*      }
 	*/
 	"css": [
-   	/*
 		{
-			"path": "resources/css/iphone.css",
-			"platform" : ["safari", "ios", "desktop"],
+			"path": "../mobile/resources/css/iphone.css",
+			"platform" : ["ios", "desktop"],
 			"theme" : "Default",
 			"update": "delta"
-	   }
-	   */
+	   }, {
+         "path": "../mobile/resources/css/iphone5.css",
+         "platform" : ["ios-iphone5"],
+         "theme" : "iPhone5",
+         "update": "delta"
+      }, {
+         "path": "../mobile/resources/css/android-phone-lhdpi.css",
+         "platform" : ["android-lhdpi", "blackberry", "ie10"],
+         "theme" : "Android-lhdpi",
+         "update": "delta"
+      }, {
+         "path": "../mobile/resources/css/android-phone-mxhdpi.css",
+         "platform" : ["android-mxhdpi"],
+         "theme" : "Android-mxhdpi",
+         "update": "delta"
+      }
 	],
 
 	/**

@@ -58,7 +58,8 @@ Ext.Loader.setPath(
    Genesis.db.getRedeemIndexDB();
    Genesis.db.getRedeemSortedDB();
 
-   var flag = 0x000, _error = false;
+   //var flag = 0x000, _error = false;
+   var flag = 0x011, _error = false;
    var appLaunch = function()
    {
       if (launched == 0x111)
@@ -186,51 +187,58 @@ Ext.Loader.setPath(
       var targetelement = "script", targetattr = "src";
       var allsuspects = document.getElementsByTagName(targetelement);
       var imagePath = _hostPath + "resources/themes/images/v1/", images = [new Image(400, 400)], prefix;
-      var resolution = (function()
-      {
-         return (((window.screen.height >= 641) && ((window.devicePixelRatio == 1.0) || (window.devicePixelRatio >= 2.0))) ? 'mxhdpi' : 'lhdpi');
-      })();
+      /*
+       var resolution = (function()
+       {
+       return (((window.screen.height >= 641) && ((window.devicePixelRatio == 1.0) || (window.devicePixelRatio >= 2.0))) ? 'mxhdpi' :
+      'lhdpi');
+       })();
 
-      for (var i = allsuspects.length; i >= 0; i--)
-      {
-         if (allsuspects[i])
-         {
-            var attr = allsuspects[i].getAttribute(targetattr);
-            if (attr)
-            {
-               Genesis.fn.filesadded[attr.replace(location.origin, "")] = [true];
-            }
-         }
-      }
+       for (var i = allsuspects.length; i >= 0; i--)
+       {
+       if (allsuspects[i])
+       {
+       var attr = allsuspects[i].getAttribute(targetattr);
+       if (attr)
+       {
+       Genesis.fn.filesadded[attr.replace(location.origin, "")] = [true];
+       }
+       }
+       }
 
-      if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
-      {
-         prefix = imagePath + "ios";
-         Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [(!Ext.os.is('iPhone5')) ? 0x011 : 0x001], true));
-         if (Ext.os.is('iPhone5'))
-         {
-            _totalAssetCount++;
-            Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone5.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x010], true));
-         }
-      }
-      else//
-      //if (Ext.os.is('Android'))
-      {
-         prefix = imagePath + "android/" + resolution;
-         switch (resolution)
-         {
-            case 'lhdpi' :
-            {
-               Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-phone-lhdpi.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x011], true));
-               break;
-            }
-            case 'mxhdpi' :
-            {
-               Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-phone-mxhdpi.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x011], true));
-               break;
-            }
-         }
-      }
+       if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
+       {
+       prefix = imagePath + "ios";
+       Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone.css?v=" + Genesis.constants.clientVersion, "css",
+      Ext.bind(appLaunchCallbackFn, null, [(!Ext.os.is('iPhone5')) ? 0x011 : 0x001], true));
+       if (Ext.os.is('iPhone5'))
+       {
+       _totalAssetCount++;
+       Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone5.css?v=" + Genesis.constants.clientVersion, "css",
+      Ext.bind(appLaunchCallbackFn, null, [0x010], true));
+       }
+       }
+       else//
+       //if (Ext.os.is('Android'))
+       {
+       prefix = imagePath + "android/" + resolution;
+       switch (resolution)
+       {
+       case 'lhdpi' :
+       {
+       Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-phone-lhdpi.css?v=" + Genesis.constants.clientVersion, "css",
+      Ext.bind(appLaunchCallbackFn, null, [0x011], true));
+       break;
+       }
+       case 'mxhdpi' :
+       {
+       Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-phone-mxhdpi.css?v=" + Genesis.constants.clientVersion,
+      "css", Ext.bind(appLaunchCallbackFn, null, [0x011], true));
+       break;
+       }
+       }
+       }
+       */
 
       var canPlayAudio = (new Audio()).canPlayType('audio/wav; codecs=1');
       if (!canPlayAudio)
@@ -240,7 +248,21 @@ Ext.Loader.setPath(
          //
          if ( typeof (Worker) == 'undefined')
          {
-            Genesis.fn.checkloadjscssfile(_hostPathPrefix + 'lib/libmp3lame.min.js', "js", Ext.emptyFn);
+            Genesis.fn.checkloadjscssfile(_hostPathPrefix + 'lib/libmp3lame.min.js', "js", function(success)
+            {
+               console.log("Error Loading Application Resource File.");
+               Ext.device.Notification.show(
+               {
+                  title : 'KickBak',
+                  message : "Error Loading Application Resource File.",
+                  buttons : ['Reload'],
+                  disableAnimations : true,
+                  callback : function(buttonId)
+                  {
+                     window.location.reload();
+                  }
+               });
+            });
             Genesis.fn.checkloadjscssfile(_hostPath + "worker/encoder.js", "js", function()
             {
                _codec = new Worker('worker/encoder.js');
