@@ -12326,7 +12326,7 @@ Ext.define('Genesis.controller.server.Viewport',
          autoLoad : false
       });
 
-      me.refreshLicenseKey(Ext.bind(pos.connect, pos, [true]));
+      me.refreshLicenseKey(Ext.bind(pos.connect, pos, [false]));
    },
    initializeConsole : function(callback)
    {
@@ -13411,6 +13411,20 @@ Ext.define('Genesis.MessageBox',
       }
 
       this.callParent(arguments);
+   }
+});
+
+// **************************************************************************
+// Ext.device.connection.PhoneGap
+// **************************************************************************
+Ext.define('Genesis.device.connection.PhoneGap',
+{
+   override : 'Ext.device.connection.PhoneGap',
+   syncOnline : function()
+   {
+      var type = navigator.connection.type;
+      this._type = type;
+      this._online = type != Connection.NONE;
    }
 });
 // **************************************************************************

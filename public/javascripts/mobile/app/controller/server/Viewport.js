@@ -332,7 +332,7 @@ Ext.define('Genesis.controller.server.Viewport',
          autoLoad : false
       });
 
-      me.refreshLicenseKey(Ext.bind(pos.connect, pos, [true]));
+      me.refreshLicenseKey(Ext.bind(pos.connect, pos, [false]));
    },
    initializeConsole : function(callback)
    {
