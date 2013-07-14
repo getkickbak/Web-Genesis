@@ -19598,13 +19598,12 @@ will need to resolve manually.
          /*
           Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone.css?v=" + Genesis.constants.clientVersion, "css",
           Ext.bind(appLaunchCallbackFn, null, [(!Ext.os.is('iPhone5')) ? 0x011 : 0x001], true));
-          if (Ext.os.is('iPhone5'))
-          {
-          _totalAssetCount++;
-          Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone5.css?v=" + Genesis.constants.clientVersion, "css",
-          Ext.bind(appLaunchCallbackFn, null, [0x010], true));
-          }
           */
+         if (Ext.os.is('iPhone5'))
+         {
+            _totalAssetCount++;
+            Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone5.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x010], true));
+         }
       }
       else//
       //if (Ext.os.is('Android'))
@@ -19616,7 +19615,7 @@ will need to resolve manually.
           case 'lhdpi' :
           {
           Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-phone-lhdpi.css?v=" + Genesis.constants.clientVersion,
-         "css",
+          "css",
           Ext.bind(appLaunchCallbackFn, null, [0x011], true));
           break;
           }

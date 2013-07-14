@@ -89,18 +89,13 @@
 			"theme" : "Default",
 			"update": "delta"
 	   }, {
-         "path": "../mobile/resources/css/iphone5.css",
-         "platform" : ["ios-iphone5"],
-         "theme" : "iPhone5",
-         "update": "delta"
-      }, {
          "path": "../mobile/resources/css/android-phone-lhdpi.css",
-         "platform" : ["android-lhdpi", "blackberry", "ie10"],
+         "platform" : ["android-lhdpi", "blackberry-lhdpi", "ie10-lhdpi"],
          "theme" : "Android-lhdpi",
          "update": "delta"
       }, {
          "path": "../mobile/resources/css/android-phone-mxhdpi.css",
-         "platform" : ["android-mxhdpi"],
+         "platform" : ["android-mxhdpi", "blackberry-mxhdpi", "ie10-mxhdpi"],
          "theme" : "Android-mxhdpi",
          "update": "delta"
       }
