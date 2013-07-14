@@ -94,7 +94,10 @@
                   Ext.device.Connection.__proto__.$className + ", " + //
                   "devicePixelRatio - " + window.devicePixelRatio + ", " + //
                   'Connection type: [' + Ext.device.Connection.getType() + ']');
-                  pos.connect();
+                  if (pos)
+                  {
+                     pos.connect();
+                  }
                }
             }, false);
 
@@ -103,7 +106,10 @@
                if (Ext.device)
                {
                   console.debug("Phone is Offline");
-                  pos.disconnect();
+                  if (pos)
+                  {
+                     pos.disconnect();
+                  }
                }
             }, false);
             document.addEventListener("pause", function()
@@ -120,7 +126,7 @@
                if (Ext.device)
                {
                   console.debug("App is Resumed");
-                  if ((typeof(pos) != 'undefined') && pos.isEnabled())
+                  if (pos && pos.isEnabled())
                   {
                      window.plugins.WifiConnMgr.establishPosConn();
                   }
