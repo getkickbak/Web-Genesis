@@ -201,12 +201,15 @@ Ext.define('Genesis.controller.ControllerBase',
          }
          else
          {
-            if (successCallback)
+            if (merchatMode)
+            {
+               sound_file['successCallback'] = successCallback || Ext.emptyFn;
+               Ext.get(sound_file['name']).dom.play();
+            }
+            else if (successCallback)
             {
                successCallback();
             }
-            //sound_file['successCallback'] = successCallback || Ext.emptyFn;
-            //Ext.get(sound_file['name']).dom.play();
          }
       },
       stopSoundFile : function(sound_file)
