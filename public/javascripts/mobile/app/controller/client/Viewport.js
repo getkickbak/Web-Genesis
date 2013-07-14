@@ -1,5 +1,3 @@
-// add back button listener
-var onBackKeyDown = Ext.emptyFn;
 Ext.require(['Genesis.controller.ControllerBase'], function()
 {
    if (!Genesis.fn.isNative())
@@ -16,8 +14,12 @@ Ext.require(['Genesis.controller.ControllerBase'], function()
          }
       }
    }
+});
+
+(function()
+{
    // add back button listener
-   function onBackKeyDown(e)
+   onBackKeyDown = function(e)
    {
       var viewport = _application.getController('client' + '.Viewport');
 
@@ -80,7 +82,7 @@ Ext.require(['Genesis.controller.ControllerBase'], function()
          }
       }
    };
-});
+})();
 
 Ext.define('Genesis.controller.client.Viewport',
 {

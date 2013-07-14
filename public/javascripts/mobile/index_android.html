@@ -153,7 +153,6 @@
                console.debug("PhoneGap App Launch");
                launched = 0x110;
                _appLaunch();
-               document.addEventListener("backbutton", onBackKeyDown, false);
             }, false);
 
             // Fix for problem  with android 3.x and 4.x which is
@@ -196,6 +195,7 @@
                      launched = 0x001;
                   }
                   console.debug("Ext App Launch")
+                  document.addEventListener("backbutton", onBackKeyDown, false);
                   _appLaunch();
                },
                appFolder : _appPath,
