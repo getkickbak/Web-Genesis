@@ -528,6 +528,14 @@ Ext.define('Genesis.controller.server.Viewport',
 
       if (!Genesis.fn.isNative())
       {
+         //
+         // Set Display mode to "Fixed" in Non-Native Mode
+         //
+         if (Genesis.db.getLocalDB()['displayMode'] != 'Fixed')
+         {
+            Genesis.db.setLocalDBAttrib('displayMode', 'Fixed');
+         }
+
          pos.connect();
       }
    }

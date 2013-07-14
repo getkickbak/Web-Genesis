@@ -11926,7 +11926,7 @@ Ext.define('Genesis.controller.server.Settings',
    },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      var me = this, form = me.getSettingsPage(), db = Genesis.db.getLocalDB();
+      var me = this, form = me.getSettingsPage(), db = Genesis.db.getLocalDB(), isNative = Genesis.fn.isNative();
 
       me.getMerchantDevice().setLabel(Genesis.fn.getPrivKey('venue'));
       me.getUtilitiesContainer()[debugMode ? 'show' : 'hide']();
@@ -11938,6 +11938,16 @@ Ext.define('Genesis.controller.server.Settings',
       var field = form.query('togglefield[tag=posMode]')[0];
       field.setReadOnly(db['enablePosIntegration'] ? false : true);
       field[(db['enablePosIntegration']) ? 'enable' : 'disable']();
+
+      //
+      // Disable DisplayMode in Non-Native mode
+      //
+      if (!isNative)
+      {
+         field = form.query('togglefield[tag=displayMode]')[0];
+         field.setReadOnly(true);
+         field.disable();
+      }
    },
    onDeactivate : function(activeItem, c, oldActiveItem, eOpts)
    {
@@ -12511,6 +12521,14 @@ Ext.define('Genesis.controller.server.Viewport',
 
       if (!Genesis.fn.isNative())
       {
+         //
+         // Set Display mode to "Fixed" in Non-Native Mode
+         //
+         if (Genesis.db.getLocalDB()['displayMode'] != 'Fixed')
+         {
+            Genesis.db.setLocalDBAttrib('displayMode', 'Fixed');
+         }
+
          pos.connect();
       }
    }
