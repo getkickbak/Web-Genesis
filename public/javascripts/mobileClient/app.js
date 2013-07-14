@@ -244,20 +244,20 @@ Ext.Loader.setPath(
             Genesis.fn.checkloadjscssfile(_hostPath + "worker/encoder.js", "js", function()
             {
                _codec = new Worker('worker/encoder.js');
-               appLaunchCallbackFn(false, 0x100);
+               appLaunchCallbackFn(true, 0x100);
                console.debug("Enable MP3 Encoder");
             });
          }
          else
          {
             _codec = new Worker('worker/encoder.js');
-            appLaunchCallbackFn(false, 0x100);
+            appLaunchCallbackFn(true, 0x100);
             console.debug("Enable MP3 Encoder");
          }
       }
       else
       {
-         appLaunchCallbackFn(false, 0x100);
+         appLaunchCallbackFn(true, 0x100);
          console.debug("Enable WAV/WebAudio Encoder");
       }
       images[0].src = prefix + "/prizewon/transmit.png";
