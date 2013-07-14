@@ -136,38 +136,35 @@ Ext.define('Genesis.controller.server.Pos',
    },
    connect : function(forced)
    {
-      var me = pos
+      var me = pos;
 
-      if (Ext.Viewport)
+      if (Ext.Viewport && !me.wssocket && me.isEnabled() && //
+      ((Genesis.fn.isNative() && Ext.device.Connection.isOnline()) || (!Genesis.fn.isNative() && navigator.onLine)))
       {
-         if (!me.wssocket && //
-         ((Genesis.fn.isNative() && Ext.device.Connection.isOnline()) || (!Genesis.fn.isNative() && navigator.onLine)))
+         me.wssocket = new WebSocket(me.url, 'json');
+
+         me.setupWsCallback();
+
+         Ext.Viewport.setMasked(null);
+         Ext.Viewport.setMasked(
          {
-            me.wssocket = new WebSocket(me.url, 'json');
-
-            me.setupWsCallback();
-
-            Ext.Viewport.setMasked(null);
-            Ext.Viewport.setMasked(
+            xtype : 'loadmask',
+            message : me.lostPosConnectionMsg,
+            listeners :
             {
-               xtype : 'loadmask',
-               message : me.lostPosConnectionMsg,
-               listeners :
+               'tap' : function(b, e, eOpts)
                {
-                  'tap' : function(b, e, eOpts)
-                  {
-                     Ext.Viewport.setMasked(null);
-                     me.connTask.cancel();
-                  }
+                  Ext.Viewport.setMasked(null);
+                  me.connTask.cancel();
                }
-            });
-            console.debug("Pos::connect(" + me.url + ")");
-         }
-         else if (me.wssocket && forced)
-         {
-            me.wssocket.onopen();
-            console.debug("Pos::connect(" + me.url + ")");
-         }
+            }
+         });
+         console.debug("Pos::connect(" + me.url + ")");
+      }
+      else if (me.wssocket && forced)
+      {
+         me.wssocket.onopen();
+         console.debug("Pos::connect(" + me.url + ")");
       }
    },
    disconnect : function(forced)
