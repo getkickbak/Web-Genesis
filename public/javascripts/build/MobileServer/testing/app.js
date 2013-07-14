@@ -13568,7 +13568,18 @@ Ext.define('Ext.device.notification.Simulator',
       {
          this.msg.destroy();
       }
-      this.msg = Ext.create('Ext.MessageBox');
+      if (config.disableAnimations)
+      {
+         this.msg = Ext.create('Ext.MessageBox',
+         {
+            showAnimation : null,
+            hideAnimation : null
+         });
+      }
+      else
+      {
+         this.msg = Ext.create('Ext.MessageBox');
+      }
 
       msg = this.msg;
       msg.setHideOnMaskTap((!config.ignoreOnHide) ? true : false);
@@ -13739,7 +13750,7 @@ var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offline
 
 window.merchantMode = true;
 window.debugMode = true;
-window.serverHost;
+window.serverHost
 window._application = null;
 window.appName = 'MerKickBak';
 window._hostPathPrefix = "/javascripts/build/MobileServer/";
@@ -13800,8 +13811,33 @@ will need to resolve manually.
          Ext.fly('loadingPct').destroy();
       }
    };
-   var appLaunchCallbackFn = function(val)
+   var appLaunchCallbackFn = function(error, val)
    {
+      if (error)
+      {
+         if (_loadingPct)
+         {
+            // Destroy the #appLoadingIndicator element
+            Ext.fly('appLoadingIndicator').destroy();
+            _loadingPct = null;
+            Ext.fly('loadingPct').destroy();
+
+            console.log("Error Loading system File.");
+            Ext.device.Notification.show(
+            {
+               title : 'KickBak',
+               message : 'Error Connecting to Server.',
+               buttons : ['Retry'],
+               disableAnimations : true,
+               callback : function(buttonId)
+               {
+                  window.location.reload();
+               }
+            });
+         }
+         return;
+      }
+      
       _filesAssetCount++;
       if ((flag |= val) == 0x111)
       {
@@ -13815,7 +13851,8 @@ will need to resolve manually.
             name : 'Genesis',
             views : ['Document', 'server.Rewards', 'server.Redemptions', 'server.MerchantAccount', 'server.MainPage', //
             'widgets.server.RedeemItemDetail', 'server.SettingsPage', 'server.TagCreatePage', 'Viewport'],
-            controllers : ['server.Pos', 'server.Viewport', 'server.MainPage', 'server.Challenges', 'server.Receipts', 'server.Rewards', //
+            controllers : ['server.Pos', 'server.Viewport', 'server.MainPage', 'server.Challenges', 'server.Receipts', 'server.Rewards',
+            // //
             'server.Redemptions', 'server.Merchants', 'server.Settings', 'server.Prizes'],
             launch : function()
             {
@@ -13846,6 +13883,7 @@ will need to resolve manually.
                Ext.device.Notification.show(
                {
                   title : 'Application Update',
+                  disableAnimations : true,
                   message : "This application has just successfully been updated to the latest version. Reload now?",
                   callback : function(buttonId)
                   {
@@ -13899,7 +13937,7 @@ will need to resolve manually.
       {
          if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
          {
-            Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/ipad.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x011]));
+            Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/ipad.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x011], true));
          }
          else
          //if (Ext.os.is('Android'))
@@ -13908,12 +13946,12 @@ will need to resolve manually.
             {
                case 'lhdpi' :
                {
-                  Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-tablet-lhdpi.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x011]));
+                  Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-tablet-lhdpi.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x011], true));
                   break;
                }
                case 'mxhdpi' :
                {
-                  Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-tablet-mxhdpi.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x011]));
+                  Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-tablet-mxhdpi.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x011], true));
                   break;
                }
             }
@@ -13923,11 +13961,11 @@ will need to resolve manually.
       {
          if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
          {
-            Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [(!Ext.os.is('iPhone5')) ? 0x011 : 0x001]));
+            Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [(!Ext.os.is('iPhone5')) ? 0x011 : 0x001], true));
             if (Ext.os.is('iPhone5'))
             {
                _totalAssetCount++;
-               Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone5.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x010]));
+               Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone5.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x010], true));
             }
          }
          else//
@@ -13937,12 +13975,12 @@ will need to resolve manually.
             {
                case 'lhdpi' :
                {
-                  Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-phone-lhdpi.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x011]));
+                  Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-phone-lhdpi.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x011], true));
                   break;
                }
                case 'mxhdpi' :
                {
-                  Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-phone-mxhdpi.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x011]));
+                  Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-phone-mxhdpi.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x011], true));
                   break;
                }
             }

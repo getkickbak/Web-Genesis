@@ -19197,7 +19197,18 @@ Ext.define('Ext.device.notification.Simulator',
       {
          this.msg.destroy();
       }
-      this.msg = Ext.create('Ext.MessageBox');
+      if (config.disableAnimations)
+      {
+         this.msg = Ext.create('Ext.MessageBox',
+         {
+            showAnimation : null,
+            hideAnimation : null
+         });
+      }
+      else
+      {
+         this.msg = Ext.create('Ext.MessageBox');
+      }
 
       msg = this.msg;
       msg.setHideOnMaskTap((!config.ignoreOnHide) ? true : false);
@@ -19433,7 +19444,7 @@ will need to resolve manually.
          Ext.fly('loadingPct').destroy();
       }
    };
-   var appLaunchCallbackFn = function(val, error)
+   var appLaunchCallbackFn = function(error, val)
    {
       if (error)
       {
@@ -19450,6 +19461,7 @@ will need to resolve manually.
                title : 'KickBak',
                message : 'Error Connecting to Server.',
                buttons : ['Retry'],
+               disableAnimations : true,
                callback : function(buttonId)
                {
                   window.location.reload();
@@ -19512,6 +19524,7 @@ will need to resolve manually.
                   title : 'Application Update',
                   message : "This application has just successfully been updated to the latest version. Reload now?",
                   buttons : ['Yes', 'No'],
+                  disableAnimations : true,
                   callback : function(buttonId)
                   {
                      if (buttonId === 'yes')
@@ -19602,20 +19615,20 @@ will need to resolve manually.
             Genesis.fn.checkloadjscssfile(_hostPath + "worker/encoder.js", "js", function()
             {
                _codec = new Worker('worker/encoder.js');
-               appLaunchCallbackFn(0x100);
+               appLaunchCallbackFn(false, 0x100);
                console.debug("Enable MP3 Encoder");
             });
          }
          else
          {
             _codec = new Worker('worker/encoder.js');
-            appLaunchCallbackFn(0x100);
+            appLaunchCallbackFn(false, 0x100);
             console.debug("Enable MP3 Encoder");
          }
       }
       else
       {
-         appLaunchCallbackFn(0x100);
+         appLaunchCallbackFn(false, 0x100);
          console.debug("Enable WAV/WebAudio Encoder");
       }
       images[0].src = prefix + "/prizewon/transmit.png";

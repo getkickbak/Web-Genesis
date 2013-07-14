@@ -843,7 +843,18 @@ Ext.define('Ext.device.notification.Simulator',
       {
          this.msg.destroy();
       }
-      this.msg = Ext.create('Ext.MessageBox');
+      if (config.disableAnimations)
+      {
+         this.msg = Ext.create('Ext.MessageBox',
+         {
+            showAnimation : null,
+            hideAnimation : null
+         });
+      }
+      else
+      {
+         this.msg = Ext.create('Ext.MessageBox');
+      }
 
       msg = this.msg;
       msg.setHideOnMaskTap((!config.ignoreOnHide) ? true : false);

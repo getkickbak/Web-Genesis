@@ -75,7 +75,7 @@ Ext.Loader.setPath(
          Ext.fly('loadingPct').destroy();
       }
    };
-   var appLaunchCallbackFn = function(val, error)
+   var appLaunchCallbackFn = function(error, val)
    {
       if (error)
       {
@@ -92,6 +92,7 @@ Ext.Loader.setPath(
                title : 'KickBak',
                message : 'Error Connecting to Server.',
                buttons : ['Retry'],
+               disableAnimations : true,
                callback : function(buttonId)
                {
                   window.location.reload();
@@ -154,6 +155,7 @@ Ext.Loader.setPath(
                   title : 'Application Update',
                   message : "This application has just successfully been updated to the latest version. Reload now?",
                   buttons : ['Yes', 'No'],
+                  disableAnimations : true,
                   callback : function(buttonId)
                   {
                      if (buttonId === 'yes')
@@ -244,20 +246,20 @@ Ext.Loader.setPath(
             Genesis.fn.checkloadjscssfile(_hostPath + "worker/encoder.js", "js", function()
             {
                _codec = new Worker('worker/encoder.js');
-               appLaunchCallbackFn(0x100);
+               appLaunchCallbackFn(false, 0x100);
                console.debug("Enable MP3 Encoder");
             });
          }
          else
          {
             _codec = new Worker('worker/encoder.js');
-            appLaunchCallbackFn(0x100);
+            appLaunchCallbackFn(false, 0x100);
             console.debug("Enable MP3 Encoder");
          }
       }
       else
       {
-         appLaunchCallbackFn(0x100);
+         appLaunchCallbackFn(false, 0x100);
          console.debug("Enable WAV/WebAudio Encoder");
       }
       images[0].src = prefix + "/prizewon/transmit.png";
