@@ -8158,23 +8158,16 @@ Ext.define('Genesis.controller.server.Pos',
 
       me.wssocket.onopen = function(event)
       {
-         var posEnabled = me.isEnabled();
-         if (posEnabled)
+         if (me.isEnabled())
          {
-            var db = Genesis.db.getLocalDB(), cntlr = me.getApplication().getController('server' + '.Receipts');
-
             Ext.Viewport.setMasked(null);
             //
             // Retrieve new connections after 5mins of inactivity
             //
             console.debug("WebSocketClient::onopen");
 
-            me.lastDisonnectTime = db['lastPosDisconnectTime'] || 0;
+            me.lastDisonnectTime = Genesis.db.getLocalDB()['lastPosDisconnectTime'] || 0;
             me.initReceipt |= 0x10;
-            if (cntlr)
-            {
-               cntlr.fireEvent('retrieveReceipts');
-            }
             Genesis.db.setLocalDBAttrib('lastPosConnectTime', Date.now());
          }
          me.fireEvent('onopen');
@@ -8275,7 +8268,7 @@ Ext.define('Genesis.controller.server.Pos',
       else if (me.wssocket && forced)
       {
          me.wssocket.onopen();
-         console.debug("Pos::connect(" + me.url + ")");
+         console.debug("Pos::connect(" + me.url + ") Forced");
       }
    },
    disconnect : function(forced)
@@ -9041,7 +9034,6 @@ Ext.define('Genesis.model.frontend.Table',
    }
 });
 
-
 Ext.merge(WebSocket.prototype,
 {
    reconnectTimeoutTimer : 5 * 60 * 1000,
@@ -9239,8 +9231,7 @@ Ext.define('Genesis.controller.server.Receipts',
       listeners :
       {
          'insertReceipts' : 'onInsertReceipts',
-         'resetReceipts' : 'onResetReceipts',
-         'retrieveReceipts' : 'onRetrieveReceipts'
+         'resetReceipts' : 'onResetReceipts'
       }
    },
    retrieveReceiptsMsg : 'Retrieving Receipts from POS ...',
@@ -9286,7 +9277,7 @@ Ext.define('Genesis.controller.server.Receipts',
             }
          }
       }
-      
+
       console.log("Server Receipts Init");
 
       me.initEvent();
@@ -9332,6 +9323,13 @@ Ext.define('Genesis.controller.server.Receipts',
          }
       }, false);
 
+      me.getApplication().getController('server' + '.Receipts').on('onopen', function()
+      {
+         if (pos.isEnabled())
+         {
+            me.onRetrieveReceipts();
+         }
+      });
       console.debug("Server Receipts : initEvent");
    },
    initWorker : function(estore)
@@ -9395,7 +9393,7 @@ Ext.define('Genesis.controller.server.Receipts',
                estore.setData(result['result']);
                console.debug("restoreReceipt  --- Restored " + result['result'].length + " Receipts from the KickBak-Receipt DB");
                pos.initReceipt |= 0x01;
-               me.fireEvent('retrieveReceipts');
+               me.onRetrieveReceipts();
                break;
             }
             case 'resetReceipts':
@@ -9536,12 +9534,12 @@ Ext.define('Genesis.controller.server.Receipts',
 
       console.debug("Server Receipts : initStore");
    },
-   updateMetaDataInfo : function(metaData)
+   updateMetaDataInfo : function(metaData, forced)
    {
       var me = this, db = Genesis.db.getLocalDB();
       try
       {
-         me.posIntegrationHandler(metaData, db['isPosEnabled']);
+         me.posIntegrationHandler(metaData, db['isPosEnabled'], forced);
       }
       catch(e)
       {
@@ -9554,7 +9552,7 @@ Ext.define('Genesis.controller.server.Receipts',
    // --------------------------------------------------------------------------
    // Callback Handlers
    // --------------------------------------------------------------------------
-   posIntegrationHandler : function(metaData, posEnabled)
+   posIntegrationHandler : function(metaData, posEnabled, forced)
    {
       var me = this, db = Genesis.db.getLocalDB(), features_config = metaData['features_config'];
 
@@ -9584,8 +9582,8 @@ Ext.define('Genesis.controller.server.Receipts',
             }
          }
          //console.debug("receiptFilters - " + Ext.encode(db['receiptFilters']));
-         pos.connect(true);
-         console.debug("posIntegrationHandler - Enabled");
+         pos.connect(forced);
+         console.debug("posIntegrationHandler - Enabled " + ((forced) ? "(Forced)" : ""));
       }
       else
       {
@@ -9858,7 +9856,7 @@ Ext.define('Genesis.controller.server.Receipts',
          var posEnabled = (field.getValue() == 1) ? true : false;
          Genesis.db.setLocalDBAttrib('isPosEnabled', posEnabled);
          console.debug("onPosModeChange - " + posEnabled);
-         me.updateMetaDataInfo(viewport.getMetaData());
+         me.updateMetaDataInfo(viewport.getMetaData(), true);
          //
          // Update Native Code
          //
@@ -12373,7 +12371,7 @@ Ext.define('Genesis.controller.server.Viewport',
                //
                // POS Connection needs to be established
                //
-               me.getApplication().getController('server' + '.Receipts').fireEvent('updatemetadata', metaData);
+               me.getApplication().getController('server' + '.Receipts').fireEvent('updatemetadata', metaData, false);
 
                console.debug("Successfully acquired dataset for Venue(" + venueId + ")");
                //console.debug("Record[" + Ext.encode(record) + "]");

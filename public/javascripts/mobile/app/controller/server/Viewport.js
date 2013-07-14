@@ -377,7 +377,7 @@ Ext.define('Genesis.controller.server.Viewport',
                //
                // POS Connection needs to be established
                //
-               me.getApplication().getController('server' + '.Receipts').fireEvent('updatemetadata', metaData);
+               me.getApplication().getController('server' + '.Receipts').fireEvent('updatemetadata', metaData, false);
 
                console.debug("Successfully acquired dataset for Venue(" + venueId + ")");
                //console.debug("Record[" + Ext.encode(record) + "]");

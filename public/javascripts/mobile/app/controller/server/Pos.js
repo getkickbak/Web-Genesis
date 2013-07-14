@@ -50,23 +50,16 @@ Ext.define('Genesis.controller.server.Pos',
 
       me.wssocket.onopen = function(event)
       {
-         var posEnabled = me.isEnabled();
-         if (posEnabled)
+         if (me.isEnabled())
          {
-            var db = Genesis.db.getLocalDB(), cntlr = me.getApplication().getController('server' + '.Receipts');
-
             Ext.Viewport.setMasked(null);
             //
             // Retrieve new connections after 5mins of inactivity
             //
             console.debug("WebSocketClient::onopen");
 
-            me.lastDisonnectTime = db['lastPosDisconnectTime'] || 0;
+            me.lastDisonnectTime = Genesis.db.getLocalDB()['lastPosDisconnectTime'] || 0;
             me.initReceipt |= 0x10;
-            if (cntlr)
-            {
-               cntlr.fireEvent('retrieveReceipts');
-            }
             Genesis.db.setLocalDBAttrib('lastPosConnectTime', Date.now());
          }
          me.fireEvent('onopen');
@@ -167,7 +160,7 @@ Ext.define('Genesis.controller.server.Pos',
       else if (me.wssocket && forced)
       {
          me.wssocket.onopen();
-         console.debug("Pos::connect(" + me.url + ")");
+         console.debug("Pos::connect(" + me.url + ") Forced");
       }
    },
    disconnect : function(forced)
