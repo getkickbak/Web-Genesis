@@ -850,6 +850,8 @@ Ext.define('Ext.device.notification.Simulator',
             showAnimation : null,
             hideAnimation : null
          });
+         this.msg.defaultAllowedConfig.showAnimation = false;
+         this.msg.defaultAllowedConfig.hideAnimation = false;
       }
       else
       {
