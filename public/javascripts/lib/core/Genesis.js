@@ -735,14 +735,14 @@ Genesis.fn =
             // FF if css not loaded an exception is fired
             if (document.styleSheets[b].cssRules)
             {
-               this.cssOnReadyStateChange(href);
+               this.cssOnReadyStateChange(href, false);
             }
             // IE no exception is fired!!!
             else
             {
                if (document.styleSheets[b].rules && document.styleSheets[b].rules.length)
                {
-                  this.cssOnReadyStateChange(href);
+                  this.cssOnReadyStateChange(href, false);
                   return;
                }
                t++;
