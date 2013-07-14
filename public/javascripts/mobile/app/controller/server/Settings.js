@@ -323,7 +323,7 @@ Ext.define('Genesis.controller.server.Settings',
       //
       if (!isNative)
       {
-         field = form.query('togglefield[tag=displayMode]')[0];
+         field = form.query('selectfield[tag=displayMode]')[0];
          field.setReadOnly(true);
          field.disable();
       }
