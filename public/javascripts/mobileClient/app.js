@@ -191,7 +191,7 @@ Ext.Loader.setPath(
        var resolution = (function()
        {
        return (((window.screen.height >= 641) && ((window.devicePixelRatio == 1.0) || (window.devicePixelRatio >= 2.0))) ? 'mxhdpi' :
-      'lhdpi');
+       'lhdpi');
        })();
 
        for (var i = allsuspects.length; i >= 0; i--)
@@ -205,40 +205,45 @@ Ext.Loader.setPath(
        }
        }
        }
-
-       if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
-       {
-       prefix = imagePath + "ios";
-       Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone.css?v=" + Genesis.constants.clientVersion, "css",
-      Ext.bind(appLaunchCallbackFn, null, [(!Ext.os.is('iPhone5')) ? 0x011 : 0x001], true));
-       if (Ext.os.is('iPhone5'))
-       {
-       _totalAssetCount++;
-       Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone5.css?v=" + Genesis.constants.clientVersion, "css",
-      Ext.bind(appLaunchCallbackFn, null, [0x010], true));
-       }
-       }
-       else//
-       //if (Ext.os.is('Android'))
-       {
-       prefix = imagePath + "android/" + resolution;
-       switch (resolution)
-       {
-       case 'lhdpi' :
-       {
-       Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-phone-lhdpi.css?v=" + Genesis.constants.clientVersion, "css",
-      Ext.bind(appLaunchCallbackFn, null, [0x011], true));
-       break;
-       }
-       case 'mxhdpi' :
-       {
-       Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-phone-mxhdpi.css?v=" + Genesis.constants.clientVersion,
-      "css", Ext.bind(appLaunchCallbackFn, null, [0x011], true));
-       break;
-       }
-       }
-       }
        */
+
+      if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
+      {
+         prefix = imagePath + "ios";
+         /*
+          Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone.css?v=" + Genesis.constants.clientVersion, "css",
+          Ext.bind(appLaunchCallbackFn, null, [(!Ext.os.is('iPhone5')) ? 0x011 : 0x001], true));
+          if (Ext.os.is('iPhone5'))
+          {
+          _totalAssetCount++;
+          Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone5.css?v=" + Genesis.constants.clientVersion, "css",
+          Ext.bind(appLaunchCallbackFn, null, [0x010], true));
+          }
+          */
+      }
+      else//
+      //if (Ext.os.is('Android'))
+      {
+         prefix = imagePath + "android/" + resolution;
+         /*
+          switch (resolution)
+          {
+          case 'lhdpi' :
+          {
+          Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-phone-lhdpi.css?v=" + Genesis.constants.clientVersion,
+         "css",
+          Ext.bind(appLaunchCallbackFn, null, [0x011], true));
+          break;
+          }
+          case 'mxhdpi' :
+          {
+          Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-phone-mxhdpi.css?v=" + Genesis.constants.clientVersion,
+          "css", Ext.bind(appLaunchCallbackFn, null, [0x011], true));
+          break;
+          }
+          }
+          */
+      }
 
       var canPlayAudio = (new Audio()).canPlayType('audio/wav; codecs=1');
       if (!canPlayAudio)
