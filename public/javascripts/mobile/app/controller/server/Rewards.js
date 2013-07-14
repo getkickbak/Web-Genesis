@@ -210,7 +210,7 @@ Ext.define('Genesis.controller.server.Rewards',
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this, container = me.getRewardsContainer(), store = Ext.StoreMgr.get('ReceiptStore'), db = Genesis.db.getLocalDB();
-      var manualMode = ((db['rewardModel'] == 'items_purchased') ? 4 : 0), posEnabled = isPosEnabled();
+      var manualMode = ((db['rewardModel'] == 'items_purchased') ? 4 : 0), posEnabled = pos.isEnabled();
 
       if (container)
       {
@@ -330,7 +330,7 @@ Ext.define('Genesis.controller.server.Rewards',
    rewardItemFn : function(params, closeDialog)
    {
       var me = this, viewport = me.getViewPortCntlr(), proxy = PurchaseReward.getProxy(), amount = 0, itemsPurchased = 0, visits = 0, db = Genesis.db.getLocalDB();
-      var posEnabled = isPosEnabled();
+      var posEnabled = pos.isEnabled();
 
       switch (me.getMode())
       {
@@ -849,7 +849,7 @@ Ext.define('Genesis.controller.server.Rewards',
    onReceiptStoreUpdate : function(store)
    {
       var me = this, db = Genesis.db.getLocalDB(), list = me.getReceiptsList(), visible = (store.getCount() > 0) ? 'show' : 'hide';
-      var posEnabled = isPosEnabled();
+      var posEnabled = pos.isEnabled();
 
       if (list)
       {
@@ -889,7 +889,7 @@ Ext.define('Genesis.controller.server.Rewards',
    onDoneTap : function(b, e, eOpts, eInfo)
    {
       var me = this, container = me.getRewardsContainer(), db = Genesis.db.getLocalDB(), store = Ext.StoreMgr.get('ReceiptStore');
-      var posEnabled = isPosEnabled();
+      var posEnabled = pos.isEnabled();
       var manualMode = ((db['rewardModel'] == 'items_purchased') ? 4 : 0);
       delete me._params;
       switch (me.getMode())
@@ -969,7 +969,7 @@ Ext.define('Genesis.controller.server.Rewards',
    },
    openPage : function(subFeature)
    {
-      var me = this, db = Genesis.db.getLocalDB(), posEnabled = isPosEnabled();
+      var me = this, db = Genesis.db.getLocalDB(), posEnabled = pos.isEnabled();
 
       switch (subFeature)
       {

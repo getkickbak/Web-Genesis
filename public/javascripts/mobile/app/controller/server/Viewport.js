@@ -70,6 +70,35 @@ Ext.require(['Genesis.controller.ControllerBase'], function()
    };
 });
 
+Ext.merge(WebSocket.prototype,
+{
+   onNfc : function(inputStream)
+   {
+      //
+      // Get NFC data from remote call
+      //
+      var cntlr = me.getActiveController(), result = Ext.decode(inputStream);
+      /*
+       {
+       result : Ext.decode(text),
+       id : id
+       };
+       */
+      if (result)
+      {
+         if (cntlr)
+         {
+            console.log("Received Message [" + Ext.encode(result) + "]");
+            cntlr.onNfc(result);
+         }
+         else
+         {
+            console.log("Ignored Received Message [" + Ext.encode(result) + "]");
+         }
+      }
+   }
+});
+
 Ext.define('Genesis.controller.server.Viewport',
 {
    extend : 'Genesis.controller.ViewportBase',
@@ -303,7 +332,7 @@ Ext.define('Genesis.controller.server.Viewport',
          autoLoad : false
       });
 
-      me.refreshLicenseKey(posConnect);
+      me.refreshLicenseKey(Ext.bind(pos.connect, pos, [true]));
    },
    initializeConsole : function(callback)
    {
@@ -491,7 +520,7 @@ Ext.define('Genesis.controller.server.Viewport',
          window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
       }
 
-      if (isPosEnabled() && Genesis.fn.isNative())
+      if (pos.isEnabled() && Genesis.fn.isNative())
       {
          console.debug("Server Viewport - establishPosConn");
          window.plugins.WifiConnMgr.establishPosConn();
@@ -499,78 +528,7 @@ Ext.define('Genesis.controller.server.Viewport',
 
       if (!Genesis.fn.isNative())
       {
-         Ext.merge(WebSocket.prototype,
-         {
-            onNfc : function(inputStream)
-            {
-               //
-               // Get NFC data from remote call
-               //
-               var cntlr = me.getActiveController(), result = Ext.decode(inputStream['data']);
-               /*
-                {
-                result : Ext.decode(text),
-                id : id
-                };
-                */
-               if (result)
-               {
-                  if (cntlr)
-                  {
-                     console.log("Received Message [" + Ext.encode(result) + "]");
-                     cntlr.onNfc(result);
-                  }
-                  else
-                  {
-                     console.log("Ignored Received Message [" + Ext.encode(result) + "]");
-                  }
-               }
-            }
-         });
-
-         var scheme = 'ws://', host = (Genesis.fn.isNative()) ? '192.168.159.1' : '127.0.0.1', port = '443';
-         var url = scheme + host + ':' + port + "/nfc";
-         var wssocket = me.wssocket = new WebSocket(url, 'json');
-         wssocket.onopen = function(event)
-         {
-         };
-         wssocket.onmessage = function(event)
-         {
-            // console.debug("wssocket.onmessage - [" + event.data + "]");
-            try
-            {
-               var inputStream = eval('[' + event.data + ']')[0];
-               //inputStream = Ext.decode(event.data);
-
-               var cmd = inputStream['code'];
-               switch (cmd)
-               {
-                  case 'nfc' :
-                  {
-                     wssocket.onNfc(inputStream);
-                     break;
-                  }
-                  case '' :
-                  {
-                     break;
-                  }
-                  default:
-                     break;
-               }
-            }
-            catch(e)
-            {
-               console.debug("Exception while parsing NFC Data ...\n" + e);
-            }
-         };
-         wssocket.onerror = function(event)
-         {
-            console.debug("WebSocketServer::onerror");
-         };
-         wssocket.onclose = function(event)
-         {
-            console.debug("WebSocketServer::onclose");
-         };
+         pos.connect();
       }
    }
 });
