@@ -1531,7 +1531,7 @@ Genesis.db =
          return;
       }
 
-      if (Genesis.fn.isNative() && Genesis.fb)
+      if (Genesis.fb)
       {
          Genesis.fb.facebook_onLogout(null, false);
       }

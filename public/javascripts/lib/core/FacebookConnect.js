@@ -193,9 +193,11 @@ __initFb__ = function(_app, _appName)
                {
                   var callback = function()
                   {
-                     var origin = db['fbLoginInProgress'];
+                     var origin = db['fbLoginInProgress'] ||
+                     {
+                     };
                      app.db.removeLocalDBAttrib('fbLoginInProgress');
-                     switch(origin)
+                     switch(origin['viewName'])
                      {
                         case 'createaccountpageview' :
                         {
