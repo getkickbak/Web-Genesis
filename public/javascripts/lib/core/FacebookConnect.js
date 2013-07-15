@@ -140,6 +140,7 @@ __initFb__ = function(_app, _appName)
          {
             supress : supress,
             messsage : message,
+            viewName : _application.getController('client.Viewport').getViewport().getActiveItem().xtype,
             iter : 0
          }
 
@@ -192,8 +193,20 @@ __initFb__ = function(_app, _appName)
                {
                   var callback = function()
                   {
+                     var origin = db['fbLoginInProgress'];
                      app.db.removeLocalDBAttrib('fbLoginInProgress');
-                     _application.getController('client' + '.Viewport').redirectTo('signup');
+                     switch(origin)
+                     {
+                        case 'createaccountpageview' :
+                        {
+                           _application.getController('client' + '.MainPage').redirectTo('createAccount');
+                           break;
+                        }
+                        case "loginpageview" :
+                        default :
+                           _application.getController('client' + '.Viewport').redirectTo('signup');
+                           break;
+                     }
                   };
                   app.fb.on('connected', callback);
                   app.fb.on('unauthorized', callback);
