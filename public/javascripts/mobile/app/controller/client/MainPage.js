@@ -75,7 +75,7 @@ Ext.define('Genesis.controller.client.MainPage',
          },
          'actionsheet button[tag=facebook]' :
          {
-            tap : 'onFacebookTap'
+            tap : 'onMainFacebookTap'
          },
          'actionsheet button[tag=createAccount]' :
          {
@@ -114,6 +114,14 @@ Ext.define('Genesis.controller.client.MainPage',
             activate : 'onCreateActivate',
             deactivate : 'onCreateDeactivate'
          },
+         'createaccountpageview togglefield[name=facebook]' :
+         {
+            change : 'onFacebookChange'
+         },
+         'createaccountpageview togglefield[name=twitter]' :
+         {
+            change : 'onTwitterChange'
+         },
          'createaccountpageview button[tag=createAccount]' :
          {
             tap : 'onCreateAccountSubmit'
@@ -122,9 +130,20 @@ Ext.define('Genesis.controller.client.MainPage',
       listeners :
       {
          'refreshCSRF' : 'onRefreshCSRF',
-         'facebookTap' : 'onFacebookTap'
+         'facebookTap' : 'onMainFacebookTap',
+         'toggleFB' :
+         {
+            fn : 'onToggleFB',
+            buffer : 500
+         },
+         'toggleTwitter' :
+         {
+            fn : 'onToggleTwitter',
+            buffer : 300
+         }
       }
    },
+   initializing : true,
    _loggingIn : false,
    _loggingOut : false,
    _logoutflag : 0,
@@ -505,7 +524,7 @@ Ext.define('Genesis.controller.client.MainPage',
          failCallback();
       }
    },
-   onFacebookTap : function(b, e, eOpts, eInfo, failCallback)
+   onMainFacebookTap : function(b, e, eOpts, eInfo, failCallback)
    {
       var me = this, fb = Genesis.fb;
       failCallback = (Ext.isFunction(failCallback)) ? failCallback : Ext.emptyFn;
@@ -910,23 +929,82 @@ Ext.define('Genesis.controller.client.MainPage',
    },
    onCreateActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      var response = Genesis.db.getLocalDB()['fbResponse'] || null;
+      var me = this, db = Genesis.db.getLocalDB(), response = db['fbResponse'] || null;
       console.debug("onCreateActivate - fbResponse[" + Ext.encode(response) + "]");
+      console.log("enableFB - " + db['enableFB'] + ", enableTwitter - " + db['enableTwitter']);
+      me.initializing = true;
       if (response)
       {
          var form = this.getCreateAccount();
          form.setValues(
          {
+            facebook : (db['enableFB']) ? 1 : 0,
+            twitter : (db['enableTwitter']) ? 1 : 0,
             name : response.name,
             username : response.email
          });
       }
+      me.initializing = false;
       //activeItem.createView();
    },
    onCreateDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
-      var me = this;
-      //oldActiveItem.removeAll(true);
+      var me = this, fb = Genesis.fb;
+      //console.debug("onCreateDeactivate");
+      me.onFbDeactivate();
+   },
+   updateFBSignUpPopupCallback : function(params, operation)
+   {
+      var me = this, page = me.getCreateAccount();
+      var toggle = (page) ? page.query('togglefield[name=facebook]')[0] : null;
+
+      Ext.Viewport.setMasked(null);
+      if ((operation && operation.wasSuccessful()) || (params && (params['type'] != 'timeout')))
+      {
+         me.updateFBSettings(params);
+         if (toggle)
+         {
+            toggle.originalValue = 1;
+            me.onCreateActivate();
+         }
+      }
+      else
+      {
+         if (toggle)
+         {
+            toggle.toggle();
+         }
+         Ext.device.Notification.show(
+         {
+            title : 'Facebook Connect',
+            message : Genesis.fb.fbConnectFailMsg,
+            buttons : ['Dismiss']
+         });
+      }
+   },
+   onToggleFB : function(toggle, slider, thumb, newValue, oldValue, eOpts)
+   {
+      var me = this, fb = Genesis.fb, db = Genesis.db.getLocalDB();
+
+      me.callParent(arguments);
+      if (newValue == 1)
+      {
+      }
+      else if (db['enableFB'])
+      {
+         console.debug("Cancelling Facebook Login ...");
+         db = Genesis.db.getLocalDB();
+         db['enableFB'] = false;
+         db['currFbId'] = 0;
+         delete db['fbAccountId'];
+         delete db['fbResponse'];
+         Genesis.db.setLocalDB(db);
+
+         if (Genesis.fn.isNative())
+         {
+            Genesis.fb.facebook_onLogout(null, true);
+         }
+      }
    },
    // --------------------------------------------------------------------------
    // Page Navigation

@@ -21,14 +21,13 @@ Ext.require(['Genesis.controller.ControllerBase'], function()
    // add back button listener
    onBackKeyDown = function(e)
    {
-      var viewport = _application.getController('client' + '.Viewport');
+      if (!_application || Ext.Viewport.getMasked())
+      {
+         return;
+      }
 
-      //e.preventDefault();
-
-      //
-      // Disable BackKey if something is in progress or application is not instantiated
-      //
-      if (!_application || Ext.Viewport.getMasked() || !viewport || viewport.popViewInProgress)
+      var viewport = _application.getController('client'+'.Viewport');
+      if (!viewport || viewport.popViewInProgress)
       {
          return;
       }

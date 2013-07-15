@@ -684,7 +684,8 @@ Ext.define('Genesis.controller.ControllerBase',
                   width : '100%',
                   flex : 1,
                   style : 'text-align:center;display:inline-table;color:white;font-size:1.1em;',
-                  html : me.fbConnectRequestMsg + '<img width="160" style="margin:0.7em 0;" src="' + Genesis.constants.resourceSite + 'images/facebook_icon.png"/>'
+                  html : me.fbConnectRequestMsg + '<img width="160" style="margin:0.7em 0;" src="' + //
+                  Genesis.constants.resourceSite + 'images/' + Genesis.constants.themeName + '/' + 'facebook_icon.png"/>'
                },
                {
                   docked : 'bottom',
@@ -1501,5 +1502,64 @@ Ext.define('Genesis.controller.ControllerBase',
       {
          console.debug(template(records[i]));
       }
+   },
+   // --------------------------------------------------------------------------
+   // Common Social Media Handlers
+   // --------------------------------------------------------------------------
+   onFbActivate : function()
+   {
+      var me = this, fb = Genesis.fb;
+
+      fb.on('connected', me.updateFBSignUpPopupCallback, me);
+      fb.on('unauthorized', me.updateFBSignUpPopupCallback, me);
+      fb.on('exception', me.updateFBSignUpPopupCallback, me);
+   },
+   onFbDeactivate : function()
+   {
+      var me = this, fb = Genesis.fb;
+
+      fb.un('connected', me.updateFBSignUpPopupCallback);
+      fb.un('unauthorized', me.updateFBSignUpPopupCallback);
+      fb.un('exception', me.updateFBSignUpPopupCallback);
+   },
+   onToggleFB : function(toggle, slider, thumb, newValue, oldValue, eOpts)
+   {
+      var me = this, fb = Genesis.fb, db = Genesis.db.getLocalDB();
+
+      if (newValue == 1)
+      {
+         me.onFbActivate();
+         fb.facebook_onLogin(db['enableTwitter']);
+      }
+      else if (db['enableFB'])
+      {
+         me.onFbDeactivate();
+      }
+   },
+   onFacebookChange : function(toggle, slider, thumb, newValue, oldValue, eOpts)
+   {
+      var me = this, viewport = me.getViewPortCntlr();
+
+      if (me.initializing)
+      {
+         return;
+      }
+
+      me.self.playSoundFile(viewport.sound_files['clickSound']);
+
+      me.fireEvent('toggleFB', toggle, slider, thumb, newValue, oldValue, eOpts);
+   },
+   onTwitterChange : function(toggle, slider, thumb, newValue, oldValue, eOpts)
+   {
+      var me = this, viewport = me.getViewPortCntlr();
+
+      if (me.initializing)
+      {
+         return;
+      }
+
+      me.self.playSoundFile(viewport.sound_files['clickSound']);
+
+      me.fireEvent('toggleTwitter', toggle, slider, thumb, newValue, oldValue, eOpts);
    }
 });

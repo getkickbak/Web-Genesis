@@ -2229,7 +2229,8 @@ Ext.define('Genesis.controller.ControllerBase',
                   width : '100%',
                   flex : 1,
                   style : 'text-align:center;display:inline-table;color:white;font-size:1.1em;',
-                  html : me.fbConnectRequestMsg + '<img width="160" style="margin:0.7em 0;" src="' + Genesis.constants.resourceSite + 'images/facebook_icon.png"/>'
+                  html : me.fbConnectRequestMsg + '<img width="160" style="margin:0.7em 0;" src="' + //
+                  Genesis.constants.resourceSite + 'images/' + Genesis.constants.themeName + '/' + 'facebook_icon.png"/>'
                },
                {
                   docked : 'bottom',
@@ -3046,6 +3047,65 @@ Ext.define('Genesis.controller.ControllerBase',
       {
          console.debug(template(records[i]));
       }
+   },
+   // --------------------------------------------------------------------------
+   // Common Social Media Handlers
+   // --------------------------------------------------------------------------
+   onFbActivate : function()
+   {
+      var me = this, fb = Genesis.fb;
+
+      fb.on('connected', me.updateFBSignUpPopupCallback, me);
+      fb.on('unauthorized', me.updateFBSignUpPopupCallback, me);
+      fb.on('exception', me.updateFBSignUpPopupCallback, me);
+   },
+   onFbDeactivate : function()
+   {
+      var me = this, fb = Genesis.fb;
+
+      fb.un('connected', me.updateFBSignUpPopupCallback);
+      fb.un('unauthorized', me.updateFBSignUpPopupCallback);
+      fb.un('exception', me.updateFBSignUpPopupCallback);
+   },
+   onToggleFB : function(toggle, slider, thumb, newValue, oldValue, eOpts)
+   {
+      var me = this, fb = Genesis.fb, db = Genesis.db.getLocalDB();
+
+      if (newValue == 1)
+      {
+         me.onFbActivate();
+         fb.facebook_onLogin(db['enableTwitter']);
+      }
+      else if (db['enableFB'])
+      {
+         me.onFbDeactivate();
+      }
+   },
+   onFacebookChange : function(toggle, slider, thumb, newValue, oldValue, eOpts)
+   {
+      var me = this, viewport = me.getViewPortCntlr();
+
+      if (me.initializing)
+      {
+         return;
+      }
+
+      me.self.playSoundFile(viewport.sound_files['clickSound']);
+
+      me.fireEvent('toggleFB', toggle, slider, thumb, newValue, oldValue, eOpts);
+   },
+   onTwitterChange : function(toggle, slider, thumb, newValue, oldValue, eOpts)
+   {
+      var me = this, viewport = me.getViewPortCntlr();
+
+      if (me.initializing)
+      {
+         return;
+      }
+
+      me.self.playSoundFile(viewport.sound_files['clickSound']);
+
+      me.fireEvent('toggleTwitter', toggle, slider, thumb, newValue, oldValue, eOpts);
    }
 });
 
@@ -11138,31 +11198,36 @@ Ext.define('Genesis.view.LoginPage',
             background : 'transparent',
             border : 'none'
          },
+         layout : 'hbox',
          showAnimation : null,
          hideAnimation : null,
          defaultUnit : 'em',
-         padding : '1em',
+         //padding : '1em',
          hideOnMaskTap : false,
          defaults :
          {
+            height : '4em',
+            flex : 1,
             defaultUnit : 'em',
-            xtype : 'button',
-            margin : '0.5 0 0 0'
+            xtype : 'button'
          },
          items : [
          {
+            margin : '0 0.7 0 0',
             tag : 'facebook',
             ui : 'fbBlue',
             text : 'Facebook'
          },
          {
+            margin : '0 0.7 0 0',
+            tag : 'signIn',
+            text : 'Sign In'
+         },
+         {
+            labelCls : 'x-button-label wrap',
             tag : 'createAccount',
             ui : 'action',
             text : 'Create Account'
-         },
-         {
-            tag : 'signIn',
-            text : 'Sign In'
          }]
       });
       this.add(actions);
@@ -11476,6 +11541,34 @@ Ext.define('Genesis.view.CreateAccountPage',
       }),
       {
          xtype : 'fieldset',
+         tag : 'social',
+         title : 'Social Media',
+         //instructions : Genesis.fb.fbConnectRequestMsg,
+         defaults :
+         {
+            labelWidth : '60%'
+         },
+         items : [
+         {
+            xtype : 'togglefield',
+            name : 'facebook',
+            label : '<img src="' + //
+            Genesis.constants.resourceSite + 'images/' + Genesis.constants.themeName + '/' + 'facebook_icon.png" ' + //
+            'style="height:' + (2.5 / 0.8) + 'em' + ';float:left;margin-right:0.8em;"/> Facebook',
+            value : 0
+         },
+         {
+            hidden : true,
+            xtype : 'togglefield',
+            name : 'twitter',
+            label : '<img src="' + //
+            Genesis.constants.resourceSite + 'images/' + Genesis.constants.themeName + '/' + 'twitter_icon.png" ' + //
+            'style="height:' + (2.5 / 0.8) + 'em' + ';float:left;margin-right:0.8em;"/> Twitter',
+            value : 0
+         }]
+      },
+      {
+         xtype : 'fieldset',
          title : 'Account Credentials:',
          //instructions : 'Enter Username (email address) and Password',
          defaults :
@@ -11508,8 +11601,9 @@ Ext.define('Genesis.view.CreateAccountPage',
          }]
       },
       {
+         height : '3em',
          xtype : 'button',
-         ui : 'createAccount',
+         ui : 'action',
          tag : 'createAccount',
          text : 'Create Account'
       }]
@@ -11535,7 +11629,9 @@ Ext.define('Genesis.view.CreateAccountPage',
    },
    createView : function()
    {
-      return Genesis.view.ViewBase.prototype.createView.apply(this, arguments);
+      var rc = Genesis.view.ViewBase.prototype.createView.apply(this, arguments);
+      this.query('fieldset[tag=social]')[0].setInstructions(Genesis.fb.fbConnectRequestMsg);
+      return rc;
    },
    showView : function()
    {
@@ -11620,7 +11716,7 @@ Ext.define('Genesis.controller.client.MainPage',
          },
          'actionsheet button[tag=facebook]' :
          {
-            tap : 'onFacebookTap'
+            tap : 'onMainFacebookTap'
          },
          'actionsheet button[tag=createAccount]' :
          {
@@ -11659,6 +11755,14 @@ Ext.define('Genesis.controller.client.MainPage',
             activate : 'onCreateActivate',
             deactivate : 'onCreateDeactivate'
          },
+         'createaccountpageview togglefield[name=facebook]' :
+         {
+            change : 'onFacebookChange'
+         },
+         'createaccountpageview togglefield[name=twitter]' :
+         {
+            change : 'onTwitterChange'
+         },
          'createaccountpageview button[tag=createAccount]' :
          {
             tap : 'onCreateAccountSubmit'
@@ -11667,9 +11771,20 @@ Ext.define('Genesis.controller.client.MainPage',
       listeners :
       {
          'refreshCSRF' : 'onRefreshCSRF',
-         'facebookTap' : 'onFacebookTap'
+         'facebookTap' : 'onMainFacebookTap',
+         'toggleFB' :
+         {
+            fn : 'onToggleFB',
+            buffer : 500
+         },
+         'toggleTwitter' :
+         {
+            fn : 'onToggleTwitter',
+            buffer : 300
+         }
       }
    },
+   initializing : true,
    _loggingIn : false,
    _loggingOut : false,
    _logoutflag : 0,
@@ -12050,7 +12165,7 @@ Ext.define('Genesis.controller.client.MainPage',
          failCallback();
       }
    },
-   onFacebookTap : function(b, e, eOpts, eInfo, failCallback)
+   onMainFacebookTap : function(b, e, eOpts, eInfo, failCallback)
    {
       var me = this, fb = Genesis.fb;
       failCallback = (Ext.isFunction(failCallback)) ? failCallback : Ext.emptyFn;
@@ -12455,23 +12570,82 @@ Ext.define('Genesis.controller.client.MainPage',
    },
    onCreateActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      var response = Genesis.db.getLocalDB()['fbResponse'] || null;
+      var me = this, db = Genesis.db.getLocalDB(), response = db['fbResponse'] || null;
       console.debug("onCreateActivate - fbResponse[" + Ext.encode(response) + "]");
+      console.log("enableFB - " + db['enableFB'] + ", enableTwitter - " + db['enableTwitter']);
+      me.initializing = true;
       if (response)
       {
          var form = this.getCreateAccount();
          form.setValues(
          {
+            facebook : (db['enableFB']) ? 1 : 0,
+            twitter : (db['enableTwitter']) ? 1 : 0,
             name : response.name,
             username : response.email
          });
       }
+      me.initializing = false;
       //activeItem.createView();
    },
    onCreateDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
-      var me = this;
-      //oldActiveItem.removeAll(true);
+      var me = this, fb = Genesis.fb;
+      //console.debug("onCreateDeactivate");
+      me.onFbDeactivate();
+   },
+   updateFBSignUpPopupCallback : function(params, operation)
+   {
+      var me = this, page = me.getCreateAccount();
+      var toggle = (page) ? page.query('togglefield[name=facebook]')[0] : null;
+
+      Ext.Viewport.setMasked(null);
+      if ((operation && operation.wasSuccessful()) || (params && (params['type'] != 'timeout')))
+      {
+         me.updateFBSettings(params);
+         if (toggle)
+         {
+            toggle.originalValue = 1;
+            me.onCreateActivate();
+         }
+      }
+      else
+      {
+         if (toggle)
+         {
+            toggle.toggle();
+         }
+         Ext.device.Notification.show(
+         {
+            title : 'Facebook Connect',
+            message : Genesis.fb.fbConnectFailMsg,
+            buttons : ['Dismiss']
+         });
+      }
+   },
+   onToggleFB : function(toggle, slider, thumb, newValue, oldValue, eOpts)
+   {
+      var me = this, fb = Genesis.fb, db = Genesis.db.getLocalDB();
+
+      me.callParent(arguments);
+      if (newValue == 1)
+      {
+      }
+      else if (db['enableFB'])
+      {
+         console.debug("Cancelling Facebook Login ...");
+         db = Genesis.db.getLocalDB();
+         db['enableFB'] = false;
+         db['currFbId'] = 0;
+         delete db['fbAccountId'];
+         delete db['fbResponse'];
+         Genesis.db.setLocalDB(db);
+
+         if (Genesis.fn.isNative())
+         {
+            Genesis.fb.facebook_onLogout(null, true);
+         }
+      }
    },
    // --------------------------------------------------------------------------
    // Page Navigation
@@ -16793,7 +16967,7 @@ Ext.define('Genesis.view.client.SettingsPage',
             xtype : 'togglefield',
             name : 'facebook',
             label : '<img src="' + //
-            'resources/themes/images/' + Genesis.constants.themeName + '/' + 'facebook_icon.png" ' + //
+            Genesis.constants.resourceSite + 'images/' + Genesis.constants.themeName + '/' + 'facebook_icon.png" ' + //
             'style="height:' + (2.5 / 0.8) + 'em' + ';float:left;margin-right:0.8em;"/> Facebook',
             value : 0
          },
@@ -16802,7 +16976,7 @@ Ext.define('Genesis.view.client.SettingsPage',
             xtype : 'togglefield',
             name : 'twitter',
             label : '<img src="' + //
-            'resources/themes/images/' + Genesis.constants.themeName + '/' + 'twitter_icon.png" ' + //
+            Genesis.constants.resourceSite + 'images/' + Genesis.constants.themeName + '/' + 'twitter_icon.png" ' + //
             'style="height:' + (2.5 / 0.8) + 'em' + ';float:left;margin-right:0.8em;"/> Twitter',
             value : 0
          }]
@@ -16987,7 +17161,7 @@ Ext.define('Genesis.controller.client.Settings',
          'toggleFB' :
          {
             fn : 'onToggleFB',
-            buffer : 5000
+            buffer : 500
          },
          'toggleTwitter' :
          {
@@ -17068,50 +17242,27 @@ Ext.define('Genesis.controller.client.Settings',
    updateFBSettingsPopup : function(title, toggle)
    {
       var me = this, db = Genesis.db.getLocalDB();
-      var _fbLogin = function()
+      
+      Genesis.fb.facebook_onLogin(function(params, operation)
       {
-         Genesis.fb.facebook_onLogin(function(params, operation)
+         Ext.Viewport.setMasked(null);
+         if (!params || ((operation && !operation.wasSuccessful())))
          {
-            Ext.Viewport.setMasked(null);
-            if (!params || ((operation && !operation.wasSuccessful())))
+            if (me.getSettingsPage() && !me.getSettingsPage().isHidden() && toggle)
             {
-               if (me.getSettingsPage() && !me.getSettingsPage().isHidden() && toggle)
-               {
-                  toggle.toggle();
-               }
+               toggle.toggle();
             }
-            else
+         }
+         else
+         {
+            me.updateFBSettings(params);
+            if (toggle)
             {
-               me.updateFBSettings(params);
-               if (toggle)
-               {
-                  toggle.originalValue = 1;
-                  me.updateAccountInfo();
-               }
+               toggle.originalValue = 1;
+               me.updateAccountInfo();
             }
-         }, db['enableTwitter']);
-      };
-
-      _fbLogin();
-      /*
-       Ext.device.Notification.show(
-       {
-       title : title,
-       message : me.enableFBMsg,
-       buttons : ['Proceed', 'Cancel'],
-       callback : function(btn)
-       {
-       if (btn.toLowerCase() == 'proceed')
-       {
-       _fbLogin();
-       }
-       else if (toggle)
-       {
-       toggle.toggle();
-       }
-       }
-       });
-       */
+         }
+      }, db['enableTwitter']);
    },
    updateAccountInfo : function()
    {
@@ -17161,32 +17312,6 @@ Ext.define('Genesis.controller.client.Settings',
 
       me.self.playSoundFile(viewport.sound_files['clickSound']);
       me.redirectTo('password_change');
-   },
-   onFacebookChange : function(toggle, slider, thumb, newValue, oldValue, eOpts)
-   {
-      var me = this, viewport = me.getViewPortCntlr();
-
-      if (me.initializing)
-      {
-         return;
-      }
-
-      me.self.playSoundFile(viewport.sound_files['clickSound']);
-
-      me.fireEvent('toggleFB', toggle, slider, thumb, newValue, oldValue, eOpts);
-   },
-   onTwitterChange : function(toggle, slider, thumb, newValue, oldValue, eOpts)
-   {
-      var me = this, viewport = me.getViewPortCntlr();
-
-      if (me.initializing)
-      {
-         return;
-      }
-
-      me.self.playSoundFile(viewport.sound_files['clickSound']);
-
-      me.fireEvent('toggleTwitter', toggle, slider, thumb, newValue, oldValue, eOpts);
    },
    onAccountUpdateTap : function(b, e, eOpts)
    {
@@ -17247,29 +17372,18 @@ Ext.define('Genesis.controller.client.Settings',
    {
       var me = this, fb = Genesis.fb;
       console.debug("Settings: onDeactivate");
-      fb.un('connected', me.updateFBSignUpPopupCallback);
-      fb.un('unauthorized', me.updateFBSignUpPopupCallback);
-      fb.un('exception', me.updateFBSignUpPopupCallback);
+      me.onFbDeacitvate();
    },
    onToggleFB : function(toggle, slider, thumb, newValue, oldValue, eOpts)
    {
-      var me = this, fb = Genesis.fb;
+      var me = this, fb = Genesis.fb, db = Genesis.db.getLocalDB();
 
+      me.callParent(arguments);
       if (newValue == 1)
       {
-         fb.on('connected', me.updateFBSignUpPopupCallback, me);
-         fb.on('unauthorized', me.updateFBSignUpPopupCallback, me);
-         fb.on('exception', me.updateFBSignUpPopupCallback, me);
-
-         //me.updateFBSettingsPopup(me.settingsTitle, toggle);
-         me.updateFBSignUpPopup(me.signupTitle, toggle);
       }
       else if (db['enableFB'])
       {
-         fb.un('connected', me.updateFBSignUpPopupCallback);
-         fb.un('unauthorized', me.updateFBSignUpPopupCallback);
-         fb.un('exception', me.updateFBSignUpPopupCallback);
-
          console.debug("Cancelling Facebook Login ...");
          var params =
          {
@@ -17339,12 +17453,6 @@ Ext.define('Genesis.controller.client.Settings',
          });
       }
    },
-   updateFBSignUpPopup : function(title, toggle)
-   {
-      var me = this, page = me.getSettingsPage();
-
-      Genesis.fb.facebook_onLogin(db['enableTwitter']);
-   },
    updateFBSignUp : function(params)
    {
       var me = this;
@@ -17361,58 +17469,6 @@ Ext.define('Genesis.controller.client.Settings',
 
       me.response = params;
    },
-   /*
-    onToggleFB : function(toggle, slider, thumb, newValue, oldValue, eOpts)
-    {
-    var me = this, db = Genesis.db.getLocalDB();
-
-    if (newValue == 1)
-    {
-    me.updateFBSettingsPopup(me.settingsTitle, toggle);
-    }
-    else if (db['enableFB'])
-    {
-    console.debug("Cancelling Facebook Login ...");
-    var params =
-    {
-    facebook_id : 0
-    };
-
-    Account['setUpdateFbLoginUrl']();
-    Account.load(0,
-    {
-    jsonData :
-    {
-    },
-    params :
-    {
-    user : Ext.encode(params)
-    },
-    callback : function(record, operation)
-    {
-    if (operation.wasSuccessful())
-    {
-    db = Genesis.db.getLocalDB();
-    db['enableFB'] = false;
-    db['currFbId'] = 0;
-    delete db['fbAccountId'];
-    delete db['fbResponse'];
-    Genesis.db.setLocalDB(db);
-
-    if (Genesis.fn.isNative())
-    {
-    Genesis.fb.facebook_onLogout(null, true);
-    }
-    }
-    else if (!me.getSettingsPage().isHidden())
-    {
-    toggle.toggle();
-    }
-    }
-    });
-    }
-    },
-    */
    onToggleTwitter : function(toggle, slider, thumb, newValue, oldValue, eOpts)
    {
       var me = this, db = Genesis.db.getLocalDB();
@@ -17512,14 +17568,13 @@ Ext.require(['Genesis.controller.ControllerBase'], function()
    // add back button listener
    onBackKeyDown = function(e)
    {
-      var viewport = _application.getController('client' + '.Viewport');
+      if (!_application || Ext.Viewport.getMasked())
+      {
+         return;
+      }
 
-      //e.preventDefault();
-
-      //
-      // Disable BackKey if something is in progress or application is not instantiated
-      //
-      if (!_application || Ext.Viewport.getMasked() || !viewport || viewport.popViewInProgress)
+      var viewport = _application.getController('client'+'.Viewport');
+      if (!viewport || viewport.popViewInProgress)
       {
          return;
       }

@@ -495,17 +495,18 @@ __initFb__ = function(_app, _appName)
       },
       createFBReminderMsg : function()
       {
-         var me = this;
+         var me = this, viewport = _application.getController('client' + '.Viewport');
 
          if (!me.actions)
          {
+            var iconEm = 8, iconSize = Genesis.fn.calcPx(iconEm, 1.1);
             me.actions = (Ext.create('Ext.Sheet',
                {
                   bottom : 0,
                   left : 0,
                   top : 0,
                   right : 0,
-                  padding : '1.0',
+                  padding : '0.8 0.7 0 0.7',
                   hideOnMaskTap : false,
                   defaultUnit : 'em',
                   layout :
@@ -522,21 +523,46 @@ __initFb__ = function(_app, _appName)
                   {
                      width : '100%',
                      flex : 1,
-                     style : 'text-align:center;display:inline-table;color:white;font-size:1.1em;',
-                     html : me.fbConnectRequestMsg + '<img width="160" style="margin:0.7em 0;" src="resources/themes/images/v1/facebook_icon.png"/>'
+                     style : 'text-align:center;color:white;font-size:1.1em;',
+                     html : me.fbConnectRequestMsg + '<br/>' + //
+                     '<img width="' + iconSize + '" ' + //
+                     'style="position: absolute;top:50%;left:50%;' + //
+                     'margin-top:' + Genesis.fn.addUnit(-1 * (iconEm / 2 - 1.5), 'em') + ';' + //
+                     'margin-left:' + Genesis.fn.addUnit(-1 * (iconEm / 2), 'em') + ';" ' + //
+                     'src="resources/themes/images/v1/facebook_icon.png"/>'
                   },
                   {
                      docked : 'bottom',
+                     layout : 'hbox',
                      defaults :
                      {
                         xtype : 'button',
+                        flex : 1,
+                        height : '3em',
                         defaultUnit : 'em',
                         scope : me
                      },
-                     padding : '0 1.0 1.0 1.0',
+                     //padding : '0 1.0 1.0 1.0',
+                     padding : '0 0.7 1.0 0.7',
                      items : [
                      {
-                        margin : '0 0 0.5 0',
+                        margin : '0 0.7 0 0',
+                        text : 'Decline',
+                        //ui : 'decline',
+                        handler : function()
+                        {
+                           me.actions.hide();
+                           app.db.setLocalDBAttrib('disableFBReminderMsg', true);
+
+                           _application.getController('client' + '.Viewport').redirectTo('checkin');
+
+                           me.actions.destroy();
+                           delete me.actions;
+                           viewport.popUpInProgress = true;
+                        }
+                     },
+                     {
+                        margin : '0 0.7 0 0',
                         text : 'Sign In',
                         ui : 'action',
                         handler : function()
@@ -554,7 +580,6 @@ __initFb__ = function(_app, _appName)
                                  {
                                     mainPage._loggingIn = false;
 
-                                    var viewport = _application.getController('client' + '.Viewport');
                                     var vport = viewport.getViewport();
                                     var activeItem = vport.getActiveItem();
                                     if (!activeItem)
@@ -573,10 +598,10 @@ __initFb__ = function(_app, _appName)
 
                            me.actions.destroy();
                            delete me.actions;
+                           viewport.popUpInProgress = true;
                         }
                      },
                      {
-                        margin : '0.5 0 0.5 0',
                         text : 'Skip',
                         ui : 'cancel',
                         handler : function()
@@ -586,25 +611,12 @@ __initFb__ = function(_app, _appName)
 
                            me.actions.destroy();
                            delete me.actions;
-                        }
-                     },
-                     {
-                        margin : '0.5 0 0 0',
-                        text : 'Don\'t Remind Me Again',
-                        //ui : 'decline',
-                        handler : function()
-                        {
-                           me.actions.hide();
-                           app.db.setLocalDBAttrib('disableFBReminderMsg', true);
-
-                           _application.getController('client' + '.Viewport').redirectTo('checkin');
-
-                           me.actions.destroy();
-                           delete me.actions;
+                           viewport.popUpInProgress = true;
                         }
                      }]
                   }]
                }));
+            viewport.popUpInProgress = true;
             Ext.Viewport.add(me.actions);
             me.actions.show();
          }

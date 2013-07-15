@@ -467,7 +467,7 @@ Genesis.constants =
    },
    site : 'www.getkickbak.com',
    photoSite : 'https://s3.amazonaws.com/files.getkickbak.com',
-   resourceSite : "resources/",
+   resourceSite : "resources/" + ((_build == "MobileWeb") ? "" : "themes/"),
    debugVPrivKey : 'oSG8JclEHvRy5ngkb6ehWbb6TTRFXd8t',
    debugRPrivKey : 'oSG8JclEHvRy5ngkb6ehWbb6TTRFXd8t',
    debugVenuePrivKey : 'Debug Venue',
@@ -1158,9 +1158,9 @@ Genesis.fn =
    // **************************************************************************
    // PX and EM Calculations
    // **************************************************************************
-   addUnit : function(unit)
+   addUnit : function(unit, metric)
    {
-      return unit + 'px';
+      return unit + ((!metric) ? 'px' : metric);
    },
    _removeUnitRegex : /(\d+)px/,
    removeUnit : function(unit)
@@ -1169,7 +1169,7 @@ Genesis.fn =
    },
    calcPx : function(em, fontsize)
    {
-      return Math.floor(((em / fontsize) * Genesis.constants.fontSize));
+      return Math.floor((Math.round(em * fontsize) * Genesis.constants.fontSize));
    },
    calcPxEm : function(px, em, fontsize)
    {

@@ -18,31 +18,36 @@ Ext.define('Genesis.view.LoginPage',
             background : 'transparent',
             border : 'none'
          },
+         layout : 'hbox',
          showAnimation : null,
          hideAnimation : null,
          defaultUnit : 'em',
-         padding : '1em',
+         //padding : '1em',
          hideOnMaskTap : false,
          defaults :
          {
+            height : '4em',
+            flex : 1,
             defaultUnit : 'em',
-            xtype : 'button',
-            margin : '0.5 0 0 0'
+            xtype : 'button'
          },
          items : [
          {
+            margin : '0 0.7 0 0',
             tag : 'facebook',
             ui : 'fbBlue',
             text : 'Facebook'
          },
          {
+            margin : '0 0.7 0 0',
+            tag : 'signIn',
+            text : 'Sign In'
+         },
+         {
+            labelCls : 'x-button-label wrap',
             tag : 'createAccount',
             ui : 'action',
             text : 'Create Account'
-         },
-         {
-            tag : 'signIn',
-            text : 'Sign In'
          }]
       });
       this.add(actions);
@@ -356,6 +361,34 @@ Ext.define('Genesis.view.CreateAccountPage',
       }),
       {
          xtype : 'fieldset',
+         tag : 'social',
+         title : 'Social Media',
+         //instructions : Genesis.fb.fbConnectRequestMsg,
+         defaults :
+         {
+            labelWidth : '60%'
+         },
+         items : [
+         {
+            xtype : 'togglefield',
+            name : 'facebook',
+            label : '<img src="' + //
+            Genesis.constants.resourceSite + 'images/' + Genesis.constants.themeName + '/' + 'facebook_icon.png" ' + //
+            'style="height:' + (2.5 / 0.8) + 'em' + ';float:left;margin-right:0.8em;"/> Facebook',
+            value : 0
+         },
+         {
+            hidden : true,
+            xtype : 'togglefield',
+            name : 'twitter',
+            label : '<img src="' + //
+            Genesis.constants.resourceSite + 'images/' + Genesis.constants.themeName + '/' + 'twitter_icon.png" ' + //
+            'style="height:' + (2.5 / 0.8) + 'em' + ';float:left;margin-right:0.8em;"/> Twitter',
+            value : 0
+         }]
+      },
+      {
+         xtype : 'fieldset',
          title : 'Account Credentials:',
          //instructions : 'Enter Username (email address) and Password',
          defaults :
@@ -388,8 +421,9 @@ Ext.define('Genesis.view.CreateAccountPage',
          }]
       },
       {
+         height : '3em',
          xtype : 'button',
-         ui : 'createAccount',
+         ui : 'action',
          tag : 'createAccount',
          text : 'Create Account'
       }]
@@ -415,7 +449,9 @@ Ext.define('Genesis.view.CreateAccountPage',
    },
    createView : function()
    {
-      return Genesis.view.ViewBase.prototype.createView.apply(this, arguments);
+      var rc = Genesis.view.ViewBase.prototype.createView.apply(this, arguments);
+      this.query('fieldset[tag=social]')[0].setInstructions(Genesis.fb.fbConnectRequestMsg);
+      return rc;
    },
    showView : function()
    {
