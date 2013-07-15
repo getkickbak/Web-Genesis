@@ -1525,11 +1525,16 @@ Genesis.db =
    //
    resetStorage : function()
    {
+      var db = this.getLocalStorage(), i;
+      if (db['fbLoginInProgress'])
+      {
+         return;
+      }
+
       if (Genesis.fn.isNative() && Genesis.fb)
       {
          Genesis.fb.facebook_onLogout(null, false);
       }
-      var db = this.getLocalStorage(), i;
       for (i in db)
       {
          if ((i == 'kickbak') || (i == 'kickbakreferral'))
