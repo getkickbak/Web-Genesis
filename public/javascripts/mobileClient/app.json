@@ -123,8 +123,8 @@
 	* Extra resources to be copied along when build
 	*/
 	"resources": ["../lib/libmp3lame.min.js", "../lib/libmp3lame.min.js.gz", //
-	"../mobile/resources/themes/images/v1", "../mobile/resources/css", "../mobile/resources/icons", //
-	"../mobile/resources/audio", "../mobile/app/store/mainClientPage.json", "../mobile/channel.html", //
+	"../mobile/resources/themes/images/v1", "../mobile/resources/icons", //
+	"../mobile/resources/audio", "../mobile/app/store/mainClientPage.json", //
 	"../mobile/term_of_service.htm", "../mobile/privacy.htm", "../mobile/program_rules.htm"],
 
 	/**
