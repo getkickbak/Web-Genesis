@@ -4,4 +4,7 @@
 .x-sheet, .x-sheet-action {
    border : none; // Needed to fix BlackBerry CSS rendering Bug
    @include custom-linear-gradient($BlueStart 10%, $BlueEnd 65%, top);
+   .x-button-label {
+     font-size : $largeFontSize;
+   }
 }
