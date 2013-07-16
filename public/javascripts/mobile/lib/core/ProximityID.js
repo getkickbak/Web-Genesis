@@ -98,10 +98,33 @@ else
          var me = this;
 
          me.bw = (me.hiFreq - me.loFreq) / me.NUM_SIGNALS;
-         Genesis.constants.s_vol = s_vol_ratio * 100 * ((Ext.os.is('Android')) ? 0.8 : 1.0);
-         // Reduce volume by 50%
-         Genesis.constants.r_vol = r_vol_ratio * 100 * 0.8;
 
+         me.iframe = document.getElementById("localID");
+         if (me.iframe)
+         {
+            me.iframe.src = 'https://' + location.host + window.location.pathname.replace(/[^\\\/]*$/, '') + 'localID.html';
+
+            Genesis.constants.s_vol = s_vol_ratio * 100 * ((Ext.os.is('Android')) ? 0.8 : 1.0);
+            // Reduce volume by 50%
+            Genesis.constants.r_vol = r_vol_ratio * 100 * 0.8;
+
+            window.addEventListener('message', function(e)
+            {
+               if ((e.origin == 'https://' + location.host))
+               {
+                  // e.data is the string sent by the origin with postMessage.
+                  if (e.data)
+                  {
+                     me.scanCallback[0](Ext.decode(e.data));
+                  }
+                  else
+                  {
+                     me.scanCallback[1]();
+                  }
+                  delete me.scanCallback;
+               }
+            }, false);
+         }
          console.debug("Initialized Proximity API");
       },
       generateData : function(offset, length)
@@ -396,6 +419,16 @@ else
       {
          var me = this, context = me.context, matchCount = 0;
 
+         //
+         // Parent window send work to iframe child to listen
+         //
+         if (navigator.webkitGetUserMedia && me.iframe)
+         {
+            me.scanCallback = [win, fail];
+            me.iframe.postMessage("scan", location.origin);
+            return;
+         }
+
          if (!me.context)
          {
             context = me.context = new webkitAudioContext();
@@ -520,6 +553,16 @@ else
       stop : function()
       {
          var me = this;
+
+         //
+         // Parent window send work to iframe child to stop listening
+         //
+         if (navigator.webkitGetUserMedia && me.iframe)
+         {
+            me.iframe.postMessage("stop", location.origin);
+            return;
+         }
+
          if (me.oscillators)
          {
             for (var i = 0; i < me.freqs.length; i++)
