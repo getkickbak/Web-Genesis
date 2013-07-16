@@ -579,7 +579,7 @@ __initFb__ = function(_app, _appName)
                      {
                         margin : '0 0.7 0 0',
                         text : 'Sign In',
-                        ui : 'action',
+                        ui : 'fbBlue',
                         handler : function()
                         {
                            me.actions.hide();

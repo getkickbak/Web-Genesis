@@ -11005,19 +11005,16 @@ Ext.define('Genesis.view.client.MainPage',
                            defaultUnit : 'em',
                            padding : '1.0',
                            hideOnMaskTap : false,
+                           layout : 'hbox',
                            defaults :
                            {
+                              margin : '0 0.7 0 0',
+                              flex : 1,
                               xtype : 'button',
                               defaultUnit : 'em'
                            },
                            items : [
                            {
-                              margin : '0 0 0.5 0',
-                              text : 'Logout',
-                              tag : 'logout'
-                           },
-                           {
-                              margin : '0.5 0 0 0',
                               text : 'Cancel',
                               ui : 'cancel',
                               scope : this,
@@ -11025,6 +11022,11 @@ Ext.define('Genesis.view.client.MainPage',
                               {
                                  this.actions.hide();
                               }
+                           },
+                           {
+                              margin : '0 0 0 0',
+                              text : 'Logout',
+                              tag : 'logout'
                            }]
                         });
                         Ext.Viewport.add(this.actions);
@@ -11214,14 +11216,14 @@ Ext.define('Genesis.view.LoginPage',
          items : [
          {
             margin : '0 0.7 0 0',
-            tag : 'facebook',
-            ui : 'fbBlue',
-            text : 'Facebook'
+            tag : 'signIn',
+            text : 'Sign In'
          },
          {
             margin : '0 0.7 0 0',
-            tag : 'signIn',
-            text : 'Sign In'
+            tag : 'facebook',
+            ui : 'fbBlue',
+            text : 'Facebook Sign In'
          },
          {
             labelCls : 'x-button-label wrap',
@@ -13839,6 +13841,8 @@ Ext.define('Genesis.view.client.MerchantDetails',
          },
          tpl : Ext.create('Ext.XTemplate', '<img height="{height}" width="{width}" src="{photo}"/>')
       })]));
+
+      me.query('button[tag=shareBtn]')[0].setHidden((_application.getProfileInstances()[0].getName().match(/mobileClient/i)) ? true : false);
    }
 });
 
