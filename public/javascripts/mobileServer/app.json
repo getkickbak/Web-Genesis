@@ -40,10 +40,6 @@
 	*/		
 	"js": [
 		{
-         "path": "http://www.getkickbak.com/javascripts/lib/touch-2.1.1/sencha-touch-all.js",
-         "remote" : true,
-         "update" : "full"
-      }, {
          "path": "http://files.getkickbak.com/mobileWeb/build/KickBak/production/lib/gibberish-aes.min.js",
          "remote" : true,
          "update": "full"
@@ -59,7 +55,7 @@
       }, {
          "path": "app.js",
          "bundle": true,  /* Indicates that all class dependencies are concatenated into this file when build */
-         "update": "full"
+         "update": "delta"
 	   }
      ],
 

@@ -2,18 +2,19 @@
    "name": "MerKickBak",
    "description": "Merchant App for KICKBAK",
    "version": "2.2.0",
-   "manifest_version": 2,
    "app": {
       "background": {
          "scripts": ["launch.js"]
       }
    },
+   "minimum_chrome_version": "28",
+   "permissions": ["experimental", "geolocation", "storage", "<all_urls>", "webview"],
    "icons": {
-      "36": 'resources/icons/icon36.png',
-      "48": 'resources/icons/icon48.png',
-      "57": 'resources/icons/icon.png',
-      "72": 'resources/icons/icon@72.png',
-      "114": 'resources/icons/icon@2x.png',
-      "144": 'resources/icons/icon@144.png'
+      "36": "resources/icons/icon36.png",
+      "48": "resources/icons/icon48.png",
+      "57": "resources/icons/icon.png",
+      "72": "resources/icons/icon@72.png",
+      "114": "resources/icons/icon@2x.png",
+      "144": "resources/icons/icon@144.png"
    }
 }

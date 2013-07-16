@@ -8,6 +8,18 @@
     function write(content) {
         document.write(content);
     }
+    function writeJs(path) {
+        var script = document.createElement('script');
+        script.src = path;
+        script.type = 'text/javascript';
+        head.appendChild(script);
+    }
+    function writeCss(path) {
+        var link = document.createElement('link');
+        link.href = path;
+        link.rel = 'stylesheet';
+        head.appendChild(link);
+    }
 
     function addMeta(name, content) {
         var meta = document.createElement('meta');
@@ -150,7 +162,8 @@
             };
         }
 
-        write('<link rel="stylesheet" href="'+path+'">');
+        //write('<link rel="stylesheet" href="'+path+'">');
+        writeCss(path);
     }
 
     for (i = 0,ln = scripts.length; i < ln; i++) {
@@ -167,7 +180,8 @@
             }
         }
 
-        write('<script src="'+path+'"></'+'script>');
+        //write('<script src="'+path+'"></'+'script>');
+        writeJs(path);
     }
 
 })();

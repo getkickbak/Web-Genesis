@@ -74,7 +74,9 @@ function printStackTrace(options)
    var result = p.run(ex);
    return (guess) ? p.guessFunctions(result) : result;
 };
-printStackTrace.implementation = Ext.emptyFn;
+printStackTrace.implementation = function()
+{
+};
 printStackTrace.implementation.prototype =
 {
    run : function(ex)
@@ -449,6 +451,202 @@ var Url =
    }
 };
 
+(function()
+{
+   __initLibExtensions__ = function()
+   {
+      //---------------------------------------------------------------------------------
+      // Array
+      //---------------------------------------------------------------------------------
+      Ext.merge(Array.prototype,
+      {
+         binarySearch : function(find, comparator)
+         {
+            var low = 0, high = this.length - 1, i, comparison;
+            while (low <= high)
+            {
+               i = Math.floor((low + high) / 2);
+               comparison = comparator(this[i], find);
+               if (comparison < 0)
+               {
+                  low = i + 1;
+                  continue;
+               };
+               if (comparison > 0)
+               {
+                  high = i - 1;
+                  continue;
+               };
+               return i;
+            }
+            return null;
+         }
+      });
+
+      //---------------------------------------------------------------------------------
+      // String
+      //---------------------------------------------------------------------------------
+      Ext.merge(String.prototype,
+      {
+         hashCode : function()
+         {
+            for (var ret = 0, i = 0, len = this.length; i < len; i++)
+            {
+               ret = (31 * ret + this.charCodeAt(i)) << 0;
+            }
+            return ret;
+         },
+         getFuncBody : function()
+         {
+            var str = this.toString();
+            str = str.replace(/[^{]+\{/, "");
+            str = str.substring(0, str.length - 1);
+            str = str.replace(/\n/gi, "");
+            if (!str.match(/\(.*\)/gi))
+               str += ")";
+            return str;
+         },
+         strip : function()
+         {
+            return this.replace(/^\s+/, '').replace(/\s+$/, '');
+         },
+         stripScripts : function()
+         {
+            //    return this.replace(new
+            // RegExp('\\bon[^=]*=[^>]*(?=>)|<\\s*(script|link|iframe|embed|object|applet|form|button|input)[^>]*[\\S\\s]*?<\\/\\1>|<[^>]*include[^>]*>',
+            // 'ig'),"");
+            return this.replace(new RegExp('<noscript[^>]*?>([\\S\\s]*?)<\/noscript>', 'img'), '').replace(new RegExp('<script[^>]*?>([\\S\\s]*?)<\/script>', 'img'), '').replace(new RegExp('<link[^>]*?>([\\S\\s]*?)<\/link>', 'img'), '').replace(new RegExp('<link[^>]*?>', 'img'), '').replace(new RegExp('<iframe[^>]*?>([\\S\\s]*?)<\/iframe>', 'img'), '').replace(new RegExp('<iframe[^>]*?>', 'img'), '').replace(new RegExp('<embed[^>]*?>([\\S\\s]*?)<\/embed>', 'img'), '').replace(new RegExp('<embed[^>]*?>', 'img'), '').replace(new RegExp('<object[^>]*?>([\\S\\s]*?)<\/object>', 'img'), '').replace(new RegExp('<object[^>]*?>', 'img'), '').replace(new RegExp('<applet[^>]*?>([\\S\\s]*?)<\/applet>', 'img'), '').replace(new RegExp('<applet[^>]*?>', 'img'), '').replace(new RegExp('<button[^>]*?>([\\S\\s]*?)<\/button>', 'img'), '').replace(new RegExp('<button[^>]*?>', 'img'), '').replace(new RegExp('<input[^>]*?>([\\S\\s]*?)<\/input>', 'img'), '').replace(new RegExp('<input[^>]*?>', 'img'), '').replace(new RegExp('<style[^>]*?>([\\S\\s]*?)<\/style>', 'img'), '').replace(new RegExp('<style[^>]*?>', 'img'), '')
+         },
+         stripTags : function()
+         {
+            return this.replace(/<\/?[^>]+>/gi, '');
+         },
+         stripComments : function()
+         {
+            return this.replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, '');
+         },
+         times : function(n)
+         {
+            var s = '', i;
+            for ( i = 0; i < n; i++)
+            {
+               s += this;
+            }
+            return s;
+         },
+         zp : function(n)
+         {
+            return ('0'.times(n - this.length) + this);
+         },
+         capitalize : function()
+         {
+            return this.replace(/\w+/g, function(a)
+            {
+               return a.charAt(0).toUpperCase() + a.substr(1);
+            });
+         },
+         uncapitalize : function()
+         {
+            return this.replace(/\w+/g, function(a)
+            {
+               return a.charAt(0).toLowerCase() + a.substr(1);
+            });
+         },
+         trim : function(x)
+         {
+            if (x == 'left')
+               return this.replace(/^\s*/, '');
+            if (x == 'right')
+               return this.replace(/\s*$/, '');
+            if (x == 'normalize')
+               return this.replace(/\s{2,}/g, ' ').trim();
+
+            return this.trim('left').trim('right');
+         },
+         trunc : function(length)
+         {
+            return (this.length > (length - 4)) ? this.substring(0, length - 4) + ' ...' : this;
+         },
+         /**
+          * Convert certain characters (&, <, >, and ') to their HTML character equivalents for literal display in web pages.
+          * @param {String} value The string to encode
+          * @return {String} The encoded text
+          */
+         htmlEncode : (function()
+         {
+            var entities =
+            {
+               '&' : '&amp;',
+               '>' : '&gt;',
+               '<' : '&lt;',
+               '"' : '&quot;'
+            }, keys = [], p, regex;
+
+            for (p in entities)
+            {
+               keys.push(p);
+            }
+            regex = new RegExp('(' + keys.join('|') + ')', 'g');
+
+            return function(value)
+            {
+               return (!value) ? value : String(value).replace(regex, function(match, capture)
+               {
+                  return entities[capture];
+               });
+            };
+         })(),
+         /**
+          * Convert certain characters (&, <, >, and ') from their HTML character equivalents.
+          * @param {String} value The string to decode
+          * @return {String} The decoded text
+          */
+         htmlDecode : (function()
+         {
+            var entities =
+            {
+               '&amp;' : '&',
+               '&gt;' : '>',
+               '&lt;' : '<',
+               '&quot;' : '"'
+            }, keys = [], p, regex;
+
+            for (p in entities)
+            {
+               keys.push(p);
+            }
+            regex = new RegExp('(' + keys.join('|') + '|&#[0-9]{1,5};' + ')', 'g');
+
+            return function(value)
+            {
+               return (!value) ? value : String(value).replace(regex, function(match, capture)
+               {
+                  if ( capture in entities)
+                  {
+                     return entities[capture];
+                  }
+                  else
+                  {
+                     return String.fromCharCode(parseInt(capture.substr(2), 10));
+                  }
+               });
+            }
+         })()
+      });
+
+      // **************************************************************************
+      // Math
+      // **************************************************************************
+      Ext.merge(Math,
+      {
+         radians : function(degrees)
+         {
+            return (degrees * Math.PI / 180);
+         }
+      });
+   }
+})();
+
 Genesis.constants =
 {
    isNfcEnabled : false,
@@ -499,6 +697,8 @@ Genesis.constants =
    init : function()
    {
       var me = this, ratio = 1.14;
+
+      __initLibExtensions__();
 
       if (merchantMode)
       {
@@ -1582,193 +1782,3 @@ Genesis.db =
       });
    }
 }
-
-//---------------------------------------------------------------------------------
-// Array
-//---------------------------------------------------------------------------------
-Ext.merge(Array.prototype,
-{
-   binarySearch : function(find, comparator)
-   {
-      var low = 0, high = this.length - 1, i, comparison;
-      while (low <= high)
-      {
-         i = Math.floor((low + high) / 2);
-         comparison = comparator(this[i], find);
-         if (comparison < 0)
-         {
-            low = i + 1;
-            continue;
-         };
-         if (comparison > 0)
-         {
-            high = i - 1;
-            continue;
-         };
-         return i;
-      }
-      return null;
-   }
-});
-
-//---------------------------------------------------------------------------------
-// String
-//---------------------------------------------------------------------------------
-Ext.merge(String.prototype,
-{
-   hashCode : function()
-   {
-      for (var ret = 0, i = 0, len = this.length; i < len; i++)
-      {
-         ret = (31 * ret + this.charCodeAt(i)) << 0;
-      }
-      return ret;
-   },
-   getFuncBody : function()
-   {
-      var str = this.toString();
-      str = str.replace(/[^{]+\{/, "");
-      str = str.substring(0, str.length - 1);
-      str = str.replace(/\n/gi, "");
-      if (!str.match(/\(.*\)/gi))
-         str += ")";
-      return str;
-   },
-   strip : function()
-   {
-      return this.replace(/^\s+/, '').replace(/\s+$/, '');
-   },
-   stripScripts : function()
-   {
-      //    return this.replace(new
-      // RegExp('\\bon[^=]*=[^>]*(?=>)|<\\s*(script|link|iframe|embed|object|applet|form|button|input)[^>]*[\\S\\s]*?<\\/\\1>|<[^>]*include[^>]*>',
-      // 'ig'),"");
-      return this.replace(new RegExp('<noscript[^>]*?>([\\S\\s]*?)<\/noscript>', 'img'), '').replace(new RegExp('<script[^>]*?>([\\S\\s]*?)<\/script>', 'img'), '').replace(new RegExp('<link[^>]*?>([\\S\\s]*?)<\/link>', 'img'), '').replace(new RegExp('<link[^>]*?>', 'img'), '').replace(new RegExp('<iframe[^>]*?>([\\S\\s]*?)<\/iframe>', 'img'), '').replace(new RegExp('<iframe[^>]*?>', 'img'), '').replace(new RegExp('<embed[^>]*?>([\\S\\s]*?)<\/embed>', 'img'), '').replace(new RegExp('<embed[^>]*?>', 'img'), '').replace(new RegExp('<object[^>]*?>([\\S\\s]*?)<\/object>', 'img'), '').replace(new RegExp('<object[^>]*?>', 'img'), '').replace(new RegExp('<applet[^>]*?>([\\S\\s]*?)<\/applet>', 'img'), '').replace(new RegExp('<applet[^>]*?>', 'img'), '').replace(new RegExp('<button[^>]*?>([\\S\\s]*?)<\/button>', 'img'), '').replace(new RegExp('<button[^>]*?>', 'img'), '').replace(new RegExp('<input[^>]*?>([\\S\\s]*?)<\/input>', 'img'), '').replace(new RegExp('<input[^>]*?>', 'img'), '').replace(new RegExp('<style[^>]*?>([\\S\\s]*?)<\/style>', 'img'), '').replace(new RegExp('<style[^>]*?>', 'img'), '')
-   },
-   stripTags : function()
-   {
-      return this.replace(/<\/?[^>]+>/gi, '');
-   },
-   stripComments : function()
-   {
-      return this.replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, '');
-   },
-   times : function(n)
-   {
-      var s = '', i;
-      for ( i = 0; i < n; i++)
-      {
-         s += this;
-      }
-      return s;
-   },
-   zp : function(n)
-   {
-      return ('0'.times(n - this.length) + this);
-   },
-   capitalize : function()
-   {
-      return this.replace(/\w+/g, function(a)
-      {
-         return a.charAt(0).toUpperCase() + a.substr(1);
-      });
-   },
-   uncapitalize : function()
-   {
-      return this.replace(/\w+/g, function(a)
-      {
-         return a.charAt(0).toLowerCase() + a.substr(1);
-      });
-   },
-   trim : function(x)
-   {
-      if (x == 'left')
-         return this.replace(/^\s*/, '');
-      if (x == 'right')
-         return this.replace(/\s*$/, '');
-      if (x == 'normalize')
-         return this.replace(/\s{2,}/g, ' ').trim();
-
-      return this.trim('left').trim('right');
-   },
-   trunc : function(length)
-   {
-      return (this.length > (length - 4)) ? this.substring(0, length - 4) + ' ...' : this;
-   },
-   /**
-    * Convert certain characters (&, <, >, and ') to their HTML character equivalents for literal display in web pages.
-    * @param {String} value The string to encode
-    * @return {String} The encoded text
-    */
-   htmlEncode : (function()
-   {
-      var entities =
-      {
-         '&' : '&amp;',
-         '>' : '&gt;',
-         '<' : '&lt;',
-         '"' : '&quot;'
-      }, keys = [], p, regex;
-
-      for (p in entities)
-      {
-         keys.push(p);
-      }
-      regex = new RegExp('(' + keys.join('|') + ')', 'g');
-
-      return function(value)
-      {
-         return (!value) ? value : String(value).replace(regex, function(match, capture)
-         {
-            return entities[capture];
-         });
-      };
-   })(),
-   /**
-    * Convert certain characters (&, <, >, and ') from their HTML character equivalents.
-    * @param {String} value The string to decode
-    * @return {String} The decoded text
-    */
-   htmlDecode : (function()
-   {
-      var entities =
-      {
-         '&amp;' : '&',
-         '&gt;' : '>',
-         '&lt;' : '<',
-         '&quot;' : '"'
-      }, keys = [], p, regex;
-
-      for (p in entities)
-      {
-         keys.push(p);
-      }
-      regex = new RegExp('(' + keys.join('|') + '|&#[0-9]{1,5};' + ')', 'g');
-
-      return function(value)
-      {
-         return (!value) ? value : String(value).replace(regex, function(match, capture)
-         {
-            if ( capture in entities)
-            {
-               return entities[capture];
-            }
-            else
-            {
-               return String.fromCharCode(parseInt(capture.substr(2), 10));
-            }
-         });
-      }
-   })()
-});
-
-// **************************************************************************
-// Math
-// **************************************************************************
-Ext.merge(Math,
-{
-   radians : function(degrees)
-   {
-      return (degrees * Math.PI / 180);
-   }
-});
