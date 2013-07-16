@@ -151,7 +151,7 @@ Ext.define('Genesis.view.client.ChallengePage',
       element.addCls('x-item-selected');
 
       var data = Ext.create('Genesis.model.Challenge', Ext.decode(decodeURIComponent(e.delegatedTarget.getAttribute('data'))));
-      var mobileClient = _application.getProfileInstances()[0].getName().match(/mobileClient/i);
+      var mobileClient = (_build == 'MobileWebClient');
       _application.getController(((mobileClient) ? 'mobileClient' : 'client') + '.Challenges').fireEvent('itemTap', data);
    },
    cleanView : function()
@@ -171,7 +171,7 @@ Ext.define('Genesis.view.client.ChallengePage',
       //
       // Disable unsupported features on MobileClient
       //
-      if (_application.getProfileInstances()[0].getName().match(/mobileClient/i))
+      if (_build == 'MobileWebClient')
       {
          for (var i = 0; i < items.length; i++)
          {

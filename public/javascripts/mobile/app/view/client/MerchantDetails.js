@@ -164,6 +164,6 @@ Ext.define('Genesis.view.client.MerchantDetails',
          tpl : Ext.create('Ext.XTemplate', '<img height="{height}" width="{width}" src="{photo}"/>')
       })]));
 
-      me.query('button[tag=shareBtn]')[0].setHidden((_application.getProfileInstances()[0].getName().match(/mobileClient/i)) ? true : false);
+      me.query('button[tag=shareBtn]')[0].setHidden(_build == 'MobileWebClient');
    }
 });

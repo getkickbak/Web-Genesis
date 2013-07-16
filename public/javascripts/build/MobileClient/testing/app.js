@@ -2145,7 +2145,8 @@ Ext.define('Genesis.controller.ControllerBase',
 
       if (Customer.isValid(customer.getId())// Valid Customer
       && (customer.get('visits') < 2)// Not a frequent visitor yet
-      && (!Genesis.db.getReferralDBAttrib("m" + merchantId)))// Haven't been referred by a friend yet
+      && (!Genesis.db.getReferralDBAttrib("m" + merchantId))// Haven't been referred by a friend yet
+      && (_build != 'MobileWebClient'))// Not a MobileWeb App
       {
          console.debug("Customer Visit Count[" + customer.get('visits') + "]")
          Ext.device.Notification.show(
@@ -5527,7 +5528,7 @@ Ext.define('Genesis.controller.ViewportBase',
                   //
                   // MobileClient do not support Referrals and Transfers
                   //
-                  else if (_application.getProfileInstances()[0].getName().match(/mobileClient/i))
+                  else if (_build == 'MobileWebClient')
                   {
                      switch (item['id'])
                      {
@@ -8896,7 +8897,7 @@ Ext.define('Genesis.view.client.ChallengePage',
       element.addCls('x-item-selected');
 
       var data = Ext.create('Genesis.model.Challenge', Ext.decode(decodeURIComponent(e.delegatedTarget.getAttribute('data'))));
-      var mobileClient = _application.getProfileInstances()[0].getName().match(/mobileClient/i);
+      var mobileClient = (_build == 'MobileWebClient');
       _application.getController(((mobileClient) ? 'mobileClient' : 'client') + '.Challenges').fireEvent('itemTap', data);
    },
    cleanView : function()
@@ -8916,7 +8917,7 @@ Ext.define('Genesis.view.client.ChallengePage',
       //
       // Disable unsupported features on MobileClient
       //
-      if (_application.getProfileInstances()[0].getName().match(/mobileClient/i))
+      if (_build == 'MobileWebClient')
       {
          for (var i = 0; i < items.length; i++)
          {
@@ -13842,7 +13843,7 @@ Ext.define('Genesis.view.client.MerchantDetails',
          tpl : Ext.create('Ext.XTemplate', '<img height="{height}" width="{width}" src="{photo}"/>')
       })]));
 
-      me.query('button[tag=shareBtn]')[0].setHidden((_application.getProfileInstances()[0].getName().match(/mobileClient/i)) ? true : false);
+      me.query('button[tag=shareBtn]')[0].setHidden(_build == 'MobileWebClient');
    }
 });
 

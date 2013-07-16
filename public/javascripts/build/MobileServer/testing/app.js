@@ -2145,7 +2145,8 @@ Ext.define('Genesis.controller.ControllerBase',
 
       if (Customer.isValid(customer.getId())// Valid Customer
       && (customer.get('visits') < 2)// Not a frequent visitor yet
-      && (!Genesis.db.getReferralDBAttrib("m" + merchantId)))// Haven't been referred by a friend yet
+      && (!Genesis.db.getReferralDBAttrib("m" + merchantId))// Haven't been referred by a friend yet
+      && (_build != 'MobileWebClient'))// Not a MobileWeb App
       {
          console.debug("Customer Visit Count[" + customer.get('visits') + "]")
          Ext.device.Notification.show(
@@ -5527,7 +5528,7 @@ Ext.define('Genesis.controller.ViewportBase',
                   //
                   // MobileClient do not support Referrals and Transfers
                   //
-                  else if (_application.getProfileInstances()[0].getName().match(/mobileClient/i))
+                  else if (_build == 'MobileWebClient')
                   {
                      switch (item['id'])
                      {
