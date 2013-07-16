@@ -306,8 +306,8 @@ Ext.define('Genesis.view.client.MerchantAccount',
                   getWidth : function()
                   {
                      var fn = Genesis.fn;
-                     var width = fn.calcPxEm(document.body.clientWidth, -1 * 2 * 0.50 * 0.8, 1);
-                     return ('width:' + fn.addUnit(fn.calcPx(width, 1)) + ';');
+                     var width = document.body.clientWidth + fn.calcPx(-1 * 2 * 0.50 * 0.8, 1);
+                     return ('width:' + fn.addUnit(width) + ';');
                   }
                }),
                onItemDisclosure : Ext.emptyFn

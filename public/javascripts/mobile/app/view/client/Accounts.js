@@ -105,7 +105,7 @@ Ext.define('Genesis.view.client.Accounts',
          return;
       }
 
-      var itemHeight = 1 + Math.max(Genesis.constants.defaultIconSize(), Genesis.fn.calcPx(0.75, 1) * 4 + Genesis.fn.calcPx(0.7 * 0.6, 1));
+      var itemHeight = 1 + Genesis.constants.defaultIconSize();
       me.setPreRender(me.getPreRender().concat([
       //
       // Accounts List
@@ -133,7 +133,7 @@ Ext.define('Genesis.view.client.Accounts',
          }],
          refreshHeightOnUpdate : false,
          variableHeights : false,
-         itemHeight : Genesis.fn.calcPx(Genesis.fn.calcPxEm(itemHeight, (2 * 0.65), 1), 1),
+         itemHeight : itemHeight + 2 * Genesis.fn.calcPx(0.65, 1),
          loadingText : null,
          deferEmptyText : false,
          emptyText : ' ',
@@ -379,7 +379,7 @@ Ext.define('Genesis.view.client.Accounts',
          refreshHeightOnUpdate : false,
          variableHeights : false,
          deferEmptyText : false,
-         itemHeight : Genesis.fn.calcPx(Genesis.fn.calcPxEm(Genesis.constants.defaultIconSize() + 2, (2 * 0.65), 1), 1),
+         itemHeight : itemHeight + 2 * Genesis.fn.calcPx(0.65, 1),
          cls : 'venuesList',
          deferEmptyText : false,
          emptyText : ' ',

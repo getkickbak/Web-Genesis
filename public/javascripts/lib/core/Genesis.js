@@ -1167,13 +1167,19 @@ Genesis.fn =
    {
       return unit.match(this._removeUnitRegex)[1];
    },
+   //
+   // Convert to equivalent px given the fontsize
+   //
    calcPx : function(em, fontsize)
    {
-      return Math.floor((Math.round(em * fontsize) * Genesis.constants.fontSize));
+      return Math.floor((em * fontsize * Genesis.constants.fontSize));
    },
-   calcPxEm : function(px, em, fontsize)
+   //
+   // Convert to equivalent em given the fontsize
+   //
+   calcEm : function(px, fontsize)
    {
-      return ((px / Genesis.constants.fontSize / fontsize) + (em / fontsize));
+      return Math.floor(px / Genesis.constants.fontSize / fontsize);
    },
    // **************************************************************************
    // File IO

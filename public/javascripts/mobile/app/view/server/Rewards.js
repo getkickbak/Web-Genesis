@@ -55,9 +55,8 @@ Ext.define('Genesis.view.server.Rewards',
          return;
       }
 
-      var itemHeight = 1 + Genesis.constants.defaultIconSize() + 2 * Genesis.fn.calcPx(0.65, 1), store = Ext.StoreMgr.get('ReceiptStore'), db = Genesis.db.getLocalDB();
-      var posEnabled = pos.isEnabled();
-      var manualMode = ((db['rewardModel'] == 'items_purchased') ? 4 : 0);
+      var itemHeight = 1 + Genesis.constants.defaultIconSize() + 2 * Genesis.fn.calcPx(0.65, 1);
+      var store = Ext.StoreMgr.get('ReceiptStore'), db = Genesis.db.getLocalDB(), posEnabled = pos.isEnabled(), manualMode = ((db['rewardModel'] == 'items_purchased') ? 4 : 0);
       console.debug("createView - rewardModel[" + db['rewardModel'] + "]")
       var toolbarBottom = function(tag, hideTb)
       {

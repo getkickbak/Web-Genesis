@@ -5973,7 +5973,7 @@ Ext.define('Genesis.view.client.Accounts',
          return;
       }
 
-      var itemHeight = 1 + Math.max(Genesis.constants.defaultIconSize(), Genesis.fn.calcPx(0.75, 1) * 4 + Genesis.fn.calcPx(0.7 * 0.6, 1));
+      var itemHeight = 1 + Genesis.constants.defaultIconSize();
       me.setPreRender(me.getPreRender().concat([
       //
       // Accounts List
@@ -6001,7 +6001,7 @@ Ext.define('Genesis.view.client.Accounts',
          }],
          refreshHeightOnUpdate : false,
          variableHeights : false,
-         itemHeight : Genesis.fn.calcPx(Genesis.fn.calcPxEm(itemHeight, (2 * 0.65), 1), 1),
+         itemHeight : itemHeight + 2 * Genesis.fn.calcPx(0.65, 1),
          loadingText : null,
          deferEmptyText : false,
          emptyText : ' ',
@@ -6247,7 +6247,7 @@ Ext.define('Genesis.view.client.Accounts',
          refreshHeightOnUpdate : false,
          variableHeights : false,
          deferEmptyText : false,
-         itemHeight : Genesis.fn.calcPx(Genesis.fn.calcPxEm(Genesis.constants.defaultIconSize() + 2, (2 * 0.65), 1), 1),
+         itemHeight : itemHeight + 2 * Genesis.fn.calcPx(0.65, 1),
          cls : 'venuesList',
          deferEmptyText : false,
          emptyText : ' ',
@@ -9796,7 +9796,7 @@ Ext.define('Genesis.view.client.CheckinExplore',
          //this.query('list')[0].refresh();
          return;
       }
-      var itemHeight = 1 + Math.max(Genesis.constants.defaultIconSize(), Genesis.fn.calcPx(0.75, 1) * 4 + Genesis.fn.calcPx(0.7 * 0.6, 1));
+      var itemHeight = 1 + Genesis.constants.defaultIconSize();
       me.getPreRender().push(Ext.create('Ext.List',
       {
          xtype : 'list',
@@ -9821,7 +9821,7 @@ Ext.define('Genesis.view.client.CheckinExplore',
          refreshHeightOnUpdate : false,
          variableHeights : false,
          deferEmptyText : false,
-         itemHeight : Genesis.fn.calcPx(Genesis.fn.calcPxEm(itemHeight, (2 * 0.65), 1), 1),
+         itemHeight : itemHeight + Genesis.fn.calcPx(2 * 0.65, 1),
          emptyText : ' ',
          tag : 'checkInExploreList',
          cls : 'checkInExploreList',
@@ -11218,13 +11218,14 @@ Ext.define('Genesis.view.LoginPage',
          {
             margin : '0 0.7 0 0',
             tag : 'signIn',
-            text : 'Sign In'
+            text : 'Sign-In'
          },
          {
+            labelCls : 'x-button-label wrap',
             margin : '0 0.7 0 0',
             tag : 'facebook',
             ui : 'fbBlue',
-            text : 'Facebook Sign In'
+            text : 'Facebook Sign-In'
          },
          {
             labelCls : 'x-button-label wrap',
@@ -13461,8 +13462,8 @@ Ext.define('Genesis.view.client.MerchantAccount',
                   getWidth : function()
                   {
                      var fn = Genesis.fn;
-                     var width = fn.calcPxEm(document.body.clientWidth, -1 * 2 * 0.50 * 0.8, 1);
-                     return ('width:' + fn.addUnit(fn.calcPx(width, 1)) + ';');
+                     var width = document.body.clientWidth + fn.calcPx(-1 * 2 * 0.50 * 0.8, 1);
+                     return ('width:' + fn.addUnit(width) + ';');
                   }
                }),
                onItemDisclosure : Ext.emptyFn
@@ -15105,9 +15106,9 @@ Ext.define('Genesis.view.RedeemBase',
    },
    _createView : function(store, renderStore, activeItemIndex)
    {
-      var me = this, itemHeight = 1 + Genesis.constants.defaultIconSize() + 2 * Genesis.fn.calcPx(0.65, 1);
+      var me = this, itemHeight = 1 + Genesis.constants.defaultIconSize() + (2 * Genesis.fn.calcPx(0.65, 1));
 
-      console.debug("itemHeight=" + itemHeight);
+      //console.debug("itemHeight=" + itemHeight);
       me.setPreRender([
       // ------------------------------------------------------------------------
       // Redemptions

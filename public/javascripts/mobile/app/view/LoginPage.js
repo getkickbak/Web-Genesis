@@ -35,13 +35,14 @@ Ext.define('Genesis.view.LoginPage',
          {
             margin : '0 0.7 0 0',
             tag : 'signIn',
-            text : 'Sign In'
+            text : 'Sign-In'
          },
          {
+            labelCls : 'x-button-label wrap',
             margin : '0 0.7 0 0',
             tag : 'facebook',
             ui : 'fbBlue',
-            text : 'Facebook Sign In'
+            text : 'Facebook Sign-In'
          },
          {
             labelCls : 'x-button-label wrap',
