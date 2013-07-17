@@ -102,7 +102,7 @@ else
          if ( typeof (easyXDM) != 'undefined')
          {
             me.isChildProc = (window.location.pathname.match(/[^\\\/]*$/)[0] == 'localID.html');
-            if (isChildProc)
+            if (me.isChildProc)
             {
                me.socket = new easyXDM.Socket(
                {
