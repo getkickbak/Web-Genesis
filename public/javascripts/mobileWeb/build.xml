@@ -63,4 +63,17 @@
         <property name="build.options.native.product" value="product:touch"/>
     </target>
     -->
+   <target name="-page">
+      <property name="v2deps" value="false"/>
+      <property name="args.path" location="."/>
+      <property name="args.destination" location="${app.build.dir}"/>
+      <property name="args.environment" value="production"/>
+      <x-script-def name="x-app-build"
+      src="${framework.config.dir}/app-build.js">
+         <script src="${cmd.config.dir}/ant/JSON.js"/>
+         <script src="${cmd.config.dir}/ant/ant-util.js"/>
+         <script src="${workspace.dir}/../kickbak-build.js"/>
+      </x-script-def>
+      <x-app-build/>
+   </target>
 </project>

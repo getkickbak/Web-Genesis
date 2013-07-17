@@ -43,7 +43,7 @@
 			"path": "touch/sencha-touch.js",
 			"x-bootstrap": true
 		}, {
-         "path": "mcore.js",
+         "path": "../mobile/mcore.js",
          "update": "delta"
       }, {
 			"path": "app.js",
@@ -108,7 +108,7 @@
 	/**
 	* Extra resources to be copied along when build
 	*/
-	"resources": ["resources/images", "resources/icons", "resources/startup", "term_of_service.htm", "privacy.htm", "program_rules.htm"],
+	"resources": ["resources/images", "../mobile/resources/icons", "resources/startup", "../mobile/term_of_service.htm", "../mobile/privacy.htm", "../mobile/program_rules.htm"],
 
 	/**
 	* File / directory name matchers to ignore when copying to the builds, must be valid regular expressions
@@ -119,7 +119,7 @@
 	* Directory path to store all previous production builds. Note that the content generated inside this directory
 	* must be kept intact for proper generation of deltas between updates
 	*/
-	"archivePath": "build/archive",
+	"archivePath": "../build/MobileWeb/archive",
 
     /**
      * List of package names to require for the cmd build process
