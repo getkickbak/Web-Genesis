@@ -44,7 +44,7 @@
          "remote" : true,
          "update" : "full"
       }, {
-         "path": "http://files.getkickbak.com/mobileWeb/build/KickBak/production/lib/gibberish-aes.min.js",
+         "path": "http://www.getkickbak.com/javascripts/lib/gibberish-aes.min.js",
          "remote" : true,
          "update": "full"
       }, {

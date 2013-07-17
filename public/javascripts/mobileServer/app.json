@@ -40,7 +40,8 @@
 	*/		
 	"js": [
 		{
-         "path": "../lib/gibberish-aes.min.js",
+         "path": "http://www.getkickbak.com/javascripts/lib/gibberish-aes.min.js",
+         "remote" : true,
          "update": "full"
       }, {
          "path": "../lib/easyXDM-2.4.17.1/easyXDM.min.js",
