@@ -425,7 +425,7 @@ else
          if (navigator.webkitGetUserMedia && me.iframe)
          {
             me.scanCallback = [win, fail];
-            me.iframe.postMessage("scan", location.origin);
+            me.iframe.contentWindow.postMessage("scan", 'https://' + location.host);
             return;
          }
 
@@ -559,7 +559,7 @@ else
          //
          if (navigator.webkitGetUserMedia && me.iframe)
          {
-            me.iframe.postMessage("stop", location.origin);
+            me.iframe.contentWindow.postMessage("stop", 'https://' + location.host);
             return;
          }
 
