@@ -135,7 +135,9 @@ Ext.Loader.setPath(
                57 : 'resources/icons/icon.png',
                72 : 'resources/icons/icon@72.png',
                114 : 'resources/icons/icon@2x.png',
-               144 : 'resources/icons/icon@144.png'
+               144 : 'resources/icons/icon@144.png',
+               128 : 'resources/icons/icon128.png',
+               256 : 'resources/icons/icon256.png'
             },
             onUpdated : function()
             {

@@ -2,7 +2,7 @@ var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offline
 
 window.merchantMode = false;
 window.debugMode = false;
-window.serverHost;
+window.serverHost
 window._application = null;
 window.appName = 'KickBak';
 window._hostPathPrefix = "/javascripts/build/Genesis/";
@@ -68,7 +68,9 @@ Ext.application(
       57 : 'resources/icons/icon.png',
       72 : 'resources/icons/icon@72.png',
       114 : 'resources/icons/icon@2x.png',
-      144 : 'resources/icons/icon@144.png'
+      144 : 'resources/icons/icon@144.png',
+      128 : 'resources/icons/icon128.png',
+      256 : 'resources/icons/icon256.png'
    },
    startupImage :
    {

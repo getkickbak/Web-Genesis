@@ -16,11 +16,6 @@
    "minimum_chrome_version": "28",
    "permissions": ["geolocation", "<all_urls>", "unlimitedStorage", "notifications", "background"],
    "icons": {
-      "36": "resources/icons/icon36.png",
-      "48": "resources/icons/icon48.png",
-      "57": "resources/icons/icon.png",
-      "72": "resources/icons/icon@72.png",
-      "114": "resources/icons/icon@2x.png",
-      "144": "resources/icons/icon@144.png"
+      "128": "resources/icons/icon128.png"
    }
 }
