@@ -60,10 +60,7 @@ Ext.define('Genesis.view.widgets.server.RedeemItemDetail',
                margin : '0 0.7 0.8 0.7',
                style : 'text-align:center;',
                defaultUnit : 'em',
-               html : (function()//Send
-               {
-                  return 'Tap your Mobile Device onto the Terminal' + Genesis.constants.addCRLF()//
-               })()
+               html :  'Tap your Mobile Device onto the Terminal'
                //,ui : 'orange-large'
             },
             {

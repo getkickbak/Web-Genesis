@@ -6,7 +6,16 @@ var _logger = SenchaLogManager.getLogger("kickbak-build");
 {
    Scope.stripSpecialDirNames = function(path)
    {
-      var cleanPath = (path + '').replace(/\.\.\\/g, "").replace(/\.\.\/mobile\//g, "").replace(/\.\.\//g, "").replace(/\.\\/g, "").replace(/\.\//g, "").replace(/\~\//g, "");
+      var cleanPath = path + '';
+     
+      if (cleanPath.match(/\.\.\/lib\//g))
+      {
+         return cleanPath;
+      }
+      else
+      {
+         cleanPath = cleanPath.replace(/\.\.\\/g, "").replace(/\.\.\/mobile\//g, "").replace(/\.\.\//g, "").replace(/\.\\/g, "").replace(/\.\//g, "").replace(/\~\//g, "");
+      }
       //_logger.info("KickBak Build CleanPath=" + cleanPath);
       return cleanPath;
    };

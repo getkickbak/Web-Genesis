@@ -99,31 +99,71 @@ else
 
          me.bw = (me.hiFreq - me.loFreq) / me.NUM_SIGNALS;
 
-         me.iframe = document.getElementById("localID");
-         if (me.iframe)
+         if ( typeof (easyXDM) != 'undefined')
          {
-            me.iframe.src = 'https://' + location.host + window.location.pathname.replace(/[^\\\/]*$/, '') + 'localID.html';
-
-            Genesis.constants.s_vol = s_vol_ratio * 100 * ((Ext.os.is('Android')) ? 0.8 : 1.0);
-            // Reduce volume by 50%
-            Genesis.constants.r_vol = r_vol_ratio * 100 * 0.8;
-
-            window.addEventListener('message', function(e)
+            me.isChildProc = (window.location.pathname.match(/[^\\\/]*$/)[0] == 'localID.html');
+            if (isChildProc)
             {
-               if ((e.origin == 'https://' + location.host))
+               me.socket = new easyXDM.Socket(
                {
-                  // e.data is the string sent by the origin with postMessage.
-                  if (e.data)
+                  onMessage : function(message, origin)
                   {
-                     me.scanCallback[0](Ext.decode(e.data));
-                  }
-                  else
+                     //
+                     // In LocalID.html context
+                     //
+                     switch(message)
+                     {
+                        case 'scan' :
+                        {
+                           var win = function(result)
+                           {
+                              me.socket.postMessage((result) ? JSON.stringify(result) : null);
+                           }
+                           window.plugins.proximityID.scan(win, win);
+                           break;
+                        }
+                        case 'stop' :
+                        {
+                           window.plugins.proximityID.stop();
+                           break;
+                        }
+                     }
+                     //alert("Received '" + message + "' from '" + origin + "'");
+                  },
+                  onReady : function()
                   {
-                     me.scanCallback[1]();
+                     //socket.postMessage("Yay, it works!");
                   }
-                  delete me.scanCallback;
-               }
-            }, false);
+               });
+            }
+            else
+            {
+               me.socket = new easyXDM.Socket(
+               {
+                  remote : 'https://' + location.host + window.location.pathname.replace(/[^\\\/]*$/, '') + 'localID.html',
+                  onMessage : function(message, origin)
+                  {
+                     if (message)
+                     {
+                        me.scanCallback[0](Ext.decode(message));
+                     }
+                     else
+                     {
+                        me.scanCallback[1]();
+                     }
+                     delete me.scanCallback;
+                     //alert("Received '" + message + "' from '" + origin + "'");
+                  },
+                  onReady : function()
+                  {
+                     //socket.postMessage("Yay, it works!");
+                  }
+               });
+
+               Genesis.constants.s_vol = s_vol_ratio * 100 * ((Ext.os.is('Android')) ? 0.8 : 1.0);
+               // Reduce volume by 50%
+               Genesis.constants.r_vol = r_vol_ratio * 100 * 0.8;
+            }
          }
          console.debug("Initialized Proximity API");
       },

@@ -40,8 +40,10 @@
 	*/		
 	"js": [
 		{
-         "path": "http://files.getkickbak.com/mobileWeb/build/KickBak/production/lib/gibberish-aes.min.js",
-         "remote" : true,
+         "path": "../lib/gibberish-aes.min.js",
+         "update": "full"
+      }, {
+         "path": "../lib/easyXDM-2.4.17.1/easyXDM.min.js",
          "update": "full"
       }, {
          "path": "../mobile/WebWorkerConsole.js",
