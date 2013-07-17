@@ -1,7 +1,7 @@
 class ReferralData
   include ActiveModel::Validations
   include ActiveModel::Conversion
-  include ActiveModel::Naming
+  extend ActiveModel::Naming
   
   attr_accessor :referral_reward_amount
   attr_accessor :referral_points

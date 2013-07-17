@@ -73,7 +73,7 @@ class ApplicationController < ActionController::Base
       elsif request.subdomain == 'merchant'
         if (request.fullpath == '/sign_in' || request.fullpath.match(/^\/invoices(.)*$/)) && request.protocol != 'https://'
           redirect_to :protocol => 'https'
-        elsif request.fullpath != '/sign_in' && request.protocol == 'https://'
+        elsif (request.fullpath != '/sign_in' && !request.fullpath.match(/^\/invoices(.)*$/)) && request.protocol == 'https://'
           redirect_to :protocol => 'http'
         end  
       end

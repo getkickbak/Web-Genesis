@@ -1,7 +1,7 @@
 class CreditCardForm
   include ActiveModel::Validations
   include ActiveModel::Conversion
-  include ActiveModel::Naming
+  extend ActiveModel::Naming
   
   attr_accessor :id, :type, :name, :number, :expiry_date, :security_code, :address, :city, :state, :zipcode, :country
   

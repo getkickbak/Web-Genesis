@@ -1,7 +1,7 @@
 class MerchantContact
   include ActiveModel::Validations
   include ActiveModel::Conversion
-  include ActiveModel::Naming
+  extend ActiveModel::Naming
   
   @@states = [
       ['BC', 'BC'],

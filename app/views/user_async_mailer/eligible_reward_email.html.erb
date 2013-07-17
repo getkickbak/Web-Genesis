@@ -22,8 +22,8 @@
 						<table width="100%" border="0" cellspacing="0" cellpadding="0">
 							<tbody>
 								<tr valign="middle">
-									<td valign="top" style="width:50px;padding-right:10px;padding-bottom: 10px;">
-										<%= link_to image_tag(@customer.merchant.photo.thumbnail_ios_small.url), business_profile_url(@customer.merchant) %>
+									<td valign="top" style="padding-right:10px;padding-bottom: 10px;">
+										<%= link_to image_tag(@customer.merchant.photo.thumbnail_ios_small.url, :style => "width:50px;"), business_profile_url(@customer.merchant) %>
 									</td>
 									<td>
 									<b><a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= business_profile_url(@customer.merchant) %>"><%= "#{@customer.merchant.name}" %></a></b>	

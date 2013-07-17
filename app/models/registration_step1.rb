@@ -1,7 +1,7 @@
 class RegistrationStep1
   include ActiveModel::Validations
   include ActiveModel::Conversion
-  include ActiveModel::Naming
+  extend ActiveModel::Naming
     
   attr_accessor :phone_number
   

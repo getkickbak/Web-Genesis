@@ -1,7 +1,7 @@
 class Contact
   include ActiveModel::Validations
   include ActiveModel::Conversion
-  include ActiveModel::Naming
+  extend ActiveModel::Naming
   
   @@topic_list = [
       ['Login issues', 'Login issues'],

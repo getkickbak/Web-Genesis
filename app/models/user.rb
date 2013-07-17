@@ -11,7 +11,7 @@ class User
 
   devise :database_authenticatable, :registerable, #:confirmable,
           :recoverable, :rememberable, :trackable, :omniauthable, :timeoutable,
-          :validatable, :token_authenticatable, :authentication_keys => [:email], :timeout_in => 14.days
+          :validatable, :token_authenticatable, :authentication_keys => [:email], :timeout_in => 60.days
           
   property :id, Serial
   property :name, String, :required => true, :default => ""
