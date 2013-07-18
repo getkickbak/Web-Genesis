@@ -3,18 +3,13 @@
    "description": "Merchant App for KICKBAK",
    "version": "2.2.0",
    "app": {
-      "urls": ["*://www.dev1getkickak.com/"],
-      "background_page": "http://www.dev1getkickbak.com/javascripts/build/MobileServer/testing/index.html",
-      "launch": {
-         "web_url": "http://www.dev1getkickbak.com/javascripts/build/MobileServer/testing/index.html",
-         "container": "panel",
-         "height": 568,
-         "width": 320
+      "background": {
+         "scripts": ["launch.js"]
       }
    },
    "manifest_version": 2,
    "minimum_chrome_version": "28",
-   "permissions": ["geolocation", "<all_urls>", "unlimitedStorage", "notifications", "background"],
+   "permissions": ["geolocation", "storage", "<all_urls>", "webview", "audioCapture"],
    "icons": {
       "128": "resources/icons/icon128.png"
    }
