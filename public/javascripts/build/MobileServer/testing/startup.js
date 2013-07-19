@@ -3,17 +3,6 @@ var phoneGapAvailable = false, serverHost, merchantMode = true, _application, _f
 document.addEventListener("DOMContentLoaded", function(event)
 {
    var _frame = document.getElementById('merkickbak');
-   var loadstop = function(e)
-   {
-      console.debug("[" + e.target.id + "] loadstop");
-      e.target.contentWindow.postMessage(
-      {
-         cmd : 'init'
-      }, 'http://www.dev1getkickbak.com');
-      _frame.removeEventListener('loadstop', loadstop);
-   };
-
-   _frame.addEventListener('loadstop', loadstop, false);
    _frame.addEventListener('permissionrequest', function(e)
    {
       var allowed = false;

@@ -99,86 +99,10 @@ else
 
          me.bw = (me.hiFreq - me.loFreq) / me.NUM_SIGNALS;
 
-         if (!Genesis.fn.isNative())
-         {
-            me.isParentProc = (window.location.pathname.match(/[^\\\/]*$/)[0] == 'launch.html');
-            if (me.isParentProc)
-            {
-               console.debug("Initialized Proximity Parent API");
-            }
-            else
-            {
-               Genesis.constants.s_vol = s_vol_ratio * 100 * ((Ext.os.is('Android')) ? 0.8 : 1.0);
-               // Reduce volume by 50%
-               Genesis.constants.r_vol = r_vol_ratio * 100 * 0.8;
-
-               console.debug("Initialized Proximity Child API");
-            }
-            window.addEventListener("message", function(event)
-            {
-               var data = event.data;
-               var source = event.source;
-               console.debug("message received in sandbox: " + Ext.encode(data));
-
-               if (me.isParentProc)
-               {
-                  switch(data['cmd'])
-                  {
-                     case 'localID-Scan' :
-                     {
-                        var win = function(result)
-                        {
-                           source.postMessage(
-                           {
-                              cmd : 'localID-Scan',
-                              data : result
-                           }, event.origin);
-                        }
-                        me.scan(win, win);
-                        break;
-                     }
-                     case 'localID-Stop' :
-                     {
-                        me.stop();
-                        break;
-                     }
-                  }
-               }
-               else
-               {
-                  switch(data['cmd'])
-                  {
-                     case 'init' :
-                     {
-                        me.frameOrigin = event.origin;
-                        me.frameWindow = source;
-                        break;
-                     }
-                     case 'localID-Scan' :
-                     {
-                        if (data['data'])
-                        {
-                           me.scanCallback[0](data['data']);
-                        }
-                        else
-                        {
-                           me.scanCallback[1]();
-                        }
-                        delete me.scanCallback;
-                        break;
-                     }
-                     case 'localID-Stop' :
-                     {
-                        break;
-                     }
-                  }
-               }
-            }, false);
-         }
-         else
-         {
-            console.debug("Initialized Proximity API");
-         }
+         Genesis.constants.s_vol = s_vol_ratio * 100 * ((Ext.os.is('Android')) ? 0.8 : 1.0);
+         // Reduce volume by 50%
+         Genesis.constants.r_vol = r_vol_ratio * 100 * 0.8;
+         console.debug("Initialized Proximity API");
       },
       generateData : function(offset, length)
       {
@@ -472,22 +396,6 @@ else
       {
          var me = this, context = me.context, matchCount = 0;
 
-         //
-         // Parent window send work to iframe child to listen
-         //
-         if (!me.isParentProc && !Genesis.fn.isNative())
-         {
-            if (me.frameWindow)
-            {
-               me.scanCallback = [win, fail];
-               me.frameWindow.contentWindow.postMessage(
-               {
-                  cmd : 'localID-Scan'
-               }, me.frameOrigin);
-            }
-            return;
-         }
-
          if (!me.context)
          {
             context = me.context = new webkitAudioContext();
@@ -612,21 +520,6 @@ else
       stop : function()
       {
          var me = this;
-
-         //
-         // Parent window send work to iframe child to stop listening
-         //
-         if (!me.isParentProc && !Genesis.fn.isNative())
-         {
-            if (me.frameWindow)
-            {
-               me.frameWindow.contentWindow.postMessage(
-               {
-                  cmd : 'localID-Stop'
-               }, me.frameOrigin);
-            }
-            return;
-         }
 
          if (me.oscillators)
          {
