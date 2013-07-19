@@ -101,80 +101,72 @@ else
 
          if (!Genesis.fn.isNative())
          {
-            me.isChildProc = (window.location.pathname.match(/[^\\\/]*$/)[0] == 'localID.html');
-            if (me.isChildProc)
+            me.isParentProc = (window.location.pathname.match(/[^\\\/]*$/)[0] == 'launch.html');
+            if (me.isParentProc)
             {
-               me.rpc = new easyXDM.Rpc(
-               {
-                  onReady : function()
-                  {
-                  }
-               },
-               {
-                  //
-                  // In LocalID.html context
-                  //
-                  local :
-                  {
-                     scan : function(fn)
-                     {
-                        me.scan(fn, fn);
-                     },
-                     stop : function(fn)
-                     {
-                        me.stop();
-                        return null;
-                     }
-                  },
-                  // Stubs for Remote Calls
-                  remote :
-                  {
-                     scan :
-                     {
-                     },
-                     stop :
-                     {
-                     }
-                  }
-               });
-
-               console.debug("Initialized Proximity Child API");
+               console.debug("Initialized Proximity Parent API");
             }
             else
             {
-               me.rpc = new easyXDM.Rpc(
-               {
-                  remote : 'https://' + location.host + window.location.pathname.replace(/[^\\\/]*$/, '') + 'localID.html',
-                  onReady : function()
-                  {
-                  }
-               },
-               {
-                  local :
-                  {
-                     scan : function(result, fn)
-                     {
-                        fn(result);
-                     },
-                     stop : function()
-                     {
-                     }
-                  },
-                  // Stubs for Remote Calls
-                  remote :
-                  {
-                     scan :
-                     {
-                     }
-                  }
-               });
-
                Genesis.constants.s_vol = s_vol_ratio * 100 * ((Ext.os.is('Android')) ? 0.8 : 1.0);
                // Reduce volume by 50%
                Genesis.constants.r_vol = r_vol_ratio * 100 * 0.8;
 
-               console.debug("Initialized Proximity Parent API");
+               console.debug("Initialized Proximity Child API");
             }
+            window.addEventListener("message", function(event)
+            {
+               var data = event.data.message;
+               console.debug("message received in sandbox: " + data);
+
+               if (me.isParentProc)
+               {
+                  switch(data['cmd'])
+                  {
+                     case 'localID-Scan' :
+                     {
+                        var win = function(result)
+                        {
+                           window.postMessage(
+                           {
+                              cmd : 'localID-Scan',
+                              data : result
+                           }, location.origin);
+                        }
+                        me.scan(win, win);
+                        break;
+                     }
+                     case 'localID-Stop' :
+                     {
+                        me.stop();
+                        break;
+                     }
+                  }
+               }
+               else
+               {
+                  switch(data['cmd'])
+                  {
+                     case 'localID-Scan' :
+                     {
+                        if (data['data'])
+                        {
+                           me.scanCallback[0](data['data']);
+                        }
+                        else
+                        {
+                           me.scanCallback[1]();
+                        }
+                        delete me.scanCallback;
+                        break;
+                     }
+                     case 'localID-Stop' :
+                     {
+                        break;
+                     }
+                  }
+               }
+            });
          }
          else
          {
@@ -476,19 +468,13 @@ else
          //
          // Parent window send work to iframe child to listen
          //
-         if (!me.isChildProc && me.socket)
+         if (!me.isParentProc && !Genesis.fn.isNative())
          {
-            me.rpc.scan(function(result)
+            me.scanCallback = [win, fail];
+            window.postMessage(
             {
-               if (result)
-               {
-                  win(result);
-               }
-               else
-               {
-                  fail();
-               }
-            });
+               cmd : 'localID-Scan'
+            }, location.origin);
             return;
          }
 
@@ -620,9 +606,12 @@ else
          //
          // Parent window send work to iframe child to stop listening
          //
-         if (!me.isChildProc && me.socket)
+         if (!me.isParentProc && me.socket)
          {
-            me.rpc.stop(Ext.emptyFn);
+            window.postMessage(
+            {
+               cmd : 'localID-Stop'
+            }, location.origin);
             return;
          }
 

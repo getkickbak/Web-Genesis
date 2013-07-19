@@ -44,9 +44,6 @@
          "remote" : true,
          "update": "full"
       }, {
-         "path": "../lib/easyXDM-2.4.17.1/easyXDM.min.js",
-         "update": "full"
-      }, {
          "path": "../mobile/WebWorkerConsole.js",
          "update": "full"
       }, {
@@ -110,7 +107,7 @@
 	/**
 	* Extra resources to be copied along when build
 	*/
-	"resources": ["licenseKey.txt", "launch.html", "launch.js", "manifest.json", "localID.html", //
+	"resources": ["licenseKey.txt", "startup.js", "postStartup.js", "launch.html", "launch.js", "manifest.json", "localID.html", //
 	"../mobile/worker/receipt.min.js", "../mobile/worker/fft.min.js", "../lib/dsp.min.js", //
 	"../lib/core/date.js", "../lib/core/extras.js", //
 	"../mobile/resources/themes/images/v1", "../mobile/resources/css", "../mobile/resources/icons", "../mobile/resources/audio", //

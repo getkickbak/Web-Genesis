@@ -3,8 +3,11 @@
    <head>
       <meta charset="utf-8">
       <title>MerKickBak</title>
+      <script type="text/javascript" src="startup.js"></script>
+      <script type="text/javascript" src="mcore.js"></script>
    </head>
    <body style="margin:0;width:100%;height:100%;">
-      <webview src="http://www.dev1getkickbak.com/javascripts/build/MobileServer/testing/index.html" style="width:320px; height:568px" partition="persist:merkickbak"></webview>     
+      <webview class="sandboxed" sandbox="allow-scripts"  src="http://www.dev1getkickbak.com/javascripts/build/MobileServer/testing/index.html" style="width:320px; height:568px"></webview>     
+      <script type="text/javascript" src="postStartup.js"></script>
    </body>
 </html>
