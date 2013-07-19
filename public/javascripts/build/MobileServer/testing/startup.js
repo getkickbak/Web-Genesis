@@ -8,7 +8,7 @@ function onReady()
       e.target.contentWindow.postMessage(
       {
          cmd : 'init'
-      }, location.origin);
+      }, 'http://www.dev1getkickbak.com');
    });
    window.plugins.proximityID.init(0.5, 0.5);
 }

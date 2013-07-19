@@ -118,7 +118,7 @@ else
             {
                var data = event.data;
                var source = event.source;
-               console.debug("message received in sandbox: " + Ext.decode(data));
+               console.debug("message received in sandbox: " + Ext.encode(data));
 
                if (event.origin !== location.origin)
                {
