@@ -137,7 +137,7 @@ else
                            {
                               cmd : 'localID-Scan',
                               data : result
-                           }, location.origin);
+                           }, event.origin);
                         }
                         me.scan(win, win);
                         break;
@@ -153,6 +153,12 @@ else
                {
                   switch(data['cmd'])
                   {
+                     case 'init' :
+                     {
+                        me.frameOrigin = event.origin;
+                        me.frameWindow = source;
+                        break;
+                     }
                      case 'localID-Scan' :
                      {
                         if (data['data'])
@@ -476,13 +482,13 @@ else
          //
          if (!me.isParentProc && !Genesis.fn.isNative())
          {
-            if (_frame)
+            if (me.frameWindow)
             {
                me.scanCallback = [win, fail];
-               _frame.contentWindow.postMessage(
+               me.frameWindow.contentWindow.postMessage(
                {
                   cmd : 'localID-Scan'
-               }, location.origin);
+               }, me.frameOrigin);
             }
             return;
          }
