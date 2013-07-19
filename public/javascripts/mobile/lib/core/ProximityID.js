@@ -621,12 +621,15 @@ else
          //
          // Parent window send work to iframe child to stop listening
          //
-         if (!me.isParentProc && me.socket)
+         if (!me.isParentProc && !Genesis.fn.isNative())
          {
-            window.postMessage(
+            if (me.frameWindow)
             {
-               cmd : 'localID-Stop'
-            }, location.origin);
+               me.frameWindow.contentWindow.postMessage(
+               {
+                  cmd : 'localID-Stop'
+               }, me.frameOrigin);
+            }
             return;
          }
 
