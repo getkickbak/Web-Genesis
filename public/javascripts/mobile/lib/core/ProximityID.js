@@ -116,8 +116,13 @@ else
             }
             window.addEventListener("message", function(event)
             {
-               var data = event.data.message;
+               var data = event.data;
                console.debug("message received in sandbox: " + data);
+
+               if (event.origin !== location.origin)
+               {
+                  return;
+               }
 
                if (me.isParentProc)
                {
