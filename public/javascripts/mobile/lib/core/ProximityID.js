@@ -436,14 +436,13 @@ else
                      }
                      case 'forward':
                      {
-                        console.debug("Local Identity Initialized scanner");
                         console.debug("Matching Freqs = [" + result['freqs'] + "]");
 
                         if (me.freqs)
                         {
                            for ( i = 0; i < result['freqs'].length; i++)
                            {
-                              if (me.freqs[i] != result['freqs'])
+                              if (me.freqs[i] != result['freqs'][i])
                               {
                                  break;
                               }
