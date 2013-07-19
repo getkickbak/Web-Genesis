@@ -117,6 +117,7 @@ else
             window.addEventListener("message", function(event)
             {
                var data = event.data;
+               var source = event.source;
                console.debug("message received in sandbox: " + data);
 
                if (event.origin !== location.origin)
@@ -132,7 +133,7 @@ else
                      {
                         var win = function(result)
                         {
-                           window.postMessage(
+                           source.postMessage(
                            {
                               cmd : 'localID-Scan',
                               data : result
