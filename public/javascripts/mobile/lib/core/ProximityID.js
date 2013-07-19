@@ -118,7 +118,7 @@ else
             {
                var data = event.data;
                var source = event.source;
-               console.debug("message received in sandbox: " + data);
+               console.debug("message received in sandbox: " + Ext.decode(data));
 
                if (event.origin !== location.origin)
                {
@@ -476,11 +476,14 @@ else
          //
          if (!me.isParentProc && !Genesis.fn.isNative())
          {
-            me.scanCallback = [win, fail];
-            window.postMessage(
+            if (_frame)
             {
-               cmd : 'localID-Scan'
-            }, location.origin);
+               me.scanCallback = [win, fail];
+               _frame.contentWindow.postMessage(
+               {
+                  cmd : 'localID-Scan'
+               }, location.origin);
+            }
             return;
          }
 
