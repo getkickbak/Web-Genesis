@@ -114,6 +114,7 @@ else
 
                console.debug("Initialized Proximity Child API");
             }
+            /*
             window.addEventListener("message", function(event)
             {
                var data = event.data;
@@ -179,6 +180,7 @@ else
                   }
                }
             });
+            */
          }
          else
          {
