@@ -120,11 +120,6 @@ else
                var source = event.source;
                console.debug("message received in sandbox: " + Ext.encode(data));
 
-               if (event.origin !== location.origin)
-               {
-                  return;
-               }
-
                if (me.isParentProc)
                {
                   switch(data['cmd'])
