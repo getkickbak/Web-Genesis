@@ -99,7 +99,7 @@ else
 
          me.bw = (me.hiFreq - me.loFreq) / me.NUM_SIGNALS;
 
-         if ( typeof (easyXDM) != 'undefined')
+         if (!Genesis.fn.isNative())
          {
             me.isChildProc = (window.location.pathname.match(/[^\\\/]*$/)[0] == 'localID.html');
             if (me.isChildProc)
