@@ -11,14 +11,25 @@
 
 chrome.app.runtime.onLaunched.addListener(function()
 {
-   chrome.app.window.create('launch.html',
+   var w = 320;
+   var h = 568;
+   var left = (screen.width) - (w);
+   var top = (screen.height) - (h);
+
+   var win = chrome.app.window.create('launch.html',
    {
-      id : "MerKickBak",
+      //id : "MerKickBak",
       singleton : true,
+      frame : 'none',
+      minHeight : h,
+      maxWidth : w,
+      minWidth : w,
       bounds :
       {
-         width : 320,
-         height : 568
+         top : top,
+         left : left,
+         width : w,
+         height : h
       },
       resizable : false
    });

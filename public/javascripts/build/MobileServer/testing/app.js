@@ -79714,6 +79714,18 @@ Ext.merge(WebSocket.prototype,
 
       if (!supress)
       {
+         //
+         // MobileWebServer, we create a popup for cashier to remind customers to use Loyalty Program
+         //
+         if (!Genesis.fn.isNative())
+         {
+            window.postMessage(
+            {
+               cmd : 'popup',
+               data : receipt.getData()
+            }, location.origin);
+         }
+
          Ext.StoreMgr.get('ReceiptStore').add(receiptsList);
          Ext.StoreMgr.get('TableStore').add(tableList);
       }

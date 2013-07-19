@@ -104,68 +104,82 @@ else
             me.isChildProc = (window.location.pathname.match(/[^\\\/]*$/)[0] == 'localID.html');
             if (me.isChildProc)
             {
-               me.socket = new easyXDM.Socket(
+               me.rpc = new easyXDM.Rpc(
                {
-                  onMessage : function(message, origin)
-                  {
-                     //
-                     // In LocalID.html context
-                     //
-                     switch(message)
-                     {
-                        case 'scan' :
-                        {
-                           var win = function(result)
-                           {
-                              me.socket.postMessage((result) ? JSON.stringify(result) : null);
-                           }
-                           window.plugins.proximityID.scan(win, win);
-                           break;
-                        }
-                        case 'stop' :
-                        {
-                           window.plugins.proximityID.stop();
-                           break;
-                        }
-                     }
-                     //alert("Received '" + message + "' from '" + origin + "'");
-                  },
                   onReady : function()
                   {
-                     //socket.postMessage("Yay, it works!");
+                  }
+               },
+               {
+                  //
+                  // In LocalID.html context
+                  //
+                  local :
+                  {
+                     scan : function(fn)
+                     {
+                        me.scan(fn, fn);
+                     },
+                     stop : function(fn)
+                     {
+                        me.stop();
+                        return null;
+                     }
+                  },
+                  // Stubs for Remote Calls
+                  remote :
+                  {
+                     scan :
+                     {
+                     },
+                     stop :
+                     {
+                     }
                   }
                });
+
+               console.debug("Initialized Proximity Child API");
             }
             else
             {
-               me.socket = new easyXDM.Socket(
+               me.rpc = new easyXDM.Rpc(
                {
                   remote : 'https://' + location.host + window.location.pathname.replace(/[^\\\/]*$/, '') + 'localID.html',
-                  onMessage : function(message, origin)
-                  {
-                     if (message)
-                     {
-                        me.scanCallback[0](Ext.decode(message));
-                     }
-                     else
-                     {
-                        me.scanCallback[1]();
-                     }
-                     delete me.scanCallback;
-                     //alert("Received '" + message + "' from '" + origin + "'");
-                  },
                   onReady : function()
                   {
-                     //socket.postMessage("Yay, it works!");
+                  }
+               },
+               {
+                  local :
+                  {
+                     scan : function(result, fn)
+                     {
+                        fn(result);
+                     },
+                     stop : function()
+                     {
+                     }
+                  },
+                  // Stubs for Remote Calls
+                  remote :
+                  {
+                     scan :
+                     {
+                     }
                   }
                });
 
                Genesis.constants.s_vol = s_vol_ratio * 100 * ((Ext.os.is('Android')) ? 0.8 : 1.0);
                // Reduce volume by 50%
                Genesis.constants.r_vol = r_vol_ratio * 100 * 0.8;
+
+               console.debug("Initialized Proximity Parent API");
             }
          }
-         console.debug("Initialized Proximity API");
+         else
+         {
+            console.debug("Initialized Proximity API");
+         }
       },
       generateData : function(offset, length)
       {
@@ -462,10 +476,19 @@ else
          //
          // Parent window send work to iframe child to listen
          //
-         if (navigator.webkitGetUserMedia && me.iframe)
+         if (!me.isChildProc && me.socket)
          {
-            me.scanCallback = [win, fail];
-            me.iframe.contentWindow.postMessage("scan", 'https://' + location.host);
+            me.rpc.scan(function(result)
+            {
+               if (result)
+               {
+                  win(result);
+               }
+               else
+               {
+                  fail();
+               }
+            });
             return;
          }
 
@@ -597,9 +620,9 @@ else
          //
          // Parent window send work to iframe child to stop listening
          //
-         if (navigator.webkitGetUserMedia && me.iframe)
+         if (!me.isChildProc && me.socket)
          {
-            me.iframe.contentWindow.postMessage("stop", 'https://' + location.host);
+            me.rpc.stop(Ext.emptyFn);
             return;
          }
 

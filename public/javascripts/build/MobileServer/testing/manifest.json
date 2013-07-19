@@ -11,6 +11,7 @@
    "minimum_chrome_version": "28",
    "permissions": ["geolocation", "storage", "<all_urls>", "webview", "audioCapture"],
    "icons": {
+      "16": "resources/icons/icon128.png"
       "128": "resources/icons/icon128.png"
    }
 }
