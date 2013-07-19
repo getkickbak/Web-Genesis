@@ -79721,9 +79721,9 @@ Ext.merge(WebSocket.prototype,
          {
             window.postMessage(
             {
-               cmd : 'popup',
-               data : receipt.getData()
-            }, location.origin);
+               cmd : 'notification',
+               data : receipt.getData(true)
+            }, "*");
          }
 
          Ext.StoreMgr.get('ReceiptStore').add(receiptsList);
