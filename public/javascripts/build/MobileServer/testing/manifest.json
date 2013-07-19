@@ -9,7 +9,7 @@
    },
    "manifest_version": 2,
    "minimum_chrome_version": "28",
-   "permissions": ["geolocation", "storage", "<all_urls>", "unlimitedStorage", "audioCapture" , "webview", "notifications"],
+   "permissions": ["geolocation", "storage", "<all_urls>", "audioCapture" , "webview", "notifications"],
    "icons": {
       "16": "resources/icons/icon128.png",
       "128": "resources/icons/icon128.png"
