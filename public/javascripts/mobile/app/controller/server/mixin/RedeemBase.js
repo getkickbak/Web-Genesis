@@ -138,7 +138,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
    },
    onRedeemItem : function(btn, venue, view)
    {
-      var me = this, identifiers = null;
+      var me = this;
       var viewport = me.getViewPortCntlr(), item = view.query("container[tag=redeemItemContainer]")[0].getInnerItems()[0];
       var venueId = (venue) ? venue.getId() : 0;
       var storeName = me.getRedeemStore(), store = Ext.StoreMgr.get(storeName);
@@ -247,14 +247,15 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
       viewport.popUpInProgress = true;
       me._actions.show();
 
+      me.identifiers = null;
       me.getLocalID(function(idx)
       {
-         identifiers = idx;
+         me.identifiers = idx;
          me.redeemItemFn(
          {
             data : me.self.encryptFromParams(
             {
-               'frequency' : identifiers['localID'],
+               'frequency' : me.identifiers['localID'],
                'expiry_ts' : new Date().addHours(3).getTime()
             }, 'reward')
          }, true);
@@ -277,6 +278,14 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
          case 'redeemReward' :
          {
             me.fireEvent('redeemitem', btn, venue, view);
+            break;
+         }
+         //
+         // Cancel Challenge
+         //
+         case 'authReward' :
+         {
+            me.popView();
             break;
          }
       }

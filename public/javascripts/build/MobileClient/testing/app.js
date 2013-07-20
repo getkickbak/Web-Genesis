@@ -9584,11 +9584,13 @@ Ext.define('Genesis.controller.mobileClient.Challenges',
                      //
                      // Stop broadcasting now ...
                      //
+                     /*
                      if (!Ext.get(Ext.DomQuery.select('.x-innerhtml',b.element.dom)[0]).getPageBox(true).isOutOfBound(
                      {
                         x : e.pageX,
                         y : e.pageY
                      }))
+                     */
                      {
                         Ext.Ajax.abort();
                         if (me.identifiers)
@@ -14775,12 +14777,15 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
                   //
                   // Stop broadcasting now ...
                   //
-                  if (!Ext.get(Ext.DomQuery.select('.x-innerhtml',b.element.dom)[0]).getPageBox(true).isOutOfBound(
+                  /*
+                   if (!Ext.get(Ext.DomQuery.select('.x-innerhtml',b.element.dom)[0]).getPageBox(true).isOutOfBound(
+                   {
+                   x : e.pageX,
+                   y : e.pageY
+                   }))
+                   */
                   {
-                     x : e.pageX,
-                     y : e.pageY
-                  }))
-                  {
+                     me.self.playSoundFile(viewport.sound_files['clickSound']);
                      Ext.Ajax.abort();
                      if (me.identifiers)
                      {
@@ -16550,12 +16555,15 @@ Ext.define('Genesis.controller.client.Rewards',
                   //
                   // Stop broadcasting now ...
                   //
+                  /*
                   if (!Ext.get(Ext.DomQuery.select('.x-innerhtml',b.element.dom)[0]).getPageBox(true).isOutOfBound(
                   {
                      x : e.pageX,
                      y : e.pageY
                   }))
+                  */
                   {
+                     me.self.playSoundFile(viewport.sound_files['clickSound']);
                      Ext.Ajax.abort();
                      if (me.identifiers)
                      {

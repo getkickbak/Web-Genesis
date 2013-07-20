@@ -532,11 +532,13 @@ Ext.define('Genesis.controller.mobileClient.Challenges',
                      //
                      // Stop broadcasting now ...
                      //
+                     /*
                      if (!Ext.get(Ext.DomQuery.select('.x-innerhtml',b.element.dom)[0]).getPageBox(true).isOutOfBound(
                      {
                         x : e.pageX,
                         y : e.pageY
                      }))
+                     */
                      {
                         Ext.Ajax.abort();
                         if (me.identifiers)

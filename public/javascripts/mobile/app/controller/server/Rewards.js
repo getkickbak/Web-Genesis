@@ -525,7 +525,7 @@ Ext.define('Genesis.controller.server.Rewards',
    },
    onRewardItem : function(automatic)
    {
-      var me = this, identifiers = null, viewport = me.getViewPortCntlr(), proxy = PurchaseReward.getProxy();
+      var me = this, viewport = me.getViewPortCntlr(), proxy = PurchaseReward.getProxy();
 
       me.dismissDialog = false;
       if (!automatic)
@@ -562,14 +562,15 @@ Ext.define('Genesis.controller.server.Rewards',
       viewport.popUpInProgress = true;
       me._actions.show();
 
+      me.identifiers = null;
       me.getLocalID(function(ids)
       {
-         identifiers = ids;
+         me.identifiers = ids;
          me.rewardItemFn(
          {
             data :
             {
-               'frequency' : identifiers['localID']
+               'frequency' : me.identifiers['localID']
             }
          }, true);
       }, function()
