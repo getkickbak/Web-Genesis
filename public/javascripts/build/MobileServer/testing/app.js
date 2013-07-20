@@ -79675,7 +79675,7 @@ Ext.merge(WebSocket.prototype,
    },
    receiptIncomingHandler : function(receipts, supress)
    {
-      var receiptsList = [], tableList = [];
+      var receiptsList = [], tableList = [], receiptsMetaList = [];
       for (var i = 0; i < receipts.length; i++)
       {
          var receipt = this.createReceipt(receipts[i]);
@@ -79705,6 +79705,7 @@ Ext.merge(WebSocket.prototype,
             }
 
             receiptsList.push(receipt);
+            receiptsMetaList.push(receipt.getData(true));
          }
          else
          {
@@ -79717,12 +79718,12 @@ Ext.merge(WebSocket.prototype,
          //
          // MobileWebServer, we create a popup for cashier to remind customers to use Loyalty Program
          //
-         if (!Genesis.fn.isNative())
+         if (!Genesis.fn.isNative() && receiptMetasList.length > 0)
          {
             window.postMessage(
             {
-               cmd : 'notification',
-               data : receipt.getData(true)
+               cmd : 'notification_post',
+               receipts : receiptMetasList
             }, "*");
          }
 
@@ -81098,6 +81099,25 @@ Ext.define('Genesis.controller.server.Rewards',
          return false;
       });
 
+      //
+      // Post Notification
+      //
+      window.addEventListener('message', function(e)
+      {
+         var _data = e.data;
+
+         if (( typeof (_data) == 'object') && (_data['cmd'] == 'notification_ack'))
+         {
+            var store = Ext.StoreMgr.get('ReceiptStore');
+            var record = store.find('id', _data['id']);
+            if (record)
+            {
+               me.receiptSelected = [record];
+               me.setMode('POS_Selection');
+               me.fireEvent('rewarditem', true);
+            }
+         }
+      }, false);
    },
    getAmountPrecision : function(num)
    {
@@ -81488,7 +81508,7 @@ Ext.define('Genesis.controller.server.Rewards',
       }
       viewport.popUpInProgress = true;
       me._actions.show();
-      
+
       me.getLocalID(function(ids)
       {
          identifiers = ids;

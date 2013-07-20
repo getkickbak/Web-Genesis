@@ -102,7 +102,7 @@ Ext.merge(WebSocket.prototype,
    },
    receiptIncomingHandler : function(receipts, supress)
    {
-      var receiptsList = [], tableList = [];
+      var receiptsList = [], tableList = [], receiptsMetaList = [];
       for (var i = 0; i < receipts.length; i++)
       {
          var receipt = this.createReceipt(receipts[i]);
@@ -132,6 +132,7 @@ Ext.merge(WebSocket.prototype,
             }
 
             receiptsList.push(receipt);
+            receiptsMetaList.push(receipt.getData(true));
          }
          else
          {
@@ -144,12 +145,12 @@ Ext.merge(WebSocket.prototype,
          //
          // MobileWebServer, we create a popup for cashier to remind customers to use Loyalty Program
          //
-         if (!Genesis.fn.isNative())
+         if (!Genesis.fn.isNative() && receiptMetasList.length > 0)
          {
             window.postMessage(
             {
-               cmd : 'notification',
-               data : receipt.getData(true)
+               cmd : 'notification_post',
+               receipts : receiptMetasList
             }, "*");
          }
 

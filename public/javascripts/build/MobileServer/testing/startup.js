@@ -1,86 +1,89 @@
-document.addEventListener("DOMContentLoaded", function(event)
+(function()
 {
-   var _frame = document.getElementById('merkickbak');
-   _frame.addEventListener('permissionrequest', function(e)
+   var _notifications = [], _frame, timeout = 30 * 1000;
+   document.addEventListener("DOMContentLoaded", function(event)
    {
-      var allowed = false;
-      if (e.permission === 'pointerLock' || e.permission === 'media' || e.permission === 'geolocation')
+      _frame = document.getElementById('merkickbak');
+      _frame.addEventListener('permissionrequest', function(e)
       {
-         allowed = true;
-         e.request.allow();
-      }
-      else
-      {
-         e.request.deny();
-      }
-      console.debug("[" + e.target.id + "] permissionrequest: permission=" + e.permission + " " + ( allowed ? "allowed" : "DENIED"));
-   }, false);
-   //
-   // Post Notification
-   //
-   _frame.addEventListener('message', function(e)
-   {
-      var data = e.data;
-
-      if (( typeof (data) == 'object') && (data['cmd'] == 'notification'))
-      {
-         var message = "No items were found";
-
-         if (data['items'].length == 1)
+         var allowed = false;
+         if (e.permission === 'pointerLock' || e.permission === 'media' || e.permission === 'geolocation')
          {
-            message = data['items'][0];
+            allowed = true;
+            e.request.allow();
          }
-         else if (data['items'].length > 1)
+         else
          {
-            message = data['items'][0] + '\n' + data['items'][1]
+            e.request.deny();
          }
+         console.debug("[" + e.target.id + "] permissionrequest: permission=" + e.permission + " " + ( allowed ? "allowed" : "DENIED"));
+      }, false);
+      //
+      // Post Notification
+      //
+      _frame.addEventListener('message', function(e)
+      {
+         var _dataMeta = e.data;
 
-         var notif = window.webkitNotifications.createNotification("resources/icons/icon@72.png", data['price'], message);
-         notif.onDisplay(function()
+         if (( typeof (_dataMeta) == 'object') && (_dataMeta['cmd'] == 'notification_post'))
          {
-            notif.task = setInterval(function()
+            for (var i = 0; i < _dataMeta['receipts'].length; i++)
             {
-               clearInterval(notif.task);
-               notif.close();
-               notif = null;
-            }, 30 * 1000);
-         });
-         notif.onClick(function()
-         {
-            _frame.contentWindow.postMessage(
-            {
-               cmd : 'earn_points',
-               data : data['id']
-            }, "*");
-         });
-         notif.onClose(function()
-         {
-            if (notif.task)
-            {
-               clearInterval(notif.task);
-               notif = null;
+               var _receipt = _dataMeta['receipts'][i], message = "No items were found";
+
+               if (_receipt['items'].length == 1)
+               {
+                  message = _receipt['items'][0];
+               }
+               else if (_receipt['items'].length > 1)
+               {
+                  message = _receipt['items'][0] + '\n' + _receipt['items'][1]
+               }
+
+               var _notif = window.webkitNotifications.createNotification("resources/icons/icon@72.png", _receipt['price'], message);
+               _notifications.push(_notif);
+
+               (function(notif, receipt)
+               {
+                  notif.onClick(function()
+                  {
+                     clearTimeout(notif.task);
+                     _frame.contentWindow.postMessage(
+                     {
+                        cmd : 'notification_ack',
+                        data : receipt['id']
+                     }, "*");
+                  });
+                  notif.onClose(function()
+                  {
+                     clearTimeout(notif.task);
+                     delete notif.task;
+                     _notifications.splice(_notifications.indexOf(notif), 1);
+                  });
+                  notif.task = setTimeout(notif.close, timeout);
+                  notif.show();
+                  /*
+                   chrome.notifications.create("",
+                   {
+                   type : 'basic',
+                   iconUrl : 'resources/icons/icon@72.png',
+                   title : receipt['price'],
+                   expandedMessage : 'Testing',
+                   message : receipt['item'],
+                   buttons : [
+                   {
+                   title : 'Earn Points!'
+                   },
+                   {
+                   title : 'Ignore'
+                   }]
+                   }, function()
+                   {
+                   });
+                   */
+               })(_notif, _receipt);
             }
-         });
-         notif.show();
-         /*
-          chrome.notifications.create("",
-          {
-          type : 'basic',
-          iconUrl : 'resources/icons/icon@72.png',
-          title : data['price'],
-          expandedMessage : 'Testing',
-          message : data['item'],
-          buttons : [
-          {
-          title : 'Earn Points!'
-          },
-          {
-          title : 'Ignore'
-          }]
-          }, function()
-          {
-          });
-          */
-      }
-   }, false);
-});
+         }
+      }, false);
+   });
+})();
