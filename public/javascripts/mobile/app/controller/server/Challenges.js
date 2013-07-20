@@ -47,6 +47,15 @@ Ext.define('Genesis.controller.server.Challenges',
 
       //oldActiveItem.removeAll(true);
       viewport.setActiveController(null);
+      if (me.scanTask)
+      {
+         Ext.device.Notification.show(
+         {
+            title : 'Challenges',
+            message : me.transactionCancelledMsg,
+            buttons : ['Dismiss']
+         });
+      }
       clearInterval(me.scanTask);
       me.scanTask = null;
       //

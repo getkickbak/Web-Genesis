@@ -55,9 +55,10 @@
       </script>
       <script type="text/javascript" src="lib/gibberish-aes.min.js"></script>
       <script type="text/javascript" src="lib/cordova-2.8.1.android.js"></script>
+      <script type="text/javascript" src="lib/sencha-touch-all.js"></script>
+      
       <script type="text/javascript" src="lib/core/PushNotification.js"></script>
       <!-- Debug Javascript on mobile browser -->
-      <script type="text/javascript" src="lib/sencha-touch-all.js"></script>
       <!--
       <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
       -->
@@ -86,46 +87,25 @@
           for more details -jm */
 
          function onBodyLoad()
-         {
-            document.addEventListener("online", function()
+         {  
+            document.addEventListener("deviceready", function()
             {
-               if (Ext.device)
+               document.addEventListener("online", function()
                {
-                  console.debug("Phone is Online" + ", "+ //
-                  Ext.device.Connection.__proto__.$className + ", " + //
-                  "devicePixelRatio - " + window.devicePixelRatio + ", " + //
-                  'Connection type: [' + Ext.device.Connection.getType() + ']');
-                  //console.debug('Checking for Network Conncetivity for [' + location.origin + ']');
-                  if (!Ext.device.Connection.isOnline())
+                  if (Ext.device)
                   {
-                     _onGotoMain();
+                     console.debug("Phone is Online" + ", "+ //
+                     Ext.device.Connection.__proto__.$className + ", " + //
+                     "devicePixelRatio - " + window.devicePixelRatio + ", " + //
+                     'Connection type: [' + Ext.device.Connection.getType() + ']');
+                     //console.debug('Checking for Network Conncetivity for [' + location.origin + ']');
+                     if (!Ext.device.Connection.isOnline())
+                     {
+                        _onGotoMain();
+                     }
                   }
-               }
-            }, false);
-
-            document.addEventListener("offline", function()
-            {
-               if (Ext.device)
-               {
-                  if (!Ext.device.Connection.isOnline())
-                  {
-                     _onGotoMain();
-                  }
-                  console.debug("Phone is Offline");
-               }
-            }, false);
-            document.addEventListener("pause", function()
-            {
-               if (_application && (launched == 0x111) && !pausedDisabled)
-               {
-                  _application.getController('client' + '.Viewport').persistSyncStores();
-                  console.debug("App is Paused");
-               }
-            }, false);
-
-            document.addEventListener("resume", function()
-            {
-               if (!pausedDisabled)
+               }, false);
+               document.addEventListener("offline", function()
                {
                   if (Ext.device)
                   {
@@ -133,18 +113,38 @@
                      {
                         _onGotoMain();
                      }
-                     else
-                     {
-                        //_onGotoMainCallBackFn();
-                     }
+                     console.debug("Phone is Offline");
                   }
-                  console.debug("App is Resumed");
-              }
-            }, false);
-
-            document.addEventListener("deviceready", function()
-            {
+               }, false);
+               document.addEventListener("pause", function()
+               {
+                  if (_application && (launched == 0x111) && !pausedDisabled)
+                  {
+                     _application.getController('client' + '.Viewport').persistSyncStores();
+                     console.debug("App is Paused");
+                  }
+               }, false);
+               document.addEventListener("resume", function()
+               {
+                  if (!pausedDisabled)
+                  {
+                     if (Ext.device)
+                     {
+                        if (!Ext.device.Connection.isOnline())
+                        {
+                           _onGotoMain();
+                        }
+                        else
+                        {
+                           //_onGotoMainCallBackFn();
+                        }
+                     }
+                     console.debug("App is Resumed");
+                 }
+               }, false);
+               document.addEventListener("backbutton", onBackKeyDown, false);
                navigator.splashscreen.show();
+               
                console.debug = (!debugMode) ? Ext.emptyFn : console.debug || console.log;
                console.warn = console.warn || console.debug;
 
@@ -152,13 +152,7 @@
                launched = 0x110;
                _appLaunch();
             }, false);
-
-            // Fix for problem  with android 3.x and 4.x which is
-            // the browser has a problem with urls with ? and this
-            // bug has not been fixed by google.  See:
-            // http://code.google.com/p/android/issues/detail?id=17535 or
-            // http://www.sencha.com/forum/showthread.php?162322-Sencha-Touch-2-PhoneGap-are-not-working-on-Android-4/page3&highlight=Loader
-            //
+            
             Ext.Loader.setConfig(
             {
                disableCaching : false,
@@ -169,10 +163,9 @@
                   Genesis : _appPath
                }
             });
-            Ext.Ajax.setDisableCaching(false);
+            
             Ext.application(
             {
-               requires : ['Ext.MessageBox', 'Ext.device.Notification', 'Ext.device.Camera', 'Ext.device.Orientation'],
                profiles : ['Android'],
                views : ['Document', 'client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions', //
                'client.AccountsTransfer', 'client.SettingsPage', //
@@ -192,8 +185,7 @@
                   {
                      launched = 0x001;
                   }
-                  console.debug("Ext App Launch")
-                  document.addEventListener("backbutton", onBackKeyDown, false);
+                  console.debug("Ext App Launch");
                   _appLaunch();
                },
                appFolder : _appPath,
@@ -202,7 +194,6 @@
          }
       </script>
       <script type="text/javascript" src="core.js"></script>
-      <!-- View Widgets -->
       <script type="text/javascript" src="app/profile/Android.js"></script>
       <script type="text/javascript" src="client-all.js"></script>
    </head>

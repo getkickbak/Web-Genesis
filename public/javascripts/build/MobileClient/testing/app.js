@@ -17386,7 +17386,7 @@ Ext.define('Genesis.controller.client.Settings',
    {
       var me = this, fb = Genesis.fb;
       console.debug("Settings: onDeactivate");
-      me.onFbDeacitvate();
+      me.onFbDeactivate();
    },
    onToggleFB : function(toggle, slider, thumb, newValue, oldValue, eOpts)
    {
@@ -17559,6 +17559,8 @@ Ext.define('Genesis.controller.client.Settings',
    // --------------------------------------------------------------------------
 });
 
+var onBackKeyDown = Ext.emptyFn;
+
 Ext.require(['Genesis.controller.ControllerBase'], function()
 {
    if (!Genesis.fn.isNative())
@@ -17575,10 +17577,7 @@ Ext.require(['Genesis.controller.ControllerBase'], function()
          }
       }
    }
-});
 
-(function()
-{
    // add back button listener
    onBackKeyDown = function(e)
    {
@@ -17587,7 +17586,7 @@ Ext.require(['Genesis.controller.ControllerBase'], function()
          return;
       }
 
-      var viewport = _application.getController('client'+'.Viewport');
+      var viewport = _application.getController('client' + '.Viewport');
       if (!viewport || viewport.popViewInProgress)
       {
          return;
@@ -17599,11 +17598,12 @@ Ext.require(['Genesis.controller.ControllerBase'], function()
       }
       else if (!viewport.popUpInProgress)
       {
+         console.debug("BackButton Pressed");
+
          var vport = viewport.getViewport();
          var activeItem = (vport) ? vport.getActiveItem() : null;
          if (activeItem)
          {
-            console.debug("BackButton Pressed");
             var success = false;
             for (var i = 0; i < backBtnCallbackListFn.length; i++)
             {
@@ -17642,7 +17642,7 @@ Ext.require(['Genesis.controller.ControllerBase'], function()
          }
       }
    };
-})();
+});
 
 Ext.define('Genesis.controller.client.Viewport',
 {

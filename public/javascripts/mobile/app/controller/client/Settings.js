@@ -325,7 +325,7 @@ Ext.define('Genesis.controller.client.Settings',
    {
       var me = this, fb = Genesis.fb;
       console.debug("Settings: onDeactivate");
-      me.onFbDeacitvate();
+      me.onFbDeactivate();
    },
    onToggleFB : function(toggle, slider, thumb, newValue, oldValue, eOpts)
    {

@@ -4,6 +4,7 @@ Ext.require(['Genesis.controller.ControllerBase'], function()
 {
    onBackKeyDown = function(e)
    {
+      console.debug("BackButton Pressed");
 
       //e.preventDefault();
 
@@ -15,7 +16,7 @@ Ext.require(['Genesis.controller.ControllerBase'], function()
          return;
       }
 
-      var viewport = _application.getController('server.Viewport');
+      var viewport = _application.getController('server' + '.Viewport');
       if (!viewport || viewport.popViewInProgress)
       {
          return;
@@ -27,8 +28,6 @@ Ext.require(['Genesis.controller.ControllerBase'], function()
       }
       else if (!viewport.popUpInProgress)
       {
-         console.debug("BackButton Pressed");
-
          var vport = viewport.getViewport();
          var activeItem = (vport) ? vport.getActiveItem() : null;
          if (activeItem)

@@ -77819,6 +77819,15 @@ Ext.define('Genesis.controller.server.Challenges',
 
       //oldActiveItem.removeAll(true);
       viewport.setActiveController(null);
+      if (me.scanTask)
+      {
+         Ext.device.Notification.show(
+         {
+            title : 'Challenges',
+            message : me.transactionCancelledMsg,
+            buttons : ['Dismiss']
+         });
+      }
       clearInterval(me.scanTask);
       me.scanTask = null;
       //
@@ -79809,7 +79818,9 @@ Ext.define('Genesis.controller.server.Receipts',
             Ext.device.Notification.show(
             {
                title : 'Battery Level Low',
-               messsage : 'Battery is at ' + info.level + '%'
+               message : 'Battery is at ' + info.level + '%',
+               buttons : ['Dismiss']
+
             });
             Ext.device.Notification.vibrate();
          }
@@ -79821,8 +79832,9 @@ Ext.define('Genesis.controller.server.Receipts',
             Ext.device.Notification.show(
             {
                title : 'Battery Level Critical',
-               messsage : 'Battery is at ' + info.level + '%' + '\n' + //
-               'Recharge Soon!'
+               message : 'Battery is at ' + info.level + '%' + '\n' + //
+               'Recharge Soon!',
+               buttons : ['Dismiss']
             });
             Ext.device.Notification.vibrate();
             Ext.device.Notification.beep();
@@ -82529,6 +82541,7 @@ Ext.require(['Genesis.controller.ControllerBase'], function()
 {
    onBackKeyDown = function(e)
    {
+      console.debug("BackButton Pressed");
 
       //e.preventDefault();
 
@@ -82540,7 +82553,7 @@ Ext.require(['Genesis.controller.ControllerBase'], function()
          return;
       }
 
-      var viewport = _application.getController('server.Viewport');
+      var viewport = _application.getController('server' + '.Viewport');
       if (!viewport || viewport.popViewInProgress)
       {
          return;
@@ -82552,8 +82565,6 @@ Ext.require(['Genesis.controller.ControllerBase'], function()
       }
       else if (!viewport.popUpInProgress)
       {
-         console.debug("BackButton Pressed");
-
          var vport = viewport.getViewport();
          var activeItem = (vport) ? vport.getActiveItem() : null;
          if (activeItem)

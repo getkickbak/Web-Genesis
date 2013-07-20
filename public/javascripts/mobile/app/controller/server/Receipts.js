@@ -280,7 +280,9 @@ Ext.define('Genesis.controller.server.Receipts',
             Ext.device.Notification.show(
             {
                title : 'Battery Level Low',
-               messsage : 'Battery is at ' + info.level + '%'
+               message : 'Battery is at ' + info.level + '%',
+               buttons : ['Dismiss']
+
             });
             Ext.device.Notification.vibrate();
          }
@@ -292,8 +294,9 @@ Ext.define('Genesis.controller.server.Receipts',
             Ext.device.Notification.show(
             {
                title : 'Battery Level Critical',
-               messsage : 'Battery is at ' + info.level + '%' + '\n' + //
-               'Recharge Soon!'
+               message : 'Battery is at ' + info.level + '%' + '\n' + //
+               'Recharge Soon!',
+               buttons : ['Dismiss']
             });
             Ext.device.Notification.vibrate();
             Ext.device.Notification.beep();
