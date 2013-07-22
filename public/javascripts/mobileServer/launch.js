@@ -11,7 +11,6 @@
 
 chrome.app.runtime.onLaunched.addListener(function()
 {
-   var debug = true;
    var w = 320;
    var h = 568;
    var left = (screen.width) - (w);
