@@ -34,6 +34,4 @@ chrome.app.runtime.onLaunched.addListener(function()
       },
       resizable : false
    });
-   var webview = win.contentWindow.getElementById('merkickbak');
-   webview.src = (!debug) ? "http://www.getkickbak.com/merchant/index.html" : "http://www.dev1getkickbak.com/javascripts/build/MobileServer/testing/index.html";
 });

@@ -84385,7 +84385,7 @@ window.debugMode = true;
 window.serverHost
 window._application = null;
 window.appName = 'MerKickBak';
-window._hostPathPrefix = "/javascripts/build/MobileServer/";
+window._hostPathPrefix = (!debug) ? "/merchant/" : "/javascripts/build/MobileServer/";
 window._hostPath = _hostPathPrefix + ((debugMode) ? "testing" : "production") + "/";
 window.phoneGapAvailable = false;
 

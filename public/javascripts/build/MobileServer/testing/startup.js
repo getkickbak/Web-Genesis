@@ -1,9 +1,13 @@
 (function()
 {
    var _notifications = [], _frame, timeout = 30 * 1000;
+   var debug = true;
+
    document.addEventListener("DOMContentLoaded", function(event)
    {
       _frame = document.getElementById('merkickbak');
+      _frame.src = (!debug) ? "http://www.getkickbak.com/merchant/index.html" : "http://www.dev1getkickbak.com/javascripts/build/MobileServer/testing/index.html";
+
       _frame.addEventListener('permissionrequest', function(e)
       {
          var allowed = false;
