@@ -1,0 +1,24 @@
+CACHE MANIFEST
+# 7ad811c246122c1786d3691eab122bf94727de40
+index.html
+# e6789690e7bb009885227d42e38cbe0a20d31444
+app/store/mainServerPage.json
+# 6770d7a1d8e70a3e03fb664023ddbf7ab76ecb6f
+term_of_service.htm
+# 83b55fbfe9cce4fa78476560a9f14f9abc47e9bd
+privacy.htm
+# 85a09696bd078f9478bcf7897abdabe8a414ca5d
+program_rules.htm
+# fb72f8b111ba66b9c392d24e269d37d884b8c388
+worker/receipt.min.js
+# 540c5fd96175ce306be10815147921d0975c1fba
+worker/fft.min.js
+# 1010b20dd5418571215b89912ad9196d147b0e16
+../lib/dsp.min.js
+
+
+FALLBACK:
+
+
+NETWORK:
+*
