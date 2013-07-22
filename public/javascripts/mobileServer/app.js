@@ -177,10 +177,6 @@ Ext.Loader.setPath(
    {
       var targetelement = "script", targetattr = "src";
       var allsuspects = document.getElementsByTagName(targetelement);
-      var resolution = (function()
-      {
-         return (((window.screen.height >= 641) && ((window.devicePixelRatio == 1.0) || (window.devicePixelRatio >= 2.0))) ? 'mxhdpi' : 'lhdpi');
-      })();
 
       for (var i = allsuspects.length; i >= 0; i--)
       {
@@ -194,59 +190,7 @@ Ext.Loader.setPath(
          }
       }
 
-      if (Ext.os.is('Tablet'))
-      {
-         if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
-         {
-            Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/ipad.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x011], true));
-         }
-         else
-         //if (Ext.os.is('Android'))
-         {
-            switch (resolution)
-            {
-               case 'lhdpi' :
-               {
-                  Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-tablet-lhdpi.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x011], true));
-                  break;
-               }
-               case 'mxhdpi' :
-               {
-                  Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-tablet-mxhdpi.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x011], true));
-                  break;
-               }
-            }
-         }
-      }
-      else
-      {
-         if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
-         {
-            Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [(!Ext.os.is('iPhone5')) ? 0x011 : 0x001], true));
-            if (Ext.os.is('iPhone5'))
-            {
-               _totalAssetCount++;
-               Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone5.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x010], true));
-            }
-         }
-         else//
-         //if (Ext.os.is('Android'))
-         {
-            switch (resolution)
-            {
-               case 'lhdpi' :
-               {
-                  Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-phone-lhdpi.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x011], true));
-                  break;
-               }
-               case 'mxhdpi' :
-               {
-                  Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-phone-mxhdpi.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x011], true));
-                  break;
-               }
-            }
-
-         }
-      }
+      _totalAssetCount++;
+      Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone5.css?v=" + Genesis.constants.serverVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x011], true));
    }, 0.1 * 1000);
 })();

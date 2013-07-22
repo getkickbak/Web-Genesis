@@ -223,29 +223,102 @@ Ext.define('Genesis.controller.server.Viewport',
          }
       });
    },
+   writeLicenseKey : function(text)
+   {
+      window.webkitRequestFileSystem(PERSISTENT, 1 * 1024 * 1024, function(fs)
+      {
+         fs.root.getFile('licenseKey.txt',
+         {
+            create : true
+         }, function(fileEntry)
+         {
+            // Create a FileWriter object for our FileEntry (log.txt).
+            fileEntry.createWriter(function(fileWriter)
+            {
+               fileWriter.onwriteend = function(e)
+               {
+                  console.log('Updated LicenseKey.');
+               };
+               fileWriter.onerror = function(e)
+               {
+                  console.log('LicenseKey Update Failed: ' + e.toString());
+               };
+
+               // Create a new Blob and write it to log.txt.
+               var blob = new Blob([text],
+               {
+                  type : 'text/plain'
+               });
+
+               fileWriter.write(blob);
+            });
+         });
+      });
+   },
    refreshLicenseKey : function(callback, forceRefresh)
    {
       var me = this;
+      var errorHandler = function()
+      {
+         console.log('Cannot retrieve LicenseKey.txt');
+         callback();
+      };
 
       callback = callback || Ext.emptyFn;
       if (!Genesis.fn.isNative())
       {
-         var request = new XMLHttpRequest();
-
-         //console.debug("Loading LicenseKey.txt ...");
-         request.onreadystatechange = function()
+         navigator.webkitPersistentStorage.requestQuota(1 * 1024 * 1024, function(grantedBytes)
          {
-            if (request.readyState == 4)
+            window.webkitRequestFileSystem(PERSISTENT, grantedBytes, function(fs)
             {
-               if (request.status == 200 || request.status == 0)
+               fs.root.getFile('licenseKey.txt',
                {
-                  console.debug("Loaded LicenseKey ...");
-                  me.getLicenseKey(request.responseText, callback, forceRefresh);
-               }
-            }
-         };
-         request.open("GET", 'licenseKey.txt', true);
-         request.send(null);
+               }, function(fileEntry)
+               {
+                  // Get a File object representing the file,
+                  // then use FileReader to read its contents.
+                  fileEntry.file(function(file)
+                  {
+                     var reader = new FileReader();
+
+                     reader.onloadend = function(e)
+                     {
+                        me.getLicenseKey(this.result, callback, forceRefresh);
+                     };
+
+                     reader.readAsText(file);
+                  }, errorHandler);
+
+               }, errorHandler);
+            }, function()
+            {
+               console.log('Cannot retrieve granted Filesystem Quota');
+               callback();
+            });
+         }, function(e)
+         {
+            console.log('Cannot retrieve requested Filesystem Quota', e);
+            callback();
+         });
+
+         /*
+          var request = new XMLHttpRequest();
+
+          //console.debug("Loading LicenseKey.txt ...");
+          request.onreadystatechange = function()
+          {
+          if (request.readyState == 4)
+          {
+          if (request.status == 200 || request.status == 0)
+          {
+          console.debug("Loaded LicenseKey ...");
+          me.getLicenseKey(request.responseText, callback, forceRefresh);
+          }
+          }
+          };
+          request.open("GET", 'licenseKey.txt', true);
+          request.send(null);
+          */
       }
       else
       {

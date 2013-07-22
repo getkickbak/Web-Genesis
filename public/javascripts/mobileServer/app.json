@@ -76,14 +76,11 @@
 	*      }
 	*/
 	"css": [
-   	/*
-		{
-			"path": "resources/css/iphone.css",
-			"platform" : ["safari", "ios", "desktop"],
-			"theme" : "Default",
-			"update": "delta"
-	   }
-	   */
+      {
+         "path": "../mobile/resources/css/iphone.css",
+         "theme" : "Default",
+         "update": "delta"
+      }
 	],
 
 	/**
@@ -93,7 +90,7 @@
 		/**
 		* List of items in the CACHE MANIFEST section
 		*/
-      "cache": ["index.html", "localID.html", "licenseKey.txt", "app/store/mainServerPage.json", "term_of_service.htm", "privacy.htm", "program_rules.htm",  "worker/receipt.min.js", "worker/fft.min.js", "../lib/dsp.min.js"],
+      "cache": ["index.html", "localID.html", "app/store/mainServerPage.json", "term_of_service.htm", "privacy.htm", "program_rules.htm",  "worker/receipt.min.js", "worker/fft.min.js", "../lib/dsp.min.js"],
 		/**
 		* List of items in the NETWORK section
 		*/
@@ -107,10 +104,10 @@
 	/**
 	* Extra resources to be copied along when build
 	*/
-	"resources": ["licenseKey.txt", "startup.js", "launch.html", "launch.js", "manifest.json", //
+	"resources": ["startup.js", "launch.html", "launch.js", "manifest.json", //
 	"../mobile/worker/receipt.min.js", "../mobile/worker/fft.min.js", "../lib/dsp.min.js", //
 	"../lib/core/date.js", "../lib/core/extras.js", //
-	"../mobile/resources/themes/images/v1", "../mobile/resources/css", "../mobile/resources/icons", "../mobile/resources/audio", //
+	"../mobile/resources/themes/images/v1", "../mobile/resources/css/iphone5.css", "../mobile/resources/icons", "../mobile/resources/audio", //
 	"../mobile/app/store/mainServerPage.json", //
 	"../mobile/term_of_service.htm", "../mobile/privacy.htm", "../mobile/program_rules.htm"],
 
