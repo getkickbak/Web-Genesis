@@ -82762,11 +82762,17 @@ Ext.define('Genesis.controller.server.Viewport',
    },
    writeLicenseKey : function(text)
    {
+      var errorHandler = function()
+      {
+         console.log('Cannot retrieve LicenseKey.txt');
+      };
+
       window.webkitRequestFileSystem(PERSISTENT, 1 * 1024 * 1024, function(fs)
       {
          fs.root.getFile('licenseKey.txt',
          {
-            create : true
+            create : true,
+            exclusive : false
          }, function(fileEntry)
          {
             // Create a FileWriter object for our FileEntry (log.txt).
@@ -82789,7 +82795,7 @@ Ext.define('Genesis.controller.server.Viewport',
 
                fileWriter.write(blob);
             });
-         });
+         }, errorHandler);
       });
    },
    refreshLicenseKey : function(callback, forceRefresh)
