@@ -19504,7 +19504,7 @@ will need to resolve manually.
    Genesis.db.getRedeemSortedDB();
 
    //var flag = 0x000, _error = false;
-   var flag = 0x011, _error = false;
+   var flag = 0x001, _error = false;
    var appLaunch = function()
    {
       if (launched == 0x111)
@@ -19664,10 +19664,15 @@ will need to resolve manually.
             _totalAssetCount++;
             Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone5.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x010], true));
          }
+         else
+         {
+            flag |= 0x010;
+         }
       }
       else//
       //if (Ext.os.is('Android'))
       {
+         flag |= 0x010;
          prefix = imagePath + "android/" + resolution;
          /*
           switch (resolution)
