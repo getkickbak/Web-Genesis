@@ -193,6 +193,10 @@ __initFb__ = function(_app, _appName)
                {
                   var callback = function()
                   {
+                     app.fb.un('connected', callback);
+                     app.fb.un('unauthorized', callback);
+                     app.fb.un('exception', callback);
+
                      var origin = db['fbLoginInProgress'] ||
                      {
                      };
@@ -205,6 +209,10 @@ __initFb__ = function(_app, _appName)
                            break;
                         }
                         case "loginpageview" :
+                        {
+                           _application.getController('client' + '.MainPage').redirectTo('signin');
+                           break;
+                        }
                         default :
                            _application.getController('client' + '.Viewport').redirectTo('signup');
                            break;
