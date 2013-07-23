@@ -225,9 +225,14 @@ Ext.define('Genesis.controller.server.Viewport',
    },
    writeLicenseKey : function(text)
    {
+      var me = this, errorHandler = function(obj, error)
+      {
+         console.log(error, obj);
+      };
+
       navigator.webkitPersistentStorage.requestQuota(1 * 1024 * 1024, function(grantedBytes)
       {
-         console.log("Local Storage " + grantedBytes + " bytes granted");
+         //console.log("Local Storage " + grantedBytes + " bytes granted");
          window.webkitRequestFileSystem(PERSISTENT, grantedBytes, function(fs)
          {
             fs.root.getFile('licenseKey.txt',
@@ -243,44 +248,31 @@ Ext.define('Genesis.controller.server.Viewport',
                   {
                      console.log('Updated LicenseKey.');
                   };
-                  fileWriter.onerror = function(e)
-                  {
-                     console.log('LicenseKey Update Failed: ' + e.toString());
-                  };
+                  fileWriter.onerror = Ext.bind(errorHandler, me, ['LicenseKey Update Failed: '], true);
 
                   // Create a new Blob and write it to log.txt.
-                  var blob = new Blob([text],
+                  fileWriter.write(new Blob([text],
                   {
                      type : 'text/plain'
-                  });
-
-                  fileWriter.write(blob);
-               }, function(e)
-               {
-                  console.log("Attempting to Update LicenseKey File : ", e);
-               });
-            }, function(e)
-            {
-               console.log("Retrivee/Create LicenseKey File : ", e);
-            })
-         }, function(e)
-         {
-            console.log("Requesting FS Quota : ", e);
-         });
+                  }));
+               }, Ext.bind(errorHandler, me, ['Attempting to Update LicenseKey File : '], true));
+            }, Ext.bind(errorHandler, me, ['Retrivee/Create LicenseKey File : '], true));
+         }, Ext.bind(errorHandler, me, ['Requesting FS Quota : '], true));
       });
    },
    refreshLicenseKey : function(callback, forceRefresh)
    {
       var me = this;
-      var errorHandler = function()
-      {
-         console.log('Cannot retrieve LicenseKey.txt');
-         callback();
-      };
 
       callback = callback || Ext.emptyFn;
       if (!Genesis.fn.isNative())
       {
+         var errorHandler = function(obj, error)
+         {
+            console.log(error, obj);
+            me.initNotification(me.licenseKeyInvalidMsg);
+         };
+
          navigator.webkitPersistentStorage.requestQuota(1 * 1024 * 1024, function(grantedBytes)
          {
             window.webkitRequestFileSystem(PERSISTENT, grantedBytes, function(fs)
@@ -301,19 +293,10 @@ Ext.define('Genesis.controller.server.Viewport',
                      };
 
                      reader.readAsText(file);
-                  }, errorHandler);
-
-               }, errorHandler);
-            }, function()
-            {
-               console.log('Cannot retrieve granted Filesystem Quota');
-               callback();
-            });
-         }, function(e)
-         {
-            console.log('Cannot retrieve requested Filesystem Quota', e);
-            callback();
-         });
+                  }, Ext.bind(errorHandler, me, ['Cannot Read from LicenseKey: '], true));
+               }, Ext.bind(errorHandler, me, ['Cannot retrieve LicenseKey: '], true));
+            }, Ext.bind(errorHandler, me, ['Cannot retrieve granted Filesystem Quota: '], true));
+         }, Ext.bind(errorHandler, me, ['Cannot retrieve requested Filesystem Quota: '], true));
 
          /*
           var request = new XMLHttpRequest();
