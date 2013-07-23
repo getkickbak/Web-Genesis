@@ -2,12 +2,12 @@ var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offline
 
 window.merchantMode = false;
 window.debugMode = false;
-window.serverHost
+window.serverHost;
 window._application = null;
 window._codec = null;
 window.appName = 'GetKickBak';
-window._hostPathPrefix = "/javascripts/build/MobileClient/";
-window._hostPath = _hostPathPrefix + ((debugMode) ? "testing" : "production") + "/";
+window._hostPathPrefix = (debugMode) ? "/javascripts/build/MobileClient/" : "/";
+window._hostPath = _hostPathPrefix + ((debugMode) ? "testing" : "") + "/";
 window.phoneGapAvailable = false;
 
 _totalAssetCount++;
@@ -187,33 +187,26 @@ Ext.Loader.setPath(
       var targetelement = "script", targetattr = "src";
       var allsuspects = document.getElementsByTagName(targetelement);
       var imagePath = _hostPath + "resources/themes/images/v1/", images = [new Image(400, 400)], prefix;
-      /*
-       var resolution = (function()
-       {
-       return (((window.screen.height >= 641) && ((window.devicePixelRatio == 1.0) || (window.devicePixelRatio >= 2.0))) ? 'mxhdpi' :
-       'lhdpi');
-       })();
+      var resolution = (function()
+      {
+         return (((window.screen.height >= 641) && ((window.devicePixelRatio == 1.0) || (window.devicePixelRatio >= 2.0))) ? 'mxhdpi' : 'lhdpi');
+      })();
 
-       for (var i = allsuspects.length; i >= 0; i--)
-       {
-       if (allsuspects[i])
-       {
-       var attr = allsuspects[i].getAttribute(targetattr);
-       if (attr)
-       {
-       Genesis.fn.filesadded[attr.replace(location.origin, "")] = [true];
-       }
-       }
-       }
-       */
+      for (var i = allsuspects.length; i >= 0; i--)
+      {
+         if (allsuspects[i])
+         {
+            var attr = allsuspects[i].getAttribute(targetattr);
+            if (attr)
+            {
+               Genesis.fn.filesadded[attr.replace(location.origin, "")] = [true];
+            }
+         }
+      }
 
       if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
       {
          prefix = imagePath + "ios";
-         /*
-          Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone.css?v=" + Genesis.constants.clientVersion, "css",
-          Ext.bind(appLaunchCallbackFn, null, [(!Ext.os.is('iPhone5')) ? 0x011 : 0x001], true));
-          */
          if (Ext.os.is('iPhone5'))
          {
             _totalAssetCount++;
