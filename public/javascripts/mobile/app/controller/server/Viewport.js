@@ -225,7 +225,7 @@ Ext.define('Genesis.controller.server.Viewport',
    },
    writeLicenseKey : function(text)
    {
-      window.webkitStorageInfo.requestQuota(PERSISTENT, 1024 * 1024, function(grantedBytes)
+      navigator.webkitPersistentStorage.requestQuota(1 * 1024 * 1024, function(grantedBytes)
       {
          console.log("Local Storage " + grantedBytes + " bytes granted");
          window.webkitRequestFileSystem(PERSISTENT, grantedBytes, function(fs)
