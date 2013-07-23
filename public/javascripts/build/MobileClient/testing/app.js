@@ -17123,6 +17123,10 @@ Ext.define('Genesis.controller.client.Settings',
    config :
    {
       models : ['Genesis.model.frontend.Account'],
+      routes :
+      {
+         'settings' : 'openSettingsPage'
+      },
       refs :
       {
          settingsPage :
@@ -17256,7 +17260,7 @@ Ext.define('Genesis.controller.client.Settings',
    updateFBSettingsPopup : function(title, toggle)
    {
       var me = this, db = Genesis.db.getLocalDB();
-      
+
       Genesis.fb.facebook_onLogin(function(params, operation)
       {
          Ext.Viewport.setMasked(null);

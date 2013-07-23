@@ -191,7 +191,7 @@ __initFb__ = function(_app, _appName)
 
                if (!app.fn.isNative())
                {
-                  var callback = function()
+                  var callback = function(p, op)
                   {
                      app.fb.un('connected', callback);
                      app.fb.un('unauthorized', callback);
@@ -201,6 +201,8 @@ __initFb__ = function(_app, _appName)
                      {
                      };
                      app.db.removeLocalDBAttrib('fbLoginInProgress');
+
+                     console.log("Originated from - " + origin['viewName']);
                      switch(origin['viewName'])
                      {
                         case 'createaccountpageview' :
@@ -208,9 +210,19 @@ __initFb__ = function(_app, _appName)
                            _application.getController('client' + '.MainPage').redirectTo('createAccount');
                            break;
                         }
-                        case "loginpageview" :
+                        case "signinpageview" :
                         {
                            _application.getController('client' + '.MainPage').redirectTo('signin');
+                           break;
+                        }
+                        case 'clientsettingspageview' :
+                        {
+                           _application.getController('client' + '.Settings').redirectTo('settings');
+                           break;
+                        }
+                        case "loginpageview" :
+                        {
+                           _application.getController('client' + '.MainPage').onFacebookLoginCallback(p, op);
                            break;
                         }
                         default :
@@ -347,7 +359,7 @@ __initFb__ = function(_app, _appName)
                {
                   title : me.titleMsg,
                   message : me.fbConnectErrorMsg,
-                  buttons : ['Try Again', 'Continue'],
+                  buttons : (app.fn.isNative() ? ['Try Again', 'Continue'] : ['Dismiss']),
                   callback : function(btn)
                   {
                      if (btn.toLowerCase() == 'try again')
