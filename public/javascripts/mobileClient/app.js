@@ -17,12 +17,12 @@ if (debugMode)
    //serverHost = 'http://192.168.0.52:3000';
    //serverHost = 'http://192.168.0.46:3000';
    //serverHost = 'http://76.10.173.153';
-   serverHost = 'http://www.dev1getkickbak.com';
+   serverHost = 'http://' + location.host.split(".")[0] + '.dev1getkickbak.com';
    //serverHost = 'http://www.devgetkickbak.com';
 }
 else
 {
-   serverHost = 'http://www.getkickbak.com';
+   serverHost = 'http://' + location.host.split(".")[0] + '.getkickbak.com';
 }
 
 /*
