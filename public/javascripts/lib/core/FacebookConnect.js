@@ -200,8 +200,6 @@ __initFb__ = function(_app, _appName)
                      var origin = db['fbLoginInProgress'] ||
                      {
                      };
-                     app.db.removeLocalDBAttrib('fbLoginInProgress');
-
                      console.log("Originated from - " + origin['viewName']);
                      switch(origin['viewName'])
                      {
@@ -229,6 +227,7 @@ __initFb__ = function(_app, _appName)
                            _application.getController('client' + '.Viewport').redirectTo('signup');
                            break;
                      }
+                     app.db.removeLocalDBAttrib('fbLoginInProgress');
                   };
                   app.fb.on('connected', callback);
                   app.fb.on('unauthorized', callback);
