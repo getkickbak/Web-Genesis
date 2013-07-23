@@ -663,7 +663,7 @@ Genesis.constants =
    {
       return this._iconSize;
    },
-   site : location.host.split(".")[1] + '.getkickbak.com',
+   site : (location.origin.match(/^file/) ? "www" : location.host.split(".")[0]) + '.getkickbak.com',
    photoSite : 'https://s3.amazonaws.com/files.getkickbak.com',
    resourceSite : "resources/" + ((_build == "MobileWeb") ? "" : "themes/"),
    debugVPrivKey : 'oSG8JclEHvRy5ngkb6ehWbb6TTRFXd8t',
