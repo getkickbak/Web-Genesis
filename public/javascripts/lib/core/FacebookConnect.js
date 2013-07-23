@@ -193,11 +193,12 @@ __initFb__ = function(_app, _appName)
                {
                   var callback = function(p, op)
                   {
+                     app.db.removeLocalDBAttrib('fbLoginInProgress');
                      app.fb.un('connected', callback);
                      app.fb.un('unauthorized', callback);
                      app.fb.un('exception', callback);
 
-                     var origin = db['fbLoginInProgress'] ||
+                     var origin = me.cb ||
                      {
                      };
                      console.log("Originated from - " + origin['viewName']);
@@ -227,7 +228,6 @@ __initFb__ = function(_app, _appName)
                            _application.getController('client' + '.Viewport').redirectTo('signup');
                            break;
                      }
-                     app.db.removeLocalDBAttrib('fbLoginInProgress');
                   };
                   app.fb.on('connected', callback);
                   app.fb.on('unauthorized', callback);
@@ -429,13 +429,12 @@ __initFb__ = function(_app, _appName)
                      'ID(' + facebook_id + ')' + '\n');
                      //me.getFriendsList();
 
-                     delete me.cb;
-
                      me._fb_connect();
                      //me.getFriendsList();
 
                      if (db['auth_code'])
                      {
+                        delete me.cb;
                         console.log("Updating Facebook Login Info ...");
                         Account['setUpdateFbLoginUrl']();
                         Account.load(0,
