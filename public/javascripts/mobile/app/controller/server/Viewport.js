@@ -225,40 +225,48 @@ Ext.define('Genesis.controller.server.Viewport',
    },
    writeLicenseKey : function(text)
    {
-      var errorHandler = function()
+      window.webkitStorageInfo.requestQuota(PERSISTENT, 1024 * 1024, function(grantedBytes)
       {
-         console.log('Cannot retrieve LicenseKey.txt');
-      };
-
-      window.webkitRequestFileSystem(PERSISTENT, 1 * 1024 * 1024, function(fs)
-      {
-         fs.root.getFile('licenseKey.txt',
+         console.log("Local Storage " + grantedBytes + " bytes granted");
+         window.webkitRequestFileSystem(PERSISTENT, grantedBytes, function(fs)
          {
-            create : true,
-            exclusive : false
-         }, function(fileEntry)
-         {
-            // Create a FileWriter object for our FileEntry (log.txt).
-            fileEntry.createWriter(function(fileWriter)
+            fs.root.getFile('licenseKey.txt',
             {
-               fileWriter.onwriteend = function(e)
+               create : true,
+               exclusive : false
+            }, function(fileEntry)
+            {
+               // Create a FileWriter object for our FileEntry (log.txt).
+               fileEntry.createWriter(function(fileWriter)
                {
-                  console.log('Updated LicenseKey.');
-               };
-               fileWriter.onerror = function(e)
-               {
-                  console.log('LicenseKey Update Failed: ' + e.toString());
-               };
+                  fileWriter.onwriteend = function(e)
+                  {
+                     console.log('Updated LicenseKey.');
+                  };
+                  fileWriter.onerror = function(e)
+                  {
+                     console.log('LicenseKey Update Failed: ' + e.toString());
+                  };
 
-               // Create a new Blob and write it to log.txt.
-               var blob = new Blob([text],
+                  // Create a new Blob and write it to log.txt.
+                  var blob = new Blob([text],
+                  {
+                     type : 'text/plain'
+                  });
+
+                  fileWriter.write(blob);
+               }, function(e)
                {
-                  type : 'text/plain'
+                  console.log("Attempting to Update LicenseKey File : ", e);
                });
-
-               fileWriter.write(blob);
-            });
-         }, errorHandler);
+            }, function(e)
+            {
+               console.log("Retrivee/Create LicenseKey File : ", e);
+            })
+         }, function(e)
+         {
+            console.log("Requesting FS Quota : ", e);
+         });
       });
    },
    refreshLicenseKey : function(callback, forceRefresh)
