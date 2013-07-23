@@ -304,10 +304,7 @@ __initFb__ = function(_app, _appName)
                if (event.url.match(me.currentLocation()))
                {
                   me.detectAccessToken(event.url);
-                  Ext.defer(function()
-                  {
-                     ref.close();
-                  }, 500);
+                  Ext.defer(ref.close, 200);
                }
             });
             ref.addEventListener('loadstop', function(event)

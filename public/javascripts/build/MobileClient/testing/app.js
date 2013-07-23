@@ -11008,15 +11008,19 @@ Ext.define('Genesis.view.client.MainPage',
                            defaultUnit : 'em',
                            padding : '1.0',
                            hideOnMaskTap : false,
-                           layout : 'hbox',
+                           //layout : 'hbox',
                            defaults :
                            {
-                              margin : '0 0.7 0 0',
-                              flex : 1,
+                              //flex : 1,
                               xtype : 'button',
                               defaultUnit : 'em'
                            },
                            items : [
+                           {
+                              margin : '0 0 0.5 0',
+                              text : 'Logout',
+                              tag : 'logout'
+                           },
                            {
                               text : 'Cancel',
                               ui : 'cancel',
@@ -11025,11 +11029,6 @@ Ext.define('Genesis.view.client.MainPage',
                               {
                                  this.actions.hide();
                               }
-                           },
-                           {
-                              margin : '0 0 0 0',
-                              text : 'Logout',
-                              tag : 'logout'
                            }]
                         });
                         Ext.Viewport.add(this.actions);
