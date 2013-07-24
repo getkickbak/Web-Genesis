@@ -296,7 +296,7 @@ Ext.define('Genesis.controller.client.Checkins',
    onCheckinTap : function(promotion)
    {
       var me = this;
-      
+
       if (promotion)
       {
          var controller = me.getApplication().getController('client' + '.Merchants');
@@ -555,10 +555,22 @@ Ext.define('Genesis.controller.client.Checkins',
          //me.getExploreList().setVisibility(false);
       }
       me.fireEvent('exploreLoad', false);
+
+      //
+      // Display Add2Home Feature is necessary to remind users
+      //
+      if (!Genesis.fn.isNative())
+      {
+         addToHome.show();
+      }
    },
    onExploreDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var cestore = Ext.StoreMgr.get('CheckinExploreStore');
+      if (!Genesis.fn.isNative())
+      {
+         addToHome.close();
+      }
    },
    onRefreshTap : function(b, e, eOpts)
    {

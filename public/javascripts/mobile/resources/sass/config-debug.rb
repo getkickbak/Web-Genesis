@@ -10,3 +10,5 @@ sass_path    = dir
 css_path     = File.join(dir, "..", "css")
 environment  = :development
 output_style = :expanded
+
+require 'sass-css-importer'

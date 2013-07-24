@@ -2,7 +2,7 @@ var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offline
 
 window.merchantMode = false;
 window.debugMode = false;
-window.serverHost;
+window.serverHost
 window._application = null;
 window._codec = null;
 window.appName = 'GetKickBak';
@@ -25,6 +25,21 @@ else
    serverHost = 'http://' + location.host.split(".")[0] + '.getkickbak.com';
 }
 
+//
+// Add2Home Feature Configuration
+//
+var addToHomeConfig =
+{
+   animationIn : 'bubble',
+   animationOut : 'drop',
+   lifespan : 10000,
+   returningVisitor : false,
+   expire : 2,
+   touchIcon : true,
+   autostart : false,
+   startDelay : 0
+};
+
 /*
 This file is generated and updated by Sencha Cmd. You can edit this file as
 needed for your application, but these edits will have to be merged by
@@ -41,6 +56,7 @@ will need to resolve manually.
 //@require @packageOverrides
 
 //@require ../mobile/lib/core/Overrides.js
+//@require ../lib/add2home.js
 
 //<debug>
 Ext.Loader.setPath(
