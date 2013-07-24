@@ -540,7 +540,6 @@ Ext.define('Genesis.controller.server.Rewards',
             iconType : 'prizewon',
             icon : 'rss',
             //cls : 'viewport',
-            layoutType : 'vertical',
             title : me.lookingForMobileDeviceMsg(),
             buttons : [
             {
@@ -551,7 +550,6 @@ Ext.define('Genesis.controller.server.Rewards',
                handler : Ext.bind(me.rewardItemCb, me, ['manual'])
             },
             {
-               margin : '0.5 0 0 0',
                text : 'Cancel',
                ui : 'cancel',
                height : (3 * 1.5) + 'em',

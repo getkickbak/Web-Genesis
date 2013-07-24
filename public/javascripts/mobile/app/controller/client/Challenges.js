@@ -1066,7 +1066,6 @@ Ext.define('Genesis.controller.client.Challenges',
             {
                me._referralActions = Ext.create('Genesis.view.widgets.PopupItemDetail',
                {
-                  layoutType : 'horizontal',
                   iconType : 'prizewon',
                   icon : 'phoneInHand',
                   title : me.confirmRecvReferralsMsg,
@@ -1092,7 +1091,6 @@ Ext.define('Genesis.controller.client.Challenges',
                      }
                   },
                   {
-                     margin : '0.5 0 0 0',
                      text : 'Cancel',
                      ui : 'cancel',
                      height : '3em',

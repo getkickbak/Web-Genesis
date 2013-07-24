@@ -24,23 +24,12 @@ window.plugins = window.plugins ||
             {
                _cntlr._actions = Ext.create('Genesis.view.widgets.PopupItemDetail',
                {
-                  layoutType : 'horizontal',
                   iconType : 'prizewon',
                   icon : 'phoneInHand',
                   title : cntlr.showToServerMsg(),
                   buttons : [
                   {
-                     margin : '0 0.5 0 0',
-                     text : 'Cancel',
-                     ui : 'cancel',
-                     height : '3em',
-                     handler : function()
-                     {
-                        _cntlr._actions.hide();
-                        viewport.popUpInProgress = false;
-                     }
-                  },
-                  {
+                     margin : '0 0 0.5 0',
                      text : 'Proceed',
                      ui : 'action',
                      height : '3em',
@@ -49,6 +38,16 @@ window.plugins = window.plugins ||
                         viewport.popUpInProgress = false;
                         _cntlr._actions.hide();
                         _win();
+                     }
+                  },
+                  {
+                     text : 'Cancel',
+                     ui : 'cancel',
+                     height : '3em',
+                     handler : function()
+                     {
+                        _cntlr._actions.hide();
+                        viewport.popUpInProgress = false;
                      }
                   }]
                });

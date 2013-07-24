@@ -8022,7 +8022,7 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
       left : 0,
       top : 0,
       right : 0,
-      //padding : '1.0',
+      padding : 0,
       hideOnMaskTap : false,
       defaultUnit : 'em',
       layout :
@@ -8030,7 +8030,6 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
          type : 'vbox',
          pack : 'middle'
       },
-      layoutType : 'vertical',
       defaults :
       {
          xtype : 'container',
@@ -8052,6 +8051,8 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
       delete config['preItemsConfig'];
       delete config['postItemsConfig'];
 
+      var orientation = Ext.Viewport.getOrientation();
+      var mobile = Ext.os.is('Phone') || Ext.os.is('Tablet');
       Ext.merge(config,
       {
          items : [
@@ -8072,12 +8073,19 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
             })
          },
          {
-            docked : 'bottom',
-            layout : (config['layoutType'] == 'horizontal') ? 'hbox' : 'vbox',
+            right : (mobile && (orientation == 'landscape')) ? 0 : null,
+            bottom : (mobile && (orientation == 'landscape')) ? 0 : null,
+            docked : (mobile && (orientation == 'landscape')) ? null : 'bottom',
+            tag : 'buttons',
+            width : (mobile && (orientation == 'landscape')) ? '10em' : 'auto',
+            layout :
+            {
+               type : 'vbox',
+               pack : 'end'
+            },
             defaults :
             {
                xtype : 'button',
-               flex : (config['layoutType'] == 'horizontal') ? 1 : null,
                defaultUnit : 'em'
             },
             padding : '0 1.0 1.0 1.0',
@@ -8087,7 +8095,41 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
       delete config['iconType'];
       delete config['icon'];
 
+      Ext.Viewport.on('orientationchange', me.onOrientationChange, me);
+      me.on(
+      {
+         destroy : 'onDestroy',
+         single : true,
+         scope : me
+      });
       me.callParent(arguments);
+      me.element.setStyle('padding', '0px');
+   },
+   onDestroy : function()
+   {
+      Ext.Viewport.un('orientationchange', me.onOrientationChange);
+   },
+   onOrientationChange : function(v, newOrientation, width, height, eOpts)
+   {
+      var me = this, buttons = me.query('container[tag=buttons]')[0];
+      buttons.setDocked((newOrientation == 'landscape') ? null : 'bottom');
+      switch (newOrientation)
+      {
+         case 'landscape' :
+         {
+            buttons.setRight(0);
+            buttons.setBottom(0);
+            buttons.setWidth('10em');
+            break;
+         }
+         case 'portrait' :
+         {
+            buttons.setRight(null);
+            buttons.setBottom(null);
+            buttons.setWidth('auto');
+            break;
+         }
+      }
    }
 });
 
@@ -11226,6 +11268,7 @@ Ext.define('Genesis.view.SignInPage',
          tag : 'login',
          text : 'Sign In',
          defaultUnit : 'em',
+         height : '3em',
          xtype : 'button',
          margin : '0.5 0 0 0'
       },
@@ -11233,6 +11276,7 @@ Ext.define('Genesis.view.SignInPage',
          xtype : 'button',
          tag : 'reset',
          text : 'Password Reset',
+         height : '3em',
          defaultUnit : 'em',
          xtype : 'button',
          margin : '0.5 0 0 0'
