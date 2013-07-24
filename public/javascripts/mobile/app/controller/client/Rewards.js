@@ -528,12 +528,12 @@ Ext.define('Genesis.controller.client.Rewards',
                   // Stop broadcasting now ...
                   //
                   /*
-                  if (!Ext.get(Ext.DomQuery.select('.x-innerhtml',b.element.dom)[0]).getPageBox(true).isOutOfBound(
-                  {
-                     x : e.pageX,
-                     y : e.pageY
-                  }))
-                  */
+                   if (!Ext.get(Ext.DomQuery.select('.x-innerhtml',b.element.dom)[0]).getPageBox(true).isOutOfBound(
+                   {
+                   x : e.pageX,
+                   y : e.pageY
+                   }))
+                   */
                   {
                      me.self.playSoundFile(viewport.sound_files['clickSound']);
                      Ext.Ajax.abort();
@@ -564,8 +564,8 @@ Ext.define('Genesis.controller.client.Rewards',
    },
    onEarnPts : function(notUseGeolocation)
    {
-      var me = this;
-      var allowedMsg = me.isOpenAllowed();
+      var me = this, allowedMsg = me.isOpenAllowed();
+
       if (allowedMsg !== true)
       {
          Ext.device.Notification.show(
@@ -578,58 +578,12 @@ Ext.define('Genesis.controller.client.Rewards',
       }
       else
       {
-         Ext.Viewport.setMasked(
+         window.plugins.proximityID.preLoadSend(me, Ext.bind(function(_notUseGeolocation)
          {
-            xtype : 'loadmask',
-            message : me.prepareToSendMerchantDeviceMsg
-         });
-
-         window.plugins.proximityID.preLoadSend(function()
-         {
-            Ext.Viewport.setMasked(null);
-            Ext.defer(function()
-            {
-               var viewport = me.getViewPortCntlr();
-               if (!me._actions)
-               {
-                  me._actions = Ext.create('Genesis.view.widgets.PopupItemDetail',
-                  {
-                     iconType : 'prizewon',
-                     icon : 'phoneInHand',
-                     title : me.showToServerMsg(),
-                     buttons : [
-                     {
-                        margin : '0 0 0.5 0',
-                        text : 'Proceed',
-                        ui : 'action',
-                        height : '3em',
-                        handler : function()
-                        {
-                           viewport.popUpInProgress = false;
-                           me._actions.hide();
-                           //var earnPts = Ext.bind(me.onEarnPtsSC, me);
-                           //me.checkReferralPrompt(earnPts, earnPts);
-                           me.fireEvent('rewarditem', notUseGeolocation);
-                        }
-                     },
-                     {
-                        margin : '0.5 0 0 0',
-                        text : 'Cancel',
-                        ui : 'cancel',
-                        height : '3em',
-                        handler : function()
-                        {
-                           viewport.popUpInProgress = false;
-                           me._actions.hide();
-                        }
-                     }]
-                  });
-                  Ext.Viewport.add(me._actions);
-               }
-               viewport.popUpInProgress = true;
-               me._actions.show();
-            }, 0.25 * 1000, me);
-         });
+            //var earnPts = Ext.bind(me.onEarnPtsSC, me);
+            //me.checkReferralPrompt(earnPts, earnPts);
+            me.fireEvent('rewarditem', _notUseGeolocation);
+         }, me, [notUseGeolocation]));
       }
    },
    updateMetaDataInfo : function(metaData)

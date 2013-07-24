@@ -76549,6 +76549,7 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
          type : 'vbox',
          pack : 'middle'
       },
+      layoutType : 'vertical',
       defaults :
       {
          xtype : 'container',
@@ -76591,9 +76592,11 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
          },
          {
             docked : 'bottom',
+            layout : (config['layoutType'] == 'horizontal') ? 'hbox' : 'vbox',
             defaults :
             {
                xtype : 'button',
+               flex : (config['layoutType'] == 'horizontal') ? 1 : null,
                defaultUnit : 'em'
             },
             padding : '0 1.0 1.0 1.0',
@@ -79010,20 +79013,21 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
             iconType : 'prizewon',
             icon : 'rss',
             //cls : 'viewport',
+            layoutType : 'vertical',
             title : message,
             buttons : [
             {
                margin : '0 0 0.5 0',
                text : me.mobilePhoneInputMsg,
                ui : 'action',
-               height : '3em',
+               height : (3 * 1.5) + 'em',
                handler : Ext.bind(me.redeemItemCb, me, ['manual'])
             },
             {
                margin : '0.5 0 0 0',
                text : 'Cancel',
                ui : 'cancel',
-               height : '3em',
+               height : (3 * 1.5) + 'em',
                handler : Ext.bind(me.redeemItemCb, me, ['cancel'])
             }]
          });
@@ -81455,20 +81459,21 @@ Ext.define('Genesis.controller.server.Rewards',
             iconType : 'prizewon',
             icon : 'rss',
             //cls : 'viewport',
+            layoutType : 'vertical',
             title : me.lookingForMobileDeviceMsg(),
             buttons : [
             {
                margin : '0 0 0.5 0',
                text : me.mobilePhoneInputMsg,
                ui : 'action',
-               height : '3em',
+               height : (3 * 1.5) + 'em',
                handler : Ext.bind(me.rewardItemCb, me, ['manual'])
             },
             {
                margin : '0.5 0 0 0',
                text : 'Cancel',
                ui : 'cancel',
-               height : '3em',
+               height : (3 * 1.5) + 'em',
                handler : Ext.bind(me.rewardItemCb, me, ['cancel'])
             }]
          });

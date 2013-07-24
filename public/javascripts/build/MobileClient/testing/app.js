@@ -8030,6 +8030,7 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
          type : 'vbox',
          pack : 'middle'
       },
+      layoutType : 'vertical',
       defaults :
       {
          xtype : 'container',
@@ -8072,9 +8073,11 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
          },
          {
             docked : 'bottom',
+            layout : (config['layoutType'] == 'horizontal') ? 'hbox' : 'vbox',
             defaults :
             {
                xtype : 'button',
+               flex : (config['layoutType'] == 'horizontal') ? 1 : null,
                defaultUnit : 'em'
             },
             padding : '0 1.0 1.0 1.0',
@@ -9123,7 +9126,7 @@ Ext.define('Genesis.controller.mobileClient.Challenges',
    {
       var me = this;
       this.callParent(arguments);
-      
+
       if (Ext.os.is('Phone'))
       {
          Ext.Viewport.on('orientationchange', function(v, newOrientation, width, height, eOpts)
@@ -9406,92 +9409,17 @@ Ext.define('Genesis.controller.mobileClient.Challenges',
             {
                if (selectedItem.get('require_verif'))
                {
-                  var send = function()
+                  window.plugins.proximityID.preLoadSend(me, Ext.bind(function(_selectedItem)
                   {
-                     if (!me._actions)
+                     if (_selectedItem.get('type').value == 'photo')
                      {
-                        me._actions = Ext.create('Genesis.view.widgets.PopupItemDetail',
-                        {
-                           iconType : 'prizewon',
-                           icon : 'phoneInHand',
-                           title : me.showToServerMsg(),
-                           buttons : [
-                           {
-                              margin : '0 0 0.5 0',
-                              text : 'Proceed',
-                              ui : 'action',
-                              height : '3em',
-                              handler : function()
-                              {
-                                 viewport.popUpInProgress = false;
-                                 me._actions.hide();
-                                 if (selectedItem.get('type').value == 'photo')
-                                 {
-                                    me.getGeoLocation();
-                                 }
-                                 else
-                                 {
-                                    me.onLocationUpdate(null);
-                                 }
-                              }
-                           },
-                           {
-                              margin : '0.5 0 0 0',
-                              text : 'Cancel',
-                              ui : 'cancel',
-                              height : '3em',
-                              handler : function()
-                              {
-                                 viewport.popUpInProgress = false;
-                                 me._actions.hide();
-                              }
-                           }]
-                        });
-                        Ext.Viewport.add(me._actions);
+                        me.getGeoLocation();
                      }
-                     viewport.popUpInProgress = true;
-                     me._actions.show();
-                     /*
-                      Ext.device.Notification.show(
-                      {
-                      title : selectedItem.get('name') + ' Challenge',
-                      message : me.showToServerMsg(),
-                      buttons : ['Proceed', 'Cancel'],
-                      callback : function(btn)
-                      {
-                      if (btn.toLowerCase() == 'proceed')
-                      {
-                      if (selectedItem.get('type').value == 'photo')
-                      {
-                      me.getGeoLocation();
-                      }
-                      else
-                      {
-                      me.onLocationUpdate(null);
-                      }
-                      }
-                      }
-                      });
-                      */
-                  };
-
-                  if (Genesis.fn.isNative())
-                  {
-                     Ext.Viewport.setMasked(
+                     else
                      {
-                        xtype : 'loadmask',
-                        message : me.prepareToSendMerchantDeviceMsg
-                     });
-                     window.plugins.proximityID.preLoadSend(function()
-                     {
-                        Ext.Viewport.setMasked(null);
-                        send();
-                     });
-                  }
-                  else
-                  {
-                     send();
-                  }
+                        me.onLocationUpdate(null);
+                     }
+                  }, me, [selectedItem]));
                }
                else
                {
@@ -9585,12 +9513,12 @@ Ext.define('Genesis.controller.mobileClient.Challenges',
                      // Stop broadcasting now ...
                      //
                      /*
-                     if (!Ext.get(Ext.DomQuery.select('.x-innerhtml',b.element.dom)[0]).getPageBox(true).isOutOfBound(
-                     {
-                        x : e.pageX,
-                        y : e.pageY
-                     }))
-                     */
+                      if (!Ext.get(Ext.DomQuery.select('.x-innerhtml',b.element.dom)[0]).getPageBox(true).isOutOfBound(
+                      {
+                      x : e.pageX,
+                      y : e.pageY
+                      }))
+                      */
                      {
                         Ext.Ajax.abort();
                         if (me.identifiers)
@@ -14826,71 +14754,10 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
          case 'redeemPrize' :
          case 'redeemReward' :
          {
-            var send = function()
+            window.plugins.proximityID.preLoadSend(me, Ext.bind(function(_btn, _venue, _view)
             {
-               if (!me._actions)
-               {
-                  me._actions = Ext.create('Genesis.view.widgets.PopupItemDetail',
-                  {
-                     iconType : 'prizewon',
-                     icon : 'phoneInHand',
-                     title : me.showToServerMsg(),
-                     buttons : [
-                     {
-                        margin : '0 0 0.5 0',
-                        text : 'Proceed',
-                        ui : 'action',
-                        height : '3em',
-                        handler : function()
-                        {
-                           viewport.popUpInProgress = false;
-                           me._actions.hide();
-                           me.fireEvent('redeemitem', btn, venue, view);
-                        }
-                     },
-                     {
-                        margin : '0.5 0 0 0',
-                        text : 'Cancel',
-                        ui : 'cancel',
-                        height : '3em',
-                        handler : function()
-                        {
-                           me._actions.hide();
-                           viewport.popUpInProgress = false;
-                        }
-                     }]
-                  });
-                  Ext.Viewport.add(me._actions);
-               }
-               viewport.popUpInProgress = true;
-               me._actions.show();
-               /*
-                Ext.device.Notification.show(
-                {
-                title : title,
-                message : me.showToServerMsg(),
-                buttons : ['Confirm', 'Cancel'],
-                callback : function(b)
-                {
-                if (b.toLowerCase() == 'confirm')
-                {
-                me.fireEvent('redeemitem', btn, venue, view);
-                }
-                }
-                });
-                */
-            };
-
-            Ext.Viewport.setMasked(
-            {
-               xtype : 'loadmask',
-               message : me.prepareToSendMerchantDeviceMsg
-            });
-            window.plugins.proximityID.preLoadSend(function()
-            {
-               Ext.Viewport.setMasked(null);
-               Ext.defer(send, 0.25 * 1000, me);
-            });
+               me.fireEvent('redeemitem', _btn, _venue, _view);
+            }, me, [btn, venue, view]));
             break;
          }
       }
@@ -16555,12 +16422,12 @@ Ext.define('Genesis.controller.client.Rewards',
                   // Stop broadcasting now ...
                   //
                   /*
-                  if (!Ext.get(Ext.DomQuery.select('.x-innerhtml',b.element.dom)[0]).getPageBox(true).isOutOfBound(
-                  {
-                     x : e.pageX,
-                     y : e.pageY
-                  }))
-                  */
+                   if (!Ext.get(Ext.DomQuery.select('.x-innerhtml',b.element.dom)[0]).getPageBox(true).isOutOfBound(
+                   {
+                   x : e.pageX,
+                   y : e.pageY
+                   }))
+                   */
                   {
                      me.self.playSoundFile(viewport.sound_files['clickSound']);
                      Ext.Ajax.abort();
@@ -16591,8 +16458,8 @@ Ext.define('Genesis.controller.client.Rewards',
    },
    onEarnPts : function(notUseGeolocation)
    {
-      var me = this;
-      var allowedMsg = me.isOpenAllowed();
+      var me = this, allowedMsg = me.isOpenAllowed();
+
       if (allowedMsg !== true)
       {
          Ext.device.Notification.show(
@@ -16605,58 +16472,12 @@ Ext.define('Genesis.controller.client.Rewards',
       }
       else
       {
-         Ext.Viewport.setMasked(
+         window.plugins.proximityID.preLoadSend(me, Ext.bind(function(_notUseGeolocation)
          {
-            xtype : 'loadmask',
-            message : me.prepareToSendMerchantDeviceMsg
-         });
-
-         window.plugins.proximityID.preLoadSend(function()
-         {
-            Ext.Viewport.setMasked(null);
-            Ext.defer(function()
-            {
-               var viewport = me.getViewPortCntlr();
-               if (!me._actions)
-               {
-                  me._actions = Ext.create('Genesis.view.widgets.PopupItemDetail',
-                  {
-                     iconType : 'prizewon',
-                     icon : 'phoneInHand',
-                     title : me.showToServerMsg(),
-                     buttons : [
-                     {
-                        margin : '0 0 0.5 0',
-                        text : 'Proceed',
-                        ui : 'action',
-                        height : '3em',
-                        handler : function()
-                        {
-                           viewport.popUpInProgress = false;
-                           me._actions.hide();
-                           //var earnPts = Ext.bind(me.onEarnPtsSC, me);
-                           //me.checkReferralPrompt(earnPts, earnPts);
-                           me.fireEvent('rewarditem', notUseGeolocation);
-                        }
-                     },
-                     {
-                        margin : '0.5 0 0 0',
-                        text : 'Cancel',
-                        ui : 'cancel',
-                        height : '3em',
-                        handler : function()
-                        {
-                           viewport.popUpInProgress = false;
-                           me._actions.hide();
-                        }
-                     }]
-                  });
-                  Ext.Viewport.add(me._actions);
-               }
-               viewport.popUpInProgress = true;
-               me._actions.show();
-            }, 0.25 * 1000, me);
-         });
+            //var earnPts = Ext.bind(me.onEarnPtsSC, me);
+            //me.checkReferralPrompt(earnPts, earnPts);
+            me.fireEvent('rewarditem', _notUseGeolocation);
+         }, me, [notUseGeolocation]));
       }
    },
    updateMetaDataInfo : function(metaData)

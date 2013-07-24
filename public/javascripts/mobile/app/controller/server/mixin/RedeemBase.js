@@ -225,20 +225,21 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
             iconType : 'prizewon',
             icon : 'rss',
             //cls : 'viewport',
+            layoutType : 'vertical',
             title : message,
             buttons : [
             {
                margin : '0 0 0.5 0',
                text : me.mobilePhoneInputMsg,
                ui : 'action',
-               height : '3em',
+               height : (3 * 1.5) + 'em',
                handler : Ext.bind(me.redeemItemCb, me, ['manual'])
             },
             {
                margin : '0.5 0 0 0',
                text : 'Cancel',
                ui : 'cancel',
-               height : '3em',
+               height : (3 * 1.5) + 'em',
                handler : Ext.bind(me.redeemItemCb, me, ['cancel'])
             }]
          });

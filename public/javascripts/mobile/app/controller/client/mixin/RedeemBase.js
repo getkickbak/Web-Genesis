@@ -293,71 +293,10 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
          case 'redeemPrize' :
          case 'redeemReward' :
          {
-            var send = function()
+            window.plugins.proximityID.preLoadSend(me, Ext.bind(function(_btn, _venue, _view)
             {
-               if (!me._actions)
-               {
-                  me._actions = Ext.create('Genesis.view.widgets.PopupItemDetail',
-                  {
-                     iconType : 'prizewon',
-                     icon : 'phoneInHand',
-                     title : me.showToServerMsg(),
-                     buttons : [
-                     {
-                        margin : '0 0 0.5 0',
-                        text : 'Proceed',
-                        ui : 'action',
-                        height : '3em',
-                        handler : function()
-                        {
-                           viewport.popUpInProgress = false;
-                           me._actions.hide();
-                           me.fireEvent('redeemitem', btn, venue, view);
-                        }
-                     },
-                     {
-                        margin : '0.5 0 0 0',
-                        text : 'Cancel',
-                        ui : 'cancel',
-                        height : '3em',
-                        handler : function()
-                        {
-                           me._actions.hide();
-                           viewport.popUpInProgress = false;
-                        }
-                     }]
-                  });
-                  Ext.Viewport.add(me._actions);
-               }
-               viewport.popUpInProgress = true;
-               me._actions.show();
-               /*
-                Ext.device.Notification.show(
-                {
-                title : title,
-                message : me.showToServerMsg(),
-                buttons : ['Confirm', 'Cancel'],
-                callback : function(b)
-                {
-                if (b.toLowerCase() == 'confirm')
-                {
-                me.fireEvent('redeemitem', btn, venue, view);
-                }
-                }
-                });
-                */
-            };
-
-            Ext.Viewport.setMasked(
-            {
-               xtype : 'loadmask',
-               message : me.prepareToSendMerchantDeviceMsg
-            });
-            window.plugins.proximityID.preLoadSend(function()
-            {
-               Ext.Viewport.setMasked(null);
-               Ext.defer(send, 0.25 * 1000, me);
-            });
+               me.fireEvent('redeemitem', _btn, _venue, _view);
+            }, me, [btn, venue, view]));
             break;
          }
       }

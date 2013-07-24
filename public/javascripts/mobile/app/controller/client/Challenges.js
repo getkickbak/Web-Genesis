@@ -1066,6 +1066,7 @@ Ext.define('Genesis.controller.client.Challenges',
             {
                me._referralActions = Ext.create('Genesis.view.widgets.PopupItemDetail',
                {
+                  layoutType : 'horizontal',
                   iconType : 'prizewon',
                   icon : 'phoneInHand',
                   title : me.confirmRecvReferralsMsg,
@@ -1104,31 +1105,6 @@ Ext.define('Genesis.controller.client.Challenges',
                Ext.Viewport.add(me._referralActions);
             }
             me._referralActions.show();
-
-            /*
-             Ext.device.Notification.show(
-             {
-             title : 'Referral Challenge',
-             message : me.confirmRecvReferralsMsg,
-             buttons : ['Proceed', 'Cancel'],
-             callback : function(btn)
-             {
-             if (btn.toLowerCase() == 'proceed')
-             {
-             if (cb)
-             {
-             me.referralCbFn = cb;
-             }
-             delete me.selectedItem;
-             me.metaData =
-             {
-             position : null
-             };
-             me.scanQRCode();
-             }
-             }
-             });
-             */
             break;
          }
       }

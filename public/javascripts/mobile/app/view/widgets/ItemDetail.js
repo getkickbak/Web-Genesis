@@ -59,6 +59,7 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
          type : 'vbox',
          pack : 'middle'
       },
+      layoutType : 'vertical',
       defaults :
       {
          xtype : 'container',
@@ -101,9 +102,11 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
          },
          {
             docked : 'bottom',
+            layout : (config['layoutType'] == 'horizontal') ? 'hbox' : 'vbox',
             defaults :
             {
                xtype : 'button',
+               flex : (config['layoutType'] == 'horizontal') ? 1 : null,
                defaultUnit : 'em'
             },
             padding : '0 1.0 1.0 1.0',
