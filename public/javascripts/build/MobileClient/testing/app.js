@@ -19677,13 +19677,13 @@ var addToHome = (function (w) {
 var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false;
 
 window.merchantMode = false;
-window.debugMode = true;
+window.debugMode = false;
 window.serverHost
 window._application = null;
 window._codec = null;
 window.appName = 'GetKickBak';
 window._hostPathPrefix = (debugMode) ? "/javascripts/build/MobileClient/" : "/";
-window._hostPath = _hostPathPrefix + ((debugMode) ? "testing" : "") + "";
+window._hostPath = _hostPathPrefix + ((debugMode) ? "testing/" : "") + "";
 window.phoneGapAvailable = false;
 
 _totalAssetCount++;
