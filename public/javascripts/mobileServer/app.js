@@ -1,12 +1,12 @@
 var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false;
 
 window.merchantMode = true;
-window.debugMode = false;
+window.debugMode = true;
 window.serverHost;
 window._application = null;
 window.appName = 'MerKickBak';
 window._hostPathPrefix = (debugMode) ? "/javascripts/build/MobileServer/" : "/merchant/";
-window._hostPath = _hostPathPrefix + ((debugMode) ? "testing" : "") + "";
+window._hostPath = _hostPathPrefix + ((debugMode) ? "testing/" : "") + "";
 window.phoneGapAvailable = false;
 
 _totalAssetCount++;

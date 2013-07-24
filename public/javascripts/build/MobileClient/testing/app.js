@@ -19677,7 +19677,7 @@ var addToHome = (function (w) {
 var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false;
 
 window.merchantMode = false;
-window.debugMode = false;
+window.debugMode = true;
 window.serverHost
 window._application = null;
 window._codec = null;
