@@ -76,4 +76,7 @@
       </x-script-def>
       <x-app-build/>
    </target>
+   <target name="-after-build">
+      <delete dir="${app.build.dir}/mobile"/>
+   </target>
 </project>

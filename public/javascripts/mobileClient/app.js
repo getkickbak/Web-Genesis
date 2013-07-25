@@ -141,11 +141,11 @@ Ext.Loader.setPath(
                {
                   title : 'Application Update',
                   message : "This application has just successfully been updated to the latest version. Reload now?",
-                  buttons : ['Yes', 'No'],
+                  buttons : ['No', 'Yes'],
                   disableAnimations : true,
                   callback : function(buttonId)
                   {
-                     if (buttonId === 'yes')
+                     if (!buttonId || (buttonId.toLowerCase() === 'yes'))
                      {
                         window.location.reload();
                      }
