@@ -19717,6 +19717,8 @@ var addToHome = (function(w)
       });
 })(window);
 
+var pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false;
+
 window.debugMode = true;
 window.merchantMode = false;
 window.serverHost = location.origin;
@@ -19755,7 +19757,7 @@ will need to resolve manually.
    Genesis.db.getRedeemIndexDB();
    Genesis.db.getRedeemSortedDB();
 
-   var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false, flag = 0x001, _error = false;
+   var launched = 0x000, flag = 0x001, _error = false;
    var appLaunch = function()
    {
       if (launched == 0x111)
