@@ -105,6 +105,24 @@
 
             for (j = 0, jln = platform.length; j < jln; j++) {
                 switch (platform[j]) {
+                    case 'android-lhdpi' :
+                        profileMatch = /(Android|Silk)/.test(ua) && !((window.devicePixelRatio == 1.0) || (window.devicePixelRatio >= 2.0));
+                        break;
+                    case 'android-mxhdpi' :
+                        profileMatch = /(Android|Silk)/.test(ua) && ((window.devicePixelRatio == 1.0) || (window.devicePixelRatio >= 2.0));
+                        break;
+                    case 'blackberry-lhdpi' :
+                        profileMatch = /(BlackBerry|BB)/.test(ua) && !((window.devicePixelRatio == 1.0) || (window.devicePixelRatio >= 2.0));
+                        break;
+                    case 'blackberry-mxhdpi' :
+                        profileMatch = /(BlackBerry|BB)/.test(ua) && ((window.devicePixelRatio == 1.0) || (window.devicePixelRatio >= 2.0));
+                        break;
+                    case 'ie10-lhdpi' :
+                        profileMatch = /MSIE 10/.test(ua) && !((window.devicePixelRatio == 1.0) || (window.devicePixelRatio >= 2.0));
+                        break;
+                    case 'ie10-mxhdpi' :
+                        profileMatch = /MSIE 10/.test(ua) && ((window.devicePixelRatio == 1.0) || (window.devicePixelRatio >= 2.0));
+                        break;
                     case 'phone':
                         profileMatch = isPhone(ua);
                         break;

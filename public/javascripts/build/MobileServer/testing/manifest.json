@@ -1,6 +1,6 @@
 {
    "name": "MerKickBak",
-   "description": "Merchant App for KICKBAK Loyalty Program",
+   "description": "Merchant App for KICKBAK",
    "version": "2.2.0",
    "app": {
       "background": {
