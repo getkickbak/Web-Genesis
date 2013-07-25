@@ -84418,8 +84418,6 @@ Ext.define('Genesis.plugin.PullRefresh',
    }
 });
 
-var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false;
-
 window.debugMode = true;
 window.merchantMode = true;
 window.serverHost = location.origin;
@@ -84453,7 +84451,7 @@ will need to resolve manually.
 {
    Genesis.db.getLocalDB();
 
-   var flag = 0x100, _error = false;
+   var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false, flag = 0x100, _error = false;
    var appLaunch = function()
    {
       if (launched == 0x111)
@@ -84545,9 +84543,10 @@ will need to resolve manually.
                   title : 'Application Update',
                   disableAnimations : true,
                   message : "This application has just successfully been updated to the latest version. Reload now?",
+                  buttons : ['No', 'Yes'],
                   callback : function(buttonId)
                   {
-                     if (buttonId === 'yes')
+                     if (!buttonId || (buttonId.toLowerCase() === 'yes'))
                      {
                         window.location.reload();
                      }

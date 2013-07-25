@@ -1,6 +1,4 @@
-var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false;
-
-window.debugMode = false;
+window.debugMode = true;
 window.merchantMode = false;
 window.serverHost = location.origin;
 window._application = null;
@@ -46,8 +44,7 @@ Ext.Loader.setPath(
    Genesis.db.getRedeemIndexDB();
    Genesis.db.getRedeemSortedDB();
 
-   //var flag = 0x000, _error = false;
-   var flag = 0x001, _error = false;
+   var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false, flag = 0x001, _error = false;
    var appLaunch = function()
    {
       if (launched == 0x111)
