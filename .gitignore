@@ -5,3 +5,4 @@ log/*.log
 tmp/
 .DS_Store
 public/javascripts/mobile/resources/sass/.sass-cache/*/*
+public/javascripts/mobileWeb/resources/sass/.sass-cache/*/*
