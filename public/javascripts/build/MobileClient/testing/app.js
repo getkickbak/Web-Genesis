@@ -19412,11 +19412,8 @@ var addToHome = (function(w)
       isSafari = true;
       isStandalone = nav.standalone;
 
-      if (isIDevice)
-      {
-         OSVersion = navigator.userAgent.match(/Version\/(\d+\.*\d+)/)[1];
-      }
-      else if (isAndroid)
+      OSVersion = navigator.userAgent.match(/Version\/(\d+\.*\d+)/)[1];
+      if (isAndroid)
       {
          OSVersion = navigator.userAgent.match(/(Android|Silk)\ (\d+\.*\d*)/)[2];
       }
