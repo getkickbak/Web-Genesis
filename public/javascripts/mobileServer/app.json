@@ -90,7 +90,7 @@
 		/**
 		* List of items in the CACHE MANIFEST section
 		*/
-      "cache": ["index.html", "app/store/mainServerPage.json", "term_of_service.htm", "privacy.htm", "program_rules.htm",  "worker/receipt.min.js", "worker/fft.min.js", "../lib/dsp.min.js"],
+      "cache": ["index.html", "app/store/mainServerPage.json", "resources/css/iphone5.css", "term_of_service.htm", "privacy.htm", "program_rules.htm",  "worker/receipt.min.js", "worker/fft.min.js", "../lib/dsp.min.js"],
 		/**
 		* List of items in the NETWORK section
 		*/
@@ -114,7 +114,7 @@
 	/**
 	* File / directory name matchers to ignore when copying to the builds, must be valid regular expressions
 	*/
-	"ignore": ["\.svn$", "\.git$", "\.sass$"],
+	"ignore": ["\.svn$", "\.git$", "\.sass-cache$"],
 
      /**
 	* Directory path to store all previous production builds. Note that the content generated inside this directory

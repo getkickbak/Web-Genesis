@@ -84420,9 +84420,9 @@ Ext.define('Genesis.plugin.PullRefresh',
 
 var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false;
 
-window.merchantMode = true;
 window.debugMode = true;
-window.serverHost;
+window.merchantMode = true;
+window.serverHost = location.origin;
 window._application = null;
 window.appName = 'MerKickBak';
 window._hostPathPrefix = (debugMode) ? "/javascripts/build/MobileServer/" : "/merchant/";
@@ -84430,19 +84430,6 @@ window._hostPath = _hostPathPrefix + ((debugMode) ? "testing/" : "") + "";
 window.phoneGapAvailable = false;
 
 _totalAssetCount++;
-
-if (debugMode)
-{
-   //serverHost = 'http://192.168.0.52:3000';
-   //serverHost = 'http://192.168.0.46:3000';
-   //serverHost = 'http://76.10.173.153';
-   serverHost = 'http://' + location.host.split(".")[0] + '.dev1getkickbak.com';
-   //serverHost = 'http://www.devgetkickbak.com';
-}
-else
-{
-   serverHost = 'http://' + location.host.split(".")[0] + '.getkickbak.com';
-}
 
 /*
 This file is generated and updated by Sencha Cmd. You can edit this file as

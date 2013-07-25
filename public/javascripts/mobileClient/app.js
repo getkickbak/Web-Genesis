@@ -1,8 +1,8 @@
 var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false;
 
-window.merchantMode = false;
 window.debugMode = true;
-window.serverHost
+window.merchantMode = false;
+window.serverHost = location.origin;
 window._application = null;
 window._codec = null;
 window.appName = 'GetKickBak';
@@ -11,19 +11,6 @@ window._hostPath = _hostPathPrefix + ((debugMode) ? "testing/" : "") + "";
 window.phoneGapAvailable = false;
 
 _totalAssetCount++;
-
-if (debugMode)
-{
-   //serverHost = 'http://192.168.0.52:3000';
-   //serverHost = 'http://192.168.0.46:3000';
-   //serverHost = 'http://76.10.173.153';
-   serverHost = 'http://' + location.host.split(".")[0] + '.dev1getkickbak.com';
-   //serverHost = 'http://www.devgetkickbak.com';
-}
-else
-{
-   serverHost = 'http://' + location.host.split(".")[0] + '.getkickbak.com';
-}
 
 //
 // Add2Home Feature Configuration

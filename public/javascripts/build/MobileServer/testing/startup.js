@@ -6,7 +6,7 @@
    document.addEventListener("DOMContentLoaded", function(event)
    {
       _frame = document.getElementById('merkickbak');
-      _frame.src = (!debug) ? "http://www.getkickbak.com/merchant/index.html" : "http://www.dev1getkickbak.com/javascripts/build/MobileServer/testing/index.html";
+      _frame.src = ((!debug) ? "http://www.getkickbak.com/merchant" : "http://www.dev1getkickbak.com/javascripts/build/MobileServer/testing") + "/index.html";
 
       _frame.addEventListener('permissionrequest', function(e)
       {
