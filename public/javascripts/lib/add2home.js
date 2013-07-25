@@ -376,10 +376,10 @@ var addToHome = (function(w)
    // Bootstrap!
    init();
 
-   return
-   {
-      show : manualShow,
-      close : close,
-      reset : reset
-   };
+   return (
+      {
+         show : manualShow,
+         close : close,
+         reset : reset
+      });
 })(window);
