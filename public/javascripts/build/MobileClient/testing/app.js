@@ -19688,21 +19688,6 @@ window.phoneGapAvailable = false;
 
 _totalAssetCount++;
 
-//
-// Add2Home Feature Configuration
-//
-var addToHomeConfig =
-{
-   animationIn : 'bubble',
-   animationOut : 'drop',
-   lifespan : 10000,
-   returningVisitor : false,
-   expire : 2,
-   touchIcon : true,
-   autostart : false,
-   startDelay : 0
-};
-
 /*
 This file is generated and updated by Sencha Cmd. You can edit this file as
 needed for your application, but these edits will have to be merged by
