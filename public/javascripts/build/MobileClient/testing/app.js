@@ -19431,7 +19431,7 @@ var addToHome = (function(w)
       {
          OSVersion = navigator.userAgent.match(/Windows\ Phone\ (\d+\.*\d*)/)[1];
       }
-      OSSVersion = OSSVersion || 0;
+      OSVersion = OSVersion || 0;
       //OSVersion = nav.appVersion.match(/OS (\d+_\d+)/i);
       //OSVersion = OSVersion && OSVersion[1] ? +OSVersion[1].replace('_', '.') : 0;
 
