@@ -4,7 +4,7 @@
  */
 var addToHome = (function(w)
 {
-   var nav = w.navigator, isIDevice = 'platform' in nav && (/iphone|ipod|ipad/gi).test(nav.platform), isAndroid = 'platform' in nav && (/android/gi).test(nav.platform), isBB = 'platform' in nav && (/blackberry|bb\d+/gi).test(nav.userAgent), isWP = 'platform' in nav && (/Windows\ Phone/gi).test(nav.userAgent), isIPad, isRetina, isSafari, isStandalone, OSVersion, startX = 0, startY = 0, lastVisit = 0, isExpired, isSessionActive, isReturningVisitor, balloon, overrideChecks, positionInterval, closeTimeout, options =
+   var nav = w.navigator, isIDevice = 'platform' in nav && (/iphone|ipod|ipad/gi).test(nav.platform), isAndroid = (/android/gi).test(nav.userAgent), isBB = (/blackberry|bb\d+/gi).test(nav.userAgent), isWP = (/Windows\ Phone/gi).test(nav.userAgent), isIPad, isRetina, isSafari, isStandalone, OSVersion, startX = 0, startY = 0, lastVisit = 0, isExpired, isSessionActive, isReturningVisitor, balloon, overrideChecks, positionInterval, closeTimeout, options =
    {
       autostart : true, // Automatically open the balloon
       returningVisitor : false, // Show the balloon to returning visitors only (setting this to true is HIGHLY RECCOMENDED)
