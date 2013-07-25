@@ -4,7 +4,7 @@
  */
 var addToHome = (function(w)
 {
-   var nav = w.navigator, isIDevice = 'platform' in nav && (/iphone|ipod|ipad/gi).test(nav.platform), isAndroid = (/android/gi).test(nav.userAgent), isBB = (/blackberry|bb\d+/gi).test(nav.userAgent), isWP = (/Windows\ Phone/gi).test(nav.userAgent), isIPad, isRetina, isSafari, isStandalone, OSVersion, startX = 0, startY = 0, lastVisit = 0, isExpired, isSessionActive, isReturningVisitor, balloon, overrideChecks, positionInterval, closeTimeout, options =
+   var nav = w.navigator, isIDevice = 'platform' in nav && (/iphone|ipod|ipad/gi).test(nav.platform), isAndroid = (/android/i).test(nav.userAgent), isBB = (/blackberry|bb\d+/i).test(nav.userAgent), isWP = (/Windows\ Phone/i).test(nav.userAgent), isIPad, isRetina, isSafari, isStandalone, OSVersion, startX = 0, startY = 0, lastVisit = 0, isExpired, isSessionActive, isReturningVisitor, balloon, overrideChecks, positionInterval, closeTimeout, options =
    {
       autostart : true, // Automatically open the balloon
       returningVisitor : false, // Show the balloon to returning visitors only (setting this to true is HIGHLY RECCOMENDED)
@@ -79,14 +79,20 @@ var addToHome = (function(w)
       isSafari = true;
       isStandalone = nav.standalone;
 
-      OSVersion = navigator.userAgent.match(/Version\/(\d+\.*\d+)/)[1];
+      OSVersion = navigator.userAgent.match(/Version\/(\d+\.*\d+)/);
+      OSVersion = ((OSVersion) ? OSVersion[1] : 0);
       if (isAndroid)
       {
          OSVersion = navigator.userAgent.match(/(Android|Silk)\ (\d+\.*\d*)/)[2];
       }
       else if (isBB)
       {
-         OSVersion = navigator.userAgent.match(/BB(\d+\.*\d*)/)[1] || navigator.userAgent.match(/BlackBerry\ (\d+)/)[1];
+         OSVersion = navigator.userAgent.match(/BB(\d+\.*\d*)/);
+         OSVersion = ((OSVersion) ? OSVersion[1] : 0);
+         if (OSVersion == 0)
+         {
+            OSVersion = navigator.userAgent.match(/BlackBerry\ (\d+)/)[1];
+         }
       }
       else if (isWP)
       {
