@@ -19951,12 +19951,13 @@ will need to resolve manually.
          //
          if ( typeof (Worker) == 'undefined')
          {
+            console.debug("HTML5 Workers not supported");
+
             var mp3Flags = 0x00;
             var callback = function(success, flag)
             {
                if (!success)
                {
-                  console.debug("Error Loading Application Resource Files.");
                   Ext.device.Notification.show(
                   {
                      title : 'KickBak',
