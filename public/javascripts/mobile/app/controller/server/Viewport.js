@@ -389,12 +389,6 @@ Ext.define('Genesis.controller.server.Viewport',
    {
       var me = this, viewport = me;
 
-      Ext.Viewport.setMasked(
-      {
-         xtype : 'loadmask',
-         message : me.loadingMsg
-      });
-
       Ext.regStore('CustomerStore',
       {
          model : 'Genesis.model.Customer',
