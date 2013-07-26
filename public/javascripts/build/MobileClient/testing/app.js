@@ -19951,26 +19951,41 @@ will need to resolve manually.
          //
          if ( typeof (Worker) == 'undefined')
          {
-            Genesis.fn.checkloadjscssfile(_hostPathPrefix + 'lib/libmp3lame.min.js', "js", function(success)
+            var mp3Flags = 0x00;
+            Genesis.fn.checkloadjscssfile(_hostPathPrefix + '../lib/libmp3lame.min.js', "js", function(success)
             {
-               console.log("Error Loading Application Resource File.");
-               Ext.device.Notification.show(
+               if (!success)
                {
-                  title : 'KickBak',
-                  message : "Error Loading Application Resource File.",
-                  buttons : ['Reload'],
-                  disableAnimations : true,
-                  callback : function(buttonId)
+                  console.log("Error Loading Application Resource File.");
+                  Ext.device.Notification.show(
                   {
-                     window.location.reload();
+                     title : 'KickBak',
+                     message : "Error Loading Application Resource File.",
+                     buttons : ['Reload'],
+                     disableAnimations : true,
+                     callback : function(buttonId)
+                     {
+                        window.location.reload();
+                     }
+                  });
+               }
+               else
+               {
+                  if ((mp3Flags |= 0x01) == 0x11)
+                  {
+                     appLaunchCallbackFn(true, 0x100);
+                     console.debug("Enable MP3 Encoder");
                   }
-               });
+               }
             });
             Genesis.fn.checkloadjscssfile(_hostPath + "worker/encoder.js", "js", function()
             {
                _codec = new Worker('worker/encoder.js');
-               appLaunchCallbackFn(true, 0x100);
-               console.debug("Enable MP3 Encoder");
+               if ((mp3Flags |= 0x10) == 0x11)
+               {
+                  appLaunchCallbackFn(true, 0x100);
+                  console.debug("Enable MP3 Encoder");
+               }
             });
          }
          else
