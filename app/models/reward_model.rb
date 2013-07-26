@@ -7,7 +7,7 @@ class RewardModel
   property :signup_amount, Decimal, :scale => 2, :default => 0.00
   property :signup_points, Integer, :required => true, :min => 1
   property :rebate_rate, Integer, :min => 1, :default => 1
-  property :badge_rebate_rate, Integer, :min => 1, :default => 1
+  property :badge_rebate_rate, Integer, :required => true, :min => 1, :default => 1
   property :prize_rebate_rate, Integer, :min => 1, :default => 1
   property :price_per_point, Decimal, :scale => 2, :min => 1.00, :default => 1.00
   property :price_per_prize_point, Decimal, :scale => 2, :min => 1.00, :default => 1.00
@@ -29,7 +29,7 @@ class RewardModel
   
   validates_presence_of :signup_amount, :if => lambda { |t| !t.type_id.nil? && RewardModelType.id_to_value[t.type_id] == "amount_spent"  }
   validates_presence_of :rebate_rate, :if => lambda { |t| !t.type_id.nil? && RewardModelType.id_to_value[t.type_id] == "amount_spent"  }
-  validates_presence_of :prize_rebate_rate, :if => lambda { |t| !t.type_id.nil? && RewardModelType.id_to_value[t.type_id] == "amount_spent"  }
+  validates_presence_of :prize_rebate_rate, :if => lambda { |t| !t.type_id.nil? && RewardModelType.id_to_value[t.type_id] == "amount_spent" && t.merchant.features_config.enable_prizes }
   validates_presence_of :expected_avg_spend, :if => lambda { |t| !t.type_id.nil? && RewardModelType.id_to_value[t.type_id] == "amount_spent"  }
   validates_with_method :signup_amount, :method => :check_signup_amount, :if => lambda { |t| !t.type_id.nil? && RewardModelType.id_to_value[t.type_id] == "amount_spent"  }
   validates_with_method :expected_avg_spend, :method => :check_expected_avg_spend, :if => lambda { |t| !t.type_id.nil? && RewardModelType.id_to_value[t.type_id] == "amount_spent"  }
