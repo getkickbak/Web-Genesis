@@ -19952,15 +19952,15 @@ will need to resolve manually.
          if ( typeof (Worker) == 'undefined')
          {
             var mp3Flags = 0x00;
-            Genesis.fn.checkloadjscssfile(_hostPathPrefix + '../lib/libmp3lame.min.js', "js", function(success)
+            var callback = function(success, flag)
             {
                if (!success)
                {
-                  console.log("Error Loading Application Resource File.");
+                  console.debug("Error Loading Application Resource Files.");
                   Ext.device.Notification.show(
                   {
                      title : 'KickBak',
-                     message : "Error Loading Application Resource File.",
+                     message : "Error Loading Application Resource Files.",
                      buttons : ['Reload'],
                      disableAnimations : true,
                      callback : function(buttonId)
@@ -19971,21 +19971,22 @@ will need to resolve manually.
                }
                else
                {
-                  if ((mp3Flags |= 0x01) == 0x11)
+                  if ((mp3Flags |= flag) == 0x11)
                   {
                      appLaunchCallbackFn(true, 0x100);
                      console.debug("Enable MP3 Encoder");
                   }
                }
-            });
-            Genesis.fn.checkloadjscssfile(_hostPath + "worker/encoder.js", "js", function()
+            };
+
+            Genesis.fn.checkloadjscssfile(_hostPathPrefix + 'lib/libmp3lame.min.js', "js", Ext.bind(callback, null, [0x01], true));
+            Genesis.fn.checkloadjscssfile(_hostPath + "worker/encoder.js", "js", function(success)
             {
-               _codec = new Worker('worker/encoder.js');
-               if ((mp3Flags |= 0x10) == 0x11)
+               if (success)
                {
-                  appLaunchCallbackFn(true, 0x100);
-                  console.debug("Enable MP3 Encoder");
+                  _codec = new Worker('worker/encoder.js');
                }
+               callback(success, 0x10);
             });
          }
          else
