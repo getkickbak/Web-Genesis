@@ -14096,7 +14096,7 @@ Ext.define('Genesis.controller.client.Merchants',
    // --------------------------------------------------------------------------
    checkInAccount : function()
    {
-      var me = this, page = me.getMainPage();
+      var me = this, page = me.getMainPage(), vport = me.getViewport();
 
       //
       // Force Page to refresh
