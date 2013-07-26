@@ -18891,7 +18891,7 @@ Ext.define('Genesis.dataview.DataView',
          reader.clearListeners();
       }
 
-      this.callParent(arguments);
+      this.callSuper(arguments);
 
       this.setStore(null);
    }
