@@ -69,7 +69,7 @@ class CustomerReward
     now = Time.now
     self.type_id = type ? type.id : nil
     self.title = reward_info[:title].squeeze(' ').strip
-    self.price = reward_info[:price]
+    self.price = reward_info[:price] if reward_info[:price]
     self.points = reward_info[:points]
     self.mode = reward_info[:mode]
     self.quantity_limited = reward_info[:quantity_limited]
