@@ -84418,6 +84418,8 @@ Ext.define('Genesis.plugin.PullRefresh',
    }
 });
 
+var  pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false;
+
 window.debugMode = true;
 window.merchantMode = true;
 window.serverHost = location.origin;
@@ -84451,7 +84453,7 @@ will need to resolve manually.
 {
    Genesis.db.getLocalDB();
 
-   var launched = 0x000, pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false, flag = 0x100, _error = false;
+   var launched = 0x000, flag = 0x100, _error = false;
    var appLaunch = function()
    {
       if (launched == 0x111)

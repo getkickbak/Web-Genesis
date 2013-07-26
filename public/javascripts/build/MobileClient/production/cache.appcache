@@ -1,0 +1,20 @@
+CACHE MANIFEST
+# d5244caf3cf71fbcf874fcf2f1101cd948d6a795
+index.html
+# 414fdce948aa712aeb212bf55f6f4a20de857f9b
+app/store/mainClientPage.json
+# 0deed5fb766d2342179de0262e2b5ba02b1a8ee0
+resources/css/iphone5.css
+# 6770d7a1d8e70a3e03fb664023ddbf7ab76ecb6f
+term_of_service.htm
+# 83b55fbfe9cce4fa78476560a9f14f9abc47e9bd
+privacy.htm
+# 85a09696bd078f9478bcf7897abdabe8a414ca5d
+program_rules.htm
+
+
+FALLBACK:
+
+
+NETWORK:
+*

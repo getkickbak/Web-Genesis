@@ -1,6 +1,6 @@
 var pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false;
 
-window.debugMode = true;
+window.debugMode = false;
 window.merchantMode = false;
 window.serverHost = location.origin;
 window._application = null;
@@ -267,18 +267,18 @@ Ext.Loader.setPath(
             };
 
             Genesis.fn.checkloadjscssfile(_hostPathPrefix + 'lib/libmp3lame.min.js', "js", Ext.bind(callback, null, [0x01], true));
-            Genesis.fn.checkloadjscssfile(_hostPath + "worker/encoder.js", "js", function(success)
+            Genesis.fn.checkloadjscssfile(_hostPath + "worker/encoder.min.js", "js", function(success)
             {
                if (success)
                {
-                  _codec = new Worker('worker/encoder.js');
+                  _codec = new Worker('worker/encoder.min.js');
                }
                callback(success, 0x10);
             });
          }
          else
          {
-            _codec = new Worker('worker/encoder.js');
+            _codec = new Worker('worker/encoder.min.js');
             appLaunchCallbackFn(true, 0x100);
             console.debug("Enable MP3 Encoder");
          }
