@@ -51,9 +51,6 @@
          "path": "../mobile/WebWorkerConsole.js",
          "update": "delta"
       }, {
-         "path": "../mobile/worker/encoder.js",
-         "update": "delta"
-      }, {
          "path": "../touch/sencha-touch.js",
          "x-bootstrap": true
       }, {
@@ -122,7 +119,7 @@
 	/**
 	* Extra resources to be copied along when build
 	*/
-	"resources": ["../lib/libmp3lame.min.js", "../lib/libmp3lame.min.js.gz", //
+	"resources": ["../lib/libmp3lame.min.js", "worker/encoder.js", "../lib/libmp3lame.min.js.gz", //
    "../mobile/resources/themes/images/v1", "../mobile/resources/css/iphone5.css", "../mobile/resources/icons", //
 	"../mobile/resources/audio", "../mobile/app/store/mainClientPage.json", //
 	"../mobile/term_of_service.htm", "../mobile/privacy.htm", "../mobile/program_rules.htm"],
