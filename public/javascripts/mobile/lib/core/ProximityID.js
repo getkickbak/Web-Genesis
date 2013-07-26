@@ -259,6 +259,8 @@ window.plugins = window.plugins ||
          },
          mp3WorkerFnHandler : function(e)
          {
+            var me = this;
+            
             switch (e.data.cmd)
             {
                case 'init' :
