@@ -14184,10 +14184,10 @@ Ext.define('Genesis.controller.client.Merchants',
          //
          // Sync CheckinExplore with Venue object value
          //
-         var vrec = cestore.getById(vrecord.getId());
-         if (vrec)
+         var vrec = cestore.getById(vrecord.getId()), prize_jackpots = vrecord.get('prize_jackpots');
+         if (vrec && (prize_jackpots >= 0))
          {
-            vrec.set('prize_jackpots', vrecord.get('prize_jackpots'));
+            vrec.set('prize_jackpots', prize_jackpots);
          }
          rstore.setData(vrecord);
          //
