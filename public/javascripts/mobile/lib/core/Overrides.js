@@ -581,6 +581,30 @@ Ext.define('Genesis.field.Select',
 });
 
 // **************************************************************************
+// Ext.dataview.DataView
+// **************************************************************************
+Ext.define('Genesis.dataview.DataView',
+{
+   override : 'Ext.dataview.DataView',
+   destroy : function()
+   {
+      var store = this.getStore(), proxy = (store && store.getProxy()), reader = (proxy && proxy.getReader());
+
+      if (reader)
+      {
+         // TODO: Use un() instead of clearListeners() when TOUCH-2723 is fixed.
+         //          reader.un('exception', 'handleException', this);
+         reader.clearListeners();
+      }
+
+      this.callParent(arguments);
+
+      this.setStore(null);
+   }
+});
+
+
+// **************************************************************************
 // Ext.dataview.element.List
 // **************************************************************************
 /**
