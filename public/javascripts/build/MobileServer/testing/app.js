@@ -83956,6 +83956,82 @@ Ext.define('Genesis.field.Select',
 });
 
 // **************************************************************************
+// Ext.dataview.DataView
+// **************************************************************************
+Ext.define('Genesis.dataview.DataView',
+{
+   override : 'Ext.dataview.DataView',
+   updateStore : function(newStore, oldStore)
+   {
+      var me = this, bindEvents = Ext.apply(
+      {
+      }, me.storeEventHooks,
+      {
+         scope : me
+      }), proxy, reader;
+
+      if (oldStore && Ext.isObject(oldStore) && oldStore.isStore)
+      {
+         oldStore.un(bindEvents);
+
+         if (!me.isDestroyed)
+         {
+            me.onStoreClear();
+         }
+
+         if (oldStore.getAutoDestroy())
+         {
+            oldStore.destroy();
+         }
+         else
+         {
+            proxy = oldStore.getProxy();
+            if (proxy)
+            {
+               reader = proxy.getReader();
+               if (reader)
+               {
+                  reader.un('exception', 'handleException', this);
+               }
+            }
+         }
+      }
+
+      if (newStore)
+      {
+         if (newStore.isLoaded())
+         {
+            this.hasLoadedStore = true;
+         }
+
+         if (newStore.isLoading())
+         {
+            me.onBeforeLoad();
+         }
+         if (me.container)
+         {
+            me.refresh();
+         }
+      }
+   },
+   destroy : function()
+   {
+      var store = this.getStore(), proxy = (store && store.getProxy()), reader = (proxy && proxy.getReader());
+
+      if (reader)
+      {
+         // TODO: Use un() instead of clearListeners() when TOUCH-2723 is fixed.
+         //          reader.un('exception', 'handleException', this);
+         reader.clearListeners();
+      }
+
+      this.callSuper(arguments);
+
+      this.setStore(null);
+   }
+});
+
+// **************************************************************************
 // Ext.dataview.element.List
 // **************************************************************************
 /**
