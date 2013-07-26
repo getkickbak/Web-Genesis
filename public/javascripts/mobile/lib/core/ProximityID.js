@@ -155,9 +155,9 @@ window.plugins = window.plugins ||
 
             me.bw = (me.hiFreq - me.loFreq) / me.NUM_SIGNALS;
 
-            Genesis.constants.s_vol = s_vol_ratio * 100 * ((Ext.os.is('Android')) ? 0.8 : 1.0);
+            Genesis.constants.s_vol = s_vol_ratio * 100;
             // Reduce volume by 50%
-            Genesis.constants.r_vol = r_vol_ratio * 100 * 0.8;
+            Genesis.constants.r_vol = r_vol_ratio * 100;
             console.debug("Initialized Proximity API");
          },
          generateData : function(offset, length)

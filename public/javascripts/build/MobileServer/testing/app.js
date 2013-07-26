@@ -84488,7 +84488,7 @@ Ext.define('Genesis.plugin.PullRefresh',
    }
 });
 
-var  pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false;
+var pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false;
 
 window.debugMode = true;
 window.merchantMode = true;

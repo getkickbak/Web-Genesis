@@ -1,4 +1,4 @@
-var  pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false;
+var pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false;
 
 window.debugMode = false;
 window.merchantMode = true;
