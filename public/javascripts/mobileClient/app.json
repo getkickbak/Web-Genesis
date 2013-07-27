@@ -105,7 +105,15 @@
 		/**
 		* List of items in the CACHE MANIFEST section
 		*/
-		"cache": ["index.html", "app/store/mainClientPage.json", "resources/css/iphone5.css", "term_of_service.htm", "privacy.htm", "program_rules.htm"],
+		"cache": ["http://www.getkickbak.com/javascripts/lib/touch-2.1.1/sencha-touch-all.js",
+		"http://www.getkickbak.com/javascripts/lib/gibberish-aes.min.js", "WebWorkerConsole.js",
+		"mcore.js", "app.js", "index.html", "app/store/mainClientPage.json", "resources/css/iphone5.css",
+		"term_of_service.htm", "privacy.htm", "program_rules.htm",
+		"../lib/libmp3lame.min.js", "worker/encoder.min.js",
+		"resources/css/iphone.css",
+      "resources/css/android-phone-lhdpi.css",
+      "resources/css/android-phone-mxhdpi.css"
+      ],
 		/**
 		* List of items in the NETWORK section
 		*/

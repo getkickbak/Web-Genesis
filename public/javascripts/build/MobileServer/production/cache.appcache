@@ -1,4 +1,12 @@
 CACHE MANIFEST
+# 
+http://www.getkickbak.com/javascripts/lib/gibberish-aes.min.js
+# b93104a5c03f4220288f0fda05841bc2ba8296d1
+WebWorkerConsole.js
+# a8f82b18bbacb0deefe262eba704f651ae2ad9cc
+mcore.js
+# b169d0ac6501546ba4eab923431b18c468ff73a9
+app.js
 # 7ad811c246122c1786d3691eab122bf94727de40
 index.html
 # e6789690e7bb009885227d42e38cbe0a20d31444
@@ -17,6 +25,10 @@ worker/receipt.min.js
 worker/fft.min.js
 # 1010b20dd5418571215b89912ad9196d147b0e16
 ../lib/dsp.min.js
+# 6f57cb59796534c5061402111199b5e6797355de
+resources/css/iphone.css
+# 0deed5fb766d2342179de0262e2b5ba02b1a8ee0
+resources/css/iphone5.css
 
 
 FALLBACK:

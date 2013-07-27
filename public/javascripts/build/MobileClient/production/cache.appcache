@@ -1,4 +1,14 @@
 CACHE MANIFEST
+# 
+http://www.getkickbak.com/javascripts/lib/touch-2.1.1/sencha-touch-all.js
+# 
+http://www.getkickbak.com/javascripts/lib/gibberish-aes.min.js
+# b93104a5c03f4220288f0fda05841bc2ba8296d1
+WebWorkerConsole.js
+# a8f82b18bbacb0deefe262eba704f651ae2ad9cc
+mcore.js
+# 5fa4590ce21d9880873e6028b39e86f4a0d53a74
+app.js
 # d5244caf3cf71fbcf874fcf2f1101cd948d6a795
 index.html
 # 414fdce948aa712aeb212bf55f6f4a20de857f9b
@@ -11,6 +21,16 @@ term_of_service.htm
 privacy.htm
 # 85a09696bd078f9478bcf7897abdabe8a414ca5d
 program_rules.htm
+# 2735964e18944afd0d2cef325c93541760569025
+../lib/libmp3lame.min.js
+# 78c188f4dd33458b85b88f5dd29d0413bce1d793
+worker/encoder.min.js
+# 6f57cb59796534c5061402111199b5e6797355de
+resources/css/iphone.css
+# 20d4dd7544319be1fda1c2d2e3c872967b0b6eb3
+resources/css/android-phone-lhdpi.css
+# ca5b8751e41e9076ae821ed11d30e70dc3e4398c
+resources/css/android-phone-mxhdpi.css
 
 
 FALLBACK:
