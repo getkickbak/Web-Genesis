@@ -18014,7 +18014,7 @@ Ext.define('Genesis.controller.client.Viewport',
       if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
       {
          //(tx)
-         s_vol_ratio = (Genesis.fn.isNative()) ? 0.50 : 0.85;
+         s_vol_ratio = (Genesis.fn.isNative()) ? 0.50 : 1.0;
          //Default Volume laying flat on a surface (tx)
          c.s_vol = 50;
 
@@ -20019,8 +20019,8 @@ will need to resolve manually.
           */
       }
 
-      var canPlayAudio = (new Audio()).canPlayType('audio/wav; codecs=1');
-      if (!canPlayAudio)
+      //var canPlayAudio = (new Audio()).canPlayType('audio/wav; codecs=1');
+      //if (!canPlayAudio)
       {
          //
          // If Worker is not supported, preload it
@@ -20073,11 +20073,13 @@ will need to resolve manually.
             console.debug("Enable MP3 Encoder");
          }
       }
+      /*
       else
       {
          appLaunchCallbackFn(true, 0x100);
          console.debug("Enable WAV/WebAudio Encoder");
       }
+      */
       images[0].src = prefix + "/prizewon/transmit.png";
    }, 0.1 * 1000);
 })();

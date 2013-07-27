@@ -573,7 +573,7 @@ Ext.define('Genesis.controller.client.Viewport',
       if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
       {
          //(tx)
-         s_vol_ratio = (Genesis.fn.isNative()) ? 0.50 : 0.85;
+         s_vol_ratio = (Genesis.fn.isNative()) ? 0.50 : 1.0;
          //Default Volume laying flat on a surface (tx)
          c.s_vol = 50;
 

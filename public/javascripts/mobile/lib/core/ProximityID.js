@@ -125,7 +125,7 @@ window.plugins = window.plugins ||
          NUM_SIGNALS : 3,
          SHORT_MAX : parseInt(0xFFFF / 2),
          sampleRate : 44100,
-         duration : 1 * 44100,
+         duration : 2 * 44100,
          bufSize : 16 * 1024,
          bitRate : 128,
          MATCH_THRESHOLD : 2,
@@ -199,6 +199,7 @@ window.plugins = window.plugins ||
                   this.play();
                }, false);
             }
+            me.audio.volume = 1.0;
          },
          webAudioFnHandler : function(s_vol)
          {
