@@ -1056,7 +1056,7 @@ Ext.define('Genesis.controller.client.Challenges',
    // --------------------------------------------------------------------------
    openPage : function(subFeature, cb)
    {
-      var me = this;
+      var me = this, viewport = me.getViewPortCntlr();
 
       switch (subFeature)
       {
@@ -1077,6 +1077,7 @@ Ext.define('Genesis.controller.client.Challenges',
                      height : '3em',
                      handler : function()
                      {
+                        viewport.popUpInProgress = true;
                         me._referralActions.hide();
                         if (cb)
                         {
@@ -1096,12 +1097,14 @@ Ext.define('Genesis.controller.client.Challenges',
                      height : '3em',
                      handler : function()
                      {
+                        viewport.popUpInProgress = true;
                         me._referralActions.hide();
                      }
                   }]
                });
                Ext.Viewport.add(me._referralActions);
             }
+            viewport.popUpInProgress = true;
             me._referralActions.show();
             break;
          }

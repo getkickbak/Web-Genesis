@@ -588,7 +588,7 @@ __initFb__ = function(_app, _appName)
 
                            me.actions.destroy();
                            delete me.actions;
-                           viewport.popUpInProgress = true;
+                           viewport.popUpInProgress = false;
                         }
                      },
                      {
@@ -628,7 +628,7 @@ __initFb__ = function(_app, _appName)
 
                            me.actions.destroy();
                            delete me.actions;
-                           viewport.popUpInProgress = true;
+                           viewport.popUpInProgress = false;
                         }
                      },
                      {
@@ -641,7 +641,7 @@ __initFb__ = function(_app, _appName)
 
                            me.actions.destroy();
                            delete me.actions;
-                           viewport.popUpInProgress = true;
+                           viewport.popUpInProgress = false;
                         }
                      }]
                   }]

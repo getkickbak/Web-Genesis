@@ -46,8 +46,8 @@ window.plugins = window.plugins ||
                      height : '3em',
                      handler : function()
                      {
-                        _cntlr._actions.hide();
                         viewport.popUpInProgress = false;
+                        _cntlr._actions.hide();
                      }
                   }]
                });
