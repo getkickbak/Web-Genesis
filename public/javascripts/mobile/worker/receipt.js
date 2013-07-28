@@ -298,6 +298,12 @@ if (( typeof (Worker) == 'undefined') && ( typeof (Ext) != 'undefined'))
 }
 else
 {
+   if ( typeof (importScripts) != 'undefined')
+   {
+      var prefix = (location.match('testing') ? '..' : '');
+      importScripts(prefix + '/lib/core/date.js', '/lib/core/extras.js');
+   }
+   
    onmessage = function(e)
    {
       var data = e.data;
@@ -335,7 +341,7 @@ else
          }
       }
    };
-   
+
    var Genesis =
    {
       db :
@@ -457,9 +463,4 @@ else
          }
       }
    };
-}
-
-if ( typeof (importScripts) != 'undefined')
-{
-   importScripts('../lib/core/date.js', '../lib/core/extras.js');
 }

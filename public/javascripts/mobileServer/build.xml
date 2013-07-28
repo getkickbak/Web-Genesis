@@ -78,5 +78,6 @@
    </target>
    <target name="-after-build">
       <delete dir="${app.build.dir}/mobile"/>
+      <delete dir="${app.build.dir}/lib"/>
    </target>
 </project>

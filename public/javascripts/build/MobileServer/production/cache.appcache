@@ -19,12 +19,12 @@ term_of_service.htm
 privacy.htm
 # 85a09696bd078f9478bcf7897abdabe8a414ca5d
 program_rules.htm
-# fb72f8b111ba66b9c392d24e269d37d884b8c388
+# 1be157124507694e7fec52ae3a7d0305567d389c
 worker/receipt.min.js
-# 540c5fd96175ce306be10815147921d0975c1fba
+# 42d441ef78b6564689ae3bf83ae58ae92ebe188f
 worker/fft.min.js
 # 1010b20dd5418571215b89912ad9196d147b0e16
-../lib/dsp.min.js
+lib/dsp.min.js
 # 6f57cb59796534c5061402111199b5e6797355de
 resources/css/iphone.css
 # 0deed5fb766d2342179de0262e2b5ba02b1a8ee0

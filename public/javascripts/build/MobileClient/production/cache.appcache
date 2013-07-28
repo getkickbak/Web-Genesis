@@ -22,8 +22,8 @@ privacy.htm
 # 85a09696bd078f9478bcf7897abdabe8a414ca5d
 program_rules.htm
 # 2735964e18944afd0d2cef325c93541760569025
-../lib/libmp3lame.min.js
-# 78c188f4dd33458b85b88f5dd29d0413bce1d793
+lib/libmp3lame.min.js
+# 4a2dddb1849ee4c373fa23bd6e02ecd405c663d4
 worker/encoder.min.js
 # 6f57cb59796534c5061402111199b5e6797355de
 resources/css/iphone.css

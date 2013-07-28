@@ -1,6 +1,6 @@
 if ( typeof (importScripts) != 'undefined')
 {
-   importScripts('../lib/libmp3lame.min.js');
+   importScripts((location.match('testing') ? '..' : '') + '/lib/libmp3lame.min.js');
 }
 else
 {
