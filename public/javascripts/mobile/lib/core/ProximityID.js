@@ -125,7 +125,7 @@ window.plugins = window.plugins ||
          NUM_SIGNALS : 3,
          SHORT_MAX : parseInt(0xFFFF / 2),
          sampleRate : 44100,
-         duration : 2 * 44100,
+         duration : 1 * 44100,
          bufSize : 16 * 1024,
          bitRate : 128,
          MATCH_THRESHOLD : 2,
@@ -162,7 +162,7 @@ window.plugins = window.plugins ||
          },
          generateData : function(offset, length)
          {
-            var me = this, i, c, s_vol = Genesis.constants.s_vol / 100, data = new Float32Array(length);
+            var me = this, i, c, s_vol = Genesis.constants.s_vol / 100, data = new Float32Array(length), _s_vol = s_vol;
 
             c = [];
             for ( i = 0; i < me.freqs.length; i++)
@@ -171,13 +171,20 @@ window.plugins = window.plugins ||
             }
             for ( i = 0; i < length; i++)
             {
+               //
+               // Create Cross Fade
+               //
+               if ((i < length / 100) && (offset == 0))
+               {
+                  _s_vol = s_vol * (i + 1) / 100;
+               }
                // convert to 16 bit pcm sound array
                // assumes the sample buffer is normalised.
                for ( j = 0; j < me.freqs.length; j++)
                {
                   data[i] += Math.sin(c[j] * (i + offset));
                }
-               data[i] = s_vol * data[i] / me.freqs.length;
+               data[i] = _s_vol * data[i] / me.freqs.length;
             }
 
             return data;
@@ -230,12 +237,19 @@ window.plugins = window.plugins ||
          },
          audioFnHandler : function(config, s_vol, win)
          {
-            var me = this, data = config['data'] = [];
+            var me = this, data = config['data'] = [], _s_vol = s_vol;
             me.getFreqs();
 
             for (var i = 0; i < (me.duration); i++)
             {
                var val = 0.0;
+               //
+               // Create Cross Fade
+               //
+               if (i < me.duration / 100)
+               {
+                  _s_vol = s_vol * (i + 1) / 100;
+               }
                // convert to 16 bit pcm sound array
                // assumes the sample buffer is normalised.
                for (var j = 0; j < me.freqs.length; j++)
@@ -244,7 +258,7 @@ window.plugins = window.plugins ||
                }
                val /= me.freqs.length;
 
-               val = Math.round(s_vol * ((me.SHORT_MAX + 1) + (val * me.SHORT_MAX)));
+               val = Math.round(_s_vol * ((me.SHORT_MAX + 1) + (val * me.SHORT_MAX)));
                data[i] = val;
             }
 
@@ -261,7 +275,7 @@ window.plugins = window.plugins ||
          mp3WorkerFnHandler : function(e)
          {
             var me = this;
-            
+
             switch (e.data.cmd)
             {
                case 'init' :
