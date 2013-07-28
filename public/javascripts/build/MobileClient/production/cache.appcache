@@ -1,15 +1,13 @@
 CACHE MANIFEST
-# 
-http://www.getkickbak.com/javascripts/lib/touch-2.1.1/sencha-touch-all.js
-# 
-http://www.getkickbak.com/javascripts/lib/gibberish-aes.min.js
+# 1cd35639737c0fde0ac125890a6e5817e0a36574
+lib/gibberish-aes.min.js
 # b93104a5c03f4220288f0fda05841bc2ba8296d1
 WebWorkerConsole.js
 # 3a93f509186629d9045dd103508e221afe75ed70
 mcore.js
-# 32a9965f3e2b6893c980deb6a60d5a24b9e11502
+# 1ac949e2cad6272f1b5c95aa8860e86aaed06d0d
 app.js
-# d5244caf3cf71fbcf874fcf2f1101cd948d6a795
+# f7058391a93a2ad19910203df854bd3d045be683
 index.html
 # 414fdce948aa712aeb212bf55f6f4a20de857f9b
 app/store/mainClientPage.json
