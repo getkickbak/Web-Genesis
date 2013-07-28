@@ -300,7 +300,7 @@ else
 {
    if ( typeof (importScripts) != 'undefined')
    {
-      var prefix = (location.match('testing') ? '..' : '');
+      var prefix = (location.match('testing') ? '..' : '/merchant');
       importScripts(prefix + '/lib/core/date.js', '/lib/core/extras.js');
    }
    
