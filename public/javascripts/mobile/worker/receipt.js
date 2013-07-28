@@ -300,10 +300,10 @@ else
 {
    if ( typeof (importScripts) != 'undefined')
    {
-      var prefix = (location.match('testing') ? '..' : '/merchant');
-      importScripts(prefix + '/lib/core/date.js', '/lib/core/extras.js');
+      var prefix = (location.href.match('testing') ? '..' : '/merchant');
+      importScripts(prefix + '/lib/core/date.js', prefix + '/lib/core/extras.js');
    }
-   
+
    onmessage = function(e)
    {
       var data = e.data;
