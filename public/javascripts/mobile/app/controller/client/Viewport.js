@@ -63,21 +63,23 @@ Ext.require(['Genesis.controller.ControllerBase'], function()
                   viewport.popView();
                }
             }
-            else
-            {
-               viewport.self.playSoundFile(viewport.sound_files['clickSound']);
-               //
-               // We have no way to "exit" the app in mobileClient
-               //
-               if (Genesis.fn.isNative())
-               {
-                  navigator.app.exitApp();
-               }
-               else
-               {
-                  window.location.reload();
-               }
-            }
+            /*
+             else
+             {
+             viewport.self.playSoundFile(viewport.sound_files['clickSound']);
+             //
+             // We have no way to "exit" the app in mobileClient
+             //
+             if (Genesis.fn.isNative())
+             {
+             navigator.app.exitApp();
+             }
+             else
+             {
+             window.location.reload();
+             }
+             }
+             */
          }
       }
    };
