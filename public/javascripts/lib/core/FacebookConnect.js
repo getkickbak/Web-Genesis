@@ -13,9 +13,9 @@ __initFb__ = function(_app, _appName)
       titleMsg : 'Facebook Connect',
       fbScope : ['email', 'user_birthday', 'publish_stream', 'read_friendlists', 'publish_actions'],
       fbConnectErrorMsg : 'Cannot retrive Facebook account information!',
-      fbConnectRequestMsg : 'By connecting to Facebook, you will receive additional Reward Pts everytime we update your KICKBAK activity to your Facebook account!',
+      fbConnectRequestMsg : 'Connect your Facebook account to KICKBAK, and you will receive bonus Reward Pts on every purchase!',
       //   fbConnectRequestMsg : 'Would you like to update your Facebook Timeline?',
-      fbConnectReconnectMsg : 'By connecting to Facebook, you will receive additional Reward Pts everytime we update your KICKBAK activity to your Facebook account!',
+      fbConnectReconnectMsg : 'Connect your Facebook account to KICKBAK, and you will receive bonus Reward Pts on every purchase!',
       //fbConnectReconnectMsg : 'Please confirm to Reconnect to Facebook',
       connectingToFBMsg : function()
       {

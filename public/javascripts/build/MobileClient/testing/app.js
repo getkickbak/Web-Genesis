@@ -79459,6 +79459,7 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
             button['margin'] = (landscape) ? '0 0 0.5 0' : '0 0.5 0.5 0';
          }
       });
+      var height = (!landscape && !merchantMode && (buttons.length > 2)) ? 2 : 3;
       return Ext.create('Ext.Container',
       {
          defaultUnit : 'em',
@@ -79466,7 +79467,7 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
          bottom : landscape ? 0 : null,
          docked : landscape ? null : 'bottom',
          tag : 'buttons',
-         width : landscape ? '10em' : 'auto',
+         width : landscape ? ((merchantMode) ? '10em' : '7.5em') : 'auto',
          layout : landscape ?
          {
             type : 'vbox',
@@ -79479,7 +79480,7 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
          {
             xtype : 'button',
             defaultUnit : 'em',
-            height : ((merchantMode) ? 1.5 * 3 : 3) + 'em',
+            height : ((merchantMode) ? 1.5 * height : height) + 'em',
             flex : (landscape) ? null : 1
          },
          padding : '0 1.0 0.5 1.0',
@@ -91395,6 +91396,7 @@ will need to resolve manually.
 
       //var canPlayAudio = (new Audio()).canPlayType('audio/wav; codecs=1');
       //if (!canPlayAudio)
+      if ( typeof (webkitAudioContext) == 'undefined')
       {
          //
          // If Worker is not supported, preload it
@@ -91447,13 +91449,11 @@ will need to resolve manually.
             console.debug("Enable MP3 Encoder");
          }
       }
-      /*
       else
       {
          appLaunchCallbackFn(true, 0x100);
          console.debug("Enable WAV/WebAudio Encoder");
       }
-      */
       images[0].src = prefix + "/prizewon/transmit.png";
    }, 0.1 * 1000);
 })();

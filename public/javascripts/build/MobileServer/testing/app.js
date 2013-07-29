@@ -76621,6 +76621,7 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
             button['margin'] = (landscape) ? '0 0 0.5 0' : '0 0.5 0.5 0';
          }
       });
+      var height = (!landscape && !merchantMode && (buttons.length > 2)) ? 2 : 3;
       return Ext.create('Ext.Container',
       {
          defaultUnit : 'em',
@@ -76628,7 +76629,7 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
          bottom : landscape ? 0 : null,
          docked : landscape ? null : 'bottom',
          tag : 'buttons',
-         width : landscape ? '10em' : 'auto',
+         width : landscape ? ((merchantMode) ? '10em' : '7.5em') : 'auto',
          layout : landscape ?
          {
             type : 'vbox',
@@ -76641,7 +76642,7 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
          {
             xtype : 'button',
             defaultUnit : 'em',
-            height : ((merchantMode) ? 1.5 * 3 : 3) + 'em',
+            height : ((merchantMode) ? 1.5 * height : height) + 'em',
             flex : (landscape) ? null : 1
          },
          padding : '0 1.0 0.5 1.0',

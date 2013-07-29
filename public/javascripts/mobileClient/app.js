@@ -231,6 +231,7 @@ Ext.Loader.setPath(
 
       //var canPlayAudio = (new Audio()).canPlayType('audio/wav; codecs=1');
       //if (!canPlayAudio)
+      if ( typeof (webkitAudioContext) == 'undefined')
       {
          //
          // If Worker is not supported, preload it
@@ -283,13 +284,11 @@ Ext.Loader.setPath(
             console.debug("Enable MP3 Encoder");
          }
       }
-      /*
       else
       {
          appLaunchCallbackFn(true, 0x100);
          console.debug("Enable WAV/WebAudio Encoder");
       }
-      */
       images[0].src = prefix + "/prizewon/transmit.png";
    }, 0.1 * 1000);
 })();
