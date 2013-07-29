@@ -73,6 +73,7 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
       };
 
       var buttons = config['buttons'] || [];
+      config['origButtons'] = buttons;
       delete config['buttons'];
 
       var preItemsConfig = config['preItemsConfig'] || [];
@@ -128,6 +129,7 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
       });
       return Ext.create('Ext.Container',
       {
+         defaultUnit : 'em',
          right : landscape ? 0 : null,
          bottom : landscape ? 0 : null,
          docked : landscape ? null : 'bottom',
@@ -161,6 +163,6 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
       var me = this;
 
       me.remove(me.query('container[tag=buttons]')[0], true);
-      me.add(me.createButtons(me.getInitialConfig()['buttons'], newOrientation));
+      me.add(me.createButtons(me.getInitialConfig()['origButtons'], newOrientation));
    }
 });
