@@ -75854,7 +75854,10 @@ Ext.define('Genesis.controller.ViewportBase',
                //
                if ((db['enableFB'] && (db['currFbId'] > 0)) || db['disableFBReminderMsg'])
                {
-                  me.redirectTo('checkin');
+                  if (!Genesis.fb.cb || !Genesis.fb.cb['viewName'])
+                  {
+                     me.redirectTo('checkin');
+                  }
                }
                else
                {

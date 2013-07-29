@@ -221,6 +221,7 @@ __initFb__ = function(_app, _appName)
                         }
                         case "loginpageview" :
                         {
+                           delete me.cb;
                            _application.getController('client' + '.MainPage').onFacebookLoginCallback(p, op);
                            break;
                         }
@@ -431,6 +432,7 @@ __initFb__ = function(_app, _appName)
                      me._fb_connect();
                      //me.getFriendsList();
 
+                     app.db.setLocalDBAttrib('enableFB', true);
                      if (db['auth_code'])
                      {
                         console.log("Updating Facebook Login Info ...");
@@ -446,11 +448,14 @@ __initFb__ = function(_app, _appName)
                            },
                            callback : function(record, operation)
                            {
+                              Ext.Viewport.setMasked(null);
                               if (operation.wasSuccessful())
                               {
-                                 Ext.Viewport.setMasked(null);
-                                 app.db.setLocalDBAttrib('enableFB', true);
                                  me.fireEvent('connected', rc, operation);
+                              }
+                              else
+                              {
+                                 app.db.setLocalDBAttrib('enableFB', false);
                               }
                               delete me.cb;
                            }
@@ -458,7 +463,6 @@ __initFb__ = function(_app, _appName)
                      }
                      else
                      {
-                        app.db.setLocalDBAttrib('enableFB', true);
                         me.fireEvent('connected', rc, null);
                         delete me.cb;
                      }
@@ -528,10 +532,41 @@ __initFb__ = function(_app, _appName)
       createFBReminderMsg : function()
       {
          var me = this, viewport = _application.getController('client' + '.Viewport');
+         var onOrientationChange = function(v, newOrientation, width, height, eOpts)
+         {
+            var buttons = me.actions.query('container[tag=buttons]')[0];
+            buttons.setDocked((newOrientation == 'landscape') ? null : 'bottom');
+            switch (newOrientation)
+            {
+               case 'landscape' :
+               {
+                  buttons.setRight(0);
+                  buttons.setBottom(0);
+                  buttons.setWidth('10em');
+                  break;
+               }
+               case 'portrait' :
+               {
+                  buttons.setRight(null);
+                  buttons.setBottom(null);
+                  buttons.setWidth('auto');
+                  break;
+               }
+            }
+         };
+         var callback = function(onOrientationChange)
+         {
+            me.actions.destroy();
+            delete me.actions;
+            viewport.popUpInProgress = false;
+            Ext.Viewport.un('orientationchange', onOrientationChange);
+         };
 
          if (!me.actions)
          {
             var iconEm = 8, iconSize = Genesis.fn.calcPx(iconEm, 1.1);
+            var orientation = Ext.Viewport.getOrientation();
+            var mobile = Ext.os.is('Phone') || Ext.os.is('Tablet');
             me.actions = (Ext.create('Ext.Sheet',
                {
                   bottom : 0,
@@ -564,21 +599,28 @@ __initFb__ = function(_app, _appName)
                      'src="resources/themes/images/v1/facebook_icon.png"/>'
                   },
                   {
-                     docked : 'bottom',
-                     layout : 'hbox',
+                     layout :
+                     {
+                        type : 'vbox',
+                        pack : 'end'
+                     },
+                     tag : 'buttons',
+                     right : (mobile && (orientation == 'landscape')) ? 0 : null,
+                     bottom : (mobile && (orientation == 'landscape')) ? 0 : null,
+                     docked : (mobile && (orientation == 'landscape')) ? null : 'bottom',
+                     tag : 'buttons',
+                     width : (mobile && (orientation == 'landscape')) ? '10em' : 'auto',
                      defaults :
                      {
                         xtype : 'button',
-                        flex : 1,
-                        height : '3em',
                         defaultUnit : 'em',
-                        scope : me
+                        height : '3em'
                      },
                      //padding : '0 1.0 1.0 1.0',
-                     padding : '0 0.7 1.0 0.7',
+                     padding : '0 1.0 1.0 1.0',
                      items : [
                      {
-                        margin : '0 0.7 0 0',
+                        margin : '0 0 0.5 0',
                         text : 'Decline',
                         //ui : 'decline',
                         handler : function()
@@ -588,13 +630,11 @@ __initFb__ = function(_app, _appName)
 
                            _application.getController('client' + '.Viewport').redirectTo('checkin');
 
-                           me.actions.destroy();
-                           delete me.actions;
-                           viewport.popUpInProgress = false;
+                           callback(onOrientationChange);
                         }
                      },
                      {
-                        margin : '0 0.7 0 0',
+                        margin : '0 0 0.5 0',
                         text : 'Sign In',
                         ui : 'fbBlue',
                         handler : function()
@@ -628,9 +668,7 @@ __initFb__ = function(_app, _appName)
                               });
                            });
 
-                           me.actions.destroy();
-                           delete me.actions;
-                           viewport.popUpInProgress = false;
+                           callback(onOrientationChange);
                         }
                      },
                      {
@@ -641,15 +679,14 @@ __initFb__ = function(_app, _appName)
                            me.actions.hide();
                            _application.getController('client' + '.Viewport').redirectTo('checkin');
 
-                           me.actions.destroy();
-                           delete me.actions;
-                           viewport.popUpInProgress = false;
+                           callback(onOrientationChange);
                         }
                      }]
                   }]
                }));
             viewport.popUpInProgress = true;
             Ext.Viewport.add(me.actions);
+            Ext.Viewport.on('orientationchange', onOrientationChange, me);
             me.actions.show();
          }
          else
