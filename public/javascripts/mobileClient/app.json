@@ -40,9 +40,6 @@
 	*/		
 	"js": [
 		{
-         "path": "../lib/gibberish-aes.min.js",
-         "update": "full"
-      }, {
          "path": "../mobile/WebWorkerConsole.js",
          "update": "delta"
       }, {
@@ -101,7 +98,7 @@
 		* List of items in the CACHE MANIFEST section
 		*/
 		"cache": [
-		"lib/gibberish-aes.min.js", "WebWorkerConsole.js",
+		"WebWorkerConsole.js",
 		"mcore.js", "app.js", "index.html", "app/store/mainClientPage.json", "resources/css/iphone5.css",
 		"term_of_service.htm", "privacy.htm", "program_rules.htm",
 		"lib/libmp3lame.min.js", "worker/encoder.min.js",

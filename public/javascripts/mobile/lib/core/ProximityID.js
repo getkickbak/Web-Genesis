@@ -174,9 +174,9 @@ window.plugins = window.plugins ||
                //
                // Create Cross Fade
                //
-               if ((i < length / 100) && (offset == 0))
+               if ((i < length / 20) && (offset == 0))
                {
-                  _s_vol = s_vol * (i + 1) / 100;
+                  _s_vol = s_vol * (i + 1) / (length / 20);
                }
                // convert to 16 bit pcm sound array
                // assumes the sample buffer is normalised.
@@ -246,9 +246,9 @@ window.plugins = window.plugins ||
                //
                // Create Cross Fade
                //
-               if (i < me.duration / 100)
+               if (i < me.duration / 20)
                {
-                  _s_vol = s_vol * (i + 1) / 100;
+                  _s_vol = s_vol * (i + 1) / (me.duration / 20);
                }
                // convert to 16 bit pcm sound array
                // assumes the sample buffer is normalised.

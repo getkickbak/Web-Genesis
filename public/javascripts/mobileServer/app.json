@@ -40,9 +40,6 @@
 	*/		
 	"js": [
 		{
-         "path": "../lib/gibberish-aes.min.js",
-         "update": "full"
-      }, {
          "path": "../mobile/WebWorkerConsole.js",
          "update": "full"
       }, {
@@ -90,7 +87,7 @@
 		* List of items in the CACHE MANIFEST section
 		*/
       "cache": [
-      "lib/gibberish-aes.min.js", "WebWorkerConsole.js",
+      "WebWorkerConsole.js",
       "mcore.js", "app.js", "index.html", "app/store/mainServerPage.json",
       "term_of_service.htm", "privacy.htm", "program_rules.htm",
       "worker/receipt.min.js", "worker/fft.min.js", "lib/dsp.min.js",
