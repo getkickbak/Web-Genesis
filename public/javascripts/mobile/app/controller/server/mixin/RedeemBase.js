@@ -228,16 +228,13 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
             title : message,
             buttons : [
             {
-               margin : '0 0 0.5 0',
                text : me.mobilePhoneInputMsg,
                ui : 'action',
-               height : (3 * 1.5) + 'em',
                handler : Ext.bind(me.redeemItemCb, me, ['manual'])
             },
             {
                text : 'Cancel',
                ui : 'cancel',
-               height : (3 * 1.5) + 'em',
                handler : Ext.bind(me.redeemItemCb, me, ['cancel'])
             }]
          });

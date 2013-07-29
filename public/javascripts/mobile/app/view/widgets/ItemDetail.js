@@ -119,6 +119,13 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
    createButtons : function(buttons, orientation)
    {
       orientation = orientation || Ext.Viewport.getOrientation(), mobile = Ext.os.is('Phone') || Ext.os.is('Tablet'), landscape = (mobile && (orientation == 'landscape'));
+      Ext.each(buttons, function(button, index, array)
+      {
+         if (index != (array.length - 1))
+         {
+            button['margin'] = (landscape) ? '0 0 0.5 0' : '0 0.5 0.5 0';
+         }
+      });
       return Ext.create('Ext.Container',
       {
          right : landscape ? 0 : null,
@@ -138,6 +145,7 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
          {
             xtype : 'button',
             defaultUnit : 'em',
+            height : ((merchantMode) ? 1.5 * 3 : 3) + 'em',
             flex : (landscape) ? null : 1
          },
          padding : '0 1.0 0.5 1.0',

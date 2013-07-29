@@ -1071,10 +1071,8 @@ Ext.define('Genesis.controller.client.Challenges',
                   title : me.confirmRecvReferralsMsg,
                   buttons : [
                   {
-                     margin : '0 0.5 0.5 0',
                      text : 'Proceed',
                      ui : 'action',
-                     height : '3em',
                      handler : function()
                      {
                         viewport.popUpInProgress = true;
@@ -1094,7 +1092,6 @@ Ext.define('Genesis.controller.client.Challenges',
                   {
                      text : 'Cancel',
                      ui : 'cancel',
-                     height : '3em',
                      handler : function()
                      {
                         viewport.popUpInProgress = true;

@@ -599,6 +599,13 @@ __initFb__ = function(_app, _appName)
          var createButtons = function(orientation)
          {
             orientation = orientation || Ext.Viewport.getOrientation(), mobile = Ext.os.is('Phone') || Ext.os.is('Tablet'), landscape = (mobile && (orientation == 'landscape'));
+            Ext.each(buttons, function(button, index, array)
+            {
+               if (index != (array.length - 1))
+               {
+                  button['margin'] = (landscape) ? '0 0 0.5 0' : '0 0.5 0.5 0';
+               }
+            });
             return Ext.create('Ext.Container',
             {
                defaultUnit : 'em',
@@ -628,7 +635,7 @@ __initFb__ = function(_app, _appName)
          };
          var onOrientationChange = function(v, newOrientation, width, height, eOpts)
          {
-            me.actions.remove(me.query('container[tag=buttons]')[0], true);
+            me.actions.remove(me.actions.query('container[tag=buttons]')[0], true);
             me.actions.add(createButtons(newOrientation));
          };
          var callback = function(onOrientationChange)
