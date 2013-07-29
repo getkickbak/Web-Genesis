@@ -419,7 +419,8 @@ __initFb__ = function(_app, _appName)
                      db['currFbId'] = facebook_id;
                      db['fbAccountId'] = response.email;
                      rc = db['fbResponse'] = me.createFbResponse(response);
-
+                     db['enableFB'] = true;
+                     
                      app.db.setLocalDB(db);
                      db = app.db.getLocalDB();
 
@@ -432,7 +433,6 @@ __initFb__ = function(_app, _appName)
                      me._fb_connect();
                      //me.getFriendsList();
 
-                     app.db.setLocalDBAttrib('enableFB', true);
                      if (db['auth_code'])
                      {
                         console.log("Updating Facebook Login Info ...");
