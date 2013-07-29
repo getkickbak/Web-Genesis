@@ -183,7 +183,7 @@ __initFb__ = function(_app, _appName)
             if (params['state'] == appName)
             {
                //console.debug("FacebookConnect::authDialog = " + Ext.encode(params));
-               me.code = db['access_token'] = params['access_token'];
+               me.code = db['access_token'] = params['access_token'] || params['token'];
                db['fbExpiresIn'] = (new Date(Date.now() + Number(params['expires_in']))).getTime();
                //console.debug("FacebookConnect::access_token=" + db['access_token']);
                //console.debug("FacebookConnect::fbExpiresIn=" + db['fbExpiresIn']);
@@ -228,7 +228,9 @@ __initFb__ = function(_app, _appName)
                            _application.getController('client' + '.Viewport').redirectTo('signup');
                            break;
                      }
+                     delete me.cb;
                   };
+
                   app.fb.on('connected', callback);
                   app.fb.on('unauthorized', callback);
                   app.fb.on('exception', callback);
@@ -431,7 +433,6 @@ __initFb__ = function(_app, _appName)
 
                      if (db['auth_code'])
                      {
-                        delete me.cb;
                         console.log("Updating Facebook Login Info ...");
                         Account['setUpdateFbLoginUrl']();
                         Account.load(0,
@@ -449,8 +450,9 @@ __initFb__ = function(_app, _appName)
                               {
                                  Ext.Viewport.setMasked(null);
                                  app.db.setLocalDBAttrib('enableFB', true);
+                                 me.fireEvent('connected', rc, operation);
                               }
-                              me.fireEvent('connected', rc, operation);
+                              delete me.cb;
                            }
                         });
                      }
