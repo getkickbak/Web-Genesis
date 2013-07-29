@@ -1,4 +1,29 @@
-importScripts((location.href.match('testing') ? '..' : '/merchant') + '/lib/dsp.min.js');
+if ( typeof (importScripts) != 'undefined')
+{
+   var prefix;
+   //
+   // Desktop testing mode
+   //
+   if (location.href.match('testing'))
+   {
+      prefix = '..'
+   }
+   //
+   // Native code or emualtor
+   //
+   else if (location.href.match(/mobileServer/i))
+   {
+      prefix = '../..';
+   }
+   //
+   // Desktop production mode
+   //
+   else
+   {
+      prefix = '/merchant';
+   }
+   importScripts(prefix + '/lib/dsp.min.js');
+}
 
 var fft, sampleRate, fftSize, bwWidth, MAG_THRESHOLD = 1e-5, MATCH_THRESHOLD = 3, ERROR_THRESHOLD = 175, //
 loFreq = 17000.0, hiFreq = 20000.0, FREQ_GAP = 500.0, NUM_SIGNALS = 3;

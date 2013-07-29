@@ -300,7 +300,28 @@ else
 {
    if ( typeof (importScripts) != 'undefined')
    {
-      var prefix = (location.href.match('testing') ? '..' : '/merchant');
+      var prefix;
+      //
+      // Desktop testing mode
+      //
+      if (location.href.match('testing'))
+      {
+         prefix = '..'
+      }
+      //
+      // Native code or emualtor
+      //
+      else if (location.href.match(/mobileServer/i))
+      {
+         prefix = '../..';
+      }
+      //
+      // Desktop production mode
+      //
+      else
+      {
+         prefix = '/merchant';
+      }
       importScripts(prefix + '/lib/core/date.js', prefix + '/lib/core/extras.js');
    }
 

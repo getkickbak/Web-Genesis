@@ -1,6 +1,27 @@
 if ( typeof (importScripts) != 'undefined')
 {
-   importScripts((location.href.match('testing') ? '..' : '') + '/lib/libmp3lame.min.js');
+      //
+      // Desktop testing mode
+      //
+      if (location.href.match('testing'))
+      {
+         prefix = '..'
+      }
+      //
+      // Native code or emualtor
+      //
+      else if (location.href.match(/mobileCilent/i))
+      {
+         prefix = '../..';
+      }
+      //
+      // Desktop production mode
+      //
+      else
+      {
+         prefix = '/merchant';
+      }
+   importScripts((location.href.match('testing') ? '' : '/merchant') + 'lib/libmp3lame.min.js');
 }
 else
 {

@@ -954,7 +954,13 @@ Ext.define('Ext.device.notification.Simulator',
       {
          if (config.callback)
          {
-            config.callback.apply(config.scope, [itemId]);
+            //
+            // Prevent UI from being blocked
+            //
+            Ext.defer(function()
+            {
+               config.callback.apply(config.scope, [itemId]);
+            }, 1);
          }
       };
       msg._hideCallbackFn = Ext.bind(callback, this, [buttons[buttons.length - 1].itemId]);
