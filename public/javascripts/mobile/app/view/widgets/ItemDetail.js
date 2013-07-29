@@ -104,7 +104,7 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
       delete config['iconType'];
       delete config['icon'];
 
-      if (mobile)
+      if (Ext.os.is('Phone') || Ext.os.is('Tablet'))
       {
          Ext.Viewport.on('orientationchange', me.onOrientationChange, me);
          me.on(

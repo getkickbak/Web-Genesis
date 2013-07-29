@@ -29,10 +29,8 @@ window.plugins = window.plugins ||
                   title : cntlr.showToServerMsg(),
                   buttons : [
                   {
-                     margin : '0 0 0.5 0',
                      text : 'Proceed',
                      ui : 'action',
-                     height : '3em',
                      handler : function()
                      {
                         viewport.popUpInProgress = false;
@@ -43,7 +41,6 @@ window.plugins = window.plugins ||
                   {
                      text : 'Cancel',
                      ui : 'cancel',
-                     height : '3em',
                      handler : function()
                      {
                         viewport.popUpInProgress = false;
