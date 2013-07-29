@@ -420,7 +420,7 @@ __initFb__ = function(_app, _appName)
                      db['fbAccountId'] = response.email;
                      rc = db['fbResponse'] = me.createFbResponse(response);
                      db['enableFB'] = true;
-                     
+
                      app.db.setLocalDB(db);
                      db = app.db.getLocalDB();
 
@@ -599,6 +599,9 @@ __initFb__ = function(_app, _appName)
          var createButtons = function(orientation)
          {
             orientation = orientation || Ext.Viewport.getOrientation(), mobile = Ext.os.is('Phone') || Ext.os.is('Tablet'), landscape = (mobile && (orientation == 'landscape'));
+
+            var height = (!landscape && (buttons.length > 2)) ? 2 : 3;
+            
             Ext.each(buttons, function(button, index, array)
             {
                if (index != (array.length - 1))
@@ -626,7 +629,7 @@ __initFb__ = function(_app, _appName)
                {
                   xtype : 'button',
                   defaultUnit : 'em',
-                  height : '3em',
+                  height : height + 'em',
                   flex : (landscape) ? null : 1
                },
                padding : '0 1.0 0.5 1.0',
