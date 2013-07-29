@@ -600,8 +600,6 @@ __initFb__ = function(_app, _appName)
          {
             orientation = orientation || Ext.Viewport.getOrientation(), mobile = Ext.os.is('Phone') || Ext.os.is('Tablet'), landscape = (mobile && (orientation == 'landscape'));
 
-            var height = (!landscape && (buttons.length > 2)) ? 2 : 3;
-            
             Ext.each(buttons, function(button, index, array)
             {
                if (index != (array.length - 1))
@@ -616,7 +614,7 @@ __initFb__ = function(_app, _appName)
                bottom : landscape ? 0 : null,
                docked : landscape ? null : 'bottom',
                tag : 'buttons',
-               width : landscape ? '10em' : 'auto',
+               width : landscape ? '7.5em' : 'auto',
                layout : landscape ?
                {
                   type : 'vbox',
@@ -629,7 +627,7 @@ __initFb__ = function(_app, _appName)
                {
                   xtype : 'button',
                   defaultUnit : 'em',
-                  height : height + 'em',
+                  height : ((landscape && (buttons.length > 2)) ? 2 : 3) + 'em',
                   flex : (landscape) ? null : 1
                },
                padding : '0 1.0 0.5 1.0',

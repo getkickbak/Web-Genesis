@@ -127,7 +127,7 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
             button['margin'] = (landscape) ? '0 0 0.5 0' : '0 0.5 0.5 0';
          }
       });
-      var height = (!landscape && !merchantMode && (buttons.length > 2)) ? 2 : 3;
+      var height = (landscape && !merchantMode && (buttons.length > 2)) ? 2 : 3;
       return Ext.create('Ext.Container',
       {
          defaultUnit : 'em',
