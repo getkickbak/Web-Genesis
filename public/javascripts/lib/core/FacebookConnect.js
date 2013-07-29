@@ -532,35 +532,104 @@ __initFb__ = function(_app, _appName)
       createFBReminderMsg : function()
       {
          var me = this, viewport = _application.getController('client' + '.Viewport');
+         var buttons = [
+         {
+            margin : '0 0.5 0.5 0',
+            text : 'Decline',
+            //ui : 'decline',
+            handler : function()
+            {
+               me.actions.hide();
+               app.db.setLocalDBAttrib('disableFBReminderMsg', true);
+
+               _application.getController('client' + '.Viewport').redirectTo('checkin');
+
+               callback(onOrientationChange);
+            }
+         },
+         {
+            margin : '0 0.5 0.5 0',
+            text : 'Sign In',
+            ui : 'fbBlue',
+            handler : function()
+            {
+               me.actions.hide();
+               var mainPage = _application.getController('client' + '.MainPage');
+               mainPage.fireEvent('facebookTap', null, null, null, null, function()
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : me.titleMsg,
+                     message : me.fbPermissionFailMsg,
+                     buttons : ['Dismiss'],
+                     callback : function(button)
+                     {
+                        mainPage._loggingIn = false;
+
+                        var vport = viewport.getViewport();
+                        var activeItem = vport.getActiveItem();
+                        if (!activeItem)
+                        {
+                           Ext.Viewport.setMasked(null);
+                           viewport.resetView();
+                           viewport.redirectTo('login');
+                        }
+                        else
+                        {
+                           //console.debug("XType:" + activeItem.getXTypes())
+                        }
+                     }
+                  });
+               });
+
+               callback(onOrientationChange);
+            }
+         },
+         {
+            text : 'Skip',
+            ui : 'cancel',
+            handler : function()
+            {
+               me.actions.hide();
+               _application.getController('client' + '.Viewport').redirectTo('checkin');
+
+               callback(onOrientationChange);
+            }
+         }];
+         var createButtons = function(orientation)
+         {
+            orientation = orientation || Ext.Viewport.getOrientation(), mobile = Ext.os.is('Phone') || Ext.os.is('Tablet'), landscape = (mobile && (orientation == 'landscape'));
+            return Ext.create('Ext.Container',
+            {
+               defaultUnit : 'em',
+               right : landscape ? 0 : null,
+               bottom : landscape ? 0 : null,
+               docked : landscape ? null : 'bottom',
+               tag : 'buttons',
+               width : landscape ? '10em' : 'auto',
+               layout : landscape ?
+               {
+                  type : 'vbox',
+                  pack : 'end'
+               } :
+               {
+                  type : 'hbox'
+               },
+               defaults :
+               {
+                  xtype : 'button',
+                  defaultUnit : 'em',
+                  height : '3em',
+                  flex : (landscape) ? null : 1
+               },
+               padding : '0 1.0 0.5 1.0',
+               items : buttons
+            });
+         };
          var onOrientationChange = function(v, newOrientation, width, height, eOpts)
          {
-            var buttons = me.actions.query('container[tag=buttons]')[0];
-            buttons.setDocked((newOrientation == 'landscape') ? null : 'bottom');
-            buttons.setLayout((newOrientation == 'landscape') ?
-            {
-               type : 'vbox',
-               pack : 'end'
-            } :
-            {
-               type : 'hbox'
-            });
-            switch (newOrientation)
-            {
-               case 'landscape' :
-               {
-                  buttons.setRight(0);
-                  buttons.setBottom(0);
-                  buttons.setWidth('10em');
-                  break;
-               }
-               case 'portrait' :
-               {
-                  buttons.setRight(null);
-                  buttons.setBottom(null);
-                  buttons.setWidth('auto');
-                  break;
-               }
-            }
+            me.actions.remove(me.query('container[tag=buttons]')[0], true);
+            me.actions.add(createButtons(newOrientation));
          };
          var callback = function(onOrientationChange)
          {
@@ -574,79 +643,15 @@ __initFb__ = function(_app, _appName)
          {
             var iconEm = 8, iconSize = Genesis.fn.calcPx(iconEm, 1.1);
             var orientation = Ext.Viewport.getOrientation(), mobile = Ext.os.is('Phone') || Ext.os.is('Tablet'), landscape = (mobile && (orientation == 'landscape'));
-            var buttons = [
-            {
-               margin : '0 0.5 0.5 0',
-               text : 'Decline',
-               //ui : 'decline',
-               handler : function()
-               {
-                  me.actions.hide();
-                  app.db.setLocalDBAttrib('disableFBReminderMsg', true);
-
-                  _application.getController('client' + '.Viewport').redirectTo('checkin');
-
-                  callback(onOrientationChange);
-               }
-            },
-            {
-               margin : '0 0.5 0.5 0',
-               text : 'Sign In',
-               ui : 'fbBlue',
-               handler : function()
-               {
-                  me.actions.hide();
-                  var mainPage = _application.getController('client' + '.MainPage');
-                  mainPage.fireEvent('facebookTap', null, null, null, null, function()
-                  {
-                     Ext.device.Notification.show(
-                     {
-                        title : me.titleMsg,
-                        message : me.fbPermissionFailMsg,
-                        buttons : ['Dismiss'],
-                        callback : function(button)
-                        {
-                           mainPage._loggingIn = false;
-
-                           var vport = viewport.getViewport();
-                           var activeItem = vport.getActiveItem();
-                           if (!activeItem)
-                           {
-                              Ext.Viewport.setMasked(null);
-                              viewport.resetView();
-                              viewport.redirectTo('login');
-                           }
-                           else
-                           {
-                              //console.debug("XType:" + activeItem.getXTypes())
-                           }
-                        }
-                     });
-                  });
-
-                  callback(onOrientationChange);
-               }
-            },
-            {
-               text : 'Skip',
-               ui : 'cancel',
-               handler : function()
-               {
-                  me.actions.hide();
-                  _application.getController('client' + '.Viewport').redirectTo('checkin');
-
-                  callback(onOrientationChange);
-               }
-            }];
             me.actions = (Ext.create('Ext.Sheet',
                {
                   bottom : 0,
                   left : 0,
                   top : 0,
                   right : 0,
-                  padding : '0.8 0.7 0 0.7',
                   hideOnMaskTap : false,
                   defaultUnit : 'em',
+                  padding : '0.8 0.7 0 0.7',
                   layout :
                   {
                      type : 'vbox',
@@ -668,32 +673,7 @@ __initFb__ = function(_app, _appName)
                      'margin-top:' + Genesis.fn.addUnit(-1 * (iconEm / 2 - 1.5), 'em') + ';' + //
                      'margin-left:' + Genesis.fn.addUnit(-1 * (iconEm / 2), 'em') + ';" ' + //
                      'src="resources/themes/images/v1/facebook_icon.png"/>'
-                  },
-                  {
-                     layout : landscape ?
-                     {
-                        type : 'vbox',
-                        pack : 'end'
-                     } :
-                     {
-                        type : 'hbox'
-                     },
-                     tag : 'buttons',
-                     right : landscape ? 0 : null,
-                     bottom : landscape ? 0 : null,
-                     docked : landscape ? null : 'bottom',
-                     tag : 'buttons',
-                     width : landscape ? '10em' : 'auto',
-                     defaults :
-                     {
-                        xtype : 'button',
-                        defaultUnit : 'em',
-                        height : '3em',
-                        flex : 1
-                     },
-                     padding : '0 1.0 1.0 1.0',
-                     items : buttons
-                  }]
+                  }, createButtons()]
                }));
             viewport.popUpInProgress = true;
             Ext.Viewport.add(me.actions);

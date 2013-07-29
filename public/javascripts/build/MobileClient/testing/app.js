@@ -79411,7 +79411,6 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
       delete config['preItemsConfig'];
       delete config['postItemsConfig'];
 
-      var orientation = Ext.Viewport.getOrientation(), mobile = Ext.os.is('Phone') || Ext.os.is('Tablet'), landscape = (mobile && (orientation == 'landscape'));
       Ext.merge(config,
       {
          items : [
@@ -79430,30 +79429,7 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
                }
                //'photo' : photoUrl
             })
-         },
-         {
-            right : landscape ? 0 : null,
-            bottom : landscape ? 0 : null,
-            docked : landscape ? null : 'bottom',
-            tag : 'buttons',
-            width : landscape ? '10em' : 'auto',
-            layout : landscape ?
-            {
-               type : 'vbox',
-               pack : 'end'
-            } :
-            {
-               type : 'hbox'
-            },
-            defaults :
-            {
-               xtype : 'button',
-               defaultUnit : 'em',
-               flex : 1
-            },
-            padding : '0 1.0 1.0 1.0',
-            items : buttons
-         }]
+         }, me.createButtons(buttons)]
       });
       delete config['iconType'];
       delete config['icon'];
@@ -79471,39 +79447,44 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
       me.callParent(arguments);
       me.element.setStyle('padding', '0px');
    },
+   createButtons : function(buttons, orientation)
+   {
+      orientation = orientation || Ext.Viewport.getOrientation(), mobile = Ext.os.is('Phone') || Ext.os.is('Tablet'), landscape = (mobile && (orientation == 'landscape'));
+      return Ext.create('Ext.Container',
+      {
+         right : landscape ? 0 : null,
+         bottom : landscape ? 0 : null,
+         docked : landscape ? null : 'bottom',
+         tag : 'buttons',
+         width : landscape ? '10em' : 'auto',
+         layout : landscape ?
+         {
+            type : 'vbox',
+            pack : 'end'
+         } :
+         {
+            type : 'hbox'
+         },
+         defaults :
+         {
+            xtype : 'button',
+            defaultUnit : 'em',
+            flex : (landscape) ? null : 1
+         },
+         padding : '0 1.0 0.5 1.0',
+         items : buttons
+      });
+   },
    onDestroy : function()
    {
       Ext.Viewport.un('orientationchange', me.onOrientationChange);
    },
    onOrientationChange : function(v, newOrientation, width, height, eOpts)
    {
-      var me = this, buttons = me.query('container[tag=buttons]')[0];
-      buttons.setDocked((newOrientation == 'landscape') ? null : 'bottom');
-      buttons.setLayout((newOrientation == 'landscape') ?
-      {
-         type : 'vbox',
-         pack : 'end'
-      } :
-      {
-         type : 'hbox'
-      });
-      switch (newOrientation)
-      {
-         case 'landscape' :
-         {
-            buttons.setRight(0);
-            buttons.setBottom(0);
-            buttons.setWidth('10em');
-            break;
-         }
-         case 'portrait' :
-         {
-            buttons.setRight(null);
-            buttons.setBottom(null);
-            buttons.setWidth('auto');
-            break;
-         }
-      }
+      var me = this;
+
+      me.remove(me.query('container[tag=buttons]')[0], true);
+      me.add(me.createButtons(me.getInitialConfig()['buttons'], newOrientation));
    }
 });
 
