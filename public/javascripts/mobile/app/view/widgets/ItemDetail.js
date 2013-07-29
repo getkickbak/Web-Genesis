@@ -80,8 +80,7 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
       delete config['preItemsConfig'];
       delete config['postItemsConfig'];
 
-      var orientation = Ext.Viewport.getOrientation();
-      var mobile = Ext.os.is('Phone') || Ext.os.is('Tablet');
+      var orientation = Ext.Viewport.getOrientation(), mobile = Ext.os.is('Phone') || Ext.os.is('Tablet'), landscape = (mobile && (orientation == 'landscape'));
       Ext.merge(config,
       {
          items : [
@@ -102,15 +101,18 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
             })
          },
          {
-            right : (mobile && (orientation == 'landscape')) ? 0 : null,
-            bottom : (mobile && (orientation == 'landscape')) ? 0 : null,
-            docked : (mobile && (orientation == 'landscape')) ? null : 'bottom',
+            right : landscape ? 0 : null,
+            bottom : landscape ? 0 : null,
+            docked : landscape ? null : 'bottom',
             tag : 'buttons',
-            width : (mobile && (orientation == 'landscape')) ? '10em' : 'auto',
-            layout :
+            width : landscape ? '10em' : 'auto',
+            layout : landscape ?
             {
                type : 'vbox',
                pack : 'end'
+            } :
+            {
+               type : 'hbox'
             },
             defaults :
             {
@@ -124,13 +126,16 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
       delete config['iconType'];
       delete config['icon'];
 
-      Ext.Viewport.on('orientationchange', me.onOrientationChange, me);
-      me.on(
+      if (mobile)
       {
-         destroy : 'onDestroy',
-         single : true,
-         scope : me
-      });
+         Ext.Viewport.on('orientationchange', me.onOrientationChange, me);
+         me.on(
+         {
+            destroy : 'onDestroy',
+            single : true,
+            scope : me
+         });
+      }
       me.callParent(arguments);
       me.element.setStyle('padding', '0px');
    },
@@ -142,6 +147,14 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
    {
       var me = this, buttons = me.query('container[tag=buttons]')[0];
       buttons.setDocked((newOrientation == 'landscape') ? null : 'bottom');
+      buttons.setLayout((newOrientation == 'landscape') ?
+      {
+         type : 'vbox',
+         pack : 'end'
+      } :
+      {
+         type : 'hbox'
+      });
       switch (newOrientation)
       {
          case 'landscape' :

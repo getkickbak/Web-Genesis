@@ -536,6 +536,14 @@ __initFb__ = function(_app, _appName)
          {
             var buttons = me.actions.query('container[tag=buttons]')[0];
             buttons.setDocked((newOrientation == 'landscape') ? null : 'bottom');
+            buttons.setLayout((newOrientation == 'landscape') ?
+            {
+               type : 'vbox',
+               pack : 'end'
+            } :
+            {
+               type : 'hbox'
+            });
             switch (newOrientation)
             {
                case 'landscape' :
@@ -565,8 +573,71 @@ __initFb__ = function(_app, _appName)
          if (!me.actions)
          {
             var iconEm = 8, iconSize = Genesis.fn.calcPx(iconEm, 1.1);
-            var orientation = Ext.Viewport.getOrientation();
-            var mobile = Ext.os.is('Phone') || Ext.os.is('Tablet');
+            var orientation = Ext.Viewport.getOrientation(), mobile = Ext.os.is('Phone') || Ext.os.is('Tablet'), landscape = (mobile && (orientation == 'landscape'));
+            var buttons = [
+            {
+               margin : '0 0.5 0.5 0',
+               text : 'Decline',
+               //ui : 'decline',
+               handler : function()
+               {
+                  me.actions.hide();
+                  app.db.setLocalDBAttrib('disableFBReminderMsg', true);
+
+                  _application.getController('client' + '.Viewport').redirectTo('checkin');
+
+                  callback(onOrientationChange);
+               }
+            },
+            {
+               margin : '0 0.5 0.5 0',
+               text : 'Sign In',
+               ui : 'fbBlue',
+               handler : function()
+               {
+                  me.actions.hide();
+                  var mainPage = _application.getController('client' + '.MainPage');
+                  mainPage.fireEvent('facebookTap', null, null, null, null, function()
+                  {
+                     Ext.device.Notification.show(
+                     {
+                        title : me.titleMsg,
+                        message : me.fbPermissionFailMsg,
+                        buttons : ['Dismiss'],
+                        callback : function(button)
+                        {
+                           mainPage._loggingIn = false;
+
+                           var vport = viewport.getViewport();
+                           var activeItem = vport.getActiveItem();
+                           if (!activeItem)
+                           {
+                              Ext.Viewport.setMasked(null);
+                              viewport.resetView();
+                              viewport.redirectTo('login');
+                           }
+                           else
+                           {
+                              //console.debug("XType:" + activeItem.getXTypes())
+                           }
+                        }
+                     });
+                  });
+
+                  callback(onOrientationChange);
+               }
+            },
+            {
+               text : 'Skip',
+               ui : 'cancel',
+               handler : function()
+               {
+                  me.actions.hide();
+                  _application.getController('client' + '.Viewport').redirectTo('checkin');
+
+                  callback(onOrientationChange);
+               }
+            }];
             me.actions = (Ext.create('Ext.Sheet',
                {
                   bottom : 0,
@@ -599,94 +670,36 @@ __initFb__ = function(_app, _appName)
                      'src="resources/themes/images/v1/facebook_icon.png"/>'
                   },
                   {
-                     layout :
+                     layout : landscape ?
                      {
                         type : 'vbox',
                         pack : 'end'
+                     } :
+                     {
+                        type : 'hbox'
                      },
                      tag : 'buttons',
-                     right : (mobile && (orientation == 'landscape')) ? 0 : null,
-                     bottom : (mobile && (orientation == 'landscape')) ? 0 : null,
-                     docked : (mobile && (orientation == 'landscape')) ? null : 'bottom',
+                     right : landscape ? 0 : null,
+                     bottom : landscape ? 0 : null,
+                     docked : landscape ? null : 'bottom',
                      tag : 'buttons',
-                     width : (mobile && (orientation == 'landscape')) ? '10em' : 'auto',
+                     width : landscape ? '10em' : 'auto',
                      defaults :
                      {
                         xtype : 'button',
                         defaultUnit : 'em',
                         height : '3em'
                      },
-                     //padding : '0 1.0 1.0 1.0',
                      padding : '0 1.0 1.0 1.0',
-                     items : [
-                     {
-                        margin : '0 0 0.5 0',
-                        text : 'Decline',
-                        //ui : 'decline',
-                        handler : function()
-                        {
-                           me.actions.hide();
-                           app.db.setLocalDBAttrib('disableFBReminderMsg', true);
-
-                           _application.getController('client' + '.Viewport').redirectTo('checkin');
-
-                           callback(onOrientationChange);
-                        }
-                     },
-                     {
-                        margin : '0 0 0.5 0',
-                        text : 'Sign In',
-                        ui : 'fbBlue',
-                        handler : function()
-                        {
-                           me.actions.hide();
-                           var mainPage = _application.getController('client' + '.MainPage');
-                           mainPage.fireEvent('facebookTap', null, null, null, null, function()
-                           {
-                              Ext.device.Notification.show(
-                              {
-                                 title : me.titleMsg,
-                                 message : me.fbPermissionFailMsg,
-                                 buttons : ['Dismiss'],
-                                 callback : function(button)
-                                 {
-                                    mainPage._loggingIn = false;
-
-                                    var vport = viewport.getViewport();
-                                    var activeItem = vport.getActiveItem();
-                                    if (!activeItem)
-                                    {
-                                       Ext.Viewport.setMasked(null);
-                                       viewport.resetView();
-                                       viewport.redirectTo('login');
-                                    }
-                                    else
-                                    {
-                                       //console.debug("XType:" + activeItem.getXTypes())
-                                    }
-                                 }
-                              });
-                           });
-
-                           callback(onOrientationChange);
-                        }
-                     },
-                     {
-                        text : 'Skip',
-                        ui : 'cancel',
-                        handler : function()
-                        {
-                           me.actions.hide();
-                           _application.getController('client' + '.Viewport').redirectTo('checkin');
-
-                           callback(onOrientationChange);
-                        }
-                     }]
+                     items : buttons
                   }]
                }));
             viewport.popUpInProgress = true;
             Ext.Viewport.add(me.actions);
-            Ext.Viewport.on('orientationchange', onOrientationChange, me);
+            if (mobile)
+            {
+               Ext.Viewport.on('orientationchange', onOrientationChange, me);
+            }
             me.actions.show();
          }
          else

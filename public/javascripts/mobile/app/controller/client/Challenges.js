@@ -1071,7 +1071,7 @@ Ext.define('Genesis.controller.client.Challenges',
                   title : me.confirmRecvReferralsMsg,
                   buttons : [
                   {
-                     margin : '0 0 0.5 0',
+                     margin : '0 0.5 0.5 0',
                      text : 'Proceed',
                      ui : 'action',
                      height : '3em',
