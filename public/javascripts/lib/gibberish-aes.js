@@ -18,7 +18,7 @@
 */
 
 
-var GibberishAES = (function(){
+window.GibberishAES = (function(){
     var Nr = 14,
     /* Default to 256 Bit Encryption */
     Nk = 8,
