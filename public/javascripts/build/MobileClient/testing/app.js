@@ -76730,6 +76730,7 @@ Ext.define('Genesis.controller.ViewportBase',
                //
                // Trigger Facebook Login reminder
                //
+               //console.log("Login Status - enableFB(" + db['enableFB'] + ") currFbId(" + db['currFbId'] + ")");
                if ((db['enableFB'] && (db['currFbId'] > 0)) || db['disableFBReminderMsg'])
                {
                   if (!Genesis.fb.cb || !Genesis.fb.cb['viewName'])
