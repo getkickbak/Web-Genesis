@@ -76610,7 +76610,8 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
             defaults :
             {
                xtype : 'button',
-               defaultUnit : 'em'
+               defaultUnit : 'em',
+               flex : 1
             },
             padding : '0 1.0 1.0 1.0',
             items : buttons

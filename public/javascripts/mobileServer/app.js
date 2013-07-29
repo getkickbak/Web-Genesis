@@ -1,6 +1,6 @@
 var pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false;
 
-window.debugMode = false;
+window.debugMode = true;
 window.merchantMode = true;
 window.serverHost = location.origin;
 window._application = null;

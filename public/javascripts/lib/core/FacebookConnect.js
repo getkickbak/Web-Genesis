@@ -688,7 +688,8 @@ __initFb__ = function(_app, _appName)
                      {
                         xtype : 'button',
                         defaultUnit : 'em',
-                        height : '3em'
+                        height : '3em',
+                        flex : 1
                      },
                      padding : '0 1.0 1.0 1.0',
                      items : buttons
