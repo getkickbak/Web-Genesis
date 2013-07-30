@@ -199,8 +199,8 @@ window.plugins = window.plugins ||
             {
                me.audio.addEventListener('ended', function()
                {
-                  this.currentTime = 0;
-                  this.play();
+                  me.audio.currentTime = 0;
+                  me.audio.play();
                }, false);
             }
             me.audio.volume = 1.0;
