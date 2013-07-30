@@ -19,9 +19,9 @@ if ( typeof (importScripts) != 'undefined')
    //
    else
    {
-      prefix = '/merchant';
+      prefix = '/';
    }
-   importScripts((location.href.match('testing') ? '' : '/') + 'lib/libmp3lame.min.js');
+   importScripts(prefix + 'lib/libmp3lame.min.js');
 }
 else
 {
