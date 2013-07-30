@@ -186,34 +186,6 @@ window.plugins = window.plugins ||
 
             return data;
          },
-         createAudioLoop : function()
-         {
-            var me = this;
-            /*
-             if ( typeof me.audio.loop == 'boolean')
-             {
-             me.audio.loop = true;
-             }
-             else
-             */
-            {
-               me.audio.addEventListener('timeupdate', function()
-               {
-                  if (me.audio.currentTime >= (0.95 * 1000))
-                  {
-                     me.audio.currentTime = 0;
-                  }
-               }, false);
-               /*
-                me.audio.addEventListener('ended', function()
-                {
-                me.audio.currentTime = 0;
-                me.audio.play();
-                }, false);
-                */
-            }
-            me.audio.volume = 1.0;
-         },
          webAudioFnHandler : function(s_vol)
          {
             var me = this;
@@ -272,7 +244,7 @@ window.plugins = window.plugins ||
             // Browser support WAV files
             //
             me.audio = new Audio(new RIFFWAVE(config).dataURI);
-            me.createAudioLoop();
+            me.audio.volume = 1.0;
 
             console.debug("WAV Gain : " + s_vol);
 
@@ -335,7 +307,7 @@ window.plugins = window.plugins ||
                   me.sampleConfig['data'] = 'data:audio/mpeg;base64,' + base64.encode(me.sampleConfig['data']);
                   //console.debug("Final MP3 File Length = " + me.sampleConfig['data'].length);
                   me.audio = new Audio(me.sampleConfig['data']);
-                  me.createAudioLoop();
+                  me.audio.volume = 1.0;
 
                   console.debug("MP3 Gain : " + Genesis.constants.s_vol / 100);
                   me.sampleConfig['callback']();
@@ -459,6 +431,14 @@ window.plugins = window.plugins ||
             else if (me.audio)
             {
                me.audio.play();
+               me.audioTimer = setInterval(function()
+               {
+                  if (me.audio.currentTime >= 0.9 * 1000)
+                  {
+                     console.log("Locating LocalID ...");
+                     me.audio.currentTime = 0;
+                  }
+               }, 50);
                win(
                {
                   freqs : me.freqs
@@ -597,6 +577,9 @@ window.plugins = window.plugins ||
          {
             var me = this;
 
+            clearInterval(me.audioTimer);
+            delete me.audioTimer;
+            
             if (me.oscillators)
             {
                for (var i = 0; i < me.freqs.length; i++)
