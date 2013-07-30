@@ -189,17 +189,28 @@ window.plugins = window.plugins ||
          createAudioLoop : function()
          {
             var me = this;
-            if ( typeof me.audio.loop == 'boolean')
+            /*
+             if ( typeof me.audio.loop == 'boolean')
+             {
+             me.audio.loop = true;
+             }
+             else
+             */
             {
-               me.audio.loop = true;
-            }
-            else
-            {
-               me.audio.addEventListener('ended', function()
+               me.audio.addEventListener('timeupdate', function()
                {
-                  me.audio.currentTime = 0;
-                  me.audio.play();
+                  if (me.audio.currentTime >= (0.95 * 1000))
+                  {
+                     me.audio.currentTime = 0;
+                  }
                }, false);
+               /*
+                me.audio.addEventListener('ended', function()
+                {
+                me.audio.currentTime = 0;
+                me.audio.play();
+                }, false);
+                */
             }
             me.audio.volume = 1.0;
          },
