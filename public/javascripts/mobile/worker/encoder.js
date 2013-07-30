@@ -19,9 +19,9 @@ if ( typeof (importScripts) != 'undefined')
    //
    else
    {
-      prefix = '/';
+      prefix = '';
    }
-   importScripts(prefix + 'lib/libmp3lame.min.js');
+   importScripts(prefix + '/lib/libmp3lame.min.js');
 }
 else
 {
