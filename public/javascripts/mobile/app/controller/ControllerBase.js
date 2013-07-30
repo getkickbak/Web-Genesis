@@ -1519,9 +1519,9 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       var me = this, fb = Genesis.fb;
 
-      fb.un('connected', me.updateFBSignUpPopupCallback);
-      fb.un('unauthorized', me.updateFBSignUpPopupCallback);
-      fb.un('exception', me.updateFBSignUpPopupCallback);
+      fb.un('connected', me.updateFBSignUpPopupCallback, me);
+      fb.un('unauthorized', me.updateFBSignUpPopupCallback, me);
+      fb.un('exception', me.updateFBSignUpPopupCallback, me);
    },
    onToggleFB : function(toggle, slider, thumb, newValue, oldValue, eOpts)
    {

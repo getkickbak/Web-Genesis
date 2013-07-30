@@ -888,9 +888,9 @@ Ext.define('Genesis.controller.client.Challenges',
             //targetHeight : 480
          });
       }
-      fb.un('connected', me.fn);
-      fb.un('unauthorized', me.fn);
-      fb.un('exception', me.fn);
+      fb.un('connected', me.fn, me);
+      fb.un('unauthorized', me.fn, me);
+      fb.un('exception', me.fn, me);
       delete me.fn;
    },
    onPhotoBtnCommon : function(sourceType)

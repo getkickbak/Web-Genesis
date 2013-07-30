@@ -124,7 +124,7 @@ __initFb__ = function(_app, _appName)
       me.actions.destroy();
       delete me.actions;
       viewport.popUpInProgress = false;
-      Ext.Viewport.un('orientationchange', onOrientationChange);
+      Ext.Viewport.un('orientationchange', onOrientationChange, me);
    };
 
    // **************************************************************************

@@ -374,9 +374,9 @@ Ext.define('Genesis.controller.client.Viewport',
                message : me.fbShareSuccessMsg,
                buttons : ['OK']
             });
-            fb.un('connected', me.onFacebookShareCallback);
-            fb.un('unauthorized', me.onFacebookShareCallback);
-            fb.un('exception', me.onFacebookShareCallback);
+            fb.un('connected', me.onFacebookShareCallback, me);
+            fb.un('unauthorized', me.onFacebookShareCallback, me);
+            fb.un('exception', me.onFacebookShareCallback, me);
          }, function(response)
          {
             Ext.Viewport.setMasked(null);
@@ -389,9 +389,9 @@ Ext.define('Genesis.controller.client.Viewport',
              buttons : ['OK']
              });
              */
-            fb.un('connected', me.onFacebookShareCallback);
-            fb.un('unauthorized', me.onFacebookShareCallback);
-            fb.un('exception', me.onFacebookShareCallback);
+            fb.un('connected', me.onFacebookShareCallback, me);
+            fb.un('unauthorized', me.onFacebookShareCallback, me);
+            fb.un('exception', me.onFacebookShareCallback, me);
          });
       }
    },

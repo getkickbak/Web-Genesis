@@ -74421,9 +74421,9 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       var me = this, fb = Genesis.fb;
 
-      fb.un('connected', me.updateFBSignUpPopupCallback);
-      fb.un('unauthorized', me.updateFBSignUpPopupCallback);
-      fb.un('exception', me.updateFBSignUpPopupCallback);
+      fb.un('connected', me.updateFBSignUpPopupCallback, me);
+      fb.un('unauthorized', me.updateFBSignUpPopupCallback, me);
+      fb.un('exception', me.updateFBSignUpPopupCallback, me);
    },
    onToggleFB : function(toggle, slider, thumb, newValue, oldValue, eOpts)
    {
@@ -79460,6 +79460,7 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
          }
       });
       var height = (landscape && !merchantMode && (buttons.length > 2)) ? 2 : 3;
+      //console.log("LandscapeMode: " + landscape);
       return Ext.create('Ext.Container',
       {
          defaultUnit : 'em',
@@ -79489,7 +79490,7 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
    },
    onDestroy : function()
    {
-      Ext.Viewport.un('orientationchange', me.onOrientationChange);
+      Ext.Viewport.un('orientationchange', me.onOrientationChange, me);
    },
    onOrientationChange : function(v, newOrientation, width, height, eOpts)
    {
@@ -89182,9 +89183,9 @@ Ext.define('Genesis.controller.client.Viewport',
                message : me.fbShareSuccessMsg,
                buttons : ['OK']
             });
-            fb.un('connected', me.onFacebookShareCallback);
-            fb.un('unauthorized', me.onFacebookShareCallback);
-            fb.un('exception', me.onFacebookShareCallback);
+            fb.un('connected', me.onFacebookShareCallback, me);
+            fb.un('unauthorized', me.onFacebookShareCallback, me);
+            fb.un('exception', me.onFacebookShareCallback, me);
          }, function(response)
          {
             Ext.Viewport.setMasked(null);
@@ -89197,9 +89198,9 @@ Ext.define('Genesis.controller.client.Viewport',
              buttons : ['OK']
              });
              */
-            fb.un('connected', me.onFacebookShareCallback);
-            fb.un('unauthorized', me.onFacebookShareCallback);
-            fb.un('exception', me.onFacebookShareCallback);
+            fb.un('connected', me.onFacebookShareCallback, me);
+            fb.un('unauthorized', me.onFacebookShareCallback, me);
+            fb.un('exception', me.onFacebookShareCallback, me);
          });
       }
    },
