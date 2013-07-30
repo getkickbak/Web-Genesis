@@ -1,6 +1,132 @@
 __initFb__ = function(_app, _appName)
 {
    var app = _app;
+   var buttons = [
+   {
+      margin : '0 0.5 0.5 0',
+      text : 'Decline',
+      //ui : 'decline',
+      handler : function()
+      {
+         var me = window[_appName].fb;
+
+         me.actions.hide();
+         app.db.setLocalDBAttrib('disableFBReminderMsg', true);
+
+         _application.getController('client' + '.Viewport').redirectTo('checkin');
+
+         callback(onOrientationChange);
+      }
+   },
+   {
+      margin : '0 0.5 0.5 0',
+      text : 'Sign In',
+      ui : 'fbBlue',
+      handler : function()
+      {
+         var me = window[_appName].fb;
+         var mainPage = _application.getController('client' + '.MainPage');
+
+         me.actions.hide();
+         mainPage.fireEvent('facebookTap', null, null, null, null, function()
+         {
+            Ext.device.Notification.show(
+            {
+               title : me.titleMsg,
+               message : me.fbPermissionFailMsg,
+               buttons : ['Dismiss'],
+               callback : function(button)
+               {
+                  mainPage._loggingIn = false;
+
+                  var vport = viewport.getViewport();
+                  var activeItem = vport.getActiveItem();
+                  if (!activeItem)
+                  {
+                     Ext.Viewport.setMasked(null);
+                     viewport.resetView();
+                     viewport.redirectTo('login');
+                  }
+                  else
+                  {
+                     //console.debug("XType:" + activeItem.getXTypes())
+                  }
+               }
+            });
+         });
+
+         callback(onOrientationChange);
+      }
+   },
+   {
+      text : 'Skip',
+      ui : 'cancel',
+      handler : function()
+      {
+         var me = window[_appName].fb;
+
+         me.actions.hide();
+         _application.getController('client' + '.Viewport').redirectTo('checkin');
+
+         callback(onOrientationChange);
+      }
+   }];
+   var createButtons = function(orientation)
+   {
+      orientation = orientation || Ext.Viewport.getOrientation(), mobile = Ext.os.is('Phone') || Ext.os.is('Tablet'), landscape = (mobile && (orientation == 'landscape'));
+
+      Ext.each(buttons, function(button, index, array)
+      {
+         if (index != (array.length - 1))
+         {
+            button['margin'] = (landscape) ? '0 0 0.5 0' : '0 0.5 0.5 0';
+         }
+      });
+      return Ext.create('Ext.Container',
+      {
+         defaultUnit : 'em',
+         right : landscape ? 0 : null,
+         bottom : landscape ? 0 : null,
+         docked : landscape ? null : 'bottom',
+         tag : 'buttons',
+         width : landscape ? '7.5em' : 'auto',
+         layout : landscape ?
+         {
+            type : 'vbox',
+            pack : 'end'
+         } :
+         {
+            type : 'hbox'
+         },
+         defaults :
+         {
+            xtype : 'button',
+            defaultUnit : 'em',
+            height : ((landscape && (buttons.length > 2)) ? 2 : 3) + 'em',
+            flex : (landscape) ? null : 1
+         },
+         padding : '0 1.0 0.5 1.0',
+         items : buttons
+      });
+   };
+   var onOrientationChange = function(v, newOrientation, width, height, eOpts)
+   {
+      var me = window[_appName].fb;
+
+      me.actions.remove(me.actions.query('container[tag=buttons]')[0], true);
+      me.actions.add(createButtons(newOrientation));
+   };
+   var callback = function(onOrientationChange)
+   {
+      var me = window[_appName].fb;
+      var viewport = _application.getController('client' + '.Viewport');
+
+      me.actions.destroy();
+      delete me.actions;
+      viewport.popUpInProgress = false;
+      Ext.Viewport.un('orientationchange', onOrientationChange);
+   };
+
    // **************************************************************************
    // Facebook API
    // **************************************************************************
@@ -532,120 +658,6 @@ __initFb__ = function(_app, _appName)
       createFBReminderMsg : function()
       {
          var me = this, viewport = _application.getController('client' + '.Viewport');
-         var buttons = [
-         {
-            margin : '0 0.5 0.5 0',
-            text : 'Decline',
-            //ui : 'decline',
-            handler : function()
-            {
-               me.actions.hide();
-               app.db.setLocalDBAttrib('disableFBReminderMsg', true);
-
-               _application.getController('client' + '.Viewport').redirectTo('checkin');
-
-               callback(onOrientationChange);
-            }
-         },
-         {
-            margin : '0 0.5 0.5 0',
-            text : 'Sign In',
-            ui : 'fbBlue',
-            handler : function()
-            {
-               me.actions.hide();
-               var mainPage = _application.getController('client' + '.MainPage');
-               mainPage.fireEvent('facebookTap', null, null, null, null, function()
-               {
-                  Ext.device.Notification.show(
-                  {
-                     title : me.titleMsg,
-                     message : me.fbPermissionFailMsg,
-                     buttons : ['Dismiss'],
-                     callback : function(button)
-                     {
-                        mainPage._loggingIn = false;
-
-                        var vport = viewport.getViewport();
-                        var activeItem = vport.getActiveItem();
-                        if (!activeItem)
-                        {
-                           Ext.Viewport.setMasked(null);
-                           viewport.resetView();
-                           viewport.redirectTo('login');
-                        }
-                        else
-                        {
-                           //console.debug("XType:" + activeItem.getXTypes())
-                        }
-                     }
-                  });
-               });
-
-               callback(onOrientationChange);
-            }
-         },
-         {
-            text : 'Skip',
-            ui : 'cancel',
-            handler : function()
-            {
-               me.actions.hide();
-               _application.getController('client' + '.Viewport').redirectTo('checkin');
-
-               callback(onOrientationChange);
-            }
-         }];
-         var createButtons = function(orientation)
-         {
-            orientation = orientation || Ext.Viewport.getOrientation(), mobile = Ext.os.is('Phone') || Ext.os.is('Tablet'), landscape = (mobile && (orientation == 'landscape'));
-
-            Ext.each(buttons, function(button, index, array)
-            {
-               if (index != (array.length - 1))
-               {
-                  button['margin'] = (landscape) ? '0 0 0.5 0' : '0 0.5 0.5 0';
-               }
-            });
-            return Ext.create('Ext.Container',
-            {
-               defaultUnit : 'em',
-               right : landscape ? 0 : null,
-               bottom : landscape ? 0 : null,
-               docked : landscape ? null : 'bottom',
-               tag : 'buttons',
-               width : landscape ? '7.5em' : 'auto',
-               layout : landscape ?
-               {
-                  type : 'vbox',
-                  pack : 'end'
-               } :
-               {
-                  type : 'hbox'
-               },
-               defaults :
-               {
-                  xtype : 'button',
-                  defaultUnit : 'em',
-                  height : ((landscape && (buttons.length > 2)) ? 2 : 3) + 'em',
-                  flex : (landscape) ? null : 1
-               },
-               padding : '0 1.0 0.5 1.0',
-               items : buttons
-            });
-         };
-         var onOrientationChange = function(v, newOrientation, width, height, eOpts)
-         {
-            me.actions.remove(me.actions.query('container[tag=buttons]')[0], true);
-            me.actions.add(createButtons(newOrientation));
-         };
-         var callback = function(onOrientationChange)
-         {
-            me.actions.destroy();
-            delete me.actions;
-            viewport.popUpInProgress = false;
-            Ext.Viewport.un('orientationchange', onOrientationChange);
-         };
 
          if (!me.actions)
          {

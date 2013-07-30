@@ -128,6 +128,7 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
          }
       });
       var height = (landscape && !merchantMode && (buttons.length > 2)) ? 2 : 3;
+      //console.log("LandscapeMode: " + landscape);
       return Ext.create('Ext.Container',
       {
          defaultUnit : 'em',
