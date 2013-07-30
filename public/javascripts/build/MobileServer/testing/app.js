@@ -73543,9 +73543,9 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       var me = this, fb = Genesis.fb;
 
-      fb.un('connected', me.updateFBSignUpPopupCallback);
-      fb.un('unauthorized', me.updateFBSignUpPopupCallback);
-      fb.un('exception', me.updateFBSignUpPopupCallback);
+      fb.un('connected', me.updateFBSignUpPopupCallback, me);
+      fb.un('unauthorized', me.updateFBSignUpPopupCallback, me);
+      fb.un('exception', me.updateFBSignUpPopupCallback, me);
    },
    onToggleFB : function(toggle, slider, thumb, newValue, oldValue, eOpts)
    {
@@ -76598,7 +76598,7 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
       delete config['iconType'];
       delete config['icon'];
 
-      if (mobile)
+      if (Ext.os.is('Phone') || Ext.os.is('Tablet'))
       {
          Ext.Viewport.on('orientationchange', me.onOrientationChange, me);
          me.on(
@@ -76621,7 +76621,8 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
             button['margin'] = (landscape) ? '0 0 0.5 0' : '0 0.5 0.5 0';
          }
       });
-      var height = (!landscape && !merchantMode && (buttons.length > 2)) ? 2 : 3;
+      var height = (landscape && !merchantMode && (buttons.length > 2)) ? 2 : 3;
+      //console.log("LandscapeMode: " + landscape);
       return Ext.create('Ext.Container',
       {
          defaultUnit : 'em',
@@ -76651,7 +76652,7 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
    },
    onDestroy : function()
    {
-      Ext.Viewport.un('orientationchange', me.onOrientationChange);
+      Ext.Viewport.un('orientationchange', me.onOrientationChange, me);
    },
    onOrientationChange : function(v, newOrientation, width, height, eOpts)
    {
