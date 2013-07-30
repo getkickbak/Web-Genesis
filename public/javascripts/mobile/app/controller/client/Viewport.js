@@ -591,7 +591,7 @@ Ext.define('Genesis.controller.client.Viewport',
       //else if (Ext.os.is('Android') || Ext.os.is('BlackBerry'))
       {
          //(tx)
-         s_vol_ratio = (Genesis.fn.isNative()) ? 0.50 : 0.8;
+         s_vol_ratio = (Genesis.fn.isNative()) ? 0.50 : 0.5;
          //Default Volume laying flat on a surface (tx)
          c.s_vol = 50;
 

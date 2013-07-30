@@ -171,9 +171,9 @@ window.plugins = window.plugins ||
                //
                // Create Cross Fade
                //
-               if ((i < length / 20) && (offset == 0))
+               if ((i < length / 10) && (offset == 0))
                {
-                  _s_vol = s_vol * (i + 1) / (length / 20);
+                  _s_vol = s_vol * (i + 1) / (length / 10);
                }
                // convert to 16 bit pcm sound array
                // assumes the sample buffer is normalised.
@@ -224,9 +224,9 @@ window.plugins = window.plugins ||
                //
                // Create Cross Fade
                //
-               if (i < me.duration / 20)
+               if (i < me.duration / 10)
                {
-                  _s_vol = s_vol * (i + 1) / (me.duration / 20);
+                  _s_vol = s_vol * (i + 1) / (me.duration / 10);
                }
                // convert to 16 bit pcm sound array
                // assumes the sample buffer is normalised.
@@ -433,7 +433,7 @@ window.plugins = window.plugins ||
                me.audio.play();
                me.audioTimer = setInterval(function()
                {
-                  if (me.audio.currentTime >= 0.9)
+                  if (me.audio.currentTime >= 0.95)
                   {
                      //console.log("Locating LocalID ...");
                      me.audio.currentTime = 0;
