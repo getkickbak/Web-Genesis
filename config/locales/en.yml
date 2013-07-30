@@ -411,7 +411,7 @@ en:
         badge_promotion: "I just got promoted to %s at %s!"
       description:
         amount_spent: "Earn 1 point for every dollar spent."
-        items_perchased: "%s."
+        items_purchased: "%s."
         visits: "%s."
         text: "Sign up with KICKBAK to get rewards at your favorite locations in the local area."        
   sms:
