@@ -433,9 +433,9 @@ window.plugins = window.plugins ||
                me.audio.play();
                me.audioTimer = setInterval(function()
                {
-                  if (me.audio.currentTime >= 0.9 * 1000)
+                  if (me.audio.currentTime >= 0.9)
                   {
-                     console.log("Locating LocalID ...");
+                     //console.log("Locating LocalID ...");
                      me.audio.currentTime = 0;
                   }
                }, 50);
