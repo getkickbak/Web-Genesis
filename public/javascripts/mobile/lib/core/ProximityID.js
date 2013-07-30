@@ -189,13 +189,11 @@ window.plugins = window.plugins ||
          createAudioLoop : function()
          {
             var me = this;
-            /*
-             if ( typeof me.audio.loop == 'boolean')
-             {
-             me.audio.loop = true;
-             }
-             else
-             */
+            if ( typeof me.audio.loop == 'boolean')
+            {
+               me.audio.loop = true;
+            }
+            else
             {
                me.audio.addEventListener('ended', function()
                {
