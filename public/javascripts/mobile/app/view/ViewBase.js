@@ -100,7 +100,7 @@ Ext.define('Genesis.view.ViewBase',
    },
    calcCarouselSize : function(factor)
    {
-      var me = this, spacingFactor = 50, mobile = Ext.os.is('Phone') || Ext.os.is('Tablet'), area = window.innerHeight * window.inneWidth;
+      var me = this, spacingFactor = 50, mobile = Ext.os.is('Phone') || Ext.os.is('Tablet'), area = window.innerHeight * window.innerWidth;
 
       factor = factor || 1;
       console.debug("Screen Height[" + window.innerHeight + "], Width[" + window.innerWidth + "]");

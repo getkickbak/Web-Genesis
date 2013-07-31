@@ -75805,7 +75805,7 @@ Ext.define('Genesis.view.ViewBase',
    },
    calcCarouselSize : function(factor)
    {
-      var me = this, spacingFactor = 50, mobile = Ext.os.is('Phone') || Ext.os.is('Tablet'), area = window.innerHeight * window.inneWidth;
+      var me = this, spacingFactor = 50, mobile = Ext.os.is('Phone') || Ext.os.is('Tablet'), area = window.innerHeight * window.innerWidth;
 
       factor = factor || 1;
       console.debug("Screen Height[" + window.innerHeight + "], Width[" + window.innerWidth + "]");
@@ -79279,7 +79279,7 @@ Ext.define('Genesis.view.client.Badges',
                getPhoto : function(values)
                {
                   var type = values['type'];
-                  var customer = _application.getController(((merchantMode) ? 'server' : 'client') + '.Viewport').getCustomer();
+                  var customer = _application.getController('client' + '.Viewport').getCustomer();
                   var badge = Ext.StoreMgr.get('BadgeStore').getById(customer.get('badge_id'));
                   var rank = badge.get('rank');
                   return me.self.getPhoto((values['rank'] <= rank) ? type : 'nobadge', 'thumbnail_medium_url');

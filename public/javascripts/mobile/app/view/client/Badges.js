@@ -111,7 +111,7 @@ Ext.define('Genesis.view.client.Badges',
                getPhoto : function(values)
                {
                   var type = values['type'];
-                  var customer = _application.getController(((merchantMode) ? 'server' : 'client') + '.Viewport').getCustomer();
+                  var customer = _application.getController('client' + '.Viewport').getCustomer();
                   var badge = Ext.StoreMgr.get('BadgeStore').getById(customer.get('badge_id'));
                   var rank = badge.get('rank');
                   return me.self.getPhoto((values['rank'] <= rank) ? type : 'nobadge', 'thumbnail_medium_url');
