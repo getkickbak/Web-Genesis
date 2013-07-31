@@ -65,9 +65,13 @@ Ext.define('Genesis.view.client.Badges',
       switch (Ext.Viewport.getOrientation())
       {
          case 'portrait' :
-         case 'landscape' :
          {
             Genesis.view.ViewBase.prototype.calcCarouselSize.apply(me, [2]);
+            break;
+         }
+         case 'landscape' :
+         {
+            Genesis.view.ViewBase.prototype.calcCarouselSize.apply(me, [4/3]);
             break;
          }
       }
