@@ -171,9 +171,9 @@ window.plugins = window.plugins ||
                //
                // Create Cross Fade
                //
-               if ((i < length / 10) && (offset == 0))
+               if ((i + offset) < (me.duration / 10))
                {
-                  _s_vol = s_vol * (i + 1) / (length / 10);
+                  _s_vol = s_vol * (i + offset + 1) / (me.duration / 10);
                }
                // convert to 16 bit pcm sound array
                // assumes the sample buffer is normalised.
@@ -579,7 +579,7 @@ window.plugins = window.plugins ||
 
             clearInterval(me.audioTimer);
             delete me.audioTimer;
-            
+
             if (me.oscillators)
             {
                for (var i = 0; i < me.freqs.length; i++)

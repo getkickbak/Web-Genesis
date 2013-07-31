@@ -100,25 +100,29 @@ Ext.define('Genesis.view.ViewBase',
    },
    calcCarouselSize : function(factor)
    {
-      var me = this, spacingFactor = 50;
+      var me = this, spacingFactor = 50, mobile = Ext.os.is('Phone') || Ext.os.is('Tablet'), area = window.innerHeight * window.inneWidth;
 
       factor = factor || 1;
       console.debug("Screen Height[" + window.innerHeight + "], Width[" + window.innerWidth + "]");
-      if (window.innerHeight < (480 - spacingFactor))
+
+      if (mobile)
       {
-         me.setItemPerPage(4 * factor);
-      }
-      else if (window.innerHeight < (568 - spacingFactor))
-      {
-         me.setItemPerPage(6 * factor);
-      }
-      else if (window.innerHeight < (1024 - spacingFactor))
-      {
-         me.setItemPerPage(8 * factor);
-      }
-      else
-      {
-         me.setItemPerPage(10 * factor);
+         if (area < ((480 - spacingFactor) * 320))
+         {
+            me.setItemPerPage(4 * factor);
+         }
+         else if (area < (568 - spacingFactor) * 320)
+         {
+            me.setItemPerPage(6 * factor);
+         }
+         else if (area < (1024 - spacingFactor) * 320)
+         {
+            me.setItemPerPage(8 * factor);
+         }
+         else
+         {
+            me.setItemPerPage(10 * factor);
+         }
       }
    },
    cleanView : function()
