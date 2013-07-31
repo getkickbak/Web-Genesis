@@ -62,16 +62,11 @@ Ext.define('Genesis.view.client.Badges',
    {
       var me = this, carousel = this;
 
-      if (!Genesis.view.ViewBase.prototype.createView.apply(this, arguments))
-      {
-         return;
-      }
-
       switch (Ext.Viewport.getOrientation())
       {
          case 'landscape' :
          {
-            Genesis.view.ViewBase.prototype.calcCarouselSize.apply(me, [4/3]);
+            Genesis.view.ViewBase.prototype.calcCarouselSize.apply(me, [4 / 3]);
             break;
          }
          case 'portrait' :
@@ -83,7 +78,7 @@ Ext.define('Genesis.view.client.Badges',
 
       carousel.removeAll(true);
 
-      var app = _application, viewport = app.getController(((merchantMode) ? 'server' : 'client') + '.Viewport');
+      var app = _application, viewport = app.getController('client' + '.Viewport');
       var vport = viewport.getViewport(), items = Ext.StoreMgr.get('BadgeStore').getRange(), list = Ext.Array.clone(items);
 
       for (var i = 0; i < Math.ceil(list.length / me.getItemPerPage()); i++)
