@@ -197,7 +197,7 @@ Ext.define('Genesis.view.client.ChallengePage',
       {
          case 'landscape' :
          {
-            me.calcCarouselSize(0.75);
+            me.calcCarouselSize(0.50);
             break;
          }
          case 'portrait' :

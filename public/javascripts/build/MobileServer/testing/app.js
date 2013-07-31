@@ -74933,15 +74933,15 @@ Ext.define('Genesis.view.ViewBase',
       console.debug("Screen Height[" + window.innerHeight + "], Width[" + window.innerWidth + "]");
       var width;
 
-      if (Ext.os.is('Phone'))
+      if (Ext.os.is('Phone') || !merchantMode)
       {
          width = (Ext.os.is('iOS')) ? 320 : 384;
       }
       else if (Ext.os.is('Tablet'))
       {
-         width = (Ext.os.is('iOS')) ? 768 : 768;
+         width = (Ext.os.is('iOS')) ? 768 : 480;
       }
-      
+
       if (mobile)
       {
          if (area < (480 - spacingFactor) * width)

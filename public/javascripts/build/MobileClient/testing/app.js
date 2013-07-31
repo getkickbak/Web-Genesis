@@ -75811,15 +75811,15 @@ Ext.define('Genesis.view.ViewBase',
       console.debug("Screen Height[" + window.innerHeight + "], Width[" + window.innerWidth + "]");
       var width;
 
-      if (Ext.os.is('Phone'))
+      if (Ext.os.is('Phone') || !merchantMode)
       {
          width = (Ext.os.is('iOS')) ? 320 : 384;
       }
       else if (Ext.os.is('Tablet'))
       {
-         width = (Ext.os.is('iOS')) ? 768 : 768;
+         width = (Ext.os.is('iOS')) ? 768 : 480;
       }
-      
+
       if (mobile)
       {
          if (area < (480 - spacingFactor) * width)
@@ -79242,12 +79242,8 @@ Ext.define('Genesis.view.client.Badges',
 
       switch (Ext.Viewport.getOrientation())
       {
-         case 'landscape' :
-         {
-            Genesis.view.ViewBase.prototype.calcCarouselSize.apply(me, [4 / 3]);
-            break;
-         }
          case 'portrait' :
+         case 'landscape' :
          {
             Genesis.view.ViewBase.prototype.calcCarouselSize.apply(me, [2]);
             break;
@@ -80377,7 +80373,7 @@ Ext.define('Genesis.view.client.ChallengePage',
       {
          case 'landscape' :
          {
-            me.calcCarouselSize(0.75);
+            me.calcCarouselSize(0.50);
             break;
          }
          case 'portrait' :
