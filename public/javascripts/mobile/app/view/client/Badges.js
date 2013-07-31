@@ -67,7 +67,19 @@ Ext.define('Genesis.view.client.Badges',
          return;
       }
 
-      Genesis.view.ViewBase.prototype.calcCarouselSize.apply(me, [2]);
+      switch (Ext.Viewport.getOrientation())
+      {
+         case 'landscape' :
+         {
+            Genesis.view.ViewBase.prototype.calcCarouselSize.apply(me, [4/3]);
+            break;
+         }
+         case 'portrait' :
+         {
+            Genesis.view.ViewBase.prototype.calcCarouselSize.apply(me, [2]);
+            break;
+         }
+      }
 
       carousel.removeAll(true);
 
@@ -125,7 +137,7 @@ Ext.define('Genesis.view.client.Badges',
        */
 
       var carousel = this;
-      
+
       Genesis.view.ViewBase.prototype.showView.apply(this, arguments);
       if (carousel.getInnerItems().length > 0)
       {

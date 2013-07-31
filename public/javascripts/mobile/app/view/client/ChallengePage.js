@@ -197,12 +197,14 @@ Ext.define('Genesis.view.client.ChallengePage',
       {
          case 'landscape' :
          {
-            me.setItemPerPage(4);
+            me.calcCarouselSize(0.75);
             break;
          }
-         default:
-            me.calcCarouselSize();
+         case 'portrait' :
+         {
+            me.calcCarouselSize(1.5);
             break;
+         }
       }
 
       carousel.removeAll(true);

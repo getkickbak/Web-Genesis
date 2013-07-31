@@ -75812,21 +75812,21 @@ Ext.define('Genesis.view.ViewBase',
 
       if (mobile)
       {
-         if (area < ((480 - spacingFactor) * 320))
+         if (area < (480 - spacingFactor) * 320)
          {
-            me.setItemPerPage(4 * factor);
+            me.setItemPerPage(Math.floor(4 * factor));
          }
          else if (area < (568 - spacingFactor) * 320)
          {
-            me.setItemPerPage(6 * factor);
+            me.setItemPerPage(Math.floor(6 * factor));
          }
          else if (area < (1024 - spacingFactor) * 320)
          {
-            me.setItemPerPage(8 * factor);
+            me.setItemPerPage(Math.floor(8 * factor));
          }
          else
          {
-            me.setItemPerPage(10 * factor);
+            me.setItemPerPage(Math.floor(10 * factor));
          }
       }
    },
@@ -79235,7 +79235,19 @@ Ext.define('Genesis.view.client.Badges',
          return;
       }
 
-      Genesis.view.ViewBase.prototype.calcCarouselSize.apply(me, [2]);
+      switch (Ext.Viewport.getOrientation())
+      {
+         case 'landscape' :
+         {
+            Genesis.view.ViewBase.prototype.calcCarouselSize.apply(me, [4/3]);
+            break;
+         }
+         case 'portrait' :
+         {
+            Genesis.view.ViewBase.prototype.calcCarouselSize.apply(me, [2]);
+            break;
+         }
+      }
 
       carousel.removeAll(true);
 
@@ -79293,7 +79305,7 @@ Ext.define('Genesis.view.client.Badges',
        */
 
       var carousel = this;
-      
+
       Genesis.view.ViewBase.prototype.showView.apply(this, arguments);
       if (carousel.getInnerItems().length > 0)
       {
@@ -80360,12 +80372,14 @@ Ext.define('Genesis.view.client.ChallengePage',
       {
          case 'landscape' :
          {
-            me.setItemPerPage(4);
+            me.calcCarouselSize(0.75);
             break;
          }
-         default:
-            me.calcCarouselSize();
+         case 'portrait' :
+         {
+            me.calcCarouselSize(1.5);
             break;
+         }
       }
 
       carousel.removeAll(true);
