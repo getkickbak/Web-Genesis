@@ -139,15 +139,12 @@ Ext.Loader.setPath(
                Ext.device.Notification.show(
                {
                   title : 'Application Update',
-                  message : "This application has just successfully been updated to the latest version. Reload now?",
-                  buttons : ['No', 'Yes'],
+                  message : "This application has just successfully been updated to the latest version.",
+                  buttons : ['Reload'],
                   disableAnimations : true,
                   callback : function(buttonId)
                   {
-                     if (!buttonId || (buttonId.toLowerCase() === 'yes'))
-                     {
-                        window.location.reload();
-                     }
+                     window.location.reload();
                   }
                });
             }

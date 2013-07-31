@@ -75809,18 +75809,28 @@ Ext.define('Genesis.view.ViewBase',
 
       factor = factor || 1;
       console.debug("Screen Height[" + window.innerHeight + "], Width[" + window.innerWidth + "]");
+      var width;
 
+      if (Ext.os.is('Phone'))
+      {
+         width = (Ext.os.is('iOS')) ? 320 : 384;
+      }
+      else if (Ext.os.is('Tablet'))
+      {
+         width = (Ext.os.is('iOS')) ? 768 : 768;
+      }
+      
       if (mobile)
       {
-         if (area < (480 - spacingFactor) * 320)
+         if (area < (480 - spacingFactor) * width)
          {
             me.setItemPerPage(Math.floor(4 * factor));
          }
-         else if (area < (568 - spacingFactor) * 320)
+         else if (area < (568 - spacingFactor) * width)
          {
             me.setItemPerPage(Math.floor(6 * factor));
          }
-         else if (area < (1024 - spacingFactor) * 320)
+         else if (area < (1024 - spacingFactor) * width)
          {
             me.setItemPerPage(Math.floor(8 * factor));
          }
@@ -91318,15 +91328,12 @@ will need to resolve manually.
                Ext.device.Notification.show(
                {
                   title : 'Application Update',
-                  message : "This application has just successfully been updated to the latest version. Reload now?",
-                  buttons : ['No', 'Yes'],
+                  message : "This application has just successfully been updated to the latest version.",
+                  buttons : ['Reload'],
                   disableAnimations : true,
                   callback : function(buttonId)
                   {
-                     if (!buttonId || (buttonId.toLowerCase() === 'yes'))
-                     {
-                        window.location.reload();
-                     }
+                     window.location.reload();
                   }
                });
             }
