@@ -28,6 +28,7 @@ __initFb__ = function(_app, _appName)
          var mainPage = _application.getController('client' + '.MainPage');
 
          me.actions.hide();
+         Ext.Viewport.setMasked(null);
          mainPage.fireEvent('facebookTap', null, null, null, null, function()
          {
             Ext.device.Notification.show(
