@@ -76666,6 +76666,7 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
    },
    onDestroy : function()
    {
+      var me = this;
       Ext.Viewport.un('orientationchange', me.onOrientationChange, me);
    },
    onOrientationChange : function(v, newOrientation, width, height, eOpts)
