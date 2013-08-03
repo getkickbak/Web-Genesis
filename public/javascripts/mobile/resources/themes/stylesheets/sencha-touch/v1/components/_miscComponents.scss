@@ -28,12 +28,12 @@
 
 .prizephoto {
    &:before {
-      background-image: theme_image($theme-path-common + "/miscicons",  "prize_points" + ".svgz");
+      background-image: theme_image($theme-path-common + "/miscicons",  "prize_points" + ".svg");
    }
 }
 .pointsphoto {
    &:before {
-      background-image: theme_image($theme-path-common + "/miscicons",  "points" + ".svgz");
+      background-image: theme_image($theme-path-common + "/miscicons",  "points" + ".svg");
    }
 }
 
@@ -42,7 +42,7 @@
    height:calc-px-em($icon-size*$icon-multiplier, $panelTopGap, $xlargeFontSize*1.25);
    max-height:calc-px-em($icon-size*$icon-multiplier, $panelTopGap, $xlargeFontSize*1.25);
    &:before {
-      background-image: theme_image($theme-path-common + "/miscicons",  "points" + ".svgz");
+      background-image: theme_image($theme-path-common + "/miscicons",  "points" + ".svg");
    }
    &:after {
       font-size:$smallFontSize;
@@ -64,7 +64,7 @@
 .visitsphotodesc {
    @extend .pointsphotodesc;
    &:before {
-      background-image: theme_image($theme-path-common + "/miscicons", "number_visits" + ".svgz");
+      background-image: theme_image($theme-path-common + "/miscicons", "number_visits" + ".svg");
    }
    &:after {
       content : 'Visits';
@@ -73,7 +73,7 @@
 .prizephotodesc {
    @extend .pointsphotodesc;
    &:before {
-      background-image: theme_image($theme-path-common + "/miscicons", "prize_points" + ".svgz");
+      background-image: theme_image($theme-path-common + "/miscicons", "prize_points" + ".svg");
    }
    &:after {
       content : 'Prizes';

@@ -3,34 +3,34 @@
       {
          "id": "rewards",
          "name": "Earn Reward Pts",
-         "photo_url": "resources/themes/images/{platform_path}/mainicons/rewards.svgz",
+         "photo_url": "resources/themes/images/{platform_path}/mainicons/rewards.svg",
          "desc": "Rewards",
          "pageCntlr": "server.Rewards",
          "subFeature": "rewards"
       }, {
          "id": "challenges",
          "name": "Challenges",
-         "photo_url": "resources/themes/images/{platform_path}/mainicons/challenges.svgz",
+         "photo_url": "resources/themes/images/{platform_path}/mainicons/challenges.svg",
          "desc": "Challenges",
          "pageCntlr": "server.Challenges"
       }, {
          "id": "redeemRewards",
          "name": "Redeem Rewards",
-         "photo_url": "resources/themes/images/{platform_path}/mainicons/redeem.svgz",
+         "photo_url": "resources/themes/images/{platform_path}/mainicons/redeem.svg",
          "desc": "Redeem Rewards",
          "pageCntlr": "server.Redemptions",
          "route": "redemptions"
       }, {
          "id": "redeemPrizes",
          "name": "Redeem Prizes",
-         "photo_url": "resources/themes/images/{platform_path}/mainicons/prizes.svgz",
+         "photo_url": "resources/themes/images/{platform_path}/mainicons/prizes.svg",
          "desc": "Redeem Prizes",
          "pageCntlr": "server.Prizes",
          "route": "prizes"
       }, {
          "id": "settings",
          "name": "Settings",
-         "photo_url": "resources/themes/images/{platform_path}/mainicons/settings.svgz",
+         "photo_url": "resources/themes/images/{platform_path}/mainicons/settings.svg",
          "desc": "Settings",
          "route": "settings",
          "pageCntlr": "server.Settings",

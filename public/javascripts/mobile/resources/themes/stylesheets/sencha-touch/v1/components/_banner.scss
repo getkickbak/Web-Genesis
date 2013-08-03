@@ -11,6 +11,6 @@
       @include background-size(contain);
       background-repeat: no-repeat;
       background-color: transparent;
-      background-image: theme_image($theme-path-common + "/toolbar", "logo" + ".svgz");
+      background-image: theme_image($theme-path-common + "/toolbar", "logo" + ".svg");
    }
 }
