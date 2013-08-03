@@ -54,7 +54,7 @@ $itemDescHeightSmall : calc-px-em($icon-size*$icon-multiplier,0em, $smallFontSiz
          font-size:1em;
          line-height:$normalFontSize;
          &:before {
-           @include custom-linear-gradient($BlueStart 10%, $BlueEnd 85%, top, url($theme-path-rel + "/miscicons/" + "prizeswon" + ".png"));
+           @include custom-linear-gradient($BlueStart 10%, $BlueEnd 85%, top, url($theme-path-rel-common + "/miscicons/" + "prizeswon" + ".svgz"));
          }
          .itemTitle {
             font-weight:bold;

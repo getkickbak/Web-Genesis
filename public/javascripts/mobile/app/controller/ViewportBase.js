@@ -373,7 +373,7 @@ Ext.define('Genesis.controller.ViewportBase',
          {
             if (request.status == 200 || request.status == 0)
             {
-               var text = request.responseText.replace(me.mainPageStorePathToken, Genesis.constants._iconPath);
+               var text = request.responseText.replace(me.mainPageStorePathToken, Genesis.constants._iconPathCommon);
                console.log("Loaded MainPage Store ...");
                var response = Ext.decode(text);
                var data = response.data;

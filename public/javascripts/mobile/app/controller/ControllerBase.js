@@ -115,6 +115,10 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       return ('Please confirm to Proceed');
    },
+   showToLoyaltyCardMsg : function()
+   {
+      return ('Please use your Mobile Phone Number or your KICKBAK Loyalty Card');
+   },
    errProcQRCodeMsg : 'Error Processing Authentication Code',
    cameraAccessMsg : 'Accessing your Camera Phone ...',
    updatingServerMsg : 'Updating Server ...',

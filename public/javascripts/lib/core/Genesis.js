@@ -772,6 +772,7 @@ Genesis.constants =
          console.log("Running a Unknown System");
       }
       me._iconPath = me.themeName + me._iconPath;
+      me._iconPathCommon = me.themeName + '/ios';
 
       console.debug("IconSize = " + me._iconSize + "px");
    },
@@ -783,8 +784,8 @@ Genesis.constants =
    getIconPath : function(type, name, remote)
    {
       return ((!remote) ? //
-      'resources/themes/images/' + this._iconPath : //
-      this.photoSite + '/' + this._iconPath + '/' + 'icons') + '/' + type + '/' + name + '.png';
+      'resources/themes/images/' + this._iconPathCommon + '/' + type + '/' + name + '.svgz' : //
+      this.photoSite + '/' + this._iconPath + '/' + 'icons' + '/' + type + '/' + name + '.png');
    }
 }
 

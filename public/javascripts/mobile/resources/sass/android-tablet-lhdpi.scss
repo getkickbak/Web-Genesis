@@ -67,6 +67,8 @@ $xlargeFontSize : 1.2em;
 // Theme Path
 $theme-path : 'v1/android/lhdpi';
 $theme-path-rel : '../themes/images/v1/android/lhdpi';
+$theme-path-common : 'v1/ios';
+$theme-path-rel-common : '../themes/images/v1/ios';
 
 // Badges Theme
 $badgePoints-bg-color: darken($GreenEnd, 10%);

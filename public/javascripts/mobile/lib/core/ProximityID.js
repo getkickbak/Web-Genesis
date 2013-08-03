@@ -12,9 +12,16 @@ window.plugins = window.plugins ||
          message : cntlr.prepareToSendMerchantDeviceMsg
       });
 
-      return Ext.bind(function(_cntlr, _win)
+      return Ext.bind(function(_cntlr, _win, useProximity)
       {
-         var viewport = cntlr.getViewPortCntlr();
+         var viewport = _cntlr.getViewPortCntlr();
+         var _cleanup = function()
+         {
+            viewport.popUpInProgress = false;
+            _cntlr._actions.hide();
+            _cntlr._actions.destroy();
+            delete _cntlr._actions;
+         };
 
          _win = _win || Ext.emptyFn;
          Ext.Viewport.setMasked(null);
@@ -22,7 +29,7 @@ window.plugins = window.plugins ||
          {
             if (!_cntlr._actions)
             {
-               _cntlr._actions = Ext.create('Genesis.view.widgets.PopupItemDetail',
+               _cntlr._actions = Ext.create('Genesis.view.widgets.PopupItemDetail', (useProximity === true) ?
                {
                   iconType : 'prizewon',
                   icon : 'phoneInHand',
@@ -33,19 +40,25 @@ window.plugins = window.plugins ||
                      ui : 'action',
                      handler : function()
                      {
-                        viewport.popUpInProgress = false;
-                        _cntlr._actions.hide();
-                        _win();
+                        _cleanup();
+                        _win(useProximity);
                      }
                   },
                   {
                      text : 'Cancel',
                      ui : 'cancel',
-                     handler : function()
-                     {
-                        viewport.popUpInProgress = false;
-                        _cntlr._actions.hide();
-                     }
+                     handler : _cleanup
+                  }]
+               } :
+               {
+                  iconType : 'prizewon',
+                  icon : 'loyaltycard',
+                  title : cntlr.showToLoyaltyCardMsg(),
+                  buttons : [
+                  {
+                     text : 'Dismiss',
+                     ui : 'cancel',
+                     handler : _cleanup
                   }]
                });
                Ext.Viewport.add(_cntlr._actions);
@@ -53,7 +66,7 @@ window.plugins = window.plugins ||
             viewport.popUpInProgress = true;
             _cntlr._actions.show();
          }, 0.25 * 1000, _cntlr);
-      }, null, [cntlr, win]);
+      }, null, [cntlr, win], true);
    };
 
    if (cordova)

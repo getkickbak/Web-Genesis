@@ -73017,6 +73017,10 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       return ('Please confirm to Proceed');
    },
+   showToLoyaltyCardMsg : function()
+   {
+      return ('Please use your Mobile Phone Number or your KICKBAK Loyalty Card');
+   },
    errProcQRCodeMsg : 'Error Processing Authentication Code',
    cameraAccessMsg : 'Accessing your Camera Phone ...',
    updatingServerMsg : 'Updating Server ...',
@@ -76861,7 +76865,7 @@ Ext.define('Genesis.controller.ViewportBase',
          {
             if (request.status == 200 || request.status == 0)
             {
-               var text = request.responseText.replace(me.mainPageStorePathToken, Genesis.constants._iconPath);
+               var text = request.responseText.replace(me.mainPageStorePathToken, Genesis.constants._iconPathCommon);
                console.log("Loaded MainPage Store ...");
                var response = Ext.decode(text);
                var data = response.data;

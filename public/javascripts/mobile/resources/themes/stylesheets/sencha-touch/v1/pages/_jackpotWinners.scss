@@ -26,7 +26,7 @@
          right:0;
          width:100%;
          @extend .emptyPage;
-         background: theme_image($theme-path,  "noprizes" + ".png") center no-repeat;
+         background: theme_image($theme-path-common,  "noprizes" + ".png") center no-repeat;
          background-size: cover;
          &:before {
             content:"Be our first Jackpot Winner this month!";

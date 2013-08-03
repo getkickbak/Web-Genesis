@@ -9,7 +9,7 @@
    & {
       @include insertion(2em, 2em, (($form-field-height/2)+$panelTopGap)-(2em/2), auto);
       right: ($form-spacing + .1em);
-      background: theme_image($theme-path + "/miscicons", "disclose" + ".png") no-repeat center center;
+      background: theme_image($theme-path-common + "/miscicons", "disclose" + ".svgz") no-repeat center center;
       @include background-size(2em);
       background-color:transparent !important;
       margin-top: -.5em;
@@ -18,7 +18,7 @@
    &.facebook {
       right: ($form-spacing + .5em);
       @include insertion(1.3em, 1.3em, (($form-field-height/2)+$panelTopGap)-(1.3em/2), auto);
-      background: theme_image($theme-path + "/toolbar", "facebook" + ".png") no-repeat 50% 50%;
+      background: theme_image($theme-path-common + "/toolbar", "facebook" + ".svgz") no-repeat 50% 50%;
       @include background-size(1.3em);
       margin-top: 0;
    }
