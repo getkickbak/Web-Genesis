@@ -784,7 +784,7 @@ Genesis.constants =
    getIconPath : function(type, name, remote)
    {
       return ((!remote) ? //
-      'resources/themes/images/' + this._iconPathCommon + '/' + type + '/' + name + '.svgz' : //
+      'resources/themes/images/' + this._iconPathCommon + '/' + type + '/' + name + '.svg' : //
       this.photoSite + '/' + this._iconPath + '/' + 'icons' + '/' + type + '/' + name + '.png');
    }
 }
