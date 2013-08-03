@@ -86584,7 +86584,8 @@ Ext.define('Genesis.view.client.Prizes',
          switch (type.value)
          {
             default :
-               photo_url = Genesis.constants.getIconPath('fooditems', type.value);
+               //photo_url = Genesis.constants.getIconPath('fooditems', type.value);
+               photo_url = Genesis.constants.getIconPath('prizewon', type.value);
                //console.debug("Icon Path [" + photo_url + "]");
                break;
          }
@@ -87202,7 +87203,8 @@ Ext.define('Genesis.view.client.Redemptions',
          switch (type.value)
          {
             default :
-               photo_url = Genesis.constants.getIconPath('fooditems', type.value);
+               //photo_url = Genesis.constants.getIconPath('fooditems', type.value);
+               photo_url = Genesis.constants.getIconPath('prizewon', type.value);
                //console.debug("Icon Path [" + photo_url + "]");
                break;
          }
@@ -87335,7 +87337,8 @@ Ext.define('Genesis.view.client.Rewards',
                photo_url = Genesis.constants.getIconPath('miscicons', type.value);
                break;
             default :
-               photo_url = Genesis.constants.getIconPath('fooditems', type.value);
+               //photo_url = Genesis.constants.getIconPath('fooditems', type.value);
+               photo_url = Genesis.constants.getIconPath('prizewon', type.value);
                //console.debug("Icon Path [" + photo_url + "]");
                break;
          }

@@ -75,7 +75,8 @@ Ext.define('Genesis.view.client.Redemptions',
          switch (type.value)
          {
             default :
-               photo_url = Genesis.constants.getIconPath('fooditems', type.value);
+               //photo_url = Genesis.constants.getIconPath('fooditems', type.value);
+               photo_url = Genesis.constants.getIconPath('prizewon', type.value);
                //console.debug("Icon Path [" + photo_url + "]");
                break;
          }
