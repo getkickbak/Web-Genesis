@@ -578,7 +578,7 @@ Ext.define('Genesis.controller.client.Rewards',
       }
       else
       {
-         window.plugins.proximityID.preLoadSend(me, Ext.bind(function(_notUseGeolocation)
+         window.plugins.proximityID.preLoadSend(me, !notUseGeolocation, Ext.bind(function(_notUseGeolocation)
          {
             //var earnPts = Ext.bind(me.onEarnPtsSC, me);
             //me.checkReferralPrompt(earnPts, earnPts);

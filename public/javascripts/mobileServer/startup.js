@@ -1,7 +1,7 @@
 (function()
 {
    var _notifications = [], _frame, timeout = 30 * 1000;
-   var debug = false;
+   var debug = true;
 
    document.addEventListener("DOMContentLoaded", function(event)
    {
@@ -29,63 +29,107 @@
       {
          var _dataMeta = e.data;
 
-         if (( typeof (_dataMeta) == 'object') && (_dataMeta['cmd'] == 'notification_post'))
+         if (!( typeof (_dataMeta) == 'object'))
          {
-            for (var i = 0; i < _dataMeta['receipts'].length; i++)
+            return;
+         }
+
+         switch (_dataMeta['cmd'])
+         {
+            case 'notification_post' :
             {
-               var _receipt = _dataMeta['receipts'][i], message = "No items were found";
-
-               if (_receipt['items'].length == 1)
+               for (var i = 0; i < _dataMeta['receipts'].length; i++)
                {
-                  message = _receipt['items'][0];
-               }
-               else if (_receipt['items'].length > 1)
-               {
-                  message = _receipt['items'][0] + '\n' + _receipt['items'][1]
-               }
+                  var _receipt = _dataMeta['receipts'][i], message = "No items were found";
 
-               var _notif = window.webkitNotifications.createNotification("resources/icons/icon@72.png", _receipt['price'], message);
-               _notifications.push(_notif);
-
-               (function(notif, receipt)
-               {
-                  notif.onClick(function()
+                  if (_receipt['items'].length == 1)
                   {
-                     clearTimeout(notif.task);
+                     message = _receipt['items'][0];
+                  }
+                  else if (_receipt['items'].length > 1)
+                  {
+                     message = _receipt['items'][0] + '\n' + _receipt['items'][1]
+                  }
+
+                  var _notif = window.webkitNotifications.createNotification("resources/icons/icon@72.png", _receipt['price'], message);
+                  _notifications.push(_notif);
+
+                  (function(notif, receipt)
+                  {
+                     notif.onClick(function()
+                     {
+                        clearTimeout(notif.task);
+                        _frame.contentWindow.postMessage(
+                        {
+                           cmd : 'notification_ack',
+                           data : receipt['id']
+                        }, "*");
+                     });
+                     notif.onClose(function()
+                     {
+                        clearTimeout(notif.task);
+                        delete notif.task;
+                        _notifications.splice(_notifications.indexOf(notif), 1);
+                     });
+                     notif.task = setTimeout(notif.close, timeout);
+                     notif.show();
+                     /*
+                      chrome.notifications.create("",
+                      {
+                      type : 'basic',
+                      iconUrl : 'resources/icons/icon@72.png',
+                      title : receipt['price'],
+                      expandedMessage : 'Testing',
+                      message : receipt['item'],
+                      buttons : [
+                      {
+                      title : 'Earn Points!'
+                      },
+                      {
+                      title : 'Ignore'
+                      }]
+                      }, function()
+                      {
+                      });
+                      */
+                  })(_notif, _receipt);
+               }
+               break;
+            }
+            case 'licenseKey' :
+            {
+               chrome.fileSystem.chooseEntry(
+               {
+                  type : 'openFile',
+                  accepts : [
+                  {
+                     //mimeTypes: ['text/*'],
+                     extensions : ['txt']
+                  }]
+               }, function(readOnlyEntry)
+               {
+                  if (!readOnlyEntry)
+                  {
                      _frame.contentWindow.postMessage(
                      {
-                        cmd : 'notification_ack',
-                        data : receipt['id']
+                        cmd : 'licenseKey_ack',
+                        key : null
                      }, "*");
-                  });
-                  notif.onClose(function()
+                     return;
+                  }
+                  readOnlyEntry.file(function(file)
                   {
-                     clearTimeout(notif.task);
-                     delete notif.task;
-                     _notifications.splice(_notifications.indexOf(notif), 1);
+                     readAsText(readOnlyEntry, function(result)
+                     {
+                        _frame.contentWindow.postMessage(
+                        {
+                           cmd : 'licenseKey_ack',
+                           key : result
+                        }, "*");
+                     });
                   });
-                  notif.task = setTimeout(notif.close, timeout);
-                  notif.show();
-                  /*
-                   chrome.notifications.create("",
-                   {
-                   type : 'basic',
-                   iconUrl : 'resources/icons/icon@72.png',
-                   title : receipt['price'],
-                   expandedMessage : 'Testing',
-                   message : receipt['item'],
-                   buttons : [
-                   {
-                   title : 'Earn Points!'
-                   },
-                   {
-                   title : 'Ignore'
-                   }]
-                   }, function()
-                   {
-                   });
-                   */
-               })(_notif, _receipt);
+               });
+               break;
             }
          }
       }, false);

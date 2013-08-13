@@ -106,7 +106,7 @@ Ext.Loader.setPath(
             'client.MainPage', 'widgets.client.RedeemItemDetail', 'client.Badges', 'client.JackpotWinners', 'client.MerchantAccount',
             // //
             'client.MerchantDetails', 'client.Accounts', 'client.Prizes', 'Viewport'],
-            controllers : ['mobileClient.Challenges', 'client.Rewards', 'client.Redemptions', 'client.Viewport', 'client.MainPage',
+            controllers : ['mobileClient.Challenges', 'client.Rewards', 'client.Redemptions', 'client.Viewport', 'client.Login', 'client.MainPage',
             // //
             'client.Badges', 'client.Merchants', 'client.Accounts', 'client.Settings', 'client.Checkins', 'client.JackpotWinners', //
             'client.Prizes'],

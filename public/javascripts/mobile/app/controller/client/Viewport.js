@@ -278,9 +278,9 @@ Ext.define('Genesis.controller.client.Viewport',
    },
    onUpdateDeviceToken : function()
    {
-      var me = this, mainPage = me.getApplication().getController('client' + '.MainPage'), proxy = Account.getProxy();
+      var me = this, login = me.getApplication().getController('client' + '.Login'), proxy = Account.getProxy();
 
-      if (me.getLoggedIn() && Genesis.constants.device && mainPage && !mainPage.updatedDeviceToken)
+      if (me.getLoggedIn() && Genesis.constants.device && login && !login.updatedDeviceToken)
       {
          Account['setUpdateRegUserDeviceUrl']();
          console.debug("setUpdateRegUserDeviceUrl - Refreshing Device Token ...");
@@ -299,7 +299,7 @@ Ext.define('Genesis.controller.client.Viewport',
                proxy.supressErrorsPopup = false;
                if (operation.wasSuccessful())
                {
-                  mainPage.updatedDeviceToken = true;
+                  login.updatedDeviceToken = true;
                }
             }
          });
@@ -618,7 +618,7 @@ Ext.define('Genesis.controller.client.Viewport',
       if (loggedIn)
       {
          //var app = this.getApplication();
-         //var controller = app.getController(()(merchantMode) ? 'server': 'client') + '.MainPage');
+         //var controller = app.getController(()(merchantMode) ? 'server': 'client') + '.Login');
 
          me.setLoggedIn(loggedIn);
          console.debug("Going to SignIn Page ...");

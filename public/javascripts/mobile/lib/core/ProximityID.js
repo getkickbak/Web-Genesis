@@ -4,18 +4,11 @@ window.plugins = window.plugins ||
 
 (function(cordova)
 {
-   var preLoadSendCommon = function(cntlr, win)
+   var preLoadSendCommon = function(cntlr, checkUseProximity, proximityWin, win, fail)
    {
-      Ext.Viewport.setMasked(
+      var _viewport = _cntlr.getViewPortCntlr(), callback = Ext.bind(function(useProximity, _cntlr, _win)
       {
-         xtype : 'loadmask',
-         message : cntlr.prepareToSendMerchantDeviceMsg
-      });
-
-      return Ext.bind(function(_cntlr, _win, useProximity)
-      {
-         var viewport = _cntlr.getViewPortCntlr();
-         var _cleanup = function()
+         var viewport = _cntlr.getViewPortCntlr(), _cleanup = function()
          {
             viewport.popUpInProgress = false;
             _cntlr._actions.hide();
@@ -67,6 +60,57 @@ window.plugins = window.plugins ||
             _cntlr._actions.show();
          }, 0.25 * 1000, _cntlr);
       }, null, [cntlr, win], true);
+
+      Ext.Viewport.setMasked(
+      {
+         xtype : 'loadmask',
+         message : cntlr.prepareToSendMerchantDeviceMsg
+      });
+
+      //
+      // Talk to server to see if we use Proximity Sensor or not
+      //
+      Ext.defer(function()
+      {
+         if (checkUseProximity)
+         {
+            _viewport.on('locationupdate', function(position)
+            {
+               proximityWin();
+            }, null,
+            {
+               single : true
+            });
+            _viewport.getGeoLocation();
+         }
+         //
+         // We must use Loyalty Card or Phone Number
+         //
+         else
+         {
+            try
+            {
+               var merchant = _viewport.getVenue().getMerchant(), features_config = merchant.get('features_config');
+               //
+               // Check if the venue supports Proximity Sensor or not
+               //
+               if (features_config['enable_mobile'])
+               {
+                  proximityWin();
+               }
+               else
+               {
+                  callback(false);
+               }
+            }
+            catch(e)
+            {
+               fail();
+            }
+         }
+      }, 1);
+
+      return rc;
    };
 
    if (cordova)
@@ -83,17 +127,21 @@ window.plugins = window.plugins ||
                console.log("Failed to initialize the ProximityIDPlugin! Reason[" + reason + "]");
             }, "ProximityIDPlugin", "init", [s_vol_ratio + "", r_vol_ratio + ""]);
          },
-         preLoadSend : function(cntlr, win, fail)
+         preLoadSend : function(cntlr, checkUseProximity, win, fail)
          {
-            var callback = preLoadSendCommon(cntlr, win);
-
-            //
-            // To give loading mask a chance to render
-            //
-            Ext.defer(function()
+            var viewport = _application.getController(((merchantMode) ? 'client' : 'server') + '.Viewport'), callback = preLoadSendCommon(cntlr, checkUseProximity, function()
             {
-               cordova.exec(callback, fail, "ProximityIDPlugin", "preLoadIdentity", []);
-            }, 0.25 * 1000, this);
+               //
+               // To give loading mask a chance to render
+               //
+               Ext.defer(function()
+               {
+                  cordova.exec(function()
+                  {
+                     callback(true);
+                  }, fail, "ProximityIDPlugin", "preLoadIdentity", []);
+               }, 0.25 * 1000, this);
+            }, win, fail);
          },
          send : function(win, fail)
          {
@@ -199,7 +247,7 @@ window.plugins = window.plugins ||
 
             return data;
          },
-         webAudioFnHandler : function(s_vol)
+         webAudioFnHandler : function(s_vol, callback)
          {
             var me = this;
 
@@ -225,6 +273,8 @@ window.plugins = window.plugins ||
             }
 
             console.debug("OSC Gain : " + s_vol);
+
+            callback(true);
          },
          audioFnHandler : function(config, s_vol, win)
          {
@@ -261,7 +311,7 @@ window.plugins = window.plugins ||
 
             console.debug("WAV Gain : " + s_vol);
 
-            win();
+            win(true);
          },
          mp3WorkerFnHandler : function(e)
          {
@@ -328,7 +378,7 @@ window.plugins = window.plugins ||
                }
             }
          },
-         mp3FnHandler : function(config, s_vol, win)
+         mp3FnHandler : function(config, s_vol, useProximity, win)
          {
             var me = this;
 
@@ -339,7 +389,11 @@ window.plugins = window.plugins ||
 
             me.getFreqs();
 
-            config['callback'] = win;
+            config['callback'] = function()
+            {
+               win(true);
+            };
+
             me.sampleConfig = config;
 
             _codec.postMessage(
@@ -384,9 +438,9 @@ window.plugins = window.plugins ||
                }
             } while (stay);
          },
-         preLoadSend : function(cntlr, win, fail)
+         preLoadSend : function(cntlr, checkUseProximity, win, fail)
          {
-            var me = this, s_vol = Genesis.constants.s_vol / 100, callback = preLoadSendCommon(cntlr, win), config =
+            var me = this, s_vol = Genesis.constants.s_vol / 100, config =
             {
                header :
                {
@@ -398,33 +452,35 @@ window.plugins = window.plugins ||
             };
 
             me.freqs = [];
-            //
-            // Use Web Audio
-            //
-            if ( typeof (webkitAudioContext) != 'undefined')
-            {
-               me.webAudioFnHandler(s_vol);
-               callback();
-            }
-            else
+
+            var callback = preLoadSendCommon(cntlr, checkUseProximity, function()
             {
                //
-               // Browser support WAV files
+               // Use Web Audio
                //
-               if (!_codec)
+               if ( typeof (webkitAudioContext) != 'undefined')
                {
-                  me.duration = 1 * 44100;
-                  Ext.defer(me.audioFnHandler, 0.25 * 1000, me, [config, s_vol, callback]);
+                  me.webAudioFnHandler(s_vol, callback);
                }
-               //
-               // Convert to MP3 first
-               //
                else
                {
+                  //
+                  // Browser support WAV files
+                  //
                   me.duration = 1 * 44100;
-                  Ext.defer(me.mp3FnHandler, 0.25 * 1000, me, [config, s_vol, callback]);
+                  if (!_codec)
+                  {
+                     Ext.defer(me.audioFnHandler, 0.25 * 1000, me, [config, s_vol, callback]);
+                  }
+                  //
+                  // Convert to MP3 first
+                  //
+                  else
+                  {
+                     Ext.defer(me.mp3FnHandler, 0.25 * 1000, me, [config, s_vol, callback]);
+                  }
                }
-            }
+            }, win, fail);
          },
          send : function(win, fail)
          {

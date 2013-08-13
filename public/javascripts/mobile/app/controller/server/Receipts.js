@@ -282,7 +282,6 @@ Ext.define('Genesis.controller.server.Receipts',
                title : 'Battery Level Low',
                message : 'Battery is at ' + info.level + '%',
                buttons : ['Dismiss']
-
             });
             Ext.device.Notification.vibrate();
          }

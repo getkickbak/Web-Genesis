@@ -4,7 +4,6 @@ Ext.define('Genesis.controller.MainPageBase',
    xtype : 'mainPageBaseCntlr',
    config :
    {
-      csrfTokenRecv : false,
       models : ['Customer', 'User', 'Merchant', 'CustomerReward', 'Genesis.model.frontend.MainPage', 'Genesis.model.frontend.Signin', 'Genesis.model.frontend.Account'],
       after :
       {
@@ -169,16 +168,6 @@ Ext.define('Genesis.controller.MainPageBase',
          case 'merchant' :
          {
             me.goToMerchantMain(true);
-            break;
-         }
-         case 'login' :
-         {
-            // Remove all previous view from viewStack
-            var controller = me.getApplication().getController('client' + '.Checkins');
-            controller.fireEvent('setupCheckinInfo', 'checkin', null, null, null);
-            //me.getApplication().getController('client' + '.Prizes').fireEvent('updatePrizeViews', null);
-            me.setAnimationMode(me.self.animationMode['fade']);
-            me.pushView(me.getLogin());
             break;
          }
       }

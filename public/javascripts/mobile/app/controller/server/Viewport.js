@@ -267,36 +267,50 @@ Ext.define('Genesis.controller.server.Viewport',
       callback = callback || Ext.emptyFn;
       if (!Genesis.fn.isNative())
       {
-         var errorHandler = function(obj, error)
+         me.licenseKeyNackFn = Ext.bind(function(obj, error)
          {
             console.log(error, obj);
             me.initNotification(me.licenseKeyInvalidMsg);
-         };
+         }, me, ['Cannot Read from LicenseKey: '], true);
+         me.licenseKeyAckFn = Ext.bind(me.getLicenseKey, me, [callback, forceRefresh], true);
 
-         navigator.webkitPersistentStorage.requestQuota(1 * 1024 * 1024, function(grantedBytes)
+         window.postMessage(
          {
-            window.webkitRequestFileSystem(PERSISTENT, grantedBytes, function(fs)
-            {
-               fs.root.getFile('licenseKey.txt',
-               {
-               }, function(fileEntry)
-               {
-                  // Get a File object representing the file,
-                  // then use FileReader to read its contents.
-                  fileEntry.file(function(file)
-                  {
-                     var reader = new FileReader();
+            cmd : 'licenseKey'
+         }, "*");
 
-                     reader.onloadend = function(e)
-                     {
-                        me.getLicenseKey(this.result, callback, forceRefresh);
-                     };
+         /*
+          var errorHandler = function(obj, error)
+          {
+          console.log(error, obj);
+          me.initNotification(me.licenseKeyInvalidMsg);
+          };
 
-                     reader.readAsText(file);
-                  }, Ext.bind(errorHandler, me, ['Cannot Read from LicenseKey: '], true));
-               }, Ext.bind(errorHandler, me, ['Cannot retrieve LicenseKey: '], true));
-            }, Ext.bind(errorHandler, me, ['Cannot retrieve granted Filesystem Quota: '], true));
-         }, Ext.bind(errorHandler, me, ['Cannot retrieve requested Filesystem Quota: '], true));
+          navigator.webkitPersistentStorage.requestQuota(1 * 1024 * 1024, function(grantedBytes)
+          {
+          window.webkitRequestFileSystem(PERSISTENT, grantedBytes, function(fs)
+          {
+          fs.root.getFile('file://licenseKey.txt',
+          {
+          }, function(fileEntry)
+          {
+          // Get a File object representing the file,
+          // then use FileReader to read its contents.
+          fileEntry.file(function(file)
+          {
+          var reader = new FileReader();
+
+          reader.onloadend = function(e)
+          {
+          me.getLicenseKey(this.result, callback, forceRefresh);
+          };
+
+          reader.readAsText(file);
+          }, Ext.bind(errorHandler, me, ['Cannot Read from LicenseKey: '], true));
+          }, Ext.bind(errorHandler, me, ['Cannot retrieve LicenseKey: '], true));
+          }, Ext.bind(errorHandler, me, ['Cannot retrieve granted Filesystem Quota: '], true));
+          }, Ext.bind(errorHandler, me, ['Cannot retrieve requested Filesystem Quota: '], true));
+          */
 
          /*
           var request = new XMLHttpRequest();
@@ -591,6 +605,32 @@ Ext.define('Genesis.controller.server.Viewport',
 
       if (!Genesis.fn.isNative())
       {
+         window.addEventListener('message', function(e)
+         {
+            var _data = e.data;
+
+            if (!( typeof (_data) == 'object'))
+            {
+               return;
+            }
+
+            switch(_data['cmd'])
+            {
+               case  'licenseKey_ack' :
+               {
+                  if (!_data['key'])
+                  {
+                     me.licenseKeyNackFn(_data);
+                  }
+                  else
+                  {
+                     me.licenseKeyAckFn(_data['key']);
+                  }
+                  break;
+               }
+            }
+         }, false);
+
          //
          // Set Display mode to "Fixed" in Non-Native Mode
          //

@@ -25,11 +25,11 @@ __initFb__ = function(_app, _appName)
       handler : function()
       {
          var me = window[_appName].fb;
-         var mainPage = _application.getController('client' + '.MainPage');
+         var login = _application.getController('client' + '.Login');
 
          me.actions.hide();
          Ext.Viewport.setMasked(null);
-         mainPage.fireEvent('facebookTap', null, null, null, null, function()
+         login.fireEvent('facebookTap', null, null, null, null, function()
          {
             Ext.device.Notification.show(
             {
@@ -38,7 +38,7 @@ __initFb__ = function(_app, _appName)
                buttons : ['Dismiss'],
                callback : function(button)
                {
-                  mainPage._loggingIn = false;
+                  login._loggingIn = false;
 
                   var vport = viewport.getViewport();
                   var activeItem = vport.getActiveItem();
@@ -302,7 +302,7 @@ __initFb__ = function(_app, _appName)
       },
       detectAccessToken : function(url)
       {
-         var me = this, db = app.db.getLocalDB();
+         var me = this, db = app.db.getLocalDB(), viewport = _application.getController('client' + '.Viewport');
 
          if (url.indexOf("access_token=") >= 1)
          {
@@ -333,27 +333,27 @@ __initFb__ = function(_app, _appName)
                      {
                         case 'createaccountpageview' :
                         {
-                           _application.getController('client' + '.MainPage').redirectTo('createAccount');
+                           viewport.redirectTo('createAccount');
                            break;
                         }
                         case "signinpageview" :
                         {
-                           _application.getController('client' + '.MainPage').redirectTo('signin');
+                           viewport.redirectTo('signin');
                            break;
                         }
                         case 'clientsettingspageview' :
                         {
-                           _application.getController('client' + '.Settings').redirectTo('settings');
+                           viewport.redirectTo('settings');
                            break;
                         }
                         case "loginpageview" :
                         {
                            delete me.cb;
-                           _application.getController('client' + '.MainPage').onFacebookLoginCallback(p, op);
+                           _application.getController('client' + '.Login').onFacebookLoginCallback(p, op);
                            break;
                         }
                         default :
-                           _application.getController('client' + '.Viewport').redirectTo('signup');
+                           viewport.redirectTo('signup');
                            break;
                      }
                      delete me.cb;

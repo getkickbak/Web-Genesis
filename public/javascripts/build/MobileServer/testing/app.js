@@ -71791,7 +71791,7 @@ Ext.define('Genesis.model.Merchant',
    id : 'Merchant',
    config :
    {
-      fields : ['id', 'name', 'email', 'photo', 'alt_photo', 'account_first_name', 'account_last_name', //
+      fields : ['id', 'name', 'email', 'photo', 'alt_photo', 'features_config', 'account_first_name', 'account_last_name', //
       'phone', 'auth_code', 'qr_code', 'features_config', 'payment_account_id', 'created_ts', 'update_ts', 'type', 'reward_terms'],
       idProperty : 'id'
    }
@@ -73905,7 +73905,6 @@ Ext.define('Genesis.controller.MainPageBase',
    xtype : 'mainPageBaseCntlr',
    config :
    {
-      csrfTokenRecv : false,
       models : ['Customer', 'User', 'Merchant', 'CustomerReward', 'Genesis.model.frontend.MainPage', 'Genesis.model.frontend.Signin', 'Genesis.model.frontend.Account'],
       after :
       {
@@ -74070,16 +74069,6 @@ Ext.define('Genesis.controller.MainPageBase',
          case 'merchant' :
          {
             me.goToMerchantMain(true);
-            break;
-         }
-         case 'login' :
-         {
-            // Remove all previous view from viewStack
-            var controller = me.getApplication().getController('client' + '.Checkins');
-            controller.fireEvent('setupCheckinInfo', 'checkin', null, null, null);
-            //me.getApplication().getController('client' + '.Prizes').fireEvent('updatePrizeViews', null);
-            me.setAnimationMode(me.self.animationMode['fade']);
-            me.pushView(me.getLogin());
             break;
          }
       }
@@ -78690,6 +78679,7 @@ Ext.define('Genesis.controller.server.Pos',
    portRemote : '443',
    portLocal : '80',
    wssocket : null,
+   tagReaderTitle : 'Tag Reader',
    lostPosConnectionMsg : 'Reestablishing connection to POS ...',
    init : function(app)
    {
@@ -78795,6 +78785,25 @@ Ext.define('Genesis.controller.server.Pos',
                case 'nfc' :
                {
                   me.wssocket.onNfc(inputStream['nfc']);
+                  break;
+               }
+               case 'nfc_error' :
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : me.tagReaderTitle,
+                     message : inputStream['message'],
+                     buttons : ['Dismiss'],
+                     callback : function()
+                     {
+                        /*
+                         if (!Genesis.fn.isNative())
+                         {
+                         window.location.reload();
+                         }
+                         */
+                     }
+                  });
                   break;
                }
                default:
@@ -79892,7 +79901,6 @@ Ext.define('Genesis.controller.server.Receipts',
                title : 'Battery Level Low',
                message : 'Battery is at ' + info.level + '%',
                buttons : ['Dismiss']
-
             });
             Ext.device.Notification.vibrate();
          }
@@ -82873,36 +82881,50 @@ Ext.define('Genesis.controller.server.Viewport',
       callback = callback || Ext.emptyFn;
       if (!Genesis.fn.isNative())
       {
-         var errorHandler = function(obj, error)
+         me.licenseKeyNackFn = Ext.bind(function(obj, error)
          {
             console.log(error, obj);
             me.initNotification(me.licenseKeyInvalidMsg);
-         };
+         }, me, ['Cannot Read from LicenseKey: '], true);
+         me.licenseKeyAckFn = Ext.bind(me.getLicenseKey, me, [callback, forceRefresh], true);
 
-         navigator.webkitPersistentStorage.requestQuota(1 * 1024 * 1024, function(grantedBytes)
+         window.postMessage(
          {
-            window.webkitRequestFileSystem(PERSISTENT, grantedBytes, function(fs)
-            {
-               fs.root.getFile('licenseKey.txt',
-               {
-               }, function(fileEntry)
-               {
-                  // Get a File object representing the file,
-                  // then use FileReader to read its contents.
-                  fileEntry.file(function(file)
-                  {
-                     var reader = new FileReader();
+            cmd : 'licenseKey'
+         }, "*");
 
-                     reader.onloadend = function(e)
-                     {
-                        me.getLicenseKey(this.result, callback, forceRefresh);
-                     };
+         /*
+          var errorHandler = function(obj, error)
+          {
+          console.log(error, obj);
+          me.initNotification(me.licenseKeyInvalidMsg);
+          };
 
-                     reader.readAsText(file);
-                  }, Ext.bind(errorHandler, me, ['Cannot Read from LicenseKey: '], true));
-               }, Ext.bind(errorHandler, me, ['Cannot retrieve LicenseKey: '], true));
-            }, Ext.bind(errorHandler, me, ['Cannot retrieve granted Filesystem Quota: '], true));
-         }, Ext.bind(errorHandler, me, ['Cannot retrieve requested Filesystem Quota: '], true));
+          navigator.webkitPersistentStorage.requestQuota(1 * 1024 * 1024, function(grantedBytes)
+          {
+          window.webkitRequestFileSystem(PERSISTENT, grantedBytes, function(fs)
+          {
+          fs.root.getFile('file://licenseKey.txt',
+          {
+          }, function(fileEntry)
+          {
+          // Get a File object representing the file,
+          // then use FileReader to read its contents.
+          fileEntry.file(function(file)
+          {
+          var reader = new FileReader();
+
+          reader.onloadend = function(e)
+          {
+          me.getLicenseKey(this.result, callback, forceRefresh);
+          };
+
+          reader.readAsText(file);
+          }, Ext.bind(errorHandler, me, ['Cannot Read from LicenseKey: '], true));
+          }, Ext.bind(errorHandler, me, ['Cannot retrieve LicenseKey: '], true));
+          }, Ext.bind(errorHandler, me, ['Cannot retrieve granted Filesystem Quota: '], true));
+          }, Ext.bind(errorHandler, me, ['Cannot retrieve requested Filesystem Quota: '], true));
+          */
 
          /*
           var request = new XMLHttpRequest();
@@ -83197,6 +83219,32 @@ Ext.define('Genesis.controller.server.Viewport',
 
       if (!Genesis.fn.isNative())
       {
+         window.addEventListener('message', function(e)
+         {
+            var _data = e.data;
+
+            if (!( typeof (_data) == 'object'))
+            {
+               return;
+            }
+
+            switch(_data['cmd'])
+            {
+               case  'licenseKey_ack' :
+               {
+                  if (!_data['key'])
+                  {
+                     me.licenseKeyNackFn(_data);
+                  }
+                  else
+                  {
+                     me.licenseKeyAckFn(_data['key']);
+                  }
+                  break;
+               }
+            }
+         }, false);
+
          //
          // Set Display mode to "Fixed" in Non-Native Mode
          //
@@ -83225,7 +83273,7 @@ Ext.define('Genesis.profile.MobileServer',
 Ext.define('Genesis.view.Viewport',
 {
    extend :  Ext.Container ,
-                                                              
+                                                                                                                 
    xtype : 'viewportview',
    config :
    {

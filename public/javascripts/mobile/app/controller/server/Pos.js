@@ -11,6 +11,7 @@ Ext.define('Genesis.controller.server.Pos',
    portRemote : '443',
    portLocal : '80',
    wssocket : null,
+   tagReaderTitle : 'Tag Reader',
    lostPosConnectionMsg : 'Reestablishing connection to POS ...',
    init : function(app)
    {
@@ -116,6 +117,25 @@ Ext.define('Genesis.controller.server.Pos',
                case 'nfc' :
                {
                   me.wssocket.onNfc(inputStream['nfc']);
+                  break;
+               }
+               case 'nfc_error' :
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : me.tagReaderTitle,
+                     message : inputStream['message'],
+                     buttons : ['Dismiss'],
+                     callback : function()
+                     {
+                        /*
+                         if (!Genesis.fn.isNative())
+                         {
+                         window.location.reload();
+                         }
+                         */
+                     }
+                  });
                   break;
                }
                default:

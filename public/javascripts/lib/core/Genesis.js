@@ -1211,7 +1211,7 @@ Genesis.fn =
             //v = (Genesis.fn.isNative()) ? v : v.split('.')[0];
          }
 
-         if (Ext.isEmpty(v))
+         if ((v === null) || (v === undefined) || v === '')
          {
             date = new Date();
          }
@@ -1220,7 +1220,7 @@ Genesis.fn =
             if (format)
             {
                date = Date.parse(v, format);
-               if (Ext.isEmpty(date))
+               if ((date === null) || (date === undefined) || date === '')
                {
                   date = new Date(v).format(format);
                }
@@ -1667,13 +1667,13 @@ Genesis.db =
    //
    getLocalDB : function()
    {
-      return (!this._localDB) ? (this._localDB = Ext.decode(this.getLocalStorage().getItem('kickbak') || "{}")) : this._localDB;
+      return (!this._localDB) ? (this._localDB = JSON.parse(this.getLocalStorage().getItem('kickbak') || "{}")) : this._localDB;
    },
    setLocalDB : function(db)
    {
       this._localDB = db;
       //console.debug("Setting KickBak DB[" + Ext.encode(db) + "]");
-      this.getLocalStorage().setItem('kickbak', Ext.encode(db));
+      this.getLocalStorage().setItem('kickbak', JSON.stringify(db));
    },
    setLocalDBAttrib : function(attrib, value)
    {
@@ -1761,9 +1761,12 @@ Genesis.db =
       //
       // Clean up ALL Object cache!
       //
-      Ext.data.Model.cache =
+      if ( typeof (Ext) != 'undefined')
       {
-      };
+         Ext.data.Model.cache =
+         {
+         };
+      }
 
       var dropStatement = "DROP TABLE Customer";
       var db = Genesis.db.openDatabase();

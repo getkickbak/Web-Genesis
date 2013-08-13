@@ -1,7 +1,7 @@
 Ext.define('Genesis.view.Viewport',
 {
    extend : 'Ext.Container',
-   requires : ['Ext.fx.layout.Card', 'Genesis.view.ViewBase'],
+   requires : ['Ext.fx.layout.Card', 'Genesis.view.ViewBase', 'Ext.plugin.ListPaging', 'Ext.plugin.PullRefresh'],
    xtype : 'viewportview',
    config :
    {
