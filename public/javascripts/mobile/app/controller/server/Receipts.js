@@ -148,13 +148,13 @@ Ext.merge(WebSocket.prototype,
          if (!Genesis.fn.isNative() && receiptMetasList.length > 0)
          {
             viewport = _application.getController('server' + '.Viewport');
-            if (viewport.appWindow)
+            if (appWindow)
             {
-               viewport.appWindow.postMessage(
+               appWindow.postMessage(
                {
                   cmd : 'notification_post',
                   receipts : receiptMetasList
-               }, viewport.appOrigin);
+               }, appOrigin);
             }
          }
 

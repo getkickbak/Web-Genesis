@@ -79766,11 +79766,15 @@ Ext.merge(WebSocket.prototype,
          //
          if (!Genesis.fn.isNative() && receiptMetasList.length > 0)
          {
-            window.postMessage(
+            viewport = _application.getController('server' + '.Viewport');
+            if (appWindow)
             {
-               cmd : 'notification_post',
-               receipts : receiptMetasList
-            }, "*");
+               appWindow.postMessage(
+               {
+                  cmd : 'notification_post',
+                  receipts : receiptMetasList
+               }, appOrigin);
+            }
          }
 
          Ext.StoreMgr.get('ReceiptStore').add(receiptsList);
@@ -82613,7 +82617,7 @@ Ext.define('Genesis.controller.server.Settings',
 });
 
 // add back button listener
-var onBackKeyDown = Ext.emptyFn;
+var onBackKeyDown = Ext.emptyFn, appWindow, appOrigin;
 Ext.require(['Genesis.controller.ControllerBase'], function()
 {
    onBackKeyDown = function(e)
@@ -82711,6 +82715,41 @@ Ext.merge(WebSocket.prototype,
       }
    }
 });
+
+window.addEventListener('message', function(e)
+{
+   var _data = e.data;
+
+   if (!( typeof (_data) == 'object'))
+   {
+      return;
+   }
+
+   switch(_data['cmd'])
+   {
+      case 'init' :
+      {
+         appWindow = e.source;
+         appOrigin = e.origin;
+
+         console.debug("Webview connection Established.")
+         break;
+      }
+      case  'licenseKey_ack' :
+      {
+         viewport = _application.getController('server' + '.Viewport');
+         if (!_data['key'])
+         {
+            viewport.licenseKeyNackFn(_data);
+         }
+         else
+         {
+            viewport.licenseKeyAckFn(_data['key']);
+         }
+         break;
+      }
+   }
+}, false);
 
 Ext.define('Genesis.controller.server.Viewport',
 {
@@ -82888,10 +82927,10 @@ Ext.define('Genesis.controller.server.Viewport',
          }, me, ['Cannot Read from LicenseKey: '], true);
          me.licenseKeyAckFn = Ext.bind(me.getLicenseKey, me, [callback, forceRefresh], true);
 
-         window.postMessage(
+         me.appWindow.postMessage(
          {
             cmd : 'licenseKey'
-         }, "*");
+         }, me.appOrigin);
 
          /*
           var errorHandler = function(obj, error)
@@ -83226,32 +83265,6 @@ Ext.define('Genesis.controller.server.Viewport',
          {
             Genesis.db.setLocalDBAttrib('displayMode', 'Fixed');
          }
-         
-         window.addEventListener('message', function(e)
-         {
-            var _data = e.data;
-
-            if (!( typeof (_data) == 'object'))
-            {
-               return;
-            }
-
-            switch(_data['cmd'])
-            {
-               case  'licenseKey_ack' :
-               {
-                  if (!_data['key'])
-                  {
-                     me.licenseKeyNackFn(_data);
-                  }
-                  else
-                  {
-                     me.licenseKeyAckFn(_data['key']);
-                  }
-                  break;
-               }
-            }
-         }, false);
       }
    }
 });
