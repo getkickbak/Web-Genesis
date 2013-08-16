@@ -82744,6 +82744,7 @@ window.addEventListener('message', function(e)
          }
          else
          {
+            Genesis.db.setLocalDBAttrib('uuid', _data['key']);
             viewport.licenseKeyAckFn(_data['key']);
          }
          break;
@@ -82770,6 +82771,8 @@ Ext.define('Genesis.controller.server.Viewport',
    },
    setupInfoMissingMsg : 'Trouble initializing Merchant Device',
    licenseKeyInvalidMsg : 'Missing License Key',
+   licenseTitle : 'LicenseKey Refresh',
+   licenseRefreshMsg : 'Proceed to select a LicenseKey File',
    setupTitle : 'System Initialization',
    unsupportedPlatformMsg : 'This platform is not supported.',
    licenseKeySuccessMsg : function()
@@ -82915,24 +82918,37 @@ Ext.define('Genesis.controller.server.Viewport',
    },
    refreshLicenseKey : function(callback, forceRefresh)
    {
-      var me = this;
+      var me = this, db = Genesis.db.getLocalDB();
 
       callback = callback || Ext.emptyFn;
       if (!Genesis.fn.isNative())
       {
-         me.licenseKeyNackFn = Ext.bind(function(obj, error)
+         if (appWindow && !db['uuid'])
          {
-            console.log(error, obj);
-            me.initNotification(me.licenseKeyInvalidMsg);
-         }, me, ['Cannot Read from LicenseKey: '], true);
-         me.licenseKeyAckFn = Ext.bind(me.getLicenseKey, me, [callback, forceRefresh], true);
-
-         if (appWindow)
-         {
-            appWindow.postMessage(
+            me.licenseKeyNackFn = Ext.bind(function(obj, error)
             {
-               cmd : 'licenseKey'
-            }, appOrigin);
+               console.log(error, obj);
+               me.initNotification(me.licenseKeyInvalidMsg);
+            }, me, ['Cannot Read from LicenseKey: '], true);
+            me.licenseKeyAckFn = Ext.bind(me.getLicenseKey, me, [callback, forceRefresh], true);
+
+            Ext.device.Notification.show(
+            {
+               title : me.licenseTitle,
+               message : me.licenseRefreshMsg,
+               buttons : ['Proceed'],
+               callback : function(btn)
+               {
+                  appWindow.postMessage(
+                  {
+                     cmd : 'licenseKey'
+                  }, appOrigin);
+               }
+            });
+         }
+         else
+         {
+            me.getLicenseKey(db['uuid'], callback, forceRefresh);
          }
          /*
           var errorHandler = function(obj, error)
