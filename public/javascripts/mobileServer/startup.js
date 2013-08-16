@@ -1,7 +1,7 @@
 (function()
 {
    var _notifications = [], _frame, timeout = 30 * 1000;
-   var debug = true;
+   var debug = false;
 
    document.addEventListener("DOMContentLoaded", function(event)
    {
@@ -125,16 +125,29 @@
                      }, "*");
                      return;
                   }
+
                   readOnlyEntry.file(function(file)
                   {
-                     readAsText(readOnlyEntry, function(result)
+                     var reader = new FileReader();
+
+                     reader.onerror = function(e)
                      {
                         _frame.contentWindow.postMessage(
                         {
                            cmd : 'licenseKey_ack',
-                           key : result
+                           key : null
                         }, "*");
-                     });
+                     };
+                     reader.onload = function(e)
+                     {
+                        _frame.contentWindow.postMessage(
+                        {
+                           cmd : 'licenseKey_ack',
+                           key : e.target.result
+                        }, "*");
+                     };
+
+                     reader.readAsText(file);
                   });
                });
                break;

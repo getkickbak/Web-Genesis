@@ -10,7 +10,7 @@
    "update_url": "http://www.getkickbak.com/merchant/updates.xml",
    "manifest_version": 2,
    "minimum_chrome_version": "29",
-   "permissions": ["geolocation", "storage", "<all_urls>", "audioCapture" , "webview", "notifications", "fileSystem", "unlimitedStorage"],
+   "permissions": ["geolocation", "storage", "<all_urls>", "audioCapture" , "webview", "notifications", "fileSystem", "unlimitedStorage", "http://www.dev1getkickbak.com/", "http://www.getkickbak.com/"],
    "icons": {
       "16": "resources/icons/icon128.png",
       "128": "resources/icons/icon128.png"
