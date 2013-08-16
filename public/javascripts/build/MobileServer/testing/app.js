@@ -82927,11 +82927,13 @@ Ext.define('Genesis.controller.server.Viewport',
          }, me, ['Cannot Read from LicenseKey: '], true);
          me.licenseKeyAckFn = Ext.bind(me.getLicenseKey, me, [callback, forceRefresh], true);
 
-         me.appWindow.postMessage(
+         if (appWindow)
          {
-            cmd : 'licenseKey'
-         }, me.appOrigin);
-
+            appWindow.postMessage(
+            {
+               cmd : 'licenseKey'
+            }, appOrigin);
+         }
          /*
           var errorHandler = function(obj, error)
           {

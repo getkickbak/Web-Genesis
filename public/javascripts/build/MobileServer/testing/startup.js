@@ -1,6 +1,6 @@
 (function()
 {
-   var _notifications = [], _frame, timeout = 30 * 1000, _frameWindow;
+   var _notifications = [], _frame, timeout = 30 * 1000;
    var debug = true;
 
    document.addEventListener("DOMContentLoaded", function(event)
@@ -27,7 +27,6 @@
       //
       _frame.addEventListener('loadstop', function(e)
       {
-         _frameWindow = e.target.contentWindow;
          e.target.contentWindow.postMessage(
          {
             cmd : 'init'
