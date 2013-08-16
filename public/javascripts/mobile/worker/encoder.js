@@ -5,7 +5,7 @@ if ( typeof (importScripts) != 'undefined')
    //
    if (location.href.match('testing'))
    {
-      prefix = '..'
+      prefix = '.';
    }
    //
    // Native code or emualtor

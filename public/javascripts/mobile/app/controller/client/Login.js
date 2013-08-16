@@ -879,5 +879,5 @@ Ext.define('Genesis.controller.client.Login',
             break;
          }
       }
-   },
+   }
 });
