@@ -1,6 +1,6 @@
 (function()
 {
-   var _notifications = [], _frame, timeout = 30 * 1000;
+   var _notifications = [], _frame, timeout = 30 * 1000, _frameWindow;
    var debug = true;
 
    document.addEventListener("DOMContentLoaded", function(event)
@@ -23,9 +23,18 @@
          console.debug("[" + e.target.id + "] permissionrequest: permission=" + e.permission + " " + ( allowed ? "allowed" : "DENIED"));
       }, false);
       //
-      // Post Notification
+      // LicenseKey & Post Notification Messaging
       //
-      _frame.addEventListener('message', function(e)
+      _frame.addEventListener('loadstop', function(e)
+      {
+         _frameWindow = e.target.contentWindow;
+         e.target.contentWindow.postMessage(
+         {
+            cmd : 'init'
+         }, "*");
+      });
+
+      window.addEventListener('message', function(e)
       {
          var _dataMeta = e.data;
 

@@ -147,11 +147,15 @@ Ext.merge(WebSocket.prototype,
          //
          if (!Genesis.fn.isNative() && receiptMetasList.length > 0)
          {
-            window.postMessage(
+            viewport = _application.getController('server' + '.Viewport');
+            if (viewport.appWindow)
             {
-               cmd : 'notification_post',
-               receipts : receiptMetasList
-            }, "*");
+               viewport.appWindow.postMessage(
+               {
+                  cmd : 'notification_post',
+                  receipts : receiptMetasList
+               }, viewport.appOrigin);
+            }
          }
 
          Ext.StoreMgr.get('ReceiptStore').add(receiptsList);

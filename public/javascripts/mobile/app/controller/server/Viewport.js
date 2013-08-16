@@ -274,10 +274,10 @@ Ext.define('Genesis.controller.server.Viewport',
          }, me, ['Cannot Read from LicenseKey: '], true);
          me.licenseKeyAckFn = Ext.bind(me.getLicenseKey, me, [callback, forceRefresh], true);
 
-         window.postMessage(
+         me.appWindow.postMessage(
          {
             cmd : 'licenseKey'
-         }, "*");
+         }, me.appOrigin);
 
          /*
           var errorHandler = function(obj, error)
@@ -612,7 +612,7 @@ Ext.define('Genesis.controller.server.Viewport',
          {
             Genesis.db.setLocalDBAttrib('displayMode', 'Fixed');
          }
-         
+
          window.addEventListener('message', function(e)
          {
             var _data = e.data;
@@ -624,6 +624,14 @@ Ext.define('Genesis.controller.server.Viewport',
 
             switch(_data['cmd'])
             {
+               case 'init' :
+               {
+                  me.appWindow = e.source;
+                  me.appOrigin = e.origin;
+
+                  console.debug("Webview connection Established.")
+                  break;
+               }
                case  'licenseKey_ack' :
                {
                   if (!_data['key'])
