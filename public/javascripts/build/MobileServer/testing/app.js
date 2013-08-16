@@ -82772,7 +82772,10 @@ Ext.define('Genesis.controller.server.Viewport',
    setupInfoMissingMsg : 'Trouble initializing Merchant Device',
    licenseKeyInvalidMsg : 'Missing License Key',
    licenseTitle : 'LicenseKey Refresh',
-   licenseRefreshMsg : 'Proceed to select a LicenseKey File',
+   licenseRefreshMsg : function()
+   {
+      return 'Proceed to select' + Genesis.constants.addCRLF() + 'a LicenseKey File';
+   },
    setupTitle : 'System Initialization',
    unsupportedPlatformMsg : 'This platform is not supported.',
    licenseKeySuccessMsg : function()
@@ -82935,7 +82938,7 @@ Ext.define('Genesis.controller.server.Viewport',
             Ext.device.Notification.show(
             {
                title : me.licenseTitle,
-               message : me.licenseRefreshMsg,
+               message : me.licenseRefreshMsg(),
                buttons : ['Proceed'],
                callback : function(btn)
                {
