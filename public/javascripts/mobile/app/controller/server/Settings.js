@@ -153,7 +153,7 @@ Ext.define('Genesis.controller.server.Settings',
          {
             if (btn.toLowerCase() == 'confirm')
             {
-               _application.getController('server' + '.Receipts').fireEvent('resetReceipts');
+               _application.getController('server' + '.Receipts').fireEvent('resetEarnedReceipts');
             }
          }
       });

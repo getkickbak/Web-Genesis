@@ -1600,6 +1600,19 @@ Genesis.fn =
 Genesis.db =
 {
    _localDB : null,
+   _idxDB : window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.msIndexedDB,
+   _idxDBTrans : window.IDBTransaction || window.webkitIDBTransaction,
+   _idxDBKeyRange : window.IDBKeyRange || window.webkitIDBKeyRange,
+   _indexDB :
+   {
+      v : 1,
+      db : null,
+      //default error handler outputs errors to console
+      onError : function(event)
+      {
+         console.debug("IndexDB error: " + event.target.errorCode, event.target);
+      }
+   },
    getLocalStorage : function()
    {
       return window.localStorage;
@@ -1691,9 +1704,14 @@ Genesis.db =
          this.setLocalDB(db);
       }
    },
-   openDatabase : function()
+   openDatabase : function(callback)
    {
-      return openDatabase('KickBak', '1.0', 'KickBakDB', 2 * 1024 * 1024);
+      var me = this, db = null;
+      if (Genesis.fn.isNative())
+      {
+         db = openDatabase('KickBak', '1.0', 'KickBakDB', 2 * 1024 * 1024);
+      }
+      return db;
    },
    //
    // Referral DB
@@ -1732,7 +1750,7 @@ Genesis.db =
    //
    resetStorage : function()
    {
-      var db = Genesis.db.getLocalDB(), i;
+      var me = this, db = Genesis.db.getLocalDB(), i;
       if (db['fbLoginInProgress'])
       {
          return;
@@ -1742,7 +1760,7 @@ Genesis.db =
       {
          Genesis.fb.facebook_onLogout(null, false);
       }
-      db = this.getLocalStorage();
+      db = me.getLocalStorage();
       for (i in db)
       {
          if ((i == 'kickbak') || (i == 'kickbakreferral'))
@@ -1757,7 +1775,7 @@ Genesis.db =
             console.debug("Removed [" + i + "]");
          }
       }
-      this._localDB = null;
+      me._localDB = null;
       //
       // Clean up ALL Object cache!
       //
@@ -1768,21 +1786,23 @@ Genesis.db =
          };
       }
 
-      var dropStatement = "DROP TABLE Customer";
       var db = Genesis.db.openDatabase();
-
-      db.transaction(function(tx)
+      if (db)
       {
-         //
-         // Drop Table
-         //
-         tx.executeSql(dropStatement, [], function(tx, result)
+         db.transaction(function(tx)
          {
-            console.debug("ResetStorage --- Successfully drop KickBak-Customers Table");
-         }, function(tx, error)
-         {
-            console.debug("Failed to drop KickBak-Customers Table : " + error.message);
+            var dropStatement = "DROP TABLE Customer";
+            //
+            // Drop Table
+            //
+            tx.executeSql(dropStatement, [], function(tx, result)
+            {
+               console.debug("ResetStorage --- Successfully drop KickBak-Customers Table");
+            }, function(tx, error)
+            {
+               console.debug("Failed to drop KickBak-Customers Table : " + error.message);
+            });
          });
-      });
+      }
    }
 };

@@ -71797,6 +71797,1549 @@ Ext.define('Genesis.model.Merchant',
    }
 });
 
+/**
+ * @class Ext.data.proxy.WebSql
+ * @author Paul van Santen
+ * @author Grgur Grisogono
+ *
+ * WebSQL proxy connects models and stores to local WebSQL database.
+ *
+ * WebSQL is deprecated in favor of indexedDb, so use with caution.
+ * IndexedDb is not available for mobile browsers at the time of writing this code
+ *
+ * Version: 0.3
+ *
+ * TODO:
+ *      filters,
+ *      failover option for remote proxies,
+ *      database version migration
+ */
+Ext.define('Genesis.data.proxy.WebSql',
+{
+   extend :  Ext.data.proxy.Proxy ,
+   alias : 'proxy.websql',
+
+   config :
+   {
+      batchActions : true,
+
+      /**
+       * @cfg {String} version
+       * database version. If different than current, use updatedb event to update database
+       */
+      dbVersion : '1.0',
+
+      /**
+       * @cfg {String} dbName
+       * @required
+       * Name of database
+       */
+      dbName : undefined,
+
+      /**
+       * @cfg {String} dbDescription
+       * Description of the database
+       */
+      dbDescription : '',
+
+      /**
+       * @cfg {String} dbSize
+       * Max storage size in bytes
+       */
+      dbSize : 10 * 1024 * 1024,
+
+      /**
+       * @cfg {String} dbTable
+       * @required
+       * Name for table where all the data will be stored
+       */
+      dbTable : undefined,
+
+      /**
+       * @cfg {String} pkField
+       * Primary key name. Defaults to idProperty
+       */
+      pkField : undefined,
+
+      /**
+       * @cfg {String} pkType
+       * Type of primary key. By default it an autoincrementing integer
+       */
+      pkType : 'INTEGER PRIMARY KEY ASC',
+
+      /**
+       * @cfg {boolean} insertReplace
+       * Setting that switches the insert and save methods
+       * When true it will do INSERT OR REPLACE queries, otherwise UPDATE and INSERT queries
+       */
+      insertOrReplace : false,
+
+      /**
+       * @cfg {boolean} autoCreateTable
+       * Should we automaticly create the table if it does not exists when initializing?
+       */
+      autoCreateTable : true,
+
+      /**
+       * @cfg {string[]} customWhereClauses
+       * The custom where clauses to use when querying
+       */
+      customWhereClauses : [],
+
+      /**
+       * @cfg {Array} customWhereParams
+       * The parameters for the custom where clauses to use when querying
+       */
+      customWhereParameters : []
+   },
+   /**
+    * @type {Database} database
+    * @private
+    * db object
+    */
+   database : undefined,
+
+   /**
+    * The maximum number of arguments in a SQLite query
+    * @type {number} maxArguments
+    * @private
+    */
+   maxArguments : 100,
+
+   /**
+    * Creates the proxy, throws an error if local storage is not supported in the current browser.
+    * @param {Object} config (optional) Config object.
+    */
+   constructor : function(config)
+   {
+      this.initConfig(config);
+      this.callParent(arguments);
+   },
+
+   /**
+    * Sets the custom clauses and parameters
+    * @param {Array} clauses
+    * @param {Array} params
+    */
+   setCustomWhereClausesAndParameters : function(clauses, params)
+   {
+      this.setCustomWhereClauses(clauses);
+      this.setCustomWhereParameters(params);
+   },
+
+   /**
+    * Clears the custom where clauses
+    */
+   clearCustomWhereClauses : function()
+   {
+      this.setCustomWhereClauses([]);
+      this.setCustomWhereParameters([]);
+   },
+
+   /**
+    * Adds a custom where clause
+    * @param {string} clause
+    */
+   addCustomWhereClause : function(clause)
+   {
+      this.getCustomWhereClauses().push(clause);
+   },
+
+   /**
+    * Clears the custom where clauses
+    */
+   clearCustomWhereParameters : function()
+   {
+      this.setCustomWhereParameters([]);
+   },
+
+   /**
+    * Adds a custom where clause
+    * @param param
+    */
+   addCustomWhereParameter : function(param)
+   {
+      this.getCustomWhereParameters().push(param);
+   },
+
+   /**
+    * Executes a query
+    * @param {SQLTransaction} transaction
+    * @param {string} query
+    * @param {Array} [args]
+    * @param {Function} [success]
+    * @param {Function} [fail]
+    * @param {Object} [scope]
+    */
+   doQuery : function(transaction, query, args, success, fail, scope)
+   {
+      if (!Ext.isFunction(success))
+      {
+         success = Ext.emptyFn;
+      }
+      transaction.executeSql(query, args, Ext.bind(success, scope || this), Ext.bind(this.queryError, this, [query, args, fail, scope], true));
+   },
+
+   /**
+    * Executes a single query, automaticly creates a transaction
+    * @param {string} query
+    * @param {Array} [args]
+    * @param {Function} [success]
+    * @param {Function} [fail]
+    * @param {Object} [scope]
+    */
+   doSingleQuery : function(query, args, success, fail, scope)
+   {
+      var me = this, db = me.database;
+
+      db.transaction(function(transaction)
+      {
+         me.doQuery(transaction, query, args, success, fail, scope);
+      });
+   },
+
+   /**
+    * Called when a query has an error
+    * @param {SQLTransaction} transaction
+    * @param {SQLError} error
+    * @param {string} query
+    * @param {Array} args
+    * @param {Function} fail
+    * @param {Object} scope
+    * @throws {Object} Exception
+    */
+   queryError : function(transaction, error, query, args, fail, scope)
+   {
+      if (Ext.isFunction(fail))
+      {
+         fail.call(scope || this, transaction, error);
+      }
+      throw (
+         {
+            code : 'websql_error',
+            message : "SQL error: " + error.message + "\nSQL query: " + query + (args && args.length ? ("\nSQL params: " + args.join(', ')) : '' )
+         });
+   },
+
+   /**
+    * @private
+    * Sets up the Proxy by opening database and creating table if necessary
+    */
+   initialize : function()
+   {
+      var me = this, pk = 'id', db = openDatabase(me.getDbName(), me.getDbVersion(), me.getDbDescription(), me.getDbSize()), query;
+
+      this.database = db;
+
+      db.transaction(function(transaction)
+      {
+         pk = me.getPkField() || (me.getReader() && me.getReader().getIdProperty()) || pk;
+         me.setPkField(pk);
+
+         query = 'CREATE TABLE IF NOT EXISTS ' + me.getDbTable() + ' (' + pk + ' ' + me.getPkType() + ', ' + me.getDbFields().join(', ') + ')';
+
+         me.doQuery(transaction, query);
+      });
+   },
+
+   /**
+    * Drops the table
+    * @param {Function} [callback]
+    * @param {Object} [scope]
+    */
+   dropTable : function(callback, scope)
+   {
+      var me = this, dropCallback = function()
+      {
+         if (callback)
+         {
+            callback.call(scope || me);
+         }
+      };
+
+      me.database.transaction(function(transaction)
+      {
+         me.doQuery(transaction, 'DROP TABLE IF EXISTS ' + me.getDbTable());
+      }, dropCallback, dropCallback);
+   },
+
+   /**
+    * Empties (truncates) the table
+    * @param {Function} [callback]
+    * @param {Object} [scope]
+    */
+   emptyTable : function(callback, scope)
+   {
+      var me = this, emptyCallback = function()
+      {
+         if (callback)
+         {
+            callback.call(scope || me);
+         }
+      };
+
+      me.database.transaction(function(transaction)
+      {
+         me.doQuery(transaction, 'DELETE FROM ' + me.getDbTable());
+      }, emptyCallback, emptyCallback);
+   },
+
+   /**
+    * @private
+    * Get reader data and set up fields accordingly
+    * Used for table creation only
+    * @return {Array} Fields array
+    */
+   getDbFields : function()
+   {
+      var me = this, fields = me.getModel().getFields(), flatFields = [], pkField = me.getPkField().toLowerCase(), name, type, sqlType, i;
+
+      for ( i = 0; i < fields.length; i++)
+      {
+         name = fields.items[i].getName();
+         type = fields.items[i].getType().type;
+
+         if (name === pkField)
+         {
+            continue;
+         }
+
+         switch (type.toLowerCase())
+         {
+            case 'int':
+               sqlType = 'INTEGER';
+               break;
+            case 'float':
+               sqlType = 'FLOAT';
+               break;
+            case 'bool':
+               sqlType = 'BOOLEAN';
+               break;
+            case 'date':
+               sqlType = 'DATETIME';
+               break;
+            default:
+               sqlType = 'TEXT';
+               break;
+         }
+         flatFields.push(name + ' ' + sqlType);
+      }
+
+      return flatFields;
+   },
+   /**
+    * Gets an object of the form {key -> value} for every field in the database table
+    * Called before saving a record to determine db structure
+    * @param {Ext.data.Fields} fields
+    * @param {Ext.data.Model} record
+    * @returns {Object}
+    */
+   getDbFieldData : function(fields, record)
+   {
+      var object =
+      {
+      }, fieldName, i;
+
+      for ( i = 0; i < fields.length; i++)
+      {
+
+         fieldName = fields.items[i].getName();
+         object[fieldName] = this.convertFieldToDb(fields.items[i], record.get(fieldName));
+      }
+      return object;
+   },
+
+   /**
+    * Reads a record from a DB row
+    * @param {SQLResultSetRowList} row
+    * @return {Object} Model object
+    */
+   readRecordFromRow : function(row)
+   {
+      var fields = this.getModel().getFields(), name, i,
+      // Copy this object because apparently we are not allowed to alter the original parameter object, weird huh?
+      rowObj = Ext.apply(
+      {
+      }, row);
+
+      for ( i = 0; i < fields.length; i++)
+      {
+         name = fields.items[i].getName();
+         rowObj[name] = this.convertFieldToRecord(fields.items[i], row[name]);
+      }
+      return rowObj;
+   },
+
+   /**
+    * Converts a queried field value to the respective record value
+    * @param {Ext.data.Field} field
+    * @param value
+    * @return
+    */
+   convertFieldToRecord : function(field, value)
+   {
+      var type = field.getType().type;
+      switch (type.toLowerCase())
+      {
+         case 'date':
+            return Ext.Date.parse(value, 'Y-m-d H:i:s', true);
+         case 'bool':
+            return value ? true : false;
+         //            case 'auto':
+         //                return Ext.decode(value, true);
+      }
+      return value;
+   },
+
+   /**
+    * Converts a record field to the respective DB field value
+    * @param {Ext.data.Field} field
+    * @param value
+    * @return
+    */
+   convertFieldToDb : function(field, value)
+   {
+      var type = field.getType().type;
+
+      switch (type.toLowerCase())
+      {
+         case 'date':
+            if (value)
+            {
+               return Ext.Date.format(value, 'Y-m-d H:i:s');
+            }
+            else
+            {
+               return '';
+            }
+         case 'bool':
+            return value ? 1 : 0;
+         //            case 'auto':
+         //                return Ext.encode(value);
+      }
+      return value;
+   },
+
+   /**
+    * Inserts or replaces the records of an operation
+    * @param {Ext.data.Operation} operation
+    * @param {Function} callback
+    * @param {Object} scope
+    */
+   insertOrReplaceRecords : function(operation, callback, scope)
+   {
+      var me = this, records = operation.getRecords(), processedRecords = [];
+
+      operation.setStarted();
+
+      me.database.transaction(function(transaction)
+      {
+         if (!records.length)
+         {
+            return;
+         }
+
+         var fields = me.getModel().getFields(), query, queryParts, recordQueryParts, dbFieldData, args;
+
+         Ext.each(records, function(record)
+         {
+            queryParts = [];
+            recordQueryParts = [];
+            args = [];
+
+            query = 'INSERT OR REPLACE INTO ' + me.getDbTable() + "\n";
+            dbFieldData = me.getDbFieldData(fields, record);
+
+            for (var key in dbFieldData)
+            {
+               if (dbFieldData.hasOwnProperty(key))
+               {
+                  queryParts.push(key);
+                  recordQueryParts.push('?');
+                  if (dbFieldData[key] === undefined)
+                  {
+                     args.push(null);
+                  }
+                  else
+                  {
+                     args.push(dbFieldData[key]);
+                  }
+               }
+            }
+            query += ' ( ' + queryParts.join(', ') + " )\n";
+            query += 'VALUES ( ' + recordQueryParts.join(', ') + " )\n";
+
+            me.doQuery(transaction, query, args, function(transaction, resultset)
+            {
+               processedRecords.push(
+               {
+                  clientId : record.getId(),
+                  id : record.getId()
+               });
+            });
+         });
+
+      }, function(error)
+      {
+         // Error
+         operation.setException(error);
+
+         if (Ext.isFunction(callback))
+         {
+            callback.call(scope || this, operation);
+         }
+      }, function()
+      {
+         // Success
+         operation.setResultSet(Ext.create('Ext.data.ResultSet',
+         {
+            records : processedRecords,
+            success : true
+         }));
+
+         operation.process(operation.getAction(), operation.getResultSet());
+
+         operation.setSuccessful();
+         operation.setCompleted();
+
+         if (Ext.isFunction(callback))
+         {
+            callback.call(scope || this, operation);
+         }
+      });
+   },
+
+   /**
+    * Called when records are created
+    * @param {Ext.data.Operation} operation
+    * @param {Function} callback
+    * @param {Object} scope
+    */
+   create : function(operation, callback, scope)
+   {
+      if (this.getInsertOrReplace())
+      {
+         this.insertOrReplaceRecords(operation, callback, scope);
+      }
+      else
+      {
+         this.insertRecords(operation, callback, scope);
+      }
+   },
+
+   /**
+    * Executes insert queries for an operation
+    * @param {Ext.data.Operation} operation
+    * @param {Function} callback
+    * @param {Object} scope
+    */
+   insertRecords : function(operation, callback, scope)
+   {
+      var me = this, records = operation.getRecords(), fields = me.getModel().getFields(), insertedRecords = [];
+
+      operation.setStarted();
+
+      me.database.transaction(function(transaction)
+      {
+
+         Ext.each(records, function(record)
+         {
+            var queryParts = [], recordQueryParts = [], args = [], query = 'INSERT INTO ' + me.getDbTable() + "\n", dbFieldData = me.getDbFieldData(fields, record), tempId = record.getId();
+
+            for (var key in dbFieldData)
+            {
+               if (dbFieldData.hasOwnProperty(key))
+               {
+                  queryParts.push(key);
+                  recordQueryParts.push('?');
+
+                  if (dbFieldData[key] === undefined || (record.phantom && key == me.getPkField()))
+                  {
+                     args.push(null);
+                  }
+                  else
+                  {
+                     args.push(dbFieldData[key]);
+                  }
+               }
+            }
+            query += ' ( ' + queryParts.join(', ') + " )\n";
+            query += 'VALUES ( ' + recordQueryParts.join(', ') + " )\n";
+
+            me.doQuery(transaction, query, args, function(transaction, resultset)
+            {
+               insertedRecords.push(
+               {
+                  clientId : record.getId(),
+                  id : resultset.insertId
+               });
+            });
+         });
+
+      }, function(error)
+      {
+         // Error
+         operation.setException(error);
+
+         if (Ext.isFunction(callback))
+         {
+            callback.call(scope || this, operation);
+         }
+      }, function()
+      {
+         // Success
+         operation.setResultSet(Ext.create('Ext.data.ResultSet',
+         {
+            records : insertedRecords,
+            success : true
+         }));
+
+         operation.process(operation.getAction(), operation.getResultSet());
+
+         operation.setSuccessful();
+         operation.setCompleted();
+
+         if (Ext.isFunction(callback))
+         {
+            callback.call(scope || this, operation);
+         }
+      });
+   },
+
+   /**
+    * Updates records
+    * @param {Ext.data.Operation} operation
+    * @param {Function} callback
+    * @param {Object} scope
+    */
+   update : function(operation, callback, scope)
+   {
+      if (this.getInsertOrReplace())
+      {
+         this.insertOrReplaceRecords(operation, callback, scope);
+      }
+      else
+      {
+         this.updateRecords(operation, callback, scope);
+      }
+   },
+
+   /**
+    * Executes update queries for an operation
+    * @param {Ext.data.Operation} operation
+    * @param {Function} callback
+    * @param {Object} scope
+    */
+   updateRecords : function(operation, callback, scope)
+   {
+      var me = this, records = operation.getRecords(), updatedRecords = [];
+
+      operation.setStarted();
+
+      me.database.transaction(function(transaction)
+      {
+
+         var fields = me.getModel().getFields(), query, queryParts, dbFieldData, args;
+
+         Ext.each(records, function(record)
+         {
+            queryParts = [];
+            args = [];
+
+            query = 'UPDATE ' + me.getDbTable() + " SET \n";
+            dbFieldData = me.getDbFieldData(fields, record);
+
+            for (var key in dbFieldData)
+            {
+               if (dbFieldData.hasOwnProperty(key) && key != me.getPkField())
+               {
+                  queryParts.push(key + ' = ?');
+
+                  if (dbFieldData[key] === undefined)
+                  {
+                     args.push(null);
+                  }
+                  else
+                  {
+                     args.push(dbFieldData[key]);
+                  }
+               }
+            }
+            query += queryParts.join(', ');
+            query += ' WHERE ' + me.getPkField() + ' = ? ';
+            args.push(record.get(me.getPkField()));
+
+            me.doQuery(transaction, query, args, function(transaction, resultset)
+            {
+               updatedRecords.push(
+               {
+                  clientId : record.getId(),
+                  id : record.getId()
+               });
+            });
+         });
+
+      }, function(error)
+      {
+         // Error
+         operation.setException(error);
+
+         if (Ext.isFunction(callback))
+         {
+            callback.call(scope || this, operation);
+         }
+      }, function()
+      {
+         // Success
+         operation.setResultSet(Ext.create('Ext.data.ResultSet',
+         {
+            records : updatedRecords,
+            success : true
+         }));
+
+         operation.process(operation.getAction(), operation.getResultSet());
+
+         operation.setSuccessful();
+         operation.setCompleted();
+
+         if (Ext.isFunction(callback))
+         {
+            callback.call(scope || this, operation);
+         }
+      });
+   },
+
+   /**
+    * Reads one or more records
+    * @param {Ext.data.Operation} operation
+    * @param {Function} callback
+    * @param {Object} scope
+    */
+   read : function(operation, callback, scope)
+   {
+      var me = this, records = [], params = operation.getParams() ||
+      {
+      }, wheres = [], sorters = operation.getSorters(), sortProperty, orderBy = [], args = [], limit = operation.getLimit(), start = operation.getStart(), customClauses = me.getCustomWhereClauses(), customParams = me.getCustomWhereParameters(), query = 'SELECT t.* FROM ' + me.getDbTable() + ' t';
+
+      if (params)
+      {
+         for (var key in params)
+         {
+            if (params.hasOwnProperty(key))
+            {
+               wheres.push('t.' + key + ' = ? ');
+               args.push(params[key]);
+            }
+         }
+      }
+
+      if (customClauses.length)
+      {
+         wheres = Ext.Array.merge(wheres, customClauses);
+      }
+      if (customParams.length)
+      {
+         args = Ext.Array.merge(args, customParams);
+      }
+
+      if (wheres.length)
+      {
+         query += ' WHERE ' + wheres.join(' AND ');
+      }
+
+      if (sorters)
+      {
+         for (var i = 0; i < sorters.length; i++)
+         {
+            sortProperty = sorters[i].getProperty();
+            if (!sortProperty)
+            {
+               sortProperty = sorters[i].getSortProperty();
+            }
+            orderBy.push('t.' + sortProperty + ' ' + sorters[i].getDirection());
+         }
+      }
+
+      if (orderBy.length)
+      {
+         query += ' ORDER BY ' + orderBy.join(', ');
+      }
+
+      if (limit || start)
+      {
+         start = start || 0;
+         query += ' LIMIT ' + limit + ' OFFSET ' + start;
+      }
+
+      me.database.transaction(function(transaction)
+      {
+         me.doQuery(transaction, query, args, function(transaction, resultset)
+         {
+            var length = resultset.rows.length, row;
+
+            for (var i = 0; i < length; i++)
+            {
+               row = resultset.rows.item(i);
+               records.push(me.readRecordFromRow(row));
+            }
+
+            operation.setCompleted();
+
+            operation.setResultSet(Ext.create('Ext.data.ResultSet',
+            {
+               records : records,
+               count : records.length,
+               total : records.length,
+               loaded : true
+            }));
+            operation.setRecords(records);
+            operation.setSuccessful();
+
+            if ( typeof callback == 'function')
+            {
+               callback.call(scope || this, operation);
+            }
+         });
+
+      }, function(error)
+      {
+         // Error
+         operation.setException(error);
+
+         if (Ext.isFunction(callback))
+         {
+            callback.call(scope || this, operation);
+         }
+      });
+   },
+
+   /**
+    * Destroys records
+    * @param {Ext.data.Operation} operation
+    * @param {Function} callback
+    * @param {Object} scope
+    */
+   destroy : function(operation, callback, scope)
+   {
+      var me = this, pkField = me.getPkField(), ids = [], records = operation.getRecords(), destroyedRecords = [], query, wheres, args, id, i;
+
+      for ( i = 0; i < records.length; i++)
+      {
+         ids.push(records[i].get(pkField));
+      }
+
+      me.database.transaction(function(transaction)
+      {
+         while (ids.length)
+         {
+            wheres = [];
+            args = [];
+            id = undefined;
+
+            while (args.length + 1 <= me.maxArguments && ids.length)
+            {
+               id = ids.pop();
+               wheres.push(pkField + ' = ? ');
+               args.push(id);
+
+               destroyedRecords.push(
+               {
+                  id : id
+               });
+            }
+
+            query = 'DELETE FROM ' + me.getDbTable() + ' WHERE ' + wheres.join(' OR ');
+            me.doQuery(transaction, query, args);
+         }
+      }, function(error)
+      {
+         // Error
+         operation.setException(error);
+
+         if (Ext.isFunction(callback))
+         {
+            callback.call(scope || this, operation);
+         }
+      }, function()
+      {
+         // Success
+         operation.process(operation.getAction(), Ext.create('Ext.data.ResultSet',
+         {
+            records : destroyedRecords,
+            success : true
+         }));
+
+         operation.setSuccessful();
+         operation.setCompleted();
+
+         if (Ext.isFunction(callback))
+         {
+            callback.call(scope || this, operation);
+         }
+      });
+   }
+});
+
+
+/**
+ * @author Grgur Grisogono
+ *
+ * IndexedDB proxy connects models and stores to local IndexedDB storage.
+ *
+ * IndexedDB is only available in Firefox 4+ and Chrome 10+ at the moment.
+ *
+ * Version: 0.5
+ *
+ * TODO: respect sorters, filters, start and limit options on the Operation; failover option for remote proxies, ..
+ */
+Ext.define('Genesis.data.proxy.IndexedDB',
+{
+   extend :  Ext.data.proxy.Proxy ,
+
+   alias : 'proxy.idb',
+
+   alternateClassName : 'Genesis.data.IdbProxy',
+
+   config :
+   {
+      /**
+       * @cfg {String} version
+       * database version. If different than current, use updatedb event to update database
+       */
+      dbVersion : '1.0',
+
+      /**
+       * @cfg {String} dbName
+       * Name of database
+       */
+      dbName : null,
+
+      /**
+       * @cfg {String} objectStoreName
+       * Name of object store
+       */
+      objectStoreName : undefined,
+
+      /**
+       * @cfg {String} keyPath
+       * Primary key for objectStore. Proxy will use reader's idProperty if not keyPath not defined.
+       */
+      keyPath : undefined,
+
+      /**
+       * @cfg {Boolean} autoIncrement
+       * Set true if keyPath is to autoIncrement. Defaults to IndexedDB default specification (false)
+       */
+      autoIncrement : false,
+
+      /**
+       * @cfg {Array} indexes
+       * Array of Objects. Properties required are "name" for index name and "field" to specify index field
+       * e.g. indexes: [{name: 'name', field: 'somefield', options: {unique: false}}]
+       */
+      indexes : [],
+
+      /**
+       * @cfg {Array} initialData
+       * Initial data that will be inserted in object store on store creation
+       */
+      initialData : [],
+
+      /**
+       * @private
+       * indexedDB object (if browser supports it)
+       */
+      indexedDB : window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB,
+
+      /**
+       * @private
+       * db object
+       */
+      db : undefined,
+
+      /**
+       * @private
+       * used to monitor initial data insertion. A helper to know when all data is in. Helps fight asynchronous nature of idb.
+       */
+      initialDataCount : 0,
+
+      /**
+       * @private
+       * Trigger that tells that proxy is currently inserting initial data
+       */
+      insertingInitialData : false
+   },
+
+   /**
+    * Creates the proxy, throws an error if local storage is not supported in the current browser.
+    * @param {Object} config (optional) Config object.
+    */
+   constructor : function(config)
+   {
+      this.initConfig(config);
+      this.callParent(arguments);
+
+      this.checkDependencies();
+
+      this.addEvents('dbopen', 'updatedb', 'exception', 'cleardb', 'initialDataInserted', 'noIdb');
+
+   },
+
+   /**
+    * @private
+    * Sets up the Proxy by opening database and creatinbg object store if necessary
+    */
+   initialize : function()
+   {
+      var me = this, request = me.getIndexedDB().open(me.getDbName(), me.getDbVersion());
+
+      me.on('updatedb', me.addInitialData);
+
+      request.onsuccess = function(e)
+      {
+         var db = me.getIndexedDB().db = e.target.result, indexes = me.getIndexes(), setVrequest, keyPath, store;
+
+         me.setDb(me.getIndexedDB().db);
+
+         me.fireEvent('dbopen', me, db);
+      };
+
+      request.onfailure = me.onerror;
+
+      request.onupgradeneeded = function(e)
+      {
+         var i;
+
+         //clean old versions
+         if (db.objectStoreNames.contains(me.getObjectStoreName()))
+         {
+            db.deleteObjectStore(me.getObjectStoreName());
+         }
+
+         //set keyPath. Use idProperty if keyPath is not specified
+         if (!me.getKeyPath())
+         {
+            me.setKeyPath(me.getReader().getIdProperty());
+         }
+
+         // create objectStore
+         keyPath = me.getKeyPath() ?
+         {
+            keyPath : me.getKeyPath()
+         } : undefined;
+         store = db.createObjectStore(me.getObjectStoreName(), keyPath, me.getAutoIncrement());
+
+         // set indexes
+         for (i in indexes)
+         {
+            if (indexes.hasOwnProperty(i))
+            {
+               db.objectStore.createIndex(indexes.name, indexes.field, indexes.options);
+            }
+         }
+
+         //Database is open and ready so fire dbopen event
+         me.fireEvent('updatedb', me, db);
+      }
+   },
+
+   /**
+    * Universal error reporter for debugging purposes
+    * @param {Object} err Error object.
+    */
+   onError : function(err)
+   {
+      if (window.console)
+         console.debug(err);
+   },
+
+   /**
+    * Check if all needed config options are set
+    */
+   checkDependencies : function()
+   {
+      var me = this;
+      window.p = me;
+      if (!me.getIndexedDB())
+      {
+         me.fireEvent('noIdb');
+         Ext.Error.raise("IndexedDB is not supported in your browser.");
+      }
+      if (!Ext.isString(me.getDbName()))
+         Ext.Error.raise("The dbName string has not been defined in your Genesis.data.proxy.IndexedDB");
+      if (!Ext.isString(me.getObjectStoreName()))
+         Ext.Error.raise("The objectStoreName string has not been defined in your Genesis.data.proxy.IndexedDB");
+
+      return true;
+   },
+
+   /**
+    * Add initial data if set at {@link #initialData}
+    */
+   addInitialData : function()
+   {
+      this.addData();
+   },
+
+   /**
+    * Add data when needed
+    * Also add initial data if set at {@link #initialData}
+    * @param {Array/Ext.data.Store} newData Data to add as array of objects or a store instance. Optional
+    * @param {Boolean} clearFirst Clear existing data first
+    */
+   addData : function(newData, clearFirst)
+   {
+      var me = this, model = me.getModel().getName(), data = newData || me.getInitialData();
+
+      //clear objectStore first
+      if (clearFirst === true)
+      {
+         me.clear();
+         me.addData(data);
+         return;
+      }
+
+      if (Ext.isObject(data) && data.isStore === true)
+      {
+         data = me.getDataFromStore(data);
+      }
+
+      me.setInitialDataCount(data.length);
+      me.setInsertingInitialData(true);
+
+      Ext.each(data, function(entry)
+      {
+         Ext.ModelManager.create(entry, model).save();
+      })
+   },
+
+   /**
+    * Get data from store. Usually from Server proxy.
+    * Useful if caching data data that don't change much (e.g. for comboboxes)
+    * Used at {@link #addData}
+    * @private
+    * @param {Ext.data.Store} store Store instance
+    * @return {Array} Array of raw data
+    */
+   getDataFromStore : function(store)
+   {
+      var data = [];
+      store.each(function(item)
+      {
+         data.push(item.data)
+      });
+      return data;
+   },
+   //inherit docs
+   create : function(operation, callback, scope)
+   {
+      var records = operation.records, length = records.length, id, record, i;
+
+      operation.setStarted();
+
+      for ( i = 0; i < length; i++)
+      {
+         record = records[i];
+         this.setRecord(record);
+      }
+
+      operation.setCompleted();
+      operation.setSuccessful();
+
+      if ( typeof callback == 'function')
+      {
+         callback.call(scope || this, operation);
+      }
+   },
+
+   //inherit docs
+   read : function(operation, callback, scope)
+   {
+      var records = [], me = this;
+
+      var finishReading = function(record, request, event)
+      {
+         me.readCallback(operation, record);
+
+         if ( typeof callback == 'function')
+         {
+            callback.call(scope || this, operation);
+         }
+      }
+      //read a single record
+      if (operation.id)
+      {
+         this.getRecord(operation.id, finishReading, me);
+      }
+      else
+      {
+         this.getAllRecords(finishReading, me);
+         operation.setSuccessful();
+      }
+   },
+
+   /**
+    * Injects data in operation instance
+    */
+   readCallback : function(operation, records)
+   {
+      var rec = Ext.isArray(records) ? records : [records];
+      operation.setSuccessful();
+      operation.setCompleted();
+      operation.resultSet = Ext.create('Ext.data.ResultSet',
+      {
+         records : rec,
+         total : rec.length,
+         loaded : true
+      });
+   },
+
+   //inherit docs
+   update : function(operation, callback, scope)
+   {
+      var records = operation.records, length = records.length, record, id, i;
+
+      operation.setStarted();
+
+      for ( i = 0; i < length; i++)
+      {
+         record = records[i];
+         this.updateRecord(record);
+      }
+      operation.setCompleted();
+      operation.setSuccessful();
+
+      if ( typeof callback == 'function')
+      {
+         callback.call(scope || this, operation);
+      }
+   },
+
+   //inherit
+   destroy : function(operation, callback, scope)
+   {
+      var records = operation.records, length = records.length, i;
+
+      for ( i = 0; i < length; i++)
+      {
+         Ext.Array.remove(newIds, records[i].getId());
+         this.removeRecord(records[i], false);
+      }
+
+      //this.setIds(newIds);
+
+      operation.setCompleted();
+      operation.setSuccessful();
+
+      if ( typeof callback == 'function')
+      {
+         callback.call(scope || this, operation);
+      }
+   },
+
+   /**
+    * Create objectStore instance
+    * @param {String} type Transaction type (r, rw)
+    * @param {Function} callback Callback function
+    * @param {Object} scope Callback fn scope
+    * @return {Object} IDB objectStore instance
+    */
+   getObjectStore : function(type, callback, scope)
+   {
+      try
+      {
+         var me = this, transTypes =
+         {
+            'rw' : IDBTransaction.READ_WRITE,
+            'r' : IDBTransaction.READ_ONLY,
+            'vc' : IDBTransaction.VERSION_CHANGE
+         }, transaction = me.getDB().transaction([me.getObjectStoreName()], type ? transTypes[type] : undefined), objectStore = transaction.objectStore(me.getObjectStoreName());
+      }
+      catch(e)
+      {
+         //retry until available due to asynchronous nature of indexedDB transaction. Not the best of workaraunds.
+         Ext.defer(callback, 20, scope || me, [type, callback, scope]);
+         return false;
+         //callback.call(scope || me, type, callback, scope);
+      }
+
+      return objectStore;
+   },
+
+   /**
+    * @private
+    * Fetches a single record by id.
+    * @param {Mixed} id Record id
+    * @param {Function} callback Callback function
+    * @param {Object} scope Callback fn scope
+    */
+   getRecord : function(id, callback, scope)
+   {
+      var me = this, objectStore = me.getObjectStore('r', Ext.bind(me.getRecord, me, [id, callback, scope])), Model = this.model, record;
+
+      if (!objectStore)
+         return false;
+
+      var request = objectStore.get(id);
+
+      request.onerror = function(event)
+      {
+         me.fireEvent('exception', me, event);
+      };
+
+      request.onsuccess = function(event)
+      {
+         record = new Model(request.result, id);
+         if ( typeof callback == 'function')
+         {
+            callback.call(scope || me, record, request, event);
+         }
+      };
+
+      return true;
+   },
+
+   /**
+    * @private
+    * Fetches all records
+    * @param {Function} callback Callback function
+    * @param {Object} scope Callback fn scope
+    */
+   getAllRecords : function(callback, scope)
+   {
+      var me = this, objectStore = me.getObjectStore('r', Ext.bind(me.getAllRecords, me, [callback, scope])), Model = this.model, records = [];
+
+      if (!objectStore)
+         return;
+
+      var request = objectStore.openCursor();
+
+      request.onerror = function(event)
+      {
+         me.fireEvent('exception', me, event);
+      };
+
+      request.onsuccess = function(event)
+      {
+         var cursor = event.target.result;
+         if (cursor)
+         {
+            //res.push(cursor.value);
+            records.push(new Model(cursor.value, cursor.key));
+            cursor["continue"]();
+         }
+         else
+         {
+
+            if ( typeof callback == 'function')
+            {
+               callback.call(scope || me, records, request, event)
+            }
+         }
+
+      };
+   },
+
+   /**
+    * Saves the given record in the Proxy.
+    * @param {Ext.data.Model} record The model instance
+    */
+   setRecord : function(record)
+   {
+      var me = this, rawData = record.data
+      objectStore = me.getObjectStore('rw', Ext.bind(me.setRecord, me, [record]));
+
+      if (!objectStore)
+         return;
+
+      var request = objectStore.add(rawData);
+
+      request.onsuccess = function()
+      {
+         if (me.getInsertingInitialData())
+         {
+            me.setInitialDataCount(me.getInsertingInitialData() - 1);
+            if (me.getInitialDataCount() === 0)
+            {
+               me.setInsertingInitialData(false);
+               me.fireEvent('initialDataInserted');
+            }
+         }
+      }
+   },
+
+   /**
+    * Updates the given record.
+    * @param {Ext.data.Model} record The model instance
+    */
+   updateRecord : function(record)
+   {
+      var me = this, objectStore = me.getObjectStore('rw', Ext.bind(me.updateRecord, me, [record])), Model = this.model, id = record.internalId || record[me.getKeyPath()], modifiedData = record.modified, newData = record.data;
+
+      if (!objectStore)
+         return false;
+
+      var keyRange = IDBKeyRange.only(id), cursorRequest = objectStore.openCursor(keyRange);
+
+      cursorRequest.onsuccess = function(e)
+      {
+         var result = e.target.result;
+         if (!!!result)
+         {
+            return me.setRecord(record);
+         }
+
+         for (var i in modifiedData)
+         {
+            result.value[i] = newData[i];
+         }
+         result.update(result.value);
+      };
+
+      cursorRequest.onerror = function(event)
+      {
+         me.fireEvent('exception', me, event);
+      };
+
+      return true;
+   },
+
+   /**
+    * @private
+    * Physically removes a given record from the object store.
+    * @param {Mixed} id The id of the record to remove
+    */
+   removeRecord : function(id)
+   {
+      var me = this, objectStore = me.getObjectStore('rw', Ext.bind(me.removeRecord, me, [id]));
+      if (!objectStore)
+         return;
+
+      var request = objectStore["delete"](id);
+
+   },
+
+   /**
+    * Destroys all records stored in the proxy
+    */
+   clear : function(callback, scope)
+   {
+      var me = this, objectStore = me.getObjectStore('r', Ext.bind(me.clear, me, [callback, scope])), Model = this.model, records = [];
+
+      if (!objectStore)
+         return;
+
+      var request = objectStore.openCursor();
+
+      request.onerror = function(event)
+      {
+         me.fireEvent('exception', me, event);
+      };
+
+      request.onsuccess = function(event)
+      {
+         var cursor = event.target.result;
+         if (cursor)
+         {
+            me.removeRecord(cursor.key);
+            cursor["continue"]();
+         }
+         me.fireEvent('cleardb', me);
+         callback.call(scope || me);
+      };
+
+   }
+});
+
+
+/**
+ * @author Grgur Grisogono
+ *
+ * BrowserDB Proxy for Ext JS 4 uses best available browser (local) database to use for your locally stored data
+ * Currently available: IndexedDB and WebSQL DB
+ *
+ * Version: 0.3
+ *
+ */
+(function()
+{
+
+   var idb = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB, cfg =
+   {
+   };
+
+   /**
+    * Choose which proxy to extend based on available features. IndexedDB is preferred over Web SQL DB
+    */
+   if (!idb)
+   {
+      cfg.dbInUse = 'websql';
+      
+      Ext.define('Genesis.data.proxy.BrowserDB',
+      {
+         extend :  Genesis.data.proxy.WebSql ,
+
+         alias : 'proxy.browserdb',
+
+         alternateClassName : 'Genesis.data.proxy.BrowserCache',
+
+         dbInUse : cfg.dbInUse,
+
+         /**
+          * Route to the right proxy.
+          * @param {Object} config (optional) Config object.
+          */
+         constructor : function(config)
+         {
+            // make sure config options are synced
+            if (this.dbInUse !== 'idb')
+            {
+               config.dbTable = config.dbTable || config.objectStoreName;
+            }
+            else
+            {
+               config.objectStoreName = config.objectStoreName || config.dbTable;
+            }
+            this.callParent(arguments);
+         }
+      });
+   }
+   else
+   {
+      cfg.dbInUse = 'idb';
+      
+      Ext.define('Genesis.data.proxy.BrowserDB',
+      {
+         extend :  Genesis.data.proxy.IndexedDB ,
+
+         alias : 'proxy.browserdb',
+
+         alternateClassName : 'Genesis.data.proxy.BrowserCache',
+
+         dbInUse : cfg.dbInUse,
+
+         /**
+          * Route to the right proxy.
+          * @param {Object} config (optional) Config object.
+          */
+         constructor : function(config)
+         {
+            // make sure config options are synced
+            if (this.dbInUse !== 'idb')
+            {
+               config.dbTable = config.dbTable || config.objectStoreName;
+            }
+            else
+            {
+               config.objectStoreName = config.objectStoreName || config.dbTable;
+            }
+            this.callParent(arguments);
+         }
+      });
+   }
+})();
+
+
 Ext.define('Genesis.model.CustomerJSON',
 {
    extend :  Ext.data.Model ,
@@ -72018,6 +73561,27 @@ Ext.define('Genesis.model.Customer',
             read : 'POST'
          });
          this.getProxy().setUrl(serverHost + '/api/v1/customers/receive_points');
+      }
+   }
+});
+
+Ext.define('Genesis.model.CustomerDB',
+{
+   id : 'CustomerDB',
+   extend :  Genesis.model.Customer ,
+   config :
+   {
+      proxy :
+      {
+         type : 'browserdb',
+         dbName : 'KickBak',
+         objectStoreName : 'Customer',
+         //dbVersion : '1.0',
+         writer :
+         {
+            type : 'json',
+            writeAllFields : false
+         }
       }
    }
 });
@@ -72888,8 +74452,8 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       var i, stores =
       {
-         'CustomerStore' : [Ext.StoreMgr.get('Persistent' + 'CustomerStore'), 'CustomerStore', 'CustomerJSON'],
-         'LicenseStore' : [Ext.StoreMgr.get('Persistent' + 'LicenseStore'), 'LicenseStore', 'frontend.LicenseKeyJSON']
+         'CustomerStore' : [Ext.StoreMgr.get('Persistent' + 'CustomerStore'), 'CustomerStore', 'Customer' + (Genesis.fn.isNative() ? 'JSON' : 'DB')],
+         'LicenseStore' : [Ext.StoreMgr.get('Persistent' + 'LicenseStore'), 'LicenseStore', 'frontend.LicenseKey' + (Genesis.fn.isNative() ? 'JSON' : 'DB')]
          //'BadgeStore' : [Ext.StoreMgr.get('Persistent' + 'BadgeStore'), 'BadgeStore', 'BadgeJSON']
          //,'PrizeStore' : [Ext.StoreMgr.get('Persistent' + 'PrizeStore'), 'PrizeStore',
          // 'CustomerRewardJSON']
@@ -72919,9 +74483,6 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    persistLoadStores : function(callback)
    {
-      var createStatement = "CREATE TABLE IF NOT EXISTS Customer (id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT)";
-      var selectAllStatement = "SELECT * FROM Customer";
-
       var me = this, store, i, x, j, flag = 0x11000, viewport = me.getViewPortCntlr(), stores = [//
       [this.persistStore('CustomerStore'), 'CustomerStore', 0x00001], //
       [this.persistStore('LicenseStore'), 'LicenseStore', 0x00100] //
@@ -72953,8 +74514,7 @@ Ext.define('Genesis.controller.ControllerBase',
                      store.removeAll();
                      for ( x = 0; x < results.length; x++)
                      {
-                        var data = results[x].get('json');
-                        items.push(data);
+                        items.push((Genesis.fn.isNative()) ? results[x].get('json') : results[x].getData(true));
                      }
                      store.setData(items);
                      console.debug("persistLoadStores  --- Restored " + results.length + " records to " + stores[i][1]);
@@ -72967,8 +74527,10 @@ Ext.define('Genesis.controller.ControllerBase',
                   //
                   // CustomerStore
                   //
-                  if (stores[i][1] == 'CustomerStore')
+                  if ((results.length > 0) && Genesis.fn.isNative() && (stores[i][1] == 'CustomerStore'))
                   {
+                     var createStatement = "CREATE TABLE IF NOT EXISTS Customer (id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT)";
+                     var selectAllStatement = "SELECT * FROM Customer";
                      var db = Genesis.db.openDatabase();
                      try
                      {
@@ -73013,6 +74575,10 @@ Ext.define('Genesis.controller.ControllerBase',
                      {
                      }
                   }
+                  else if (!Genesis.fn.isNative() && (flag == 0x11101))
+                  {
+                     callback();
+                  }
 
                   if (flag == 0x11111)
                   {
@@ -73041,15 +74607,13 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    persistSyncStores : function(storeName, cleanOnly)
    {
-      var createStatement = "CREATE TABLE IF NOT EXISTS Customer (id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT)";
-      var insertStatement = "INSERT INTO Customer (json) VALUES (?)";
       //var updateStatement = "UPDATE Customer SET json = ? WHERE id = ?";
       //var deleteStatement = "DELETE FROM Customer WHERE id=?";
       var dropStatement = "DROP TABLE Customer";
 
       var i, x, items, json, stores = [//
-      [this.persistStore('CustomerStore'), 'CustomerStore', 'Genesis.model.CustomerJSON'], //
-      [this.persistStore('LicenseStore'), 'LicenseStore', 'Genesis.model.frontend.LicenseKeyJSON'] //
+      [this.persistStore('CustomerStore'), 'CustomerStore', 'Customer' + (Genesis.fn.isNative() ? 'JSON' : 'DB')], //
+      [this.persistStore('LicenseStore'), 'LicenseStore', 'frontend.LicenseKey' + (Genesis.fn.isNative() ? 'JSON' : 'DB')] //
       //[this.persistStore('BadgeStore'), 'BadgeStore']];
       //, [this.persistStore('PrizeStore'), 'PrizeStore']];
       ];
@@ -73058,13 +74622,14 @@ Ext.define('Genesis.controller.ControllerBase',
       //
       // Customer Store
       //
-      if (!storeName || (storeName == stores[0][1]))
+      if (Genesis.fn.isNative() && (!storeName || (storeName == stores[0][1])))
       {
+         var createStatement = "CREATE TABLE IF NOT EXISTS Customer (id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT)";
+         var insertStatement = "INSERT INTO Customer (json) VALUES (?)";
          var db = Genesis.db.openDatabase();
-         var cstore = Ext.StoreMgr.get('CustomerStore');
-
          try
          {
+            var cstore = Ext.StoreMgr.get('CustomerStore');
             db.transaction(function(tx)
             {
                //
@@ -73135,10 +74700,10 @@ Ext.define('Genesis.controller.ControllerBase',
                {
                   json = items[x].getData(true);
 
-                  stores[i][0].add(Ext.create(stores[i][2],
+                  stores[i][0].add(Ext.create('Genesis.model.' + stores[i][2], (Genesis.fn.isNative()) ?
                   {
                      json : json
-                  }));
+                  } : json));
                }
                console.debug("persistSyncStores  --- Found " + items.length + " records in [" + stores[i][1] + "] ...");
             }
@@ -75597,6 +77162,27 @@ Ext.define('Genesis.model.frontend.LicenseKey',
             read : 'GET'
          });
          this.getProxy().setUrl(serverHost + '/api/v1/devices/get_encryption_key');
+      }
+   }
+});
+
+Ext.define('Genesis.model.frontend.LicenseKeyDB',
+{
+   extend :  Genesis.model.frontend.LicenseKey ,
+   id : 'LicenseKeyDB',
+   config :
+   {
+      proxy :
+      {
+         type : 'browserdb',
+         dbName : 'KickBak',
+         objectStoreName : 'LicenseKey',
+         //dbVersion : '1.0',
+         writer :
+         {
+            type : 'json',
+            writeAllFields : false
+         }
       }
    }
 });
@@ -79584,8 +81170,7 @@ Ext.define('Genesis.model.frontend.Receipt',
       {
          name : 'subtotal',
          type : 'float'
-      },
-      'itemsPurchased',
+      }, 'itemsPurchased',
       {
          name : 'price',
          type : 'float'
@@ -79595,7 +81180,19 @@ Ext.define('Genesis.model.frontend.Receipt',
       {
          model : 'Genesis.model.frontend.ReceiptItem',
          name : 'items'
-      }]
+      }],
+      proxy :
+      {
+         type : 'browserdb',
+         dbName : 'KickBak',
+         objectStoreName : 'Receipt',
+         //dbVersion : '1.0',
+         writer :
+         {
+            type : 'json',
+            writeAllFields : false
+         }
+      }
    },
    inheritableStatics :
    {
@@ -79830,8 +81427,8 @@ Ext.define('Genesis.controller.server.Receipts',
       },
       listeners :
       {
-         'insertReceipts' : 'onInsertReceipts',
-         'resetReceipts' : 'onResetReceipts'
+         'resetEarnedReceipts' : 'onResetEarnedReceipts',
+         'addEarnedReceipt' : 'onAddEarnedReceipt'
       }
    },
    retrieveReceiptsMsg : 'Retrieving Receipts from POS ...',
@@ -79882,8 +81479,7 @@ Ext.define('Genesis.controller.server.Receipts',
 
       me.initEvent();
       me.initStore();
-
-      me.initWorker(Ext.StoreMgr.get('EarnedReceiptStore'));
+      me.initWorker();
    },
    initEvent : function()
    {
@@ -79940,102 +81536,19 @@ Ext.define('Genesis.controller.server.Receipts',
    },
    initWorker : function(estore)
    {
-      var me = this, worker = me.worker = new Worker('worker/receipt.min.js');
-      //worker.postMessage = worker.webkitPostMessage || worker.postMessage;
-      worker.onmessage = function(e)
+      var me = this;
+      Ext.StoreMgr.get('EarnedReceiptStore').load(
       {
-         var result = eval('[' + e.data + ']')[0];
-         switch (result['cmd'])
+         callback : function(records, operation, success)
          {
-            case 'createReceipts':
+            if (operation.wasSuccessful())
             {
-               console.debug("Successfully created/retrieved KickBak-Receipt Table");
-               break;
-            }
-            case 'uploadReceipts':
-            {
-               var items = [], ids = [], item;
-
-               result = result['result'];
-               for (var i = 0; i < result.length; i++)
-               {
-                  //console.debug("uploadReceipts  --- item=" + result[i]['receipt']);
-                  item = Ext.decode(result[i]['receipt']);
-                  //console.debug("uploadReceipts  --- item[txnId]=" + item['txnId'] + ", item[items]=" + Ext.encode(item['items']));
-                  for (var j = 0; j < item['items'].length; j++)
-                  {
-                     delete item['items']['receipt_id'];
-                  }
-                  items.push(
-                  {
-                     txnId : item['txnId'],
-                     items : item['items']
-                  });
-                  ids.push(item['id']);
-               }
-               if (items.length > 0)
-               {
-                  me.uploadReceipts(items, ids);
-               }
-               console.debug("uploadReceipts  --- Found(unsync) " + items.length + " Receipts to Upload to Server");
-               break;
-            }
-            case 'insertReceipts' :
-            {
-               console.debug("insertReceipts --- Inserted(unsync) " + result['result'] + " Receipts into KickBak-Receipt DB ...");
-               break;
-            }
-            case 'updateReceipts':
-            {
-               console.debug("updateReceipts --- Updated(synced) " + result['result'] + " Receipts in the KickBak-Receipt DB");
-               break;
-            }
-            case 'restoreReceipts' :
-            {
-               for (var i = 0; i < result['result'].length; i++)
-               {
-                  result['result'][i] = eval('[' + result['result'][i]['receipt'] + ']')[0];
-               }
-               estore.setData(result['result']);
-               console.debug("restoreReceipt  --- Restored " + result['result'].length + " Receipts from the KickBak-Receipt DB");
+               console.debug("restoreReceipt  --- Restored " + records.length + " Receipts from the KickBak-Receipt DB");
                pos.initReceipt |= 0x01;
                me.onRetrieveReceipts();
-               break;
             }
-            case 'resetReceipts':
-            {
-               console.debug("resetReceipts --- Successfully drop KickBak-Receipt Table");
-               //
-               // Restart because we can't continue without Console Setup data
-               //
-               if (Genesis.fn.isNative())
-               {
-                  navigator.app.exitApp();
-               }
-               else
-               {
-                  window.location.reload();
-               }
-               break;
-            }
-            case 'nfc':
-            {
-               break;
-            }
-            default:
-               break;
          }
-      };
-
-      worker.postMessage(
-      {
-         "cmd" : 'createReceipts'
       });
-      worker.postMessage(
-      {
-         "cmd" : 'restoreReceipts'
-      });
-
       console.debug("Server Receipts : initWorker");
    },
    initStore : function()
@@ -80126,6 +81639,7 @@ Ext.define('Genesis.controller.server.Receipts',
       Ext.regStore('EarnedReceiptStore',
       {
          model : 'Genesis.model.frontend.Receipt',
+         autoSync : true,
          autoLoad : false,
          //
          // Receipts sorted based on time
@@ -80333,7 +81847,13 @@ Ext.define('Genesis.controller.server.Receipts',
    // --------------------------------------------------------------------------
    // Functions
    // --------------------------------------------------------------------------
-   uploadReceipts : function(receipts, ids)
+   updateReceipts : function(receipts)
+   {
+      var estore = Ext.StoreMgr.get('EarnedReceiptStore');
+      estore.remove(receipts);
+      console.debug("updateReceipts --- Updated(synced) " + receipts.length + " Receipts in the KickBak-Receipt DB");
+   },
+   uploadReceipts : function(result, receipts, ids)
    {
       var me = this, proxy = Venue.getProxy(), db = Genesis.db.getLocalDB();
       var displayMode = db["displayMode"], enableReceiptUpload = db['enableReceiptUpload'], posEnabled = pos.isEnabled();
@@ -80354,13 +81874,9 @@ Ext.define('Genesis.controller.server.Receipts',
       //
       if (!posEnabled || (posEnabled && !enableReceiptUpload))
       {
-         me.worker.postMessage(
-         {
-            'cmd' : 'updateReceipts',
-            'ids' : ids
-         });
-
-         console.debug("Successfully DISCARDED " + receipts.length + " Receipt(s) sent to Server");
+         me.updateReceipts(result);
+         console.debug("Successfully DISCARDED " + receipts.length + " Receipt updated(s) to Server");
+         return;
       }
 
       params['data'] = me.self.encryptFromParams(params['data']);
@@ -80379,12 +81895,7 @@ Ext.define('Genesis.controller.server.Receipts',
             Ext.Viewport.setMasked(null);
             if (operation.wasSuccessful())
             {
-               me.worker.postMessage(
-               {
-                  'cmd' : 'updateReceipts',
-                  'ids' : ids
-               });
-
+               me.updateReceipts(result);
                console.debug("Successfully Uploaded " + receipts.length + " Receipt(s) to Server");
             }
             else
@@ -80413,7 +81924,7 @@ Ext.define('Genesis.controller.server.Receipts',
    },
    syncReceiptDB : function(duration)
    {
-      var me = this;
+      var me = this, estore = Ext.StoreMgr.get('EarnedReceiptStore');
 
       //
       // Wait for time to expire before Uploading Earned Receipts to KickBak server
@@ -80434,11 +81945,39 @@ Ext.define('Genesis.controller.server.Receipts',
                }
                //console.debug("syncReceiptDB - TimeStamp[" + Genesis.fn.convertDateFullTime(new Date(rec.getId()*1000)) + "]");
             }
-            me.worker.postMessage(
+
+            var startIndex, lastReceiptTime = (oldestReceipt == Number.MAX_VALUE) ? 0 : oldestReceipt;
+            if (( startIndex = estore.findBy(function(record, id)
             {
-               'cmd' : 'uploadReceipts',
-               'lastReceiptTime' : (oldestReceipt == Number.MAX_VALUE) ? 0 : oldestReceipt
-            });
+               return (id <= lastReceiptTime);
+            }, me)) >= 0)
+            {
+               var items = [], ids = [], item, result = estore.getRange();
+
+               for (var i = startIndex; i < result.length; i++)
+               {
+                  //console.debug("uploadReceipts  --- item=" + result[i]['receipt']);
+                  item = result[i].getData(true);
+                  //console.debug("uploadReceipts  --- item[txnId]=" + item['txnId'] + ", item[items]=" +
+                  // Ext.encode(item['items']));
+                  for (var j = 0; j < item['items'].length; j++)
+                  {
+                     delete item['items']['receipt_id'];
+                  }
+                  items.push(
+                  {
+                     txnId : item['txnId'],
+                     items : item['items']
+                  });
+                  ids.push(item['id']);
+               }
+               console.debug("syncReceiptsDB  --- Found(unsync) " + items.length + " Receipts to Upload to Server");
+
+               if (items.length > 0)
+               {
+                  me.uploadReceipts(result, items, ids);
+               }
+            }
          });
       }
 
@@ -80490,20 +82029,31 @@ Ext.define('Genesis.controller.server.Receipts',
       me.receiptCleanFn(newValue);
       me.batteryStatusFn();
    },
-   onInsertReceipts : function(receipts)
+   onAddEarnedReceipt : function(receipt)
    {
-      this.worker.postMessage(
-      {
-         "cmd" : 'insertReceipts',
-         "receipts" : receipts
-      });
+      var estore = Ext.StoreMgr.get('EarnedReceiptStore');
+      estore.add(receipt);
+
+      console.debug("addEarnedReceipt --- Successfully added KickBak-Receipt");
    },
-   onResetReceipts : function()
+   onResetEarnedtReceipts : function()
    {
-      this.worker.postMessage(
+      var estore = Ext.StoreMgr.get('EarnedReceiptStore');
+      estore.removeAll();
+
+      console.debug("resetEarnedReceipts --- Successfully drop KickBak-Receipt Table");
+      //
+      // Restart because we can't continue without Console Setup data
+      //
+      if (Genesis.fn.isNative())
       {
-         "cmd" : 'resetReceipts'
-      });
+         navigator.app.exitApp();
+      }
+      else
+      {
+         window.location.reload();
+      }
+
    },
    onRetrieveReceipts : function()
    {
@@ -81443,7 +82993,7 @@ Ext.define('Genesis.controller.server.Rewards',
                //
                if (posEnabled)
                {
-                  var x, receipts = [], receipt, rstore = Ext.StoreMgr.get('ReceiptStore'), estore = Ext.StoreMgr.get('EarnedReceiptStore');
+                  var x, receipts = [], receipt, rstore = Ext.StoreMgr.get('ReceiptStore');
 
                   for (var i = 0; i < me.receiptSelected.length; i++)
                   {
@@ -81460,9 +83010,7 @@ Ext.define('Genesis.controller.server.Rewards',
                   //
                   // Add to Earned store
                   //
-                  estore.add(me.receiptSelected);
-
-                  _application.getController('server' + '.Receipts').fireEvent('insertReceipts', receipts);
+                  me.getApplication().getController('server' + '.Receipts').fireEvent('addEarnedReceipt', me.receiptSelected);
                   //
                   // Refresh Store
                   //
@@ -82399,7 +83947,7 @@ Ext.define('Genesis.controller.server.Settings',
          {
             if (btn.toLowerCase() == 'confirm')
             {
-               _application.getController('server' + '.Receipts').fireEvent('resetReceipts');
+               _application.getController('server' + '.Receipts').fireEvent('resetEarnedReceipts');
             }
          }
       });
@@ -82852,8 +84400,8 @@ Ext.define('Genesis.controller.server.Viewport',
                      };
                      licenseKey['r' + venueId] = licenseKey['p' + venueId] = records[0].getId();
 
-                     me.persistSyncStores('LicenseStore');
                      Genesis.db.resetStorage();
+                     me.persistSyncStores('LicenseStore');
                      me.initializeConsole(callback);
                   }
                   else if (!records[0])

@@ -864,8 +864,8 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       var i, stores =
       {
-         'CustomerStore' : [Ext.StoreMgr.get('Persistent' + 'CustomerStore'), 'CustomerStore', 'CustomerJSON'],
-         'LicenseStore' : [Ext.StoreMgr.get('Persistent' + 'LicenseStore'), 'LicenseStore', 'frontend.LicenseKeyJSON']
+         'CustomerStore' : [Ext.StoreMgr.get('Persistent' + 'CustomerStore'), 'CustomerStore', 'Customer' + (Genesis.fn.isNative() ? 'JSON' : 'DB')],
+         'LicenseStore' : [Ext.StoreMgr.get('Persistent' + 'LicenseStore'), 'LicenseStore', 'frontend.LicenseKey' + (Genesis.fn.isNative() ? 'JSON' : 'DB')]
          //'BadgeStore' : [Ext.StoreMgr.get('Persistent' + 'BadgeStore'), 'BadgeStore', 'BadgeJSON']
          //,'PrizeStore' : [Ext.StoreMgr.get('Persistent' + 'PrizeStore'), 'PrizeStore',
          // 'CustomerRewardJSON']
@@ -895,9 +895,6 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    persistLoadStores : function(callback)
    {
-      var createStatement = "CREATE TABLE IF NOT EXISTS Customer (id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT)";
-      var selectAllStatement = "SELECT * FROM Customer";
-
       var me = this, store, i, x, j, flag = 0x11000, viewport = me.getViewPortCntlr(), stores = [//
       [this.persistStore('CustomerStore'), 'CustomerStore', 0x00001], //
       [this.persistStore('LicenseStore'), 'LicenseStore', 0x00100] //
@@ -929,8 +926,7 @@ Ext.define('Genesis.controller.ControllerBase',
                      store.removeAll();
                      for ( x = 0; x < results.length; x++)
                      {
-                        var data = results[x].get('json');
-                        items.push(data);
+                        items.push((Genesis.fn.isNative()) ? results[x].get('json') : results[x].getData(true));
                      }
                      store.setData(items);
                      console.debug("persistLoadStores  --- Restored " + results.length + " records to " + stores[i][1]);
@@ -943,8 +939,10 @@ Ext.define('Genesis.controller.ControllerBase',
                   //
                   // CustomerStore
                   //
-                  if (stores[i][1] == 'CustomerStore')
+                  if ((results.length > 0) && Genesis.fn.isNative() && (stores[i][1] == 'CustomerStore'))
                   {
+                     var createStatement = "CREATE TABLE IF NOT EXISTS Customer (id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT)";
+                     var selectAllStatement = "SELECT * FROM Customer";
                      var db = Genesis.db.openDatabase();
                      try
                      {
@@ -989,6 +987,10 @@ Ext.define('Genesis.controller.ControllerBase',
                      {
                      }
                   }
+                  else if (!Genesis.fn.isNative() && (flag == 0x11101))
+                  {
+                     callback();
+                  }
 
                   if (flag == 0x11111)
                   {
@@ -1017,15 +1019,13 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    persistSyncStores : function(storeName, cleanOnly)
    {
-      var createStatement = "CREATE TABLE IF NOT EXISTS Customer (id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT)";
-      var insertStatement = "INSERT INTO Customer (json) VALUES (?)";
       //var updateStatement = "UPDATE Customer SET json = ? WHERE id = ?";
       //var deleteStatement = "DELETE FROM Customer WHERE id=?";
       var dropStatement = "DROP TABLE Customer";
 
       var i, x, items, json, stores = [//
-      [this.persistStore('CustomerStore'), 'CustomerStore', 'Genesis.model.CustomerJSON'], //
-      [this.persistStore('LicenseStore'), 'LicenseStore', 'Genesis.model.frontend.LicenseKeyJSON'] //
+      [this.persistStore('CustomerStore'), 'CustomerStore', 'Customer' + (Genesis.fn.isNative() ? 'JSON' : 'DB')], //
+      [this.persistStore('LicenseStore'), 'LicenseStore', 'frontend.LicenseKey' + (Genesis.fn.isNative() ? 'JSON' : 'DB')] //
       //[this.persistStore('BadgeStore'), 'BadgeStore']];
       //, [this.persistStore('PrizeStore'), 'PrizeStore']];
       ];
@@ -1034,13 +1034,14 @@ Ext.define('Genesis.controller.ControllerBase',
       //
       // Customer Store
       //
-      if (!storeName || (storeName == stores[0][1]))
+      if (Genesis.fn.isNative() && (!storeName || (storeName == stores[0][1])))
       {
+         var createStatement = "CREATE TABLE IF NOT EXISTS Customer (id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT)";
+         var insertStatement = "INSERT INTO Customer (json) VALUES (?)";
          var db = Genesis.db.openDatabase();
-         var cstore = Ext.StoreMgr.get('CustomerStore');
-
          try
          {
+            var cstore = Ext.StoreMgr.get('CustomerStore');
             db.transaction(function(tx)
             {
                //
@@ -1111,10 +1112,10 @@ Ext.define('Genesis.controller.ControllerBase',
                {
                   json = items[x].getData(true);
 
-                  stores[i][0].add(Ext.create(stores[i][2],
+                  stores[i][0].add(Ext.create('Genesis.model.' + stores[i][2], (Genesis.fn.isNative()) ?
                   {
                      json : json
-                  }));
+                  } : json));
                }
                console.debug("persistSyncStores  --- Found " + items.length + " records in [" + stores[i][1] + "] ...");
             }

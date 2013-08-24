@@ -211,8 +211,8 @@ Ext.define('Genesis.controller.server.Receipts',
       },
       listeners :
       {
-         'insertReceipts' : 'onInsertReceipts',
-         'resetReceipts' : 'onResetReceipts'
+         'resetEarnedReceipts' : 'onResetEarnedReceipts',
+         'addEarnedReceipt' : 'onAddEarnedReceipt'
       }
    },
    retrieveReceiptsMsg : 'Retrieving Receipts from POS ...',
@@ -263,8 +263,7 @@ Ext.define('Genesis.controller.server.Receipts',
 
       me.initEvent();
       me.initStore();
-
-      me.initWorker(Ext.StoreMgr.get('EarnedReceiptStore'));
+      me.initWorker();
    },
    initEvent : function()
    {
@@ -321,102 +320,19 @@ Ext.define('Genesis.controller.server.Receipts',
    },
    initWorker : function(estore)
    {
-      var me = this, worker = me.worker = new Worker('worker/receipt.min.js');
-      //worker.postMessage = worker.webkitPostMessage || worker.postMessage;
-      worker.onmessage = function(e)
+      var me = this;
+      Ext.StoreMgr.get('EarnedReceiptStore').load(
       {
-         var result = eval('[' + e.data + ']')[0];
-         switch (result['cmd'])
+         callback : function(records, operation, success)
          {
-            case 'createReceipts':
+            if (operation.wasSuccessful())
             {
-               console.debug("Successfully created/retrieved KickBak-Receipt Table");
-               break;
-            }
-            case 'uploadReceipts':
-            {
-               var items = [], ids = [], item;
-
-               result = result['result'];
-               for (var i = 0; i < result.length; i++)
-               {
-                  //console.debug("uploadReceipts  --- item=" + result[i]['receipt']);
-                  item = Ext.decode(result[i]['receipt']);
-                  //console.debug("uploadReceipts  --- item[txnId]=" + item['txnId'] + ", item[items]=" + Ext.encode(item['items']));
-                  for (var j = 0; j < item['items'].length; j++)
-                  {
-                     delete item['items']['receipt_id'];
-                  }
-                  items.push(
-                  {
-                     txnId : item['txnId'],
-                     items : item['items']
-                  });
-                  ids.push(item['id']);
-               }
-               if (items.length > 0)
-               {
-                  me.uploadReceipts(items, ids);
-               }
-               console.debug("uploadReceipts  --- Found(unsync) " + items.length + " Receipts to Upload to Server");
-               break;
-            }
-            case 'insertReceipts' :
-            {
-               console.debug("insertReceipts --- Inserted(unsync) " + result['result'] + " Receipts into KickBak-Receipt DB ...");
-               break;
-            }
-            case 'updateReceipts':
-            {
-               console.debug("updateReceipts --- Updated(synced) " + result['result'] + " Receipts in the KickBak-Receipt DB");
-               break;
-            }
-            case 'restoreReceipts' :
-            {
-               for (var i = 0; i < result['result'].length; i++)
-               {
-                  result['result'][i] = eval('[' + result['result'][i]['receipt'] + ']')[0];
-               }
-               estore.setData(result['result']);
-               console.debug("restoreReceipt  --- Restored " + result['result'].length + " Receipts from the KickBak-Receipt DB");
+               console.debug("restoreReceipt  --- Restored " + records.length + " Receipts from the KickBak-Receipt DB");
                pos.initReceipt |= 0x01;
                me.onRetrieveReceipts();
-               break;
             }
-            case 'resetReceipts':
-            {
-               console.debug("resetReceipts --- Successfully drop KickBak-Receipt Table");
-               //
-               // Restart because we can't continue without Console Setup data
-               //
-               if (Genesis.fn.isNative())
-               {
-                  navigator.app.exitApp();
-               }
-               else
-               {
-                  window.location.reload();
-               }
-               break;
-            }
-            case 'nfc':
-            {
-               break;
-            }
-            default:
-               break;
          }
-      };
-
-      worker.postMessage(
-      {
-         "cmd" : 'createReceipts'
       });
-      worker.postMessage(
-      {
-         "cmd" : 'restoreReceipts'
-      });
-
       console.debug("Server Receipts : initWorker");
    },
    initStore : function()
@@ -507,6 +423,7 @@ Ext.define('Genesis.controller.server.Receipts',
       Ext.regStore('EarnedReceiptStore',
       {
          model : 'Genesis.model.frontend.Receipt',
+         autoSync : true,
          autoLoad : false,
          //
          // Receipts sorted based on time
@@ -714,7 +631,13 @@ Ext.define('Genesis.controller.server.Receipts',
    // --------------------------------------------------------------------------
    // Functions
    // --------------------------------------------------------------------------
-   uploadReceipts : function(receipts, ids)
+   updateReceipts : function(receipts)
+   {
+      var estore = Ext.StoreMgr.get('EarnedReceiptStore');
+      estore.remove(receipts);
+      console.debug("updateReceipts --- Updated(synced) " + receipts.length + " Receipts in the KickBak-Receipt DB");
+   },
+   uploadReceipts : function(result, receipts, ids)
    {
       var me = this, proxy = Venue.getProxy(), db = Genesis.db.getLocalDB();
       var displayMode = db["displayMode"], enableReceiptUpload = db['enableReceiptUpload'], posEnabled = pos.isEnabled();
@@ -735,13 +658,9 @@ Ext.define('Genesis.controller.server.Receipts',
       //
       if (!posEnabled || (posEnabled && !enableReceiptUpload))
       {
-         me.worker.postMessage(
-         {
-            'cmd' : 'updateReceipts',
-            'ids' : ids
-         });
-
-         console.debug("Successfully DISCARDED " + receipts.length + " Receipt(s) sent to Server");
+         me.updateReceipts(result);
+         console.debug("Successfully DISCARDED " + receipts.length + " Receipt updated(s) to Server");
+         return;
       }
 
       params['data'] = me.self.encryptFromParams(params['data']);
@@ -760,12 +679,7 @@ Ext.define('Genesis.controller.server.Receipts',
             Ext.Viewport.setMasked(null);
             if (operation.wasSuccessful())
             {
-               me.worker.postMessage(
-               {
-                  'cmd' : 'updateReceipts',
-                  'ids' : ids
-               });
-
+               me.updateReceipts(result);
                console.debug("Successfully Uploaded " + receipts.length + " Receipt(s) to Server");
             }
             else
@@ -794,7 +708,7 @@ Ext.define('Genesis.controller.server.Receipts',
    },
    syncReceiptDB : function(duration)
    {
-      var me = this;
+      var me = this, estore = Ext.StoreMgr.get('EarnedReceiptStore');
 
       //
       // Wait for time to expire before Uploading Earned Receipts to KickBak server
@@ -815,11 +729,39 @@ Ext.define('Genesis.controller.server.Receipts',
                }
                //console.debug("syncReceiptDB - TimeStamp[" + Genesis.fn.convertDateFullTime(new Date(rec.getId()*1000)) + "]");
             }
-            me.worker.postMessage(
+
+            var startIndex, lastReceiptTime = (oldestReceipt == Number.MAX_VALUE) ? 0 : oldestReceipt;
+            if (( startIndex = estore.findBy(function(record, id)
             {
-               'cmd' : 'uploadReceipts',
-               'lastReceiptTime' : (oldestReceipt == Number.MAX_VALUE) ? 0 : oldestReceipt
-            });
+               return (id <= lastReceiptTime);
+            }, me)) >= 0)
+            {
+               var items = [], ids = [], item, result = estore.getRange();
+
+               for (var i = startIndex; i < result.length; i++)
+               {
+                  //console.debug("uploadReceipts  --- item=" + result[i]['receipt']);
+                  item = result[i].getData(true);
+                  //console.debug("uploadReceipts  --- item[txnId]=" + item['txnId'] + ", item[items]=" +
+                  // Ext.encode(item['items']));
+                  for (var j = 0; j < item['items'].length; j++)
+                  {
+                     delete item['items']['receipt_id'];
+                  }
+                  items.push(
+                  {
+                     txnId : item['txnId'],
+                     items : item['items']
+                  });
+                  ids.push(item['id']);
+               }
+               console.debug("syncReceiptsDB  --- Found(unsync) " + items.length + " Receipts to Upload to Server");
+
+               if (items.length > 0)
+               {
+                  me.uploadReceipts(result, items, ids);
+               }
+            }
          });
       }
 
@@ -871,20 +813,31 @@ Ext.define('Genesis.controller.server.Receipts',
       me.receiptCleanFn(newValue);
       me.batteryStatusFn();
    },
-   onInsertReceipts : function(receipts)
+   onAddEarnedReceipt : function(receipt)
    {
-      this.worker.postMessage(
-      {
-         "cmd" : 'insertReceipts',
-         "receipts" : receipts
-      });
+      var estore = Ext.StoreMgr.get('EarnedReceiptStore');
+      estore.add(receipt);
+
+      console.debug("addEarnedReceipt --- Successfully added KickBak-Receipt");
    },
-   onResetReceipts : function()
+   onResetEarnedtReceipts : function()
    {
-      this.worker.postMessage(
+      var estore = Ext.StoreMgr.get('EarnedReceiptStore');
+      estore.removeAll();
+
+      console.debug("resetEarnedReceipts --- Successfully drop KickBak-Receipt Table");
+      //
+      // Restart because we can't continue without Console Setup data
+      //
+      if (Genesis.fn.isNative())
       {
-         "cmd" : 'resetReceipts'
-      });
+         navigator.app.exitApp();
+      }
+      else
+      {
+         window.location.reload();
+      }
+
    },
    onRetrieveReceipts : function()
    {

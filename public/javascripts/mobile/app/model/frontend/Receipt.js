@@ -23,8 +23,7 @@ Ext.define('Genesis.model.frontend.Receipt',
       {
          name : 'subtotal',
          type : 'float'
-      },
-      'itemsPurchased',
+      }, 'itemsPurchased',
       {
          name : 'price',
          type : 'float'
@@ -34,7 +33,19 @@ Ext.define('Genesis.model.frontend.Receipt',
       {
          model : 'Genesis.model.frontend.ReceiptItem',
          name : 'items'
-      }]
+      }],
+      proxy :
+      {
+         type : 'browserdb',
+         dbName : 'KickBak',
+         objectStoreName : 'Receipt',
+         //dbVersion : '1.0',
+         writer :
+         {
+            type : 'json',
+            writeAllFields : false
+         }
+      }
    },
    inheritableStatics :
    {

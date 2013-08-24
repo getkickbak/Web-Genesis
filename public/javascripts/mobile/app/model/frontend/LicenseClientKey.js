@@ -61,3 +61,24 @@ Ext.define('Genesis.model.frontend.LicenseKey',
       }
    }
 });
+
+Ext.define('Genesis.model.frontend.LicenseKeyDB',
+{
+   extend : 'Genesis.model.frontend.LicenseKey',
+   id : 'LicenseKeyDB',
+   config :
+   {
+      proxy :
+      {
+         type : 'browserdb',
+         dbName : 'KickBak',
+         objectStoreName : 'LicenseKey',
+         //dbVersion : '1.0',
+         writer :
+         {
+            type : 'json',
+            writeAllFields : false
+         }
+      }
+   }
+});

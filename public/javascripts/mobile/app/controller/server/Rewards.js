@@ -443,7 +443,7 @@ Ext.define('Genesis.controller.server.Rewards',
                //
                if (posEnabled)
                {
-                  var x, receipts = [], receipt, rstore = Ext.StoreMgr.get('ReceiptStore'), estore = Ext.StoreMgr.get('EarnedReceiptStore');
+                  var x, receipts = [], receipt, rstore = Ext.StoreMgr.get('ReceiptStore');
 
                   for (var i = 0; i < me.receiptSelected.length; i++)
                   {
@@ -460,9 +460,7 @@ Ext.define('Genesis.controller.server.Rewards',
                   //
                   // Add to Earned store
                   //
-                  estore.add(me.receiptSelected);
-
-                  _application.getController('server' + '.Receipts').fireEvent('insertReceipts', receipts);
+                  me.getApplication().getController('server' + '.Receipts').fireEvent('addEarnedReceipt', me.receiptSelected);
                   //
                   // Refresh Store
                   //

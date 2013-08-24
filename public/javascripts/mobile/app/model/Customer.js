@@ -222,3 +222,24 @@ Ext.define('Genesis.model.Customer',
       }
    }
 });
+
+Ext.define('Genesis.model.CustomerDB',
+{
+   id : 'CustomerDB',
+   extend : 'Genesis.model.Customer',
+   config :
+   {
+      proxy :
+      {
+         type : 'browserdb',
+         dbName : 'KickBak',
+         objectStoreName : 'Customer',
+         //dbVersion : '1.0',
+         writer :
+         {
+            type : 'json',
+            writeAllFields : false
+         }
+      }
+   }
+});

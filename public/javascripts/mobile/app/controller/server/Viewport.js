@@ -234,8 +234,8 @@ Ext.define('Genesis.controller.server.Viewport',
                      };
                      licenseKey['r' + venueId] = licenseKey['p' + venueId] = records[0].getId();
 
-                     me.persistSyncStores('LicenseStore');
                      Genesis.db.resetStorage();
+                     me.persistSyncStores('LicenseStore');
                      me.initializeConsole(callback);
                   }
                   else if (!records[0])

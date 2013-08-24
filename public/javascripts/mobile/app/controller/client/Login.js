@@ -193,9 +193,10 @@ Ext.define('Genesis.controller.client.Login',
       var me = this, viewport = me.getViewPortCntlr();
 
       Genesis.db.resetStorage();
+      me.persistSyncStores(null, true);
+
       Ext.StoreMgr.get('CustomerStore').removeAll();
       Ext.StoreMgr.get('VenueStore').removeAll();
-      me.persistSyncStores(null, true);
       viewport.setLoggedIn(false);
       me._loggingIn = false;
 
