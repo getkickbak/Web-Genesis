@@ -73052,9 +73052,9 @@ Ext.define('Genesis.data.proxy.IndexedDB',
       {
          var me = this, transTypes =
          {
-            'rw' : IDBTransaction.READ_WRITE,
-            'r' : IDBTransaction.READ_ONLY,
-            'vc' : IDBTransaction.VERSION_CHANGE
+            'rw' :"readwrite",
+            'r' : "readonly",
+            'vc' : "versionchange"
          }, transaction = me.getDb().transaction([me.getObjectStoreName()], type ? transTypes[type] : undefined), objectStore = transaction.objectStore(me.getObjectStoreName());
       }
       catch(e)
