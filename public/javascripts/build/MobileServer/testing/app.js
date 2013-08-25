@@ -84329,7 +84329,6 @@ window.addEventListener('message', function(e)
          }
          else
          {
-            Genesis.db.setLocalDBAttrib('uuid', _data['key']);
             viewport.licenseKeyAckFn(_data['key']);
          }
          break;
@@ -84449,6 +84448,7 @@ Ext.define('Genesis.controller.server.Viewport',
                   {
                      lstore.getProxy()._errorCallback = Ext.bind(me.initNotification, me, [me.licenseKeyInvalidMsg]);
                   }
+                  Genesis.db.setLocalDBAttrib('uuid', uuid);
                }
             });
          }
