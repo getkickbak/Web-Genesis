@@ -919,92 +919,104 @@ Ext.define('Genesis.controller.ControllerBase',
             {
                callback : Ext.bind(function(results, operation, success, _flag, store)
                {
-                  flag |= _flag;
-                  var items = [];
-                  if (operation.wasSuccessful())
-                  {
-                     store.removeAll();
-                     for ( x = 0; x < results.length; x++)
-                     {
-                        items.push((Genesis.fn.isNative()) ? results[x].get('json') : results[x].getData(true));
-                     }
-                     store.setData(items);
-                     console.debug("persistLoadStores  --- Restored " + results.length + " records to " + stores[i][1]);
-                  }
-                  else
-                  {
-                     console.debug("Error Restoring " + stores[i][1] + " ...");
-                  }
+                  var me = this, items = [];
 
+                  flag |= _flag;
                   //
                   // CustomerStore
                   //
-                  if (Genesis.fn.isNative() && (stores[i][1] == 'CustomerStore'))
+                  if (Genesis.fn.isNative())
                   {
-                     if (results.length > 0)
+                     if (operation.wasSuccessful())
                      {
-                        var createStatement = "CREATE TABLE IF NOT EXISTS Customer (id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT)";
-                        var selectAllStatement = "SELECT * FROM Customer";
-                        var db = Genesis.db.openDatabase();
-                        try
+                        store.removeAll();
+                        for ( x = 0; x < results.length; x++)
                         {
-                           db.transaction(function(tx)
-                           {
-                              //
-                              // Create Table
-                              //
-                              tx.executeSql(createStatement, [], function()
-                              {
-                                 console.debug("Successfully created/retrieved KickBak-Customers Table");
-                              }, function(tx, error)
-                              {
-                                 console.debug("Failed to create KickBak-Customers Table : " + error.message);
-                              });
-                              //
-                              // Retrieve Customers
-                              //
-                              tx.executeSql(selectAllStatement, [], function(tx, result)
-                              {
-                                 var items = [];
-                                 var dataset = result.rows;
-                                 for ( j = 0, item = null; j < dataset.length; j++)
-                                 {
-                                    item = dataset.item(j);
-                                    //console.debug("JSON - " + item['json'])
-                                    items.push(Ext.decode(item['json']));
-                                 }
-                                 Ext.StoreMgr.get('CustomerStore').add(items);
-                                 if ((flag |= 0x0010) == 0x11111)
-                                 {
-                                    callback();
-                                 }
-                                 console.debug("persistLoadStores  --- Restored " + items.length + " records from SQL Database, flag=" + flag);
-                              }, function(tx, error)
-                              {
-                                 console.debug("No Customer Table found in SQL Database : " + error.message);
-                              });
-                           });
+                           items.push((Genesis.fn.isNative()) ? results[x].get('json') : results[x].getData(true));
                         }
-                        catch(e)
-                        {
-                        }
+                        store.setData(items);
+                        console.debug("persistLoadStores  --- Restored " + results.length + " records to " + store.getStoreId());
                      }
                      else
                      {
-                        if ((flag |= 0x0010) == 0x11111)
+                        console.debug("Error Restoring " + store.getStoreId() + " ...");
+                     }
+
+                     if (store.getStoreId() == 'CustomerStore')
+                     {
+                        if (results.length > 0)
                         {
-                           callback();
+                           var createStatement = "CREATE TABLE IF NOT EXISTS Customer (id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT)";
+                           var selectAllStatement = "SELECT * FROM Customer";
+                           var db = Genesis.db.openDatabase();
+                           try
+                           {
+                              db.transaction(function(tx)
+                              {
+                                 //
+                                 // Create Table
+                                 //
+                                 tx.executeSql(createStatement, [], function()
+                                 {
+                                    console.debug("Successfully created/retrieved KickBak-Customers Table");
+                                 }, function(tx, error)
+                                 {
+                                    console.debug("Failed to create KickBak-Customers Table : " + error.message);
+                                 });
+                                 //
+                                 // Retrieve Customers
+                                 //
+                                 tx.executeSql(selectAllStatement, [], function(tx, result)
+                                 {
+                                    var items = [];
+                                    var dataset = result.rows;
+                                    for ( j = 0, item = null; j < dataset.length; j++)
+                                    {
+                                       item = dataset.item(j);
+                                       //console.debug("JSON - " + item['json'])
+                                       items.push(Ext.decode(item['json']));
+                                    }
+                                    Ext.StoreMgr.get('CustomerStore').add(items);
+                                    if ((flag |= 0x0010) == 0x11111)
+                                    {
+                                       callback();
+                                    }
+                                    console.debug("persistLoadStores  --- Restored " + items.length + " records from SQL Database, flag=" + flag);
+                                 }, function(tx, error)
+                                 {
+                                    console.debug("No Customer Table found in SQL Database : " + error.message);
+                                 });
+                              });
+                           }
+                           catch(e)
+                           {
+                           }
+                        }
+                        else
+                        {
+                           flag |= 0x0010;
                         }
                      }
-                  }
-                  else if (!Genesis.fn.isNative() && (flag == 0x11101))
-                  {
-                     callback();
-                  }
 
-                  if (flag == 0x11111)
+                     if (flag == 0x11111)
+                     {
+                        callback();
+                     }
+                  }
+                  else
                   {
-                     callback();
+                     if (operation.wasSuccessful())
+                     {
+                        console.debug("persistLoadStores  --- Restored " + results.length + " records to " + store.getStoreId());
+                     }
+                     else
+                     {
+                        console.debug("Error Restoring " + store.getStoreId() + " ...");
+                     }
+                     if (flag == 0x11101)
+                     {
+                        callback();
+                     }
                   }
                }, me, [stores[i][2], _store], true)
             });
