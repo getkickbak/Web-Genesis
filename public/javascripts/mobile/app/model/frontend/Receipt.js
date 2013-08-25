@@ -37,7 +37,7 @@ Ext.define('Genesis.model.frontend.Receipt',
       proxy :
       {
          type : 'browserdb',
-         dbName : 'KickBak',
+         dbName : 'KickBakReceipt',
          objectStoreName : 'Receipt',
          //dbVersion : '1.0',
          writer :
