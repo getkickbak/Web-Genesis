@@ -1030,7 +1030,6 @@ Genesis.fn =
           debug("Error Calling callback on JS file["+src+"] index["+i+"]\nStack: ===========\n"+e.stack);
           }
           */
-         delete cbList[1];
       }
       else
       {
@@ -1067,7 +1066,6 @@ Genesis.fn =
           console.debug("Error Calling callback on CSS file[" + href + "] index[" + i + "]\nStack: ===========\n" + e.stack);
           }
           */
-         delete cbList[1];
       }
       else
       {
