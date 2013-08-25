@@ -97,7 +97,7 @@ Ext.Loader.setPath(
             name : 'Genesis',
             views : ['Document', 'server.Rewards', 'server.Redemptions', 'server.MerchantAccount', 'server.MainPage', //
             'widgets.server.RedeemItemDetail', 'server.SettingsPage', 'server.TagCreatePage', 'Viewport'],
-            controllers : ['server.Pos', 'server.Viewport', 'server.MainPage', 'server.Challenges', 'server.Receipts', 'server.Rewards',
+            controllers : ['server.Receipts', 'server.Pos', 'server.Viewport', 'server.MainPage', 'server.Challenges', 'server.Rewards',
             // //
             'server.Redemptions', 'server.Merchants', 'server.Settings', 'server.Prizes'],
             launch : function()

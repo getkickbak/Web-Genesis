@@ -74498,7 +74498,7 @@ Ext.define('Genesis.controller.ControllerBase',
 
       for ( i = 0; i < stores.length; i++)
       {
-         _store = stores[i];
+         _store = stores[i][0];
          if (!_store)
          {
             flag |= stores[i][2];
@@ -74509,7 +74509,7 @@ Ext.define('Genesis.controller.ControllerBase',
          {
             //var ids = stores[i][0].getProxy().getIds();
             //console.debug("Ids found are [" + ids + "]");
-            stores[i][0].load(
+            _store.load(
             {
                callback : Ext.bind(function(results, operation, success, _flag, store)
                {
@@ -86276,7 +86276,7 @@ will need to resolve manually.
             name : 'Genesis',
             views : ['Document', 'server.Rewards', 'server.Redemptions', 'server.MerchantAccount', 'server.MainPage', //
             'widgets.server.RedeemItemDetail', 'server.SettingsPage', 'server.TagCreatePage', 'Viewport'],
-            controllers : ['server.Pos', 'server.Viewport', 'server.MainPage', 'server.Challenges', 'server.Receipts', 'server.Rewards',
+            controllers : ['server.Receipts', 'server.Pos', 'server.Viewport', 'server.MainPage', 'server.Challenges', 'server.Rewards',
             // //
             'server.Redemptions', 'server.Merchants', 'server.Settings', 'server.Prizes'],
             launch : function()
