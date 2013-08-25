@@ -864,42 +864,44 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       var i, stores =
       {
-         'CustomerStore' : [Ext.StoreMgr.get('Persistent' + 'CustomerStore'), 'CustomerStore', 'Customer' + (Genesis.fn.isNative() ? 'JSON' : 'DB')],
-         'LicenseStore' : [Ext.StoreMgr.get('Persistent' + 'LicenseStore'), 'LicenseStore', 'frontend.LicenseKey' + (Genesis.fn.isNative() ? 'JSON' : 'DB')]
-         //'BadgeStore' : [Ext.StoreMgr.get('Persistent' + 'BadgeStore'), 'BadgeStore', 'BadgeJSON']
-         //,'PrizeStore' : [Ext.StoreMgr.get('Persistent' + 'PrizeStore'), 'PrizeStore',
+         'CustomerStore' : [false, Ext.StoreMgr.get('Persistent' + 'CustomerStore'), 'CustomerStore', 'Customer' + (Genesis.fn.isNative() ? 'JSON' : 'DB')],
+         'LicenseStore' : [false, Ext.StoreMgr.get('Persistent' + 'LicenseStore'), 'LicenseStore', 'frontend.LicenseKey' + (Genesis.fn.isNative() ? 'JSON' : 'DB')],
+         'ReceiptStore' : [true, Ext.StoreMgr.get('ReceiptStore'), 'ReceiptStore', 'frontend.Receipt']
+         //'BadgeStore' : [false, Ext.StoreMgr.get('Persistent' + 'BadgeStore'), 'BadgeStore', 'BadgeJSON']
+         //,'PrizeStore' : [false, Ext.StoreMgr.get('Persistent' + 'PrizeStore'), 'PrizeStore',
          // 'CustomerRewardJSON']
       };
       console.debug("Looking for " + storeName);
       for (i in stores)
       {
-         if (!stores[i][0])
+         if (!stores[i][0] && !stores[i][1])
          {
-            Ext.regStore('Persistent' + stores[i][1],
+            Ext.regStore('Persistent' + stores[i][2],
             {
-               model : 'Genesis.model.' + stores[i][2],
+               model : 'Genesis.model.' + stores[i][3],
                syncRemovedRecords : true,
                autoLoad : false
             });
-            stores[i][0] = Ext.StoreMgr.get('Persistent' + stores[i][1]);
+            stores[i][1] = Ext.StoreMgr.get('Persistent' + stores[i][2]);
             //console.debug("Created [" + 'Persistent' + stores[i][1] + "]");
          }
-         else if (stores[i][0].getStoreId() == ('Persistent' + storeName))
+         else if (stores[i][1] && (stores[i][1].getStoreId() == ('Persistent' + storeName)))
          {
             //console.debug("Store[" + stores[i][0].getStoreId() + "] found!");
-            return stores[i][0];
+            return stores[i][1];
          }
       }
 
-      return stores[storeName][0];
+      return stores[storeName][1];
    },
    persistLoadStores : function(callback)
    {
-      var me = this, _store, i, x, j, flag = 0x11000, viewport = me.getViewPortCntlr(), stores = [//
-      [this.persistStore('CustomerStore'), 'CustomerStore', 0x00001], //
-      [this.persistStore('LicenseStore'), 'LicenseStore', 0x00100] //
-      //[this.persistStore('BadgeStore'), 'BadgeStore', 0x01000]];
-      //,[this.persistStore('PrizeStore'), 'PrizeStore', 0x10000]];
+      var me = this, _store, i, x, j, flag = 0x110000, viewport = me.getViewPortCntlr(), stores = [//
+      [this.persistStore('CustomerStore'), 'CustomerStore', 0x000001], //
+      [this.persistStore('LicenseStore'), 'LicenseStore', 0x000100] //
+      [this.persistStore('ReceiptStore'), 'ReceiptStore', 0x001000] //
+      //[this.persistStore('BadgeStore'), 'BadgeStore', 0x010000]];
+      //,[this.persistStore('PrizeStore'), 'PrizeStore', 0x100000]];
       ];
 
       callback = callback || Ext.emptyFn;
@@ -909,6 +911,7 @@ Ext.define('Genesis.controller.ControllerBase',
          _store = Ext.StoreMgr.get(stores[i][1]);
          if (!_store)
          {
+            flag |= stores[i][2];
             console.debug("Cannot find Store[" + stores[i][1] + "] to be restored!");
          }
          try
@@ -994,11 +997,11 @@ Ext.define('Genesis.controller.ControllerBase',
                         }
                         else
                         {
-                           flag |= 0x0010;
+                           flag |= 0x000010;
                         }
                      }
 
-                     if (flag == 0x11111)
+                     if (flag == 0x111111)
                      {
                         callback();
                      }
@@ -1013,7 +1016,7 @@ Ext.define('Genesis.controller.ControllerBase',
                      {
                         console.debug("Error Restoring " + store.getStoreId() + " ...");
                      }
-                     if (flag == 0x11101)
+                     if (flag == 0x111101)
                      {
                         callback();
                      }

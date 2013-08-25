@@ -71,7 +71,7 @@ Ext.define('Genesis.model.frontend.LicenseKeyDB',
       proxy :
       {
          type : 'browserdb',
-         dbName : 'KickBak',
+         dbName : 'KickBakLicenseKey',
          objectStoreName : 'LicenseKey',
          //dbVersion : '1.0',
          writer :

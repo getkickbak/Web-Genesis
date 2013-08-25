@@ -232,7 +232,7 @@ Ext.define('Genesis.model.CustomerDB',
       proxy :
       {
          type : 'browserdb',
-         dbName : 'KickBak',
+         dbName : 'KickBakCustomer',
          objectStoreName : 'Customer',
          //dbVersion : '1.0',
          writer :
