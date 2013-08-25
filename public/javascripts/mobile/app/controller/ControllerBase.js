@@ -908,11 +908,12 @@ Ext.define('Genesis.controller.ControllerBase',
 
       for ( i = 0; i < stores.length; i++)
       {
-         _store = Ext.StoreMgr.get(stores[i][1]);
+         _store = stores[i];
          if (!_store)
          {
             flag |= stores[i][2];
             console.debug("Cannot find Store[" + stores[i][1] + "] to be restored!");
+            continue;
          }
          try
          {
@@ -1050,7 +1051,8 @@ Ext.define('Genesis.controller.ControllerBase',
 
       var i, x, items, json, stores = [//
       [this.persistStore('CustomerStore'), 'CustomerStore', 'Customer' + (Genesis.fn.isNative() ? 'JSON' : 'DB')], //
-      [this.persistStore('LicenseStore'), 'LicenseStore', 'frontend.LicenseKey' + (Genesis.fn.isNative() ? 'JSON' : 'DB')] //
+      [this.persistStore('LicenseStore'), 'LicenseStore', 'frontend.LicenseKey' + (Genesis.fn.isNative() ? 'JSON' : 'DB')], //
+      [this.persistStore('ReceiptStore'), 'ReceiptStore', 'frontend.Receipt'] //
       //[this.persistStore('BadgeStore'), 'BadgeStore']];
       //, [this.persistStore('PrizeStore'), 'PrizeStore']];
       ];
@@ -1125,27 +1127,35 @@ Ext.define('Genesis.controller.ControllerBase',
       //
       for ( i = 1; i < stores.length; i++)
       {
-         if (!storeName || (stores[i][1] == storeName))
+         if (!stores[i][0])
          {
-            stores[i][0].removeAll();
-            stores[i][0].getProxy().clear();
-
-            if (!cleanOnly)
-            {
-               items = Ext.StoreMgr.get(stores[i][1]).getRange();
-               for ( x = 0; x < items.length; x++)
-               {
-                  json = items[x].getData(true);
-
-                  stores[i][0].add(Ext.create('Genesis.model.' + stores[i][2], (Genesis.fn.isNative()) ?
-                  {
-                     json : json
-                  } : json));
-               }
-               console.debug("persistSyncStores  --- Found " + items.length + " records in [" + stores[i][1] + "] ...");
-            }
-            stores[i][0].sync();
+            console.debug("Cannot find Store[" + stores[i][1] + "] to be restored!");
+            continue;
          }
+         if (Genesis.fn.isNative())
+         {
+            if (!storeName || (stores[i][1] == storeName))
+            {
+               stores[i][0].removeAll();
+               stores[i][0].getProxy().clear();
+
+               if (!cleanOnly)
+               {
+                  items = Ext.StoreMgr.get(stores[i][1]).getRange();
+                  for ( x = 0; x < items.length; x++)
+                  {
+                     json = items[x].getData(true);
+
+                     stores[i][0].add(Ext.create('Genesis.model.' + stores[i][2], (Genesis.fn.isNative()) ?
+                     {
+                        json : json
+                     } : json));
+                  }
+                  console.debug("persistSyncStores  --- Found " + items.length + " records in [" + stores[i][1] + "] ...");
+               }
+            }
+         }
+         stores[i][0].sync();
       }
    },
    // --------------------------------------------------------------------------
