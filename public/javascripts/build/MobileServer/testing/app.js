@@ -74488,7 +74488,7 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       var me = this, _store, i, x, j, flag = 0x110000, viewport = me.getViewPortCntlr(), stores = [//
       [this.persistStore('CustomerStore'), 'CustomerStore', 0x000001], //
-      [this.persistStore('LicenseStore'), 'LicenseStore', 0x000100] //
+      [this.persistStore('LicenseStore'), 'LicenseStore', 0x000100], //
       [this.persistStore('ReceiptStore'), 'ReceiptStore', 0x001000] //
       //[this.persistStore('BadgeStore'), 'BadgeStore', 0x010000]];
       //,[this.persistStore('PrizeStore'), 'PrizeStore', 0x100000]];
