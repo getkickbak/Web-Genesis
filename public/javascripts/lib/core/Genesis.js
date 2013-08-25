@@ -1014,7 +1014,10 @@ Genesis.fn =
           */
          for (; i < cbList[1].length; i++)
          {
-            cbList[1][i](!error);
+            Ext.defer(function()
+            {
+               cbList[1][i](!error)
+            }, 1);
          }
          /*
           }
@@ -1048,7 +1051,10 @@ Genesis.fn =
           */
          for (; i < cbList[1].length; i++)
          {
-            cbList[1][i](!error);
+            Ext.defer(function()
+            {
+               cbList[1][i](!error)
+            }, 1);
          }
          /*
           }
