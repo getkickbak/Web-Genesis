@@ -1014,10 +1014,10 @@ Genesis.fn =
           */
          for (; i < cbList[1].length; i++)
          {
-            Ext.defer(function()
+            Ext.defer(function(index)
             {
-               cbList[1][i](!error)
-            }, 1);
+               cbList[1][index](!error);
+            }, 1, null, [i]);
          }
          /*
           }
@@ -1051,10 +1051,10 @@ Genesis.fn =
           */
          for (; i < cbList[1].length; i++)
          {
-            Ext.defer(function()
+            Ext.defer(function(index)
             {
-               cbList[1][i](!error)
-            }, 1);
+               cbList[1][index](!error);
+            }, 1, null, [i]);
          }
          /*
           }
