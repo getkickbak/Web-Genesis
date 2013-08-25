@@ -117,15 +117,15 @@ Ext.define('Genesis.data.proxy.IndexedDB',
     */
    initialize : function()
    {
-      var me = this, request = me.getIndexedDB().open(me.getDbName(), me.getDbVersion());
+      var me = this, request = me.getIndexedDB().open(me.getDbName(), me.getDbVersion()), indexes = me.getIndexes();
 
       me.on('updatedb', me.addInitialData);
 
       request.onsuccess = function(e)
       {
-         var db = me.getIndexedDB().db = e.target.result, indexes = me.getIndexes(), setVrequest, keyPath;
+         var db = me.getIndexedDB().db = e.target.result, setVrequest, keyPath;
 
-         me.setDb(me.getIndexedDB().db);
+         me.setDb(db);
 
          me.fireEvent('dbopen', me, db);
       };
@@ -134,7 +134,7 @@ Ext.define('Genesis.data.proxy.IndexedDB',
 
       request.onupgradeneeded = function(e)
       {
-         var i, db = e.target.result, store;
+         var i, store, db = e.target.result;
 
          //clean old versions
          if (db.objectStoreNames.contains(me.getObjectStoreName()))
