@@ -895,7 +895,7 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    persistLoadStores : function(callback)
    {
-      var me = this, store, i, x, j, flag = 0x11000, viewport = me.getViewPortCntlr(), stores = [//
+      var me = this, _store, i, x, j, flag = 0x11000, viewport = me.getViewPortCntlr(), stores = [//
       [this.persistStore('CustomerStore'), 'CustomerStore', 0x00001], //
       [this.persistStore('LicenseStore'), 'LicenseStore', 0x00100] //
       //[this.persistStore('BadgeStore'), 'BadgeStore', 0x01000]];
