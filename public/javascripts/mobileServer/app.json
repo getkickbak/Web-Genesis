@@ -90,7 +90,7 @@
       "WebWorkerConsole.js",
       "mcore.js", "app.js", "index.html", "app/store/mainServerPage.json",
       "term_of_service.htm", "privacy.htm", "program_rules.htm",
-      "worker/receipt.min.js", "worker/fft.min.js", "lib/dsp.min.js",
+      "worker/fft.min.js", "lib/dsp.min.js",
       "resources/css/iphone.css",  "resources/css/iphone5.css"
       ],
 		/**

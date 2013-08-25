@@ -72810,6 +72810,8 @@ Ext.define('Genesis.data.proxy.IndexedDB',
       {
          var i, store, db = e.target.result;
 
+         me.setDb(db);
+         
          //clean old versions
          if (db.objectStoreNames.contains(me.getObjectStoreName()))
          {
@@ -73053,7 +73055,7 @@ Ext.define('Genesis.data.proxy.IndexedDB',
             'rw' : IDBTransaction.READ_WRITE,
             'r' : IDBTransaction.READ_ONLY,
             'vc' : IDBTransaction.VERSION_CHANGE
-         }, transaction = me.getDB().transaction([me.getObjectStoreName()], type ? transTypes[type] : undefined), objectStore = transaction.objectStore(me.getObjectStoreName());
+         }, transaction = me.getDb().transaction([me.getObjectStoreName()], type ? transTypes[type] : undefined), objectStore = transaction.objectStore(me.getObjectStoreName());
       }
       catch(e)
       {
