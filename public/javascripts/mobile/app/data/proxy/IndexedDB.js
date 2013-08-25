@@ -134,7 +134,7 @@ Ext.define('Genesis.data.proxy.IndexedDB',
 
       request.onupgradeneeded = function(e)
       {
-         var i, db = me.getDb(), store;
+         var i, db = e.target.result, store;
 
          //clean old versions
          if (db.objectStoreNames.contains(me.getObjectStoreName()))
