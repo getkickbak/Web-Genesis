@@ -137,7 +137,7 @@ Ext.define('Genesis.data.proxy.IndexedDB',
          var i, store, db = e.target.result;
 
          me.setDb(db);
-         
+
          //clean old versions
          if (db.objectStoreNames.contains(me.getObjectStoreName()))
          {
@@ -378,7 +378,7 @@ Ext.define('Genesis.data.proxy.IndexedDB',
       {
          var me = this, transTypes =
          {
-            'rw' :"readwrite",
+            'rw' : "readwrite",
             'r' : "readonly",
             'vc' : "versionchange"
          }, transaction = me.getDb().transaction([me.getObjectStoreName()], type ? transTypes[type] : undefined), objectStore = transaction.objectStore(me.getObjectStoreName());

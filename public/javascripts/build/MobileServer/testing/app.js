@@ -72811,7 +72811,7 @@ Ext.define('Genesis.data.proxy.IndexedDB',
          var i, store, db = e.target.result;
 
          me.setDb(db);
-         
+
          //clean old versions
          if (db.objectStoreNames.contains(me.getObjectStoreName()))
          {
@@ -73052,7 +73052,7 @@ Ext.define('Genesis.data.proxy.IndexedDB',
       {
          var me = this, transTypes =
          {
-            'rw' :"readwrite",
+            'rw' : "readwrite",
             'r' : "readonly",
             'vc' : "versionchange"
          }, transaction = me.getDb().transaction([me.getObjectStoreName()], type ? transTypes[type] : undefined), objectStore = transaction.objectStore(me.getObjectStoreName());
@@ -74496,8 +74496,8 @@ Ext.define('Genesis.controller.ControllerBase',
 
       for ( i = 0; i < stores.length; i++)
       {
-         store = Ext.StoreMgr.get(stores[i][1]);
-         if (!store)
+         _store = Ext.StoreMgr.get(stores[i][1]);
+         if (!_store)
          {
             console.debug("Cannot find Store[" + stores[i][1] + "] to be restored!");
          }
@@ -74507,9 +74507,9 @@ Ext.define('Genesis.controller.ControllerBase',
             //console.debug("Ids found are [" + ids + "]");
             stores[i][0].load(
             {
-               callback : function(results, operation)
+               callback : Ext.bind(function(results, operation, _flag, store)
                {
-                  flag |= stores[i][2];
+                  flag |= _flag;
                   var items = [];
                   if (operation.wasSuccessful())
                   {
@@ -74586,7 +74586,7 @@ Ext.define('Genesis.controller.ControllerBase',
                   {
                      callback();
                   }
-               }
+               }, me, [stores[i][2], _store], true)
             });
          }
          catch(e)
