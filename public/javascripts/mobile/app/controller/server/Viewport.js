@@ -76,7 +76,7 @@ Ext.merge(WebSocket.prototype,
       //
       // Get NFC data from remote call
       //
-      var cntlr = me.getActiveController(), result = Ext.decode(inputStream);
+      var cntlr = _application.getController('server' + '.Viewport').getActiveController(), result = Ext.decode(inputStream);
       /*
        {
        result : Ext.decode(text),

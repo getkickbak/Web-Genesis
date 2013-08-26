@@ -80394,7 +80394,7 @@ Ext.define('Genesis.controller.server.Pos',
                   Genesis.fn.systemTime = inputStream['systemTime'] * 1000;
                   Genesis.fn.clientTime = new Date().getTime();
                   //console.debug("WebSocketClient::receipt_incoming ...")
-                  pos.wssocket.receiptIncomingHandler(inputStream['receipts']);
+                  me.wssocket.receiptIncomingHandler(inputStream['receipts']);
                   break;
                }
                case 'receipt_response' :
@@ -80402,19 +80402,19 @@ Ext.define('Genesis.controller.server.Pos',
                   Genesis.fn.systemTime = inputStream['systemTime'] * 1000;
                   Genesis.fn.clientTime = new Date().getTime();
                   //console.debug("WebSocketClient::receipt_response ...")
-                  pos.wssocket.receiptResponseHandler(inputStream['receipts']);
+                  me.wssocket.receiptResponseHandler(inputStream['receipts']);
                   break;
                }
                case 'nfc' :
                {
-                  pos.wssocket.onNfc(inputStream['nfc']);
+                  me.wssocket.onNfc(inputStream['nfc']);
                   break;
                }
                case 'nfc_error' :
                {
                   Ext.device.Notification.show(
                   {
-                     title : pos.tagReaderTitle,
+                     title : me.tagReaderTitle,
                      message : inputStream['errorMsg'],
                      buttons : ['Dismiss']
                   });
@@ -80424,7 +80424,7 @@ Ext.define('Genesis.controller.server.Pos',
                {
                   Ext.device.Notification.show(
                   {
-                     title : pos.tagReaderTitle,
+                     title : me.tagReaderTitle,
                      ignoreOnHide : !Genesis.fn.isNative(),
                      message : inputStream['errorMsg']
                   });
@@ -80444,7 +80444,7 @@ Ext.define('Genesis.controller.server.Pos',
             console.debug("Exception while parsing Incoming Receipt ...\n" + e);
             Ext.Viewport.setMasked(null);
          }
-         pos.fireEvent('onmessage');
+         me.fireEvent('onmessage');
       };
    },
    connect : function(forced)
@@ -84287,7 +84287,7 @@ Ext.merge(WebSocket.prototype,
       //
       // Get NFC data from remote call
       //
-      var cntlr = me.getActiveController(), result = Ext.decode(inputStream);
+      var cntlr = _application.getController('server' + '.Viewport').getActiveController(), result = Ext.decode(inputStream);
       /*
        {
        result : Ext.decode(text),
