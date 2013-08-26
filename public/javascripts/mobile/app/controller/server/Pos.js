@@ -103,7 +103,7 @@ Ext.define('Genesis.controller.server.Pos',
                   Genesis.fn.systemTime = inputStream['systemTime'] * 1000;
                   Genesis.fn.clientTime = new Date().getTime();
                   //console.debug("WebSocketClient::receipt_incoming ...")
-                  me.wssocket.receiptIncomingHandler(inputStream['receipts']);
+                  pos.wssocket.receiptIncomingHandler(inputStream['receipts']);
                   break;
                }
                case 'receipt_response' :
@@ -111,19 +111,19 @@ Ext.define('Genesis.controller.server.Pos',
                   Genesis.fn.systemTime = inputStream['systemTime'] * 1000;
                   Genesis.fn.clientTime = new Date().getTime();
                   //console.debug("WebSocketClient::receipt_response ...")
-                  me.wssocket.receiptResponseHandler(inputStream['receipts']);
+                  pos.wssocket.receiptResponseHandler(inputStream['receipts']);
                   break;
                }
                case 'nfc' :
                {
-                  me.wssocket.onNfc(inputStream['nfc']);
+                  pos.wssocket.onNfc(inputStream['nfc']);
                   break;
                }
                case 'nfc_error' :
                {
                   Ext.device.Notification.show(
                   {
-                     title : me.tagReaderTitle,
+                     title : pos.tagReaderTitle,
                      message : inputStream['errorMsg'],
                      buttons : ['Dismiss']
                   });
@@ -133,7 +133,7 @@ Ext.define('Genesis.controller.server.Pos',
                {
                   Ext.device.Notification.show(
                   {
-                     title : me.tagReaderTitle,
+                     title : pos.tagReaderTitle,
                      ignoreOnHide : !Genesis.fn.isNative(),
                      message : inputStream['errorMsg']
                   });
@@ -153,7 +153,7 @@ Ext.define('Genesis.controller.server.Pos',
             console.debug("Exception while parsing Incoming Receipt ...\n" + e);
             Ext.Viewport.setMasked(null);
          }
-         me.fireEvent('onmessage');
+         pos.fireEvent('onmessage');
       };
    },
    connect : function(forced)
