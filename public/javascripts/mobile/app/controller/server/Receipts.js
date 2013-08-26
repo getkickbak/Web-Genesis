@@ -1,7 +1,7 @@
 Ext.merge(WebSocket.prototype,
 {
    reconnectTimeoutTimer : 5 * 60 * 1000,
-   reconnectTimer : 5 * 1000,
+   reconnectTimer : 10 * 1000,
    createReceipt : function(receiptText)
    {
       var me = this, i, match, currItemPrice = 0, maxItemPrice = 0, id = receiptText[0], matchFlag = 0x0000, rc = null;

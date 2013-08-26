@@ -73,7 +73,7 @@ Ext.define('Genesis.controller.server.Pos',
       me.wssocket.onclose = function(event)
       {
          var timeout = pos.wssocket.reconnectTimer;
-         console.debug("WebSocketClient::onclose, 5sec before retrying ...");
+         console.debug("WebSocketClient::onclose, " + (timeout / 1000) + "secs before retrying ...");
          //delete WebSocket.store[event._target];
          me.wssocket = null;
          //
@@ -124,18 +124,24 @@ Ext.define('Genesis.controller.server.Pos',
                   Ext.device.Notification.show(
                   {
                      title : me.tagReaderTitle,
-                     message : inputStream['message'],
-                     buttons : ['Dismiss'],
-                     callback : function()
-                     {
-                        /*
-                         if (!Genesis.fn.isNative())
-                         {
-                         window.location.reload();
-                         }
-                         */
-                     }
+                     message : inputStream['errorMsg'],
+                     buttons : ['Dismiss']
                   });
+                  break;
+               }
+               case 'nfc_sysError' :
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : me.tagReaderTitle,
+                     ignoreOnHide : !Genesis.fn.isNative(),
+                     message : inputStream['errorMsg']
+                  });
+                  break;
+               }
+               case 'nfc_ok' :
+               {
+                  Ext.device.Notification.dismiss();
                   break;
                }
                default:
@@ -165,15 +171,17 @@ Ext.define('Genesis.controller.server.Pos',
          Ext.Viewport.setMasked(
          {
             xtype : 'loadmask',
-            message : me.lostPosConnectionMsg,
-            listeners :
-            {
-               'tap' : function(b, e, eOpts)
-               {
-                  Ext.Viewport.setMasked(null);
-                  me.connTask.cancel();
-               }
-            }
+            message : me.lostPosConnectionMsg
+            /*
+             ,listeners :
+             {
+             'tap' : function(b, e, eOpts)
+             {
+             Ext.Viewport.setMasked(null);
+             me.connTask.cancel();
+             }
+             }
+             */
          });
          console.debug("Pos::connect(" + me.url + ")");
       }
