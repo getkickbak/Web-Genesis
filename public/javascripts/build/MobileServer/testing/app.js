@@ -80426,7 +80426,8 @@ Ext.define('Genesis.controller.server.Pos',
                   {
                      title : me.tagReaderTitle,
                      ignoreOnHide : !Genesis.fn.isNative(),
-                     message : inputStream['errorMsg']
+                     message : inputStream['errorMsg'],
+                     buttons : []
                   });
                   break;
                }
@@ -86037,7 +86038,8 @@ Ext.define('Ext.device.notification.Simulator',
             }, 1);
          }
       };
-      msg._hideCallbackFn = Ext.bind(callback, this, [buttons[buttons.length - 1].itemId]);
+      var itemId = (buttons.length >= 1) ? buttons[buttons.length - 1].itemId : "";
+      msg._hideCallbackFn = Ext.bind(callback, this, [itemId]);
       msg.getModal().on('hide', msg._hideCallbackFn, this);
 
       msg.show(

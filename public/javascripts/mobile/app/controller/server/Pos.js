@@ -135,7 +135,8 @@ Ext.define('Genesis.controller.server.Pos',
                   {
                      title : me.tagReaderTitle,
                      ignoreOnHide : !Genesis.fn.isNative(),
-                     message : inputStream['errorMsg']
+                     message : inputStream['errorMsg'],
+                     buttons : []
                   });
                   break;
                }
