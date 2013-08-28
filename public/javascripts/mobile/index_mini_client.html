@@ -13,7 +13,7 @@
       <link href="resources/css/iphone.css" rel="stylesheet">
       <link href="resources/css/mini_client.css" rel="stylesheet">
       !-->
-      <link href="../lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+      <link href="../lib/bootstrap-3.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
       <link href="../lib/bootstrap-switch/static/stylesheets/bootstrap-switch.css" rel="stylesheet">
       <style>
 				.overthrow-enabled .overthrow {
@@ -27,16 +27,20 @@
    </head>
    <body>
       <img id="bgImage" src="resources/themes/images/v1/ios/texture.png" style="position:absolute;top:50px;bottom:0;left:0;right:0;z-index:-1;"/>
-      <div class="navbar navbar-fixed-top">
-         <div class="nav-collapse collapse bs-navbar-collapse">
-            <ul class="nav navbar-nav">
-               <li>
-                  <a href="#">Back</a>
-               </li>
-            </ul>
-         </div>
+      <div class="pagination-large" >
+         <ul class="breadcrumb">
+            <li>
+               <a href="#">Back</a>
+            </li>
+            <li>
+               <a href="#">Library</a>
+            </li>
+            <li class="active">
+               Data
+            </li>
+         </ul>
       </div>
-      <div id = "wrapper" class="row" style="margin-top:70px;">
+     <div id = "wrapper" class="row" style="margin-top:70px;">
          <div id="createaccountpageview-wrapper" class="overthrow">
             <form class = "">
                <fieldset>
@@ -153,7 +157,7 @@
             //$('#ext-viewport').height(window.outerHeight + getHeightOfIOSToolbars()-64);
          });
       </script>
-      <script type="text/javascript" src="../lib/bootstrap/dist/js/bootstrap.min.js"></script>
+      <script type="text/javascript" src="../lib/bootstrap-3.0.0/dist/js/bootstrap.min.js"></script>
       <script type="text/javascript" src="../lib/bootstrap-switch/static/js/bootstrap-switch.min.js"></script>
    </body>
 </html>
