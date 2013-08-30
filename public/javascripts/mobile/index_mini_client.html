@@ -12,114 +12,149 @@
       <!--
       <link href="resources/css/iphone.css" rel="stylesheet">
       <link href="resources/css/mini_client.css" rel="stylesheet">
+      <link href="../lib/bootstrap-switch/static/stylesheets/bootstrap-switch.css" rel="stylesheet">
       !-->
       <link href="../lib/bootstrap-3.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
-      <link href="../lib/bootstrap-switch/static/stylesheets/bootstrap-switch.css" rel="stylesheet">
+      <style id="holderjs-style" type="text/css">
+         .holderjs-fluid {font-size:16px;font-weight:bold;text-align:center;font-family:sans-serif;margin:0}
+      </style>
       <style>
+            input::-webkit-outer-spin-button,
+            input::-webkit-inner-spin-button {
+               -webkit-appearance: none;
+               margin: 0;
+            }
+            .thumbnail {
+                text-align:center;
+            }            
+            .thumbnail > li {
+                display: inline-block;
+                *display:inline; /* ie7 fix */
+                float: none; /* this is the part that makes it work */
+            }
 				.overthrow-enabled .overthrow {
 				   overflow-y: auto;
 					-webkit-overflow-scrolling:touch;
                height: 366px;
 				}
+				.bgImage {
+               background-color: #0a78be 80%;
+               background-image: url("resources/themes/images/v1/ios/logohomescreen3.png"),-webkit-gradient(radial, 50% 50%, 0, 50% 50%, 80, color-stop(50%, #00adee), color-stop(80%, #0a78be));
+               background-image: url("resources/themes/images/v1/ios/logohomescreen3.png"),-webkit-radial-gradient(center center, #00adee 50%,#0a78be 80%);
+               background-image: url("resources/themes/images/v1/ios/logohomescreen3.png"),radial-gradient(center center, #00adee 50%,#0a78be 80%);
+               background-position: center center;
+               -webkit-background-size: contain;
+               background-size: contain;
+               background-repeat: no-repeat;
+            }
+            #createaccountpageview-top-wrapper {
+               position:absolute;
+               margin-top:20px;
+               top:0;
+               bottom:0;
+               left:0;
+               right:0;
+               z-index:1;
+            }
+            #createaccountpageview-bottom-wrapper {
+               position:absolute;
+               height:50px;
+               bottom:8px;
+               left:0;
+               right:0;
+               z-index:1;
+            }
+            #earnptstpageview {
+               position:absolute;
+               margin-top:20px;
+               top:0;
+               bottom:0;
+               left:0;
+               right:0;
+               z-index:1;
+            }
       </style>
       <meta charset="UTF-8">
       <title>KickBak</title>
    </head>
-   <body>
-      <img id="bgImage" src="resources/themes/images/v1/ios/texture.png" style="position:absolute;top:50px;bottom:0;left:0;right:0;z-index:-1;"/>
-      <div class="pagination-large" >
-         <ul class="breadcrumb">
-            <li>
-               <a href="#">Back</a>
-            </li>
-            <li>
-               <a href="#">Library</a>
-            </li>
-            <li class="active">
-               Data
-            </li>
-         </ul>
+   <body class="bgImage">
+      <div id = "wrapper" class="container" style="display:none;">
+         <div id="createaccountpageview-top-wrapper" class="">
+            <div class="form-group col-xs-2"></div>
+            <div class="form-group col-xs-8">
+               <label for="inputMobile" class="">Mobile #</label>
+               <div class="input-group">
+                  <input type="number" class="form-control input-lg" id="inputMobile" pattern="[0-9]*" placeholder="800-555-1234">
+                  <span class="input-group-addon input-lg">x</span>
+               </div>
+            </div>
+            <div class="form-group col-xs-2"></div>
+         </div>
+         <div id="createaccountpageview-bottom-wrapper" class="">
+            <div class="col-xs-1"></div>
+            <div class="col-xs-10">
+               <div class="btn-group btn-group-justified btn-group-lg">
+                  <a type="button" class="btn btn-default">Browse</a>
+                  <a type="button" class="btn btn-primary">Earn Pts</a>
+               </div>
+               <div class="col-xs-1"></div>
+            </div>
+         </div>
       </div>
-     <div id = "wrapper" class="row" style="margin-top:70px;">
-         <div id="createaccountpageview-wrapper" class="overthrow">
-            <form class = "">
-               <fieldset>
-                  <legend class="col-12">
-                     Social Media
-                  </legend>
-                  <div class="form-group col-12 col-sm-6">
-                     <label for="inputFacebook" class="">Facebook</label>
-                     <div class="input-group">
-                        <input type="text" class="form-control input-lg" id="inputFacebook" placeholder="">
-                        <img style="position:absolute;top:0;bottom:0;left:0;width:46px;" src="resources/themes/images/v1/facebook_icon.svg"/>
-                        <span class="input-group-addon input-lg">OFF</span>
-                        <span class="input-group-addon input-lg">ON</span>
+      <div id = "wrapper" class="container" style="">
+         <div id="earnptstpageview-top-wrapper" class="">
+            <div class="col-xs-12">
+               <div class="panel panel-primary">
+                  <div class="panel-heading">
+                     <h3 class="panel-title">Please tap your phone on the Card Reader</h3>
+                  </div>
+                  <div class="panel-body thumbnail">
+                     <img data-src="../lib/holder.js/171x171" alt="171x171" src="resources/themes/images/v1/ios/prizewon/transmit.svg" style="width:171px;">
+                  </div>
+                  <div class="panel-footer">
+                     <div class="btn-group btn-group-justified btn-group-lg">
+                        <a href="#" type="button" class="btn btn-primary">Proceed</a>
+                     </div>
+                     <div class="btn-group btn-group-justified btn-group-lg">
+                        <a href="#" type="button" class="btn btn-default">Cancel</a>
                      </div>
                   </div>
-               </fieldset>
-               <fieldset>
-                  <legend class="col-12">
-                     Account Profile
-                  </legend>
-                  <div class="form-group col-12 col-sm-6">
-                     <label for="inputName" class="">Name</label>
-                     <div class="input-group">
-                        <input type="text" class="form-control input-lg" id="inputName" placeholder="John Smith">
-                        <span class="input-group-addon input-lg">x</span>
-                     </div>
-                  </div>
-                  <div class="form-group col-12 col-sm-6">
-                     <label for="inputEmail" class="">Email</label>
-                     <div class="input-group">
-                        <input type="text" class="form-control input-lg" id="inputEmail" placeholder="john.smith@example.com">
-                        <span class="input-group-addon input-lg">x</span>
-                     </div>
-                  </div>
-                  <div class="form-group col-12 col-sm-6">
-                     <label for="inputPassword" class="">Password</label>
-                     <div class="input-group">
-                        <input type="password" class="form-control input-lg" id="inputPasswordl" placeholder="Min 6 chars.">
-                        <span class="input-group-addon input-lg">x</span>
-                     </div>
-                  </div>
-                  <div class="form-group col-12 col-sm-6">
-                     <label for="inputMobile" class="">Mobile #</label>
-                     <div class="input-group">
-                        <input type="text" class="form-control input-lg" id="inputMobile" placeholder="800-555-1234">
-                        <span class="input-group-addon input-lg">x</span>
-                     </div>
-                  </div>
-                  <div class="form-group col-12 col-sm-6">
-                     <label for="inputBirthday" class="">Birthday</label>
-                     <div class="input-group">
-                        <input type="text" class="form-control input-lg" id="inputBirthday" placeholder="">
-                        <span class="input-group-addon input-lg">x</span>
-                     </div>
-                  </div>
-               </fieldset>
-            </form>
+              </div>
+            </div>
          </div>
       </div>
       <script type="text/javascript" src="../lib/zepto.min.js"></script>
-      <script type="text/javascript" src="../lib/overthrow.sidescroller.min.js"></script>
       <!--
+      <script type="text/javascript" src="../lib/overthrow.sidescroller.min.js"></script>
       <script type="text/javascript" src="../lib/iscroll-min.js"></script>
       -->
       <script type="text/javascript">
          window.jQuery = Zepto;
          function hideAddressBar()
          {
-            if(!window.location.hash)
+            //if(!window.location.hash)
             {
-               if(document.height < window.outerHeight)
+               if (!window.pageYOffset)
                {
-                  //document.body.style.height = (window.outerHeight + getHeightOfIOSToolbars()) + 'px';
+                  var totalHeight = (window.innerHeight + getHeightOfIOSToolbars()*0.5);
+                  if(document.height <= window.outerHeight)
+                  {
+                     //document.body.style.height = (window.outerHeight + getHeightOfIOSToolbars()) + 'px';
+                     //console.log('Window Height: '+ totalHeight);
+                     document.body.style.height = totalHeight + 'px';
+                  }
+                  else
+                  {
+                     //document.body.style.height = window.outerHeight + 'px';                  
+                  }
                }
- 
+               else
+               {
+                  document.body.style.height = window.innerHeight + 'px';                  
+               }
+               $('#createaccountpageview-bottom-wrapper')[0].style.bottom = (-1*52)+'px';
                setTimeout( function(){ window.scrollTo(0, 1); }, 50 );
             }
-            $('#bgImage').width(window.innerWidth);
-            $('#bgImage').height(window.innerHeight+30);
          };
          var getIOSWindowHeight = function() {
             // Get zoom level of mobile Safari
@@ -138,7 +173,7 @@
             return tH > 1 ? tH : 0;
          };
  
-         window.addEventListener("load", function(){ if(!window.pageYOffset){ hideAddressBar(); } } );
+         window.addEventListener("load", function(){ hideAddressBar(); });
          window.addEventListener("orientationchange", hideAddressBar );
          document.addEventListener('touchstart', function (e) { if ((e.target == $('body')[0]) || ($(e.target).closest('.navbar.navbar-fixed-top').length > 0)) e.preventDefault(); }, false);         
          document.addEventListener('touchmove', function (e) { if ((e.target == $('body')[0]) || ($(e.target).closest('.navbar.navbar-fixed-top').length > 0)) e.preventDefault(); }, false);         
@@ -152,12 +187,15 @@
             //myScroll[2] = new IScroll('#ext-passwdresetpageview-1 .x-scroll-view', { scrollbars: true, mouseWheel: true, interactiveScrollbars: true });
             */
             //$('body').height(window.outerHeight + getHeightOfIOSToolbars()-64);
-            $('#bgImage').width(window.innerWidth);
-            $('#bgImage').height(window.innerHeight+30);
+            //$('#bgImage').width(window.innerWidth);
+            //$('#bgImage').height(window.innerHeight+30);
             //$('#ext-viewport').height(window.outerHeight + getHeightOfIOSToolbars()-64);
          });
       </script>
       <script type="text/javascript" src="../lib/bootstrap-3.0.0/dist/js/bootstrap.min.js"></script>
+      <script type="text/javascript" src="../lib/holder.js"></script>
+      <!--
       <script type="text/javascript" src="../lib/bootstrap-switch/static/js/bootstrap-switch.min.js"></script>
+      -->
    </body>
 </html>

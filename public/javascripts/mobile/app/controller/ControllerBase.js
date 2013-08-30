@@ -662,9 +662,9 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       var me = this;
 
-      if (!me.earnRedeemPopup)
+      if (!me._earnRedeemPopup)
       {
-         me.earnRedeemPopup = (Ext.create('Ext.Sheet',
+         me._earnRedeemPopup = Ext.create('Ext.Sheet',
             {
                bottom : 0,
                left : 0,
@@ -708,7 +708,7 @@ Ext.define('Genesis.controller.ControllerBase',
                      ui : 'action',
                      handler : function()
                      {
-                        me.earnRedeemPopup.hide();
+                        me._earnRedeemPopup.hide();
                         callback();
                      }
                   },
@@ -718,14 +718,14 @@ Ext.define('Genesis.controller.ControllerBase',
                      //ui : 'decline',
                      handler : function()
                      {
-                        me.earnRedeemPopup.hide();
+                        me._earnRedeemPopup.hide();
                      }
                   }]
                }]
-            }));
-         Ext.Viewport.add(me.earnRedeemPopup);
+            });
+         Ext.Viewport.add(me._earnRedeemPopup);
       }
-      me.earnRedeemPopup.show();
+      me._earnRedeemPopup.show();
    },
    gravityThreshold : 4.0,
    accelerometerHandler : function(vol, callback)

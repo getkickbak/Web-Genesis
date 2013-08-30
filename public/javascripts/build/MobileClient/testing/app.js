@@ -72669,11 +72669,1556 @@ Ext.define('Genesis.model.Merchant',
    id : 'Merchant',
    config :
    {
-      fields : ['id', 'name', 'email', 'photo', 'alt_photo', 'account_first_name', 'account_last_name', //
+      fields : ['id', 'name', 'email', 'photo', 'alt_photo', 'features_config', 'account_first_name', 'account_last_name', //
       'phone', 'auth_code', 'qr_code', 'features_config', 'payment_account_id', 'created_ts', 'update_ts', 'type', 'reward_terms'],
       idProperty : 'id'
    }
 });
+
+/**
+ * @class Ext.data.proxy.WebSql
+ * @author Paul van Santen
+ * @author Grgur Grisogono
+ *
+ * WebSQL proxy connects models and stores to local WebSQL database.
+ *
+ * WebSQL is deprecated in favor of indexedDb, so use with caution.
+ * IndexedDb is not available for mobile browsers at the time of writing this code
+ *
+ * Version: 0.3
+ *
+ * TODO:
+ *      filters,
+ *      failover option for remote proxies,
+ *      database version migration
+ */
+Ext.define('Genesis.data.proxy.WebSql',
+{
+   extend :  Ext.data.proxy.Proxy ,
+   alias : 'proxy.websql',
+
+   config :
+   {
+      batchActions : true,
+
+      /**
+       * @cfg {String} version
+       * database version. If different than current, use updatedb event to update database
+       */
+      dbVersion : '1.0',
+
+      /**
+       * @cfg {String} dbName
+       * @required
+       * Name of database
+       */
+      dbName : undefined,
+
+      /**
+       * @cfg {String} dbDescription
+       * Description of the database
+       */
+      dbDescription : '',
+
+      /**
+       * @cfg {String} dbSize
+       * Max storage size in bytes
+       */
+      dbSize : 10 * 1024 * 1024,
+
+      /**
+       * @cfg {String} dbTable
+       * @required
+       * Name for table where all the data will be stored
+       */
+      dbTable : undefined,
+
+      /**
+       * @cfg {String} pkField
+       * Primary key name. Defaults to idProperty
+       */
+      pkField : undefined,
+
+      /**
+       * @cfg {String} pkType
+       * Type of primary key. By default it an autoincrementing integer
+       */
+      pkType : 'INTEGER PRIMARY KEY ASC',
+
+      /**
+       * @cfg {boolean} insertReplace
+       * Setting that switches the insert and save methods
+       * When true it will do INSERT OR REPLACE queries, otherwise UPDATE and INSERT queries
+       */
+      insertOrReplace : false,
+
+      /**
+       * @cfg {boolean} autoCreateTable
+       * Should we automaticly create the table if it does not exists when initializing?
+       */
+      autoCreateTable : true,
+
+      /**
+       * @cfg {string[]} customWhereClauses
+       * The custom where clauses to use when querying
+       */
+      customWhereClauses : [],
+
+      /**
+       * @cfg {Array} customWhereParams
+       * The parameters for the custom where clauses to use when querying
+       */
+      customWhereParameters : []
+   },
+   /**
+    * @type {Database} database
+    * @private
+    * db object
+    */
+   database : undefined,
+
+   /**
+    * The maximum number of arguments in a SQLite query
+    * @type {number} maxArguments
+    * @private
+    */
+   maxArguments : 100,
+
+   /**
+    * Creates the proxy, throws an error if local storage is not supported in the current browser.
+    * @param {Object} config (optional) Config object.
+    */
+   constructor : function(config)
+   {
+      this.initConfig(config);
+      this.callParent(arguments);
+   },
+
+   /**
+    * Sets the custom clauses and parameters
+    * @param {Array} clauses
+    * @param {Array} params
+    */
+   setCustomWhereClausesAndParameters : function(clauses, params)
+   {
+      this.setCustomWhereClauses(clauses);
+      this.setCustomWhereParameters(params);
+   },
+
+   /**
+    * Clears the custom where clauses
+    */
+   clearCustomWhereClauses : function()
+   {
+      this.setCustomWhereClauses([]);
+      this.setCustomWhereParameters([]);
+   },
+
+   /**
+    * Adds a custom where clause
+    * @param {string} clause
+    */
+   addCustomWhereClause : function(clause)
+   {
+      this.getCustomWhereClauses().push(clause);
+   },
+
+   /**
+    * Clears the custom where clauses
+    */
+   clearCustomWhereParameters : function()
+   {
+      this.setCustomWhereParameters([]);
+   },
+
+   /**
+    * Adds a custom where clause
+    * @param param
+    */
+   addCustomWhereParameter : function(param)
+   {
+      this.getCustomWhereParameters().push(param);
+   },
+
+   /**
+    * Executes a query
+    * @param {SQLTransaction} transaction
+    * @param {string} query
+    * @param {Array} [args]
+    * @param {Function} [success]
+    * @param {Function} [fail]
+    * @param {Object} [scope]
+    */
+   doQuery : function(transaction, query, args, success, fail, scope)
+   {
+      if (!Ext.isFunction(success))
+      {
+         success = Ext.emptyFn;
+      }
+      transaction.executeSql(query, args, Ext.bind(success, scope || this), Ext.bind(this.queryError, this, [query, args, fail, scope], true));
+   },
+
+   /**
+    * Executes a single query, automaticly creates a transaction
+    * @param {string} query
+    * @param {Array} [args]
+    * @param {Function} [success]
+    * @param {Function} [fail]
+    * @param {Object} [scope]
+    */
+   doSingleQuery : function(query, args, success, fail, scope)
+   {
+      var me = this, db = me.database;
+
+      db.transaction(function(transaction)
+      {
+         me.doQuery(transaction, query, args, success, fail, scope);
+      });
+   },
+
+   /**
+    * Called when a query has an error
+    * @param {SQLTransaction} transaction
+    * @param {SQLError} error
+    * @param {string} query
+    * @param {Array} args
+    * @param {Function} fail
+    * @param {Object} scope
+    * @throws {Object} Exception
+    */
+   queryError : function(transaction, error, query, args, fail, scope)
+   {
+      if (Ext.isFunction(fail))
+      {
+         fail.call(scope || this, transaction, error);
+      }
+      throw (
+         {
+            code : 'websql_error',
+            message : "SQL error: " + error.message + "\nSQL query: " + query + (args && args.length ? ("\nSQL params: " + args.join(', ')) : '' )
+         });
+   },
+
+   /**
+    * @private
+    * Sets up the Proxy by opening database and creating table if necessary
+    */
+   initialize : function()
+   {
+      var me = this, pk = 'id', db = openDatabase(me.getDbName(), me.getDbVersion(), me.getDbDescription(), me.getDbSize()), query;
+
+      this.database = db;
+
+      db.transaction(function(transaction)
+      {
+         pk = me.getPkField() || (me.getReader() && me.getReader().getIdProperty()) || pk;
+         me.setPkField(pk);
+
+         query = 'CREATE TABLE IF NOT EXISTS ' + me.getDbTable() + ' (' + pk + ' ' + me.getPkType() + ', ' + me.getDbFields().join(', ') + ')';
+
+         me.doQuery(transaction, query);
+      });
+   },
+
+   /**
+    * Drops the table
+    * @param {Function} [callback]
+    * @param {Object} [scope]
+    */
+   dropTable : function(callback, scope)
+   {
+      var me = this, dropCallback = function()
+      {
+         if (callback)
+         {
+            callback.call(scope || me);
+         }
+      };
+
+      me.database.transaction(function(transaction)
+      {
+         me.doQuery(transaction, 'DROP TABLE IF EXISTS ' + me.getDbTable());
+      }, dropCallback, dropCallback);
+   },
+
+   /**
+    * Empties (truncates) the table
+    * @param {Function} [callback]
+    * @param {Object} [scope]
+    */
+   emptyTable : function(callback, scope)
+   {
+      var me = this, emptyCallback = function()
+      {
+         if (callback)
+         {
+            callback.call(scope || me);
+         }
+      };
+
+      me.database.transaction(function(transaction)
+      {
+         me.doQuery(transaction, 'DELETE FROM ' + me.getDbTable());
+      }, emptyCallback, emptyCallback);
+   },
+
+   /**
+    * @private
+    * Get reader data and set up fields accordingly
+    * Used for table creation only
+    * @return {Array} Fields array
+    */
+   getDbFields : function()
+   {
+      var me = this, fields = me.getModel().getFields(), flatFields = [], pkField = me.getPkField().toLowerCase(), name, type, sqlType, i;
+
+      for ( i = 0; i < fields.length; i++)
+      {
+         name = fields.items[i].getName();
+         type = fields.items[i].getType().type;
+
+         if (name === pkField)
+         {
+            continue;
+         }
+
+         switch (type.toLowerCase())
+         {
+            case 'int':
+               sqlType = 'INTEGER';
+               break;
+            case 'float':
+               sqlType = 'FLOAT';
+               break;
+            case 'bool':
+               sqlType = 'BOOLEAN';
+               break;
+            case 'date':
+               sqlType = 'DATETIME';
+               break;
+            default:
+               sqlType = 'TEXT';
+               break;
+         }
+         flatFields.push(name + ' ' + sqlType);
+      }
+
+      return flatFields;
+   },
+   /**
+    * Gets an object of the form {key -> value} for every field in the database table
+    * Called before saving a record to determine db structure
+    * @param {Ext.data.Fields} fields
+    * @param {Ext.data.Model} record
+    * @returns {Object}
+    */
+   getDbFieldData : function(fields, record)
+   {
+      var object =
+      {
+      }, fieldName, i;
+
+      for ( i = 0; i < fields.length; i++)
+      {
+
+         fieldName = fields.items[i].getName();
+         object[fieldName] = this.convertFieldToDb(fields.items[i], record.get(fieldName));
+      }
+      return object;
+   },
+
+   /**
+    * Reads a record from a DB row
+    * @param {SQLResultSetRowList} row
+    * @return {Object} Model object
+    */
+   readRecordFromRow : function(row)
+   {
+      var fields = this.getModel().getFields(), name, i,
+      // Copy this object because apparently we are not allowed to alter the original parameter object, weird huh?
+      rowObj = Ext.apply(
+      {
+      }, row);
+
+      for ( i = 0; i < fields.length; i++)
+      {
+         name = fields.items[i].getName();
+         rowObj[name] = this.convertFieldToRecord(fields.items[i], row[name]);
+      }
+      return rowObj;
+   },
+
+   /**
+    * Converts a queried field value to the respective record value
+    * @param {Ext.data.Field} field
+    * @param value
+    * @return
+    */
+   convertFieldToRecord : function(field, value)
+   {
+      var type = field.getType().type;
+      switch (type.toLowerCase())
+      {
+         case 'date':
+            return Ext.Date.parse(value, 'Y-m-d H:i:s', true);
+         case 'bool':
+            return value ? true : false;
+         //            case 'auto':
+         //                return Ext.decode(value, true);
+      }
+      return value;
+   },
+
+   /**
+    * Converts a record field to the respective DB field value
+    * @param {Ext.data.Field} field
+    * @param value
+    * @return
+    */
+   convertFieldToDb : function(field, value)
+   {
+      var type = field.getType().type;
+
+      switch (type.toLowerCase())
+      {
+         case 'date':
+            if (value)
+            {
+               return Ext.Date.format(value, 'Y-m-d H:i:s');
+            }
+            else
+            {
+               return '';
+            }
+         case 'bool':
+            return value ? 1 : 0;
+         //            case 'auto':
+         //                return Ext.encode(value);
+      }
+      return value;
+   },
+
+   /**
+    * Inserts or replaces the records of an operation
+    * @param {Ext.data.Operation} operation
+    * @param {Function} callback
+    * @param {Object} scope
+    */
+   insertOrReplaceRecords : function(operation, callback, scope)
+   {
+      var me = this, records = operation.getRecords(), processedRecords = [];
+
+      operation.setStarted();
+
+      me.database.transaction(function(transaction)
+      {
+         if (!records.length)
+         {
+            return;
+         }
+
+         var fields = me.getModel().getFields(), query, queryParts, recordQueryParts, dbFieldData, args;
+
+         Ext.each(records, function(record)
+         {
+            queryParts = [];
+            recordQueryParts = [];
+            args = [];
+
+            query = 'INSERT OR REPLACE INTO ' + me.getDbTable() + "\n";
+            dbFieldData = me.getDbFieldData(fields, record);
+
+            for (var key in dbFieldData)
+            {
+               if (dbFieldData.hasOwnProperty(key))
+               {
+                  queryParts.push(key);
+                  recordQueryParts.push('?');
+                  if (dbFieldData[key] === undefined)
+                  {
+                     args.push(null);
+                  }
+                  else
+                  {
+                     args.push(dbFieldData[key]);
+                  }
+               }
+            }
+            query += ' ( ' + queryParts.join(', ') + " )\n";
+            query += 'VALUES ( ' + recordQueryParts.join(', ') + " )\n";
+
+            me.doQuery(transaction, query, args, function(transaction, resultset)
+            {
+               processedRecords.push(
+               {
+                  clientId : record.getId(),
+                  id : record.getId()
+               });
+            });
+         });
+
+      }, function(error)
+      {
+         // Error
+         operation.setException(error);
+
+         if (Ext.isFunction(callback))
+         {
+            callback.call(scope || this, operation);
+         }
+      }, function()
+      {
+         // Success
+         operation.setResultSet(Ext.create('Ext.data.ResultSet',
+         {
+            records : processedRecords,
+            success : true
+         }));
+
+         operation.process(operation.getAction(), operation.getResultSet());
+
+         operation.setSuccessful();
+         operation.setCompleted();
+
+         if (Ext.isFunction(callback))
+         {
+            callback.call(scope || this, operation);
+         }
+      });
+   },
+
+   /**
+    * Called when records are created
+    * @param {Ext.data.Operation} operation
+    * @param {Function} callback
+    * @param {Object} scope
+    */
+   create : function(operation, callback, scope)
+   {
+      if (this.getInsertOrReplace())
+      {
+         this.insertOrReplaceRecords(operation, callback, scope);
+      }
+      else
+      {
+         this.insertRecords(operation, callback, scope);
+      }
+   },
+
+   /**
+    * Executes insert queries for an operation
+    * @param {Ext.data.Operation} operation
+    * @param {Function} callback
+    * @param {Object} scope
+    */
+   insertRecords : function(operation, callback, scope)
+   {
+      var me = this, records = operation.getRecords(), fields = me.getModel().getFields(), insertedRecords = [];
+
+      operation.setStarted();
+
+      me.database.transaction(function(transaction)
+      {
+
+         Ext.each(records, function(record)
+         {
+            var queryParts = [], recordQueryParts = [], args = [], query = 'INSERT INTO ' + me.getDbTable() + "\n", dbFieldData = me.getDbFieldData(fields, record), tempId = record.getId();
+
+            for (var key in dbFieldData)
+            {
+               if (dbFieldData.hasOwnProperty(key))
+               {
+                  queryParts.push(key);
+                  recordQueryParts.push('?');
+
+                  if (dbFieldData[key] === undefined || (record.phantom && key == me.getPkField()))
+                  {
+                     args.push(null);
+                  }
+                  else
+                  {
+                     args.push(dbFieldData[key]);
+                  }
+               }
+            }
+            query += ' ( ' + queryParts.join(', ') + " )\n";
+            query += 'VALUES ( ' + recordQueryParts.join(', ') + " )\n";
+
+            me.doQuery(transaction, query, args, function(transaction, resultset)
+            {
+               insertedRecords.push(
+               {
+                  clientId : record.getId(),
+                  id : resultset.insertId
+               });
+            });
+         });
+
+      }, function(error)
+      {
+         // Error
+         operation.setException(error);
+
+         if (Ext.isFunction(callback))
+         {
+            callback.call(scope || this, operation);
+         }
+      }, function()
+      {
+         // Success
+         operation.setResultSet(Ext.create('Ext.data.ResultSet',
+         {
+            records : insertedRecords,
+            success : true
+         }));
+
+         operation.process(operation.getAction(), operation.getResultSet());
+
+         operation.setSuccessful();
+         operation.setCompleted();
+
+         if (Ext.isFunction(callback))
+         {
+            callback.call(scope || this, operation);
+         }
+      });
+   },
+
+   /**
+    * Updates records
+    * @param {Ext.data.Operation} operation
+    * @param {Function} callback
+    * @param {Object} scope
+    */
+   update : function(operation, callback, scope)
+   {
+      if (this.getInsertOrReplace())
+      {
+         this.insertOrReplaceRecords(operation, callback, scope);
+      }
+      else
+      {
+         this.updateRecords(operation, callback, scope);
+      }
+   },
+
+   /**
+    * Executes update queries for an operation
+    * @param {Ext.data.Operation} operation
+    * @param {Function} callback
+    * @param {Object} scope
+    */
+   updateRecords : function(operation, callback, scope)
+   {
+      var me = this, records = operation.getRecords(), updatedRecords = [];
+
+      operation.setStarted();
+
+      me.database.transaction(function(transaction)
+      {
+
+         var fields = me.getModel().getFields(), query, queryParts, dbFieldData, args;
+
+         Ext.each(records, function(record)
+         {
+            queryParts = [];
+            args = [];
+
+            query = 'UPDATE ' + me.getDbTable() + " SET \n";
+            dbFieldData = me.getDbFieldData(fields, record);
+
+            for (var key in dbFieldData)
+            {
+               if (dbFieldData.hasOwnProperty(key) && key != me.getPkField())
+               {
+                  queryParts.push(key + ' = ?');
+
+                  if (dbFieldData[key] === undefined)
+                  {
+                     args.push(null);
+                  }
+                  else
+                  {
+                     args.push(dbFieldData[key]);
+                  }
+               }
+            }
+            query += queryParts.join(', ');
+            query += ' WHERE ' + me.getPkField() + ' = ? ';
+            args.push(record.get(me.getPkField()));
+
+            me.doQuery(transaction, query, args, function(transaction, resultset)
+            {
+               updatedRecords.push(
+               {
+                  clientId : record.getId(),
+                  id : record.getId()
+               });
+            });
+         });
+
+      }, function(error)
+      {
+         // Error
+         operation.setException(error);
+
+         if (Ext.isFunction(callback))
+         {
+            callback.call(scope || this, operation);
+         }
+      }, function()
+      {
+         // Success
+         operation.setResultSet(Ext.create('Ext.data.ResultSet',
+         {
+            records : updatedRecords,
+            success : true
+         }));
+
+         operation.process(operation.getAction(), operation.getResultSet());
+
+         operation.setSuccessful();
+         operation.setCompleted();
+
+         if (Ext.isFunction(callback))
+         {
+            callback.call(scope || this, operation);
+         }
+      });
+   },
+
+   /**
+    * Reads one or more records
+    * @param {Ext.data.Operation} operation
+    * @param {Function} callback
+    * @param {Object} scope
+    */
+   read : function(operation, callback, scope)
+   {
+      var me = this, records = [], params = operation.getParams() ||
+      {
+      }, wheres = [], sorters = operation.getSorters(), sortProperty, orderBy = [], args = [], limit = operation.getLimit(), start = operation.getStart(), customClauses = me.getCustomWhereClauses(), customParams = me.getCustomWhereParameters(), query = 'SELECT t.* FROM ' + me.getDbTable() + ' t';
+
+      if (params)
+      {
+         for (var key in params)
+         {
+            if (params.hasOwnProperty(key))
+            {
+               wheres.push('t.' + key + ' = ? ');
+               args.push(params[key]);
+            }
+         }
+      }
+
+      if (customClauses.length)
+      {
+         wheres = Ext.Array.merge(wheres, customClauses);
+      }
+      if (customParams.length)
+      {
+         args = Ext.Array.merge(args, customParams);
+      }
+
+      if (wheres.length)
+      {
+         query += ' WHERE ' + wheres.join(' AND ');
+      }
+
+      if (sorters)
+      {
+         for (var i = 0; i < sorters.length; i++)
+         {
+            sortProperty = sorters[i].getProperty();
+            if (!sortProperty)
+            {
+               sortProperty = sorters[i].getSortProperty();
+            }
+            orderBy.push('t.' + sortProperty + ' ' + sorters[i].getDirection());
+         }
+      }
+
+      if (orderBy.length)
+      {
+         query += ' ORDER BY ' + orderBy.join(', ');
+      }
+
+      if (limit || start)
+      {
+         start = start || 0;
+         query += ' LIMIT ' + limit + ' OFFSET ' + start;
+      }
+
+      me.database.transaction(function(transaction)
+      {
+         me.doQuery(transaction, query, args, function(transaction, resultset)
+         {
+            var length = resultset.rows.length, row;
+
+            for (var i = 0; i < length; i++)
+            {
+               row = resultset.rows.item(i);
+               records.push(me.readRecordFromRow(row));
+            }
+
+            operation.setCompleted();
+
+            operation.setResultSet(Ext.create('Ext.data.ResultSet',
+            {
+               records : records,
+               count : records.length,
+               total : records.length,
+               loaded : true
+            }));
+            operation.setRecords(records);
+            operation.setSuccessful();
+
+            if ( typeof callback == 'function')
+            {
+               callback.call(scope || this, operation);
+            }
+         });
+
+      }, function(error)
+      {
+         // Error
+         operation.setException(error);
+
+         if (Ext.isFunction(callback))
+         {
+            callback.call(scope || this, operation);
+         }
+      });
+   },
+
+   /**
+    * Destroys records
+    * @param {Ext.data.Operation} operation
+    * @param {Function} callback
+    * @param {Object} scope
+    */
+   destroy : function(operation, callback, scope)
+   {
+      var me = this, pkField = me.getPkField(), ids = [], records = operation.getRecords(), destroyedRecords = [], query, wheres, args, id, i;
+
+      for ( i = 0; i < records.length; i++)
+      {
+         ids.push(records[i].get(pkField));
+      }
+
+      me.database.transaction(function(transaction)
+      {
+         while (ids.length)
+         {
+            wheres = [];
+            args = [];
+            id = undefined;
+
+            while (args.length + 1 <= me.maxArguments && ids.length)
+            {
+               id = ids.pop();
+               wheres.push(pkField + ' = ? ');
+               args.push(id);
+
+               destroyedRecords.push(
+               {
+                  id : id
+               });
+            }
+
+            query = 'DELETE FROM ' + me.getDbTable() + ' WHERE ' + wheres.join(' OR ');
+            me.doQuery(transaction, query, args);
+         }
+      }, function(error)
+      {
+         // Error
+         operation.setException(error);
+
+         if (Ext.isFunction(callback))
+         {
+            callback.call(scope || this, operation);
+         }
+      }, function()
+      {
+         // Success
+         operation.process(operation.getAction(), Ext.create('Ext.data.ResultSet',
+         {
+            records : destroyedRecords,
+            success : true
+         }));
+
+         operation.setSuccessful();
+         operation.setCompleted();
+
+         if (Ext.isFunction(callback))
+         {
+            callback.call(scope || this, operation);
+         }
+      });
+   }
+});
+
+
+/**
+ * @author Grgur Grisogono
+ *
+ * IndexedDB proxy connects models and stores to local IndexedDB storage.
+ *
+ * IndexedDB is only available in Firefox 4+ and Chrome 10+ at the moment.
+ *
+ * Version: 0.5
+ *
+ * TODO: respect sorters, filters, start and limit options on the Operation; failover option for remote proxies, ..
+ */
+Ext.define('Genesis.data.proxy.IndexedDB',
+{
+   extend :  Ext.data.proxy.Proxy ,
+
+   alias : 'proxy.idb',
+
+   alternateClassName : 'Genesis.data.IdbProxy',
+
+   config :
+   {
+      /**
+       * @cfg {String} version
+       * database version. If different than current, use updatedb event to update database
+       */
+      dbVersion : '1.0',
+
+      /**
+       * @cfg {String} dbName
+       * Name of database
+       */
+      dbName : null,
+
+      /**
+       * @cfg {String} objectStoreName
+       * Name of object store
+       */
+      objectStoreName : undefined,
+
+      /**
+       * @cfg {String} keyPath
+       * Primary key for objectStore. Proxy will use reader's idProperty if not keyPath not defined.
+       */
+      keyPath : undefined,
+
+      /**
+       * @cfg {Boolean} autoIncrement
+       * Set true if keyPath is to autoIncrement. Defaults to IndexedDB default specification (false)
+       */
+      autoIncrement : false,
+
+      /**
+       * @cfg {Array} indexes
+       * Array of Objects. Properties required are "name" for index name and "field" to specify index field
+       * e.g. indexes: [{name: 'name', field: 'somefield', options: {unique: false}}]
+       */
+      indexes : [],
+
+      /**
+       * @cfg {Array} initialData
+       * Initial data that will be inserted in object store on store creation
+       */
+      initialData : [],
+
+      /**
+       * @private
+       * indexedDB object (if browser supports it)
+       */
+      indexedDB : window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB,
+
+      /**
+       * @private
+       * db object
+       */
+      db : undefined,
+
+      /**
+       * @private
+       * used to monitor initial data insertion. A helper to know when all data is in. Helps fight asynchronous nature of idb.
+       */
+      initialDataCount : 0,
+
+      /**
+       * @private
+       * Trigger that tells that proxy is currently inserting initial data
+       */
+      insertingInitialData : false
+   },
+
+   /**
+    * Creates the proxy, throws an error if local storage is not supported in the current browser.
+    * @param {Object} config (optional) Config object.
+    */
+   constructor : function(config)
+   {
+      this.initConfig(config);
+      this.callParent(arguments);
+
+      this.checkDependencies();
+
+      this.addEvents('dbopen', 'updatedb', 'exception', 'cleardb', 'initialDataInserted', 'noIdb');
+
+   },
+
+   /**
+    * @private
+    * Sets up the Proxy by opening database and creatinbg object store if necessary
+    */
+   initialize : function()
+   {
+      var me = this, request = me.getIndexedDB().open(me.getDbName(), me.getDbVersion()), indexes = me.getIndexes();
+
+      me.on('updatedb', me.addInitialData);
+
+      request.onsuccess = function(e)
+      {
+         var db = me.getIndexedDB().db = e.target.result, setVrequest, keyPath;
+
+         me.setDb(db);
+
+         me.fireEvent('dbopen', me, db);
+      };
+
+      request.onfailure = me.onerror;
+
+      request.onupgradeneeded = function(e)
+      {
+         var i, store, db = e.target.result;
+
+         me.setDb(db);
+
+         //clean old versions
+         if (db.objectStoreNames.contains(me.getObjectStoreName()))
+         {
+            db.deleteObjectStore(me.getObjectStoreName());
+         }
+
+         //set keyPath. Use idProperty if keyPath is not specified
+         if (!me.getKeyPath())
+         {
+            me.setKeyPath(me.getReader().getIdProperty());
+         }
+
+         // create objectStore
+         keyPath = me.getKeyPath() ?
+         {
+            keyPath : me.getKeyPath()
+         } : undefined;
+         store = db.createObjectStore(me.getObjectStoreName(), keyPath, me.getAutoIncrement());
+
+         // set indexes
+         for (i in indexes)
+         {
+            if (indexes.hasOwnProperty(i))
+            {
+               db.objectStore.createIndex(indexes.name, indexes.field, indexes.options);
+            }
+         }
+
+         //Database is open and ready so fire dbopen event
+         me.fireEvent('updatedb', me, db);
+      }
+   },
+
+   /**
+    * Universal error reporter for debugging purposes
+    * @param {Object} err Error object.
+    */
+   onError : function(err)
+   {
+      if (window.console)
+         console.debug(err);
+   },
+
+   /**
+    * Check if all needed config options are set
+    */
+   checkDependencies : function()
+   {
+      var me = this;
+      window.p = me;
+      if (!me.getIndexedDB())
+      {
+         me.fireEvent('noIdb');
+         Ext.Error.raise("IndexedDB is not supported in your browser.");
+      }
+      if (!Ext.isString(me.getDbName()))
+         Ext.Error.raise("The dbName string has not been defined in your Genesis.data.proxy.IndexedDB");
+      if (!Ext.isString(me.getObjectStoreName()))
+         Ext.Error.raise("The objectStoreName string has not been defined in your Genesis.data.proxy.IndexedDB");
+
+      return true;
+   },
+
+   /**
+    * Add initial data if set at {@link #initialData}
+    */
+   addInitialData : function()
+   {
+      this.addData();
+   },
+
+   /**
+    * Add data when needed
+    * Also add initial data if set at {@link #initialData}
+    * @param {Array/Ext.data.Store} newData Data to add as array of objects or a store instance. Optional
+    * @param {Boolean} clearFirst Clear existing data first
+    */
+   addData : function(newData, clearFirst)
+   {
+      var me = this, model = me.getModel().getName(), data = newData || me.getInitialData();
+
+      //clear objectStore first
+      if (clearFirst === true)
+      {
+         me.clear();
+         me.addData(data);
+         return;
+      }
+
+      if (Ext.isObject(data) && data.isStore === true)
+      {
+         data = me.getDataFromStore(data);
+      }
+
+      me.setInitialDataCount(data.length);
+      me.setInsertingInitialData(true);
+
+      Ext.each(data, function(entry)
+      {
+         Ext.ModelManager.create(entry, model).save();
+      })
+   },
+
+   /**
+    * Get data from store. Usually from Server proxy.
+    * Useful if caching data data that don't change much (e.g. for comboboxes)
+    * Used at {@link #addData}
+    * @private
+    * @param {Ext.data.Store} store Store instance
+    * @return {Array} Array of raw data
+    */
+   getDataFromStore : function(store)
+   {
+      var data = [];
+      store.each(function(item)
+      {
+         data.push(item.data)
+      });
+      return data;
+   },
+   //inherit docs
+   create : function(operation, callback, scope)
+   {
+      var records = operation.records, length = records.length, id, record, i;
+
+      operation.setStarted();
+
+      for ( i = 0; i < length; i++)
+      {
+         record = records[i];
+         this.setRecord(record);
+      }
+
+      operation.setCompleted();
+      operation.setSuccessful();
+
+      if ( typeof callback == 'function')
+      {
+         callback.call(scope || this, operation);
+      }
+   },
+
+   //inherit docs
+   read : function(operation, callback, scope)
+   {
+      var records = [], me = this;
+
+      var finishReading = function(record, request, event)
+      {
+         me.readCallback(operation, record);
+
+         if ( typeof callback == 'function')
+         {
+            callback.call(scope || this, operation);
+         }
+      }
+      //read a single record
+      if (operation.id)
+      {
+         this.getRecord(operation.id, finishReading, me);
+      }
+      else
+      {
+         this.getAllRecords(finishReading, me);
+         operation.setSuccessful();
+      }
+   },
+
+   /**
+    * Injects data in operation instance
+    */
+   readCallback : function(operation, records)
+   {
+      var rec = Ext.isArray(records) ? records : [records];
+      operation.setSuccessful();
+      operation.setCompleted();
+      operation.resultSet = Ext.create('Ext.data.ResultSet',
+      {
+         records : rec,
+         total : rec.length,
+         loaded : true
+      });
+   },
+
+   //inherit docs
+   update : function(operation, callback, scope)
+   {
+      var records = operation.records, length = records.length, record, id, i;
+
+      operation.setStarted();
+
+      for ( i = 0; i < length; i++)
+      {
+         record = records[i];
+         this.updateRecord(record);
+      }
+      operation.setCompleted();
+      operation.setSuccessful();
+
+      if ( typeof callback == 'function')
+      {
+         callback.call(scope || this, operation);
+      }
+   },
+
+   //inherit
+   destroy : function(operation, callback, scope)
+   {
+      var records = operation.records, length = records.length, i;
+
+      for ( i = 0; i < length; i++)
+      {
+         Ext.Array.remove(newIds, records[i].getId());
+         this.removeRecord(records[i], false);
+      }
+
+      //this.setIds(newIds);
+
+      operation.setCompleted();
+      operation.setSuccessful();
+
+      if ( typeof callback == 'function')
+      {
+         callback.call(scope || this, operation);
+      }
+   },
+
+   /**
+    * Create objectStore instance
+    * @param {String} type Transaction type (r, rw)
+    * @param {Function} callback Callback function
+    * @param {Object} scope Callback fn scope
+    * @return {Object} IDB objectStore instance
+    */
+   getObjectStore : function(type, callback, scope)
+   {
+      try
+      {
+         var me = this, transTypes =
+         {
+            'rw' : "readwrite",
+            'r' : "readonly",
+            'vc' : "versionchange"
+         }, transaction = me.getDb().transaction([me.getObjectStoreName()], type ? transTypes[type] : undefined), objectStore = transaction.objectStore(me.getObjectStoreName());
+      }
+      catch(e)
+      {
+         //retry until available due to asynchronous nature of indexedDB transaction. Not the best of workaraunds.
+         Ext.defer(callback, 20, scope || me, [type, callback, scope]);
+         return false;
+         //callback.call(scope || me, type, callback, scope);
+      }
+
+      return objectStore;
+   },
+
+   /**
+    * @private
+    * Fetches a single record by id.
+    * @param {Mixed} id Record id
+    * @param {Function} callback Callback function
+    * @param {Object} scope Callback fn scope
+    */
+   getRecord : function(id, callback, scope)
+   {
+      var me = this, objectStore = me.getObjectStore('r', Ext.bind(me.getRecord, me, [id, callback, scope])), Model = this.model, record;
+
+      if (!objectStore)
+         return false;
+
+      var request = objectStore.get(id);
+
+      request.onerror = function(event)
+      {
+         me.fireEvent('exception', me, event);
+      };
+
+      request.onsuccess = function(event)
+      {
+         record = new Model(request.result, id);
+         if ( typeof callback == 'function')
+         {
+            callback.call(scope || me, record, request, event);
+         }
+      };
+
+      return true;
+   },
+
+   /**
+    * @private
+    * Fetches all records
+    * @param {Function} callback Callback function
+    * @param {Object} scope Callback fn scope
+    */
+   getAllRecords : function(callback, scope)
+   {
+      var me = this, objectStore = me.getObjectStore('r', Ext.bind(me.getAllRecords, me, [callback, scope])), Model = this.model, records = [];
+
+      if (!objectStore)
+         return;
+
+      var request = objectStore.openCursor();
+
+      request.onerror = function(event)
+      {
+         me.fireEvent('exception', me, event);
+      };
+
+      request.onsuccess = function(event)
+      {
+         var cursor = event.target.result;
+         if (cursor)
+         {
+            //res.push(cursor.value);
+            records.push(new Model(cursor.value, cursor.key));
+            cursor["continue"]();
+         }
+         else
+         {
+
+            if ( typeof callback == 'function')
+            {
+               callback.call(scope || me, records, request, event)
+            }
+         }
+
+      };
+   },
+
+   /**
+    * Saves the given record in the Proxy.
+    * @param {Ext.data.Model} record The model instance
+    */
+   setRecord : function(record)
+   {
+      var me = this, rawData = record.data
+      objectStore = me.getObjectStore('rw', Ext.bind(me.setRecord, me, [record]));
+
+      if (!objectStore)
+         return;
+
+      var request = objectStore.add(rawData);
+
+      request.onsuccess = function()
+      {
+         if (me.getInsertingInitialData())
+         {
+            me.setInitialDataCount(me.getInsertingInitialData() - 1);
+            if (me.getInitialDataCount() === 0)
+            {
+               me.setInsertingInitialData(false);
+               me.fireEvent('initialDataInserted');
+            }
+         }
+      }
+   },
+
+   /**
+    * Updates the given record.
+    * @param {Ext.data.Model} record The model instance
+    */
+   updateRecord : function(record)
+   {
+      var me = this, objectStore = me.getObjectStore('rw', Ext.bind(me.updateRecord, me, [record])), Model = this.model, id = record.internalId || record[me.getKeyPath()], modifiedData = record.modified, newData = record.data;
+
+      if (!objectStore)
+         return false;
+
+      var keyRange = IDBKeyRange.only(id), cursorRequest = objectStore.openCursor(keyRange);
+
+      cursorRequest.onsuccess = function(e)
+      {
+         var result = e.target.result;
+         if (!!!result)
+         {
+            return me.setRecord(record);
+         }
+
+         for (var i in modifiedData)
+         {
+            result.value[i] = newData[i];
+         }
+         result.update(result.value);
+      };
+
+      cursorRequest.onerror = function(event)
+      {
+         me.fireEvent('exception', me, event);
+      };
+
+      return true;
+   },
+
+   /**
+    * @private
+    * Physically removes a given record from the object store.
+    * @param {Mixed} id The id of the record to remove
+    */
+   removeRecord : function(id)
+   {
+      var me = this, objectStore = me.getObjectStore('rw', Ext.bind(me.removeRecord, me, [id]));
+      if (!objectStore)
+         return;
+
+      var request = objectStore["delete"](id);
+
+   },
+
+   /**
+    * Destroys all records stored in the proxy
+    */
+   clear : function(callback, scope)
+   {
+      var me = this, objectStore = me.getObjectStore('r', Ext.bind(me.clear, me, [callback, scope])), Model = this.model, records = [];
+
+      if (!objectStore)
+         return;
+
+      var request = objectStore.openCursor();
+
+      request.onerror = function(event)
+      {
+         me.fireEvent('exception', me, event);
+      };
+
+      request.onsuccess = function(event)
+      {
+         var cursor = event.target.result;
+         if (cursor)
+         {
+            me.removeRecord(cursor.key);
+            cursor["continue"]();
+         }
+         me.fireEvent('cleardb', me);
+         callback.call(scope || me);
+      };
+
+   }
+});
+
+
+/**
+ * @author Grgur Grisogono
+ *
+ * BrowserDB Proxy for Ext JS 4 uses best available browser (local) database to use for your locally stored data
+ * Currently available: IndexedDB and WebSQL DB
+ *
+ * Version: 0.3
+ *
+ */
+(function()
+{
+
+   var idb = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB, cfg =
+   {
+   };
+
+   /**
+    * Choose which proxy to extend based on available features. IndexedDB is preferred over Web SQL DB
+    */
+   if (!idb)
+   {
+      cfg.dbInUse = 'websql';
+      
+      Ext.define('Genesis.data.proxy.BrowserDB',
+      {
+         extend :  Genesis.data.proxy.WebSql ,
+
+         alias : 'proxy.browserdb',
+
+         alternateClassName : 'Genesis.data.proxy.BrowserCache',
+
+         dbInUse : cfg.dbInUse,
+
+         /**
+          * Route to the right proxy.
+          * @param {Object} config (optional) Config object.
+          */
+         constructor : function(config)
+         {
+            // make sure config options are synced
+            if (this.dbInUse !== 'idb')
+            {
+               config.dbTable = config.dbTable || config.objectStoreName;
+            }
+            else
+            {
+               config.objectStoreName = config.objectStoreName || config.dbTable;
+            }
+            this.callParent(arguments);
+         }
+      });
+   }
+   else
+   {
+      cfg.dbInUse = 'idb';
+      
+      Ext.define('Genesis.data.proxy.BrowserDB',
+      {
+         extend :  Genesis.data.proxy.IndexedDB ,
+
+         alias : 'proxy.browserdb',
+
+         alternateClassName : 'Genesis.data.proxy.BrowserCache',
+
+         dbInUse : cfg.dbInUse,
+
+         /**
+          * Route to the right proxy.
+          * @param {Object} config (optional) Config object.
+          */
+         constructor : function(config)
+         {
+            // make sure config options are synced
+            if (this.dbInUse !== 'idb')
+            {
+               config.dbTable = config.dbTable || config.objectStoreName;
+            }
+            else
+            {
+               config.objectStoreName = config.objectStoreName || config.dbTable;
+            }
+            this.callParent(arguments);
+         }
+      });
+   }
+})();
+
 
 Ext.define('Genesis.model.CustomerJSON',
 {
@@ -72896,6 +74441,27 @@ Ext.define('Genesis.model.Customer',
             read : 'POST'
          });
          this.getProxy().setUrl(serverHost + '/api/v1/customers/receive_points');
+      }
+   }
+});
+
+Ext.define('Genesis.model.CustomerDB',
+{
+   id : 'CustomerDB',
+   extend :  Genesis.model.Customer ,
+   config :
+   {
+      proxy :
+      {
+         type : 'browserdb',
+         dbName : 'KickBakCustomer',
+         objectStoreName : 'Customer',
+         //dbVersion : '1.0',
+         writer :
+         {
+            type : 'json',
+            writeAllFields : false
+         }
       }
    }
 });
@@ -73564,9 +75130,9 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       var me = this;
 
-      if (!me.earnRedeemPopup)
+      if (!me._earnRedeemPopup)
       {
-         me.earnRedeemPopup = (Ext.create('Ext.Sheet',
+         me._earnRedeemPopup = Ext.create('Ext.Sheet',
             {
                bottom : 0,
                left : 0,
@@ -73610,7 +75176,7 @@ Ext.define('Genesis.controller.ControllerBase',
                      ui : 'action',
                      handler : function()
                      {
-                        me.earnRedeemPopup.hide();
+                        me._earnRedeemPopup.hide();
                         callback();
                      }
                   },
@@ -73620,14 +75186,14 @@ Ext.define('Genesis.controller.ControllerBase',
                      //ui : 'decline',
                      handler : function()
                      {
-                        me.earnRedeemPopup.hide();
+                        me._earnRedeemPopup.hide();
                      }
                   }]
                }]
-            }));
-         Ext.Viewport.add(me.earnRedeemPopup);
+            });
+         Ext.Viewport.add(me._earnRedeemPopup);
       }
-      me.earnRedeemPopup.show();
+      me._earnRedeemPopup.show();
    },
    gravityThreshold : 4.0,
    accelerometerHandler : function(vol, callback)
@@ -73766,137 +75332,165 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       var i, stores =
       {
-         'CustomerStore' : [Ext.StoreMgr.get('Persistent' + 'CustomerStore'), 'CustomerStore', 'CustomerJSON'],
-         'LicenseStore' : [Ext.StoreMgr.get('Persistent' + 'LicenseStore'), 'LicenseStore', 'frontend.LicenseKeyJSON']
-         //'BadgeStore' : [Ext.StoreMgr.get('Persistent' + 'BadgeStore'), 'BadgeStore', 'BadgeJSON']
-         //,'PrizeStore' : [Ext.StoreMgr.get('Persistent' + 'PrizeStore'), 'PrizeStore',
+         'CustomerStore' : [false, Ext.StoreMgr.get('Persistent' + 'CustomerStore'), 'CustomerStore', 'Customer' + (Genesis.fn.isNative() ? 'JSON' : 'DB')],
+         'LicenseStore' : [false, Ext.StoreMgr.get('Persistent' + 'LicenseStore'), 'LicenseStore', 'frontend.LicenseKey' + (Genesis.fn.isNative() ? 'JSON' : 'DB')],
+         'ReceiptStore' : [true, Ext.StoreMgr.get('ReceiptStore'), 'ReceiptStore', 'frontend.Receipt']
+         //'BadgeStore' : [false, Ext.StoreMgr.get('Persistent' + 'BadgeStore'), 'BadgeStore', 'BadgeJSON']
+         //,'PrizeStore' : [false, Ext.StoreMgr.get('Persistent' + 'PrizeStore'), 'PrizeStore',
          // 'CustomerRewardJSON']
       };
       console.debug("Looking for " + storeName);
       for (i in stores)
       {
-         if (!stores[i][0])
+         if (!stores[i][0] && !stores[i][1])
          {
-            Ext.regStore('Persistent' + stores[i][1],
+            Ext.regStore('Persistent' + stores[i][2],
             {
-               model : 'Genesis.model.' + stores[i][2],
+               model : 'Genesis.model.' + stores[i][3],
                syncRemovedRecords : true,
                autoLoad : false
             });
-            stores[i][0] = Ext.StoreMgr.get('Persistent' + stores[i][1]);
+            stores[i][1] = Ext.StoreMgr.get('Persistent' + stores[i][2]);
             //console.debug("Created [" + 'Persistent' + stores[i][1] + "]");
          }
-         else if (stores[i][0].getStoreId() == ('Persistent' + storeName))
+         else if (stores[i][1] && (stores[i][1].getStoreId() == ('Persistent' + storeName)))
          {
             //console.debug("Store[" + stores[i][0].getStoreId() + "] found!");
-            return stores[i][0];
+            return stores[i][1];
          }
       }
 
-      return stores[storeName][0];
+      return stores[storeName][1];
    },
    persistLoadStores : function(callback)
    {
-      var createStatement = "CREATE TABLE IF NOT EXISTS Customer (id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT)";
-      var selectAllStatement = "SELECT * FROM Customer";
-
-      var me = this, store, i, x, j, flag = 0x11000, viewport = me.getViewPortCntlr(), stores = [//
-      [this.persistStore('CustomerStore'), 'CustomerStore', 0x00001], //
-      [this.persistStore('LicenseStore'), 'LicenseStore', 0x00100] //
-      //[this.persistStore('BadgeStore'), 'BadgeStore', 0x01000]];
-      //,[this.persistStore('PrizeStore'), 'PrizeStore', 0x10000]];
+      var me = this, _store, i, x, j, flag = 0x110000, viewport = me.getViewPortCntlr(), stores = [//
+      [this.persistStore('CustomerStore'), 'CustomerStore', 0x000001], //
+      [this.persistStore('LicenseStore'), 'LicenseStore', 0x000100], //
+      [this.persistStore('ReceiptStore'), 'ReceiptStore', 0x001000] //
+      //[this.persistStore('BadgeStore'), 'BadgeStore', 0x010000]];
+      //,[this.persistStore('PrizeStore'), 'PrizeStore', 0x100000]];
       ];
 
       callback = callback || Ext.emptyFn;
 
       for ( i = 0; i < stores.length; i++)
       {
-         store = Ext.StoreMgr.get(stores[i][1]);
-         if (!store)
+         _store = stores[i][0];
+         if (!_store)
          {
+            flag |= stores[i][2];
             console.debug("Cannot find Store[" + stores[i][1] + "] to be restored!");
+            continue;
          }
          try
          {
             //var ids = stores[i][0].getProxy().getIds();
             //console.debug("Ids found are [" + ids + "]");
-            stores[i][0].load(
+            _store.load(
             {
-               callback : function(results, operation)
+               callback : Ext.bind(function(results, operation, success, _flag, store)
                {
-                  flag |= stores[i][2];
-                  var items = [];
-                  if (operation.wasSuccessful())
-                  {
-                     store.removeAll();
-                     for ( x = 0; x < results.length; x++)
-                     {
-                        var data = results[x].get('json');
-                        items.push(data);
-                     }
-                     store.setData(items);
-                     console.debug("persistLoadStores  --- Restored " + results.length + " records to " + stores[i][1]);
-                  }
-                  else
-                  {
-                     console.debug("Error Restoring " + stores[i][1] + " ...");
-                  }
+                  var me = this, items = [];
 
+                  flag |= _flag;
                   //
                   // CustomerStore
                   //
-                  if (stores[i][1] == 'CustomerStore')
+                  if (Genesis.fn.isNative())
                   {
-                     var db = Genesis.db.openDatabase();
-                     try
+                     if (operation.wasSuccessful())
                      {
-                        db.transaction(function(tx)
+                        store.removeAll();
+                        for ( x = 0; x < results.length; x++)
                         {
-                           //
-                           // Create Table
-                           //
-                           tx.executeSql(createStatement, [], function()
-                           {
-                              console.debug("Successfully created/retrieved KickBak-Customers Table");
-                           }, function(tx, error)
-                           {
-                              console.debug("Failed to create KickBak-Customers Table : " + error.message);
-                           });
-                           //
-                           // Retrieve Customers
-                           //
-                           tx.executeSql(selectAllStatement, [], function(tx, result)
-                           {
-                              var items = [];
-                              var dataset = result.rows;
-                              for ( j = 0, item = null; j < dataset.length; j++)
-                              {
-                                 item = dataset.item(j);
-                                 //console.debug("JSON - " + item['json'])
-                                 items.push(Ext.decode(item['json']));
-                              }
-                              Ext.StoreMgr.get('CustomerStore').add(items);
-                              if ((flag |= 0x0010) == 0x11111)
-                              {
-                                 callback();
-                              }
-                              console.debug("persistLoadStores  --- Restored " + items.length + " records from SQL Database, flag=" + flag);
-                           }, function(tx, error)
-                           {
-                              console.debug("No Customer Table found in SQL Database : " + error.message);
-                           });
-                        });
+                           items.push((Genesis.fn.isNative()) ? results[x].get('json') : results[x].getData(true));
+                        }
+                        store.setData(items);
+                        console.debug("persistLoadStores  --- Restored " + results.length + " records to " + store.getStoreId());
                      }
-                     catch(e)
+                     else
                      {
+                        console.debug("Error Restoring " + store.getStoreId() + " ...");
+                     }
+
+                     if (store.getStoreId() == 'CustomerStore')
+                     {
+                        if (results.length > 0)
+                        {
+                           var createStatement = "CREATE TABLE IF NOT EXISTS Customer (id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT)";
+                           var selectAllStatement = "SELECT * FROM Customer";
+                           var db = Genesis.db.openDatabase();
+                           try
+                           {
+                              db.transaction(function(tx)
+                              {
+                                 //
+                                 // Create Table
+                                 //
+                                 tx.executeSql(createStatement, [], function()
+                                 {
+                                    console.debug("Successfully created/retrieved KickBak-Customers Table");
+                                 }, function(tx, error)
+                                 {
+                                    console.debug("Failed to create KickBak-Customers Table : " + error.message);
+                                 });
+                                 //
+                                 // Retrieve Customers
+                                 //
+                                 tx.executeSql(selectAllStatement, [], function(tx, result)
+                                 {
+                                    var items = [];
+                                    var dataset = result.rows;
+                                    for ( j = 0, item = null; j < dataset.length; j++)
+                                    {
+                                       item = dataset.item(j);
+                                       //console.debug("JSON - " + item['json'])
+                                       items.push(Ext.decode(item['json']));
+                                    }
+                                    Ext.StoreMgr.get('CustomerStore').add(items);
+                                    if ((flag |= 0x0010) == 0x11111)
+                                    {
+                                       callback();
+                                    }
+                                    console.debug("persistLoadStores  --- Restored " + items.length + " records from SQL Database, flag=" + flag);
+                                 }, function(tx, error)
+                                 {
+                                    console.debug("No Customer Table found in SQL Database : " + error.message);
+                                 });
+                              });
+                           }
+                           catch(e)
+                           {
+                           }
+                        }
+                        else
+                        {
+                           flag |= 0x000010;
+                        }
+                     }
+
+                     if (flag == 0x111111)
+                     {
+                        callback();
                      }
                   }
-
-                  if (flag == 0x11111)
+                  else
                   {
-                     callback();
+                     if (operation.wasSuccessful())
+                     {
+                        console.debug("persistLoadStores  --- Restored " + results.length + " records to " + store.getStoreId());
+                     }
+                     else
+                     {
+                        console.debug("Error Restoring " + store.getStoreId() + " ...");
+                     }
+                     if (flag == 0x111101)
+                     {
+                        callback();
+                     }
                   }
-               }
+               }, me, [stores[i][2], _store], true)
             });
          }
          catch(e)
@@ -73919,15 +75513,14 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    persistSyncStores : function(storeName, cleanOnly)
    {
-      var createStatement = "CREATE TABLE IF NOT EXISTS Customer (id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT)";
-      var insertStatement = "INSERT INTO Customer (json) VALUES (?)";
       //var updateStatement = "UPDATE Customer SET json = ? WHERE id = ?";
       //var deleteStatement = "DELETE FROM Customer WHERE id=?";
       var dropStatement = "DROP TABLE Customer";
 
       var i, x, items, json, stores = [//
-      [this.persistStore('CustomerStore'), 'CustomerStore', 'Genesis.model.CustomerJSON'], //
-      [this.persistStore('LicenseStore'), 'LicenseStore', 'Genesis.model.frontend.LicenseKeyJSON'] //
+      [this.persistStore('CustomerStore'), 'CustomerStore', 'Customer' + (Genesis.fn.isNative() ? 'JSON' : 'DB')], //
+      [this.persistStore('LicenseStore'), 'LicenseStore', 'frontend.LicenseKey' + (Genesis.fn.isNative() ? 'JSON' : 'DB')], //
+      [this.persistStore('ReceiptStore'), 'ReceiptStore', 'frontend.Receipt'] //
       //[this.persistStore('BadgeStore'), 'BadgeStore']];
       //, [this.persistStore('PrizeStore'), 'PrizeStore']];
       ];
@@ -73936,13 +75529,14 @@ Ext.define('Genesis.controller.ControllerBase',
       //
       // Customer Store
       //
-      if (!storeName || (storeName == stores[0][1]))
+      if (Genesis.fn.isNative() && (!storeName || (storeName == stores[0][1])))
       {
+         var createStatement = "CREATE TABLE IF NOT EXISTS Customer (id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT)";
+         var insertStatement = "INSERT INTO Customer (json) VALUES (?)";
          var db = Genesis.db.openDatabase();
-         var cstore = Ext.StoreMgr.get('CustomerStore');
-
          try
          {
+            var cstore = Ext.StoreMgr.get('CustomerStore');
             db.transaction(function(tx)
             {
                //
@@ -74001,27 +75595,35 @@ Ext.define('Genesis.controller.ControllerBase',
       //
       for ( i = 1; i < stores.length; i++)
       {
-         if (!storeName || (stores[i][1] == storeName))
+         if (!stores[i][0])
          {
-            stores[i][0].removeAll();
-            stores[i][0].getProxy().clear();
-
-            if (!cleanOnly)
-            {
-               items = Ext.StoreMgr.get(stores[i][1]).getRange();
-               for ( x = 0; x < items.length; x++)
-               {
-                  json = items[x].getData(true);
-
-                  stores[i][0].add(Ext.create(stores[i][2],
-                  {
-                     json : json
-                  }));
-               }
-               console.debug("persistSyncStores  --- Found " + items.length + " records in [" + stores[i][1] + "] ...");
-            }
-            stores[i][0].sync();
+            console.debug("Cannot find Store[" + stores[i][1] + "] to be restored!");
+            continue;
          }
+         if (Genesis.fn.isNative())
+         {
+            if (!storeName || (stores[i][1] == storeName))
+            {
+               stores[i][0].removeAll();
+               stores[i][0].getProxy().clear();
+
+               if (!cleanOnly)
+               {
+                  items = Ext.StoreMgr.get(stores[i][1]).getRange();
+                  for ( x = 0; x < items.length; x++)
+                  {
+                     json = items[x].getData(true);
+
+                     stores[i][0].add(Ext.create('Genesis.model.' + stores[i][2], (Genesis.fn.isNative()) ?
+                     {
+                        json : json
+                     } : json));
+                  }
+                  console.debug("persistSyncStores  --- Found " + items.length + " records in [" + stores[i][1] + "] ...");
+               }
+            }
+         }
+         stores[i][0].sync();
       }
    },
    // --------------------------------------------------------------------------
@@ -74783,7 +76385,6 @@ Ext.define('Genesis.controller.MainPageBase',
    xtype : 'mainPageBaseCntlr',
    config :
    {
-      csrfTokenRecv : false,
       models : ['Customer', 'User', 'Merchant', 'CustomerReward', 'Genesis.model.frontend.MainPage', 'Genesis.model.frontend.Signin', 'Genesis.model.frontend.Account'],
       after :
       {
@@ -74948,16 +76549,6 @@ Ext.define('Genesis.controller.MainPageBase',
          case 'merchant' :
          {
             me.goToMerchantMain(true);
-            break;
-         }
-         case 'login' :
-         {
-            // Remove all previous view from viewStack
-            var controller = me.getApplication().getController('client' + '.Checkins');
-            controller.fireEvent('setupCheckinInfo', 'checkin', null, null, null);
-            //me.getApplication().getController('client' + '.Prizes').fireEvent('updatePrizeViews', null);
-            me.setAnimationMode(me.self.animationMode['fade']);
-            me.pushView(me.getLogin());
             break;
          }
       }
@@ -76486,6 +78077,27 @@ Ext.define('Genesis.model.frontend.LicenseKey',
             read : 'GET'
          });
          this.getProxy().setUrl(serverHost + '/api/v1/devices/get_encryption_key');
+      }
+   }
+});
+
+Ext.define('Genesis.model.frontend.LicenseKeyDB',
+{
+   extend :  Genesis.model.frontend.LicenseKey ,
+   id : 'LicenseKeyDB',
+   config :
+   {
+      proxy :
+      {
+         type : 'browserdb',
+         dbName : 'KickBakLicenseKey',
+         objectStoreName : 'LicenseKey',
+         //dbVersion : '1.0',
+         writer :
+         {
+            type : 'json',
+            writeAllFields : false
+         }
       }
    }
 });
@@ -80847,7 +82459,7 @@ Ext.define('Genesis.controller.mobileClient.Challenges',
             {
                if (selectedItem.get('require_verif'))
                {
-                  window.plugins.proximityID.preLoadSend(me, Ext.bind(function(_selectedItem)
+                  window.plugins.proximityID.preLoadSend(me, false, Ext.bind(function(_selectedItem)
                   {
                      if (_selectedItem.get('type').value == 'photo')
                      {
@@ -82216,350 +83828,6 @@ Ext.define('Genesis.model.frontend.ChangePassword',
    }
 });
 
-Ext.define('Genesis.view.MainPageBase',
-{
-   extend :  Genesis.view.ViewBase ,
-                                                                                                          
-   alias : 'widget.mainpagebaseview',
-   config :
-   {
-      models : ['frontend.MainPage'],
-      itemPerPage : 6,
-      layout : 'fit',
-      cls : 'viewport',
-      listeners : [
-      {
-         element : 'element',
-         delegate : 'div.itemWrapper',
-         event : 'tap',
-         fn : "onItemTap"
-      }],
-      scrollable : undefined
-   },
-   //disableAnimation : null,
-   isEligible : Ext.emptyFn,
-   initialize : function()
-   {
-      this.setPreRender([]);
-      this.callParent(arguments);
-   },
-   onItemTap : function(e, target, delegate, eOpts)
-   {
-      var data = Ext.create('Genesis.model.frontend.MainPage', Ext.decode(decodeURIComponent(e.delegatedTarget.getAttribute('data'))));
-      _application.getController(((merchantMode) ? 'server' : 'client') + '.MainPage').fireEvent('itemTap', data);
-   },
-   /**
-    * Removes all items currently in the Container, optionally destroying them all
-    * @param {Boolean} destroy If true, {@link Ext.Component#destroy destroys} each removed Component
-    * @param {Boolean} everything If true, completely remove all items including docked / centered and floating items
-    * @return {Ext.Component} this
-    */
-   cleanView : function()
-   {
-      this.removeAll(true);
-      this.callParent(arguments);
-   },
-   removeAll : function(destroy, everything)
-   {
-      var carousel = this.query('carousel')[0];
-      return carousel.removeAll(true);
-   },
-   createView : function()
-   {
-      var me = this, carousel = me.query('carousel')[0], app = _application;
-      var viewport = app.getController(((merchantMode) ? 'server' : 'client') + '.Viewport'), vport = viewport.getViewport();
-      var show = (!merchantMode) ? viewport.getCheckinInfo().venue != null : false;
-      var items = Ext.StoreMgr.get('MainPageStore').getRange(), list = Ext.Array.clone(items);
-
-      if (!carousel._listitems)
-      {
-         carousel._listitems = [];
-      }
-
-      if (!show)
-      {
-         Ext.Array.forEach(list, function(item, index, all)
-         {
-            switch (item.get('hide'))
-            {
-               case 'true' :
-               {
-                  Ext.Array.remove(items, item);
-                  break;
-               }
-            }
-         });
-      }
-      //
-      // Only update if changes were made
-      //
-      if ((Ext.Array.difference(items, carousel._listitems).length > 0) || //
-      (items.length != carousel._listitems.length))
-      {
-         carousel._listitems = items;
-         carousel.removeAll(true);
-         for (var i = 0; i < Math.ceil(items.length / me.getItemPerPage()); i++)
-         {
-            carousel.add(
-            {
-               xtype : 'component',
-               cls : 'mainMenuSelections',
-               tag : 'mainMenuSelections',
-               scrollable : undefined,
-               data : Ext.Array.pluck(items.slice(i * me.getItemPerPage(), ((i + 1) * me.getItemPerPage())), 'data'),
-               tpl : Ext.create('Ext.XTemplate',
-               // @formatter:off
-               '<tpl for=".">',
-                  '<div class="itemWrapper x-hasbadge" data="{[this.encodeData(values)]}">',
-                     '{[this.isEligible(values)]}',
-                     '<div class="photo"><img src="{[this.getPhoto(values.photo_url)]}" /></div>',
-                     '<div class="photoName">{name}</div>',
-                  '</div>',
-               '</tpl>',
-               // @formatter:on
-               {
-                  encodeData : function(values)
-                  {
-                     return encodeURIComponent(Ext.encode(values));
-                  },
-                  getType : function()
-                  {
-                     return values['pageCntlr'];
-                  },
-                  isEligible : me.isEligible,
-                  getPhoto : function(photoURL)
-                  {
-                     return Ext.isEmpty(photoURL) ? Ext.BLANK_IMAGE_URL : photoURL;
-                  }
-               })
-            });
-         }
-         console.debug("MainPage Icons Refreshed.");
-      }
-      else
-      {
-         console.debug("MainPage Icons Not changed.");
-      }
-      delete carousel._listitems;
-
-      this.callParent(arguments);
-   },
-   showView : function()
-   {
-      var carousel = this.query('carousel')[0];
-      this.callParent(arguments);
-      if (carousel.getInnerItems().length > 0)
-      {
-         carousel.setActiveItem(0);
-      }
-   }
-});
-
-Ext.define('Genesis.view.client.MainPage',
-{
-   extend :  Genesis.view.MainPageBase ,
-   alias : 'widget.clientmainpageview',
-   config :
-   {
-      items : ( function()
-         {
-            var items = [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
-            {
-               xtype : 'titlebar',
-               cls : 'navigationBarTop kbTitle',
-               items : [
-               {
-                  align : 'right',
-                  tag : 'info',
-                  iconCls : 'info',
-                  destroy : function()
-                  {
-                     this.actions.destroy();
-                     this.callParent(arguments);
-                  },
-                  handler : function()
-                  {
-                     if (!this.actions)
-                     {
-                        this.actions = Ext.create('Ext.ActionSheet',
-                        {
-                           defaultUnit : 'em',
-                           padding : '1.0',
-                           hideOnMaskTap : false,
-                           //layout : 'hbox',
-                           defaults :
-                           {
-                              //flex : 1,
-                              xtype : 'button',
-                              defaultUnit : 'em'
-                           },
-                           items : [
-                           {
-                              margin : '0 0 0.5 0',
-                              text : 'Logout',
-                              tag : 'logout'
-                           },
-                           {
-                              text : 'Cancel',
-                              ui : 'cancel',
-                              scope : this,
-                              handler : function()
-                              {
-                                 this.actions.hide();
-                              }
-                           }]
-                        });
-                        Ext.Viewport.add(this.actions);
-                     }
-                     this.actions.show();
-                  }
-               }]
-            }),
-            {
-               xtype : 'carousel',
-               direction : 'horizontal'
-            }];
-            return items;
-         }())
-   },
-   disableAnimation : true,
-   isEligible : function(values, xindex)
-   {
-      var eligibleRewards = (values['pageCntlr'] == 'client' + '.Redemptions');
-      var eligiblePrizes = (values['pageCntlr'] == 'client' + '.Prizes');
-      var showIcon = false;
-
-      values.index = xindex - 1;
-      if (eligibleRewards || eligiblePrizes)
-      {
-         var customers = Ext.StoreMgr.get('CustomerStore').getRange();
-         for (var i = 0; i < customers.length; i++)
-         {
-            var customer = customers[i];
-            if (eligiblePrizes)
-            {
-               if (customer.get('eligible_for_prize'))
-               {
-                  showIcon = true;
-                  break;
-               }
-            }
-            else if (eligibleRewards)
-            {
-               if (customer.get('eligible_for_reward'))
-               {
-                  showIcon = true;
-                  break;
-               }
-            }
-         }
-      }
-      return ((eligibleRewards || eligiblePrizes) ? //
-      '<span data="' + values['pageCntlr'] + '" ' + //
-      'class="x-badge round ' + ((showIcon) ? '' : 'x-item-hidden') + '">' + //
-      '✔' + '</span>' : '');
-   },
-   createView : function()
-   {
-      var me = this;
-      var carousel = this.query('carousel')[0];
-      var app = _application;
-      var viewport = app.getController(((merchantMode) ? 'server' : 'client') + '.Viewport');
-      var vport = viewport.getViewport();
-      var show = (!merchantMode) ? viewport.getCheckinInfo().venue != null : false;
-      var items = Ext.StoreMgr.get('MainPageStore').getRange();
-      var list = Ext.Array.clone(items);
-
-      me.calcCarouselSize();
-
-      if (!carousel._listitems)
-      {
-         carousel._listitems = [];
-      }
-
-      if (!show)
-      {
-         Ext.Array.forEach(list, function(item, index, all)
-         {
-            switch (item.get('hide'))
-            {
-               case 'true' :
-               {
-                  Ext.Array.remove(items, item);
-                  break;
-               }
-            }
-         });
-      }//
-      // Only update if changes were made
-      //
-      if ((Ext.Array.difference(items, carousel._listitems).length > 0) || //
-      (items.length != carousel._listitems.length))
-      {
-      }
-      else
-      {
-         //
-         // Refresh All Badges
-         //
-         var cstore = Ext.StoreMgr.get('CustomerStore');
-         if (cstore)
-         {
-            var customers = cstore.getRange();
-            var eligibleReward = false;
-            var eligiblePrize = false;
-            for (var i = 0; i < customers.length; i++)
-            {
-               var customer = customers[i];
-               if (customer.get('eligible_for_reward'))
-               {
-                  eligibleReward = true;
-                  break;
-               }
-               if (customer.get('eligible_for_prize'))
-               {
-                  eligiblePrize = true;
-                  break;
-               }
-            }
-            if (carousel.getInnerItems().length > 0)
-            {
-               var dom = Ext.DomQuery.select('span[data=client'+'.Redemptions]',carousel.element.dom)[0];
-               if (eligibleReward)
-               {
-                  dom.innerHTML = count;
-                  Ext.fly(dom).removeCls("x-item-hidden");
-               }
-               else
-               {
-                  if (!dom.className.match(/x-item-hidden/))
-                  {
-                     Ext.fly(dom).addCls("x-item-hidden");
-                  }
-               }
-
-               dom = Ext.DomQuery.select('span[data=client'+'.Prizes]',carousel.element.dom)[0];
-               if (eligiblePrize)
-               {
-                  dom.innerHTML = count;
-                  Ext.fly(dom).removeCls("x-item-hidden");
-               }
-               else
-               {
-                  if (!dom.className.match(/x-item-hidden/))
-                  {
-                     Ext.fly(dom).addCls("x-item-hidden");
-                  }
-               }
-            }
-         }
-         console.debug("MainPage Icons Not changed.");
-      }
-
-      this.callParent(arguments);
-   }
-});
-
 Ext.define('Genesis.view.LoginPage',
 {
    extend :  Genesis.view.ViewBase ,
@@ -83024,23 +84292,16 @@ Ext.define('Genesis.view.CreateAccountPage',
    }
 });
 
-Ext.define('Genesis.controller.client.MainPage',
+Ext.define('Genesis.controller.client.Login',
 {
-   extend :  Genesis.controller.MainPageBase ,
-   xtype : 'clientMainPageCntlr',
+   extend :  Genesis.controller.ControllerBase ,
+   xtype : 'clientLoginCntlr',
    config :
    {
-      csrfTokenRecv : false,
-      models : ['Genesis.model.frontend.MainPage', 'Genesis.model.frontend.Signin', 'Genesis.model.frontend.Account', 'Genesis.model.frontend.ChangePassword', 'Venue', 'Customer', 'User', 'Merchant', 'CustomerReward'],
-      after :
-      {
-         'mainPage' : ''
-      },
+      models : ['Genesis.model.frontend.Signin', 'Genesis.model.frontend.Account', 'Genesis.model.frontend.ChangePassword', 'Venue', 'Customer', 'User', 'Merchant', 'CustomerReward'],
       routes :
       {
-         //'' : 'openPage', //Default do nothing
          'login' : 'loginPage',
-         'merchant' : 'merchantPage',
          'signin' : 'signInPage',
          'password_reset' : 'signInResetPage',
          'password_change' : 'signInChangePage',
@@ -83048,15 +84309,6 @@ Ext.define('Genesis.controller.client.MainPage',
       },
       refs :
       {
-         // Main Page
-         main :
-         {
-            selector : 'clientmainpageview',
-            autoCreate : true,
-            xtype : 'clientmainpageview'
-         },
-         mainCarousel : 'clientmainpageview',
-         infoBtn : 'button[tag=info]',
          // Login Page
          login :
          {
@@ -83087,10 +84339,7 @@ Ext.define('Genesis.controller.client.MainPage',
             selector : 'createaccountpageview',
             autoCreate : true,
             xtype : 'createaccountpageview'
-         },
-         mainCarousel : 'clientmainpageview',
-         shortcutTabBar : 'clientmainpageview tabbar[tag=navigationBarBottom]',
-         prizesBtn : 'clientmainpageview tabbar[tag=navigationBarBottom] button[tag=prizesSC]'
+         }
       },
       control :
       {
@@ -83130,10 +84379,6 @@ Ext.define('Genesis.controller.client.MainPage',
          'actionsheet button[tag=logout]' :
          {
             tap : 'onLogoutTap'
-         },
-         shortcutTabBar :
-         {
-            tabchange : 'onTabBarTabChange'
          },
          createAccount :
          {
@@ -83194,126 +84439,12 @@ Ext.define('Genesis.controller.client.MainPage',
    {
       return msg + Genesis.constants.addCRLF() + 'Please retype the passwords';
    },
-   initCallback : function()
-   {
-      var me = this;
-      var db = Genesis.db.getLocalDB();
-      if (db['auth_code'])
-      {
-         me.fireEvent('refreshCSRF');
-      }
-      else
-      {
-         me.resetView();
-         me.redirectTo('login');
-      }
-   },
    init : function(app)
    {
       var me = this;
       me.callParent(arguments);
 
-      //
-      // Customer Accounts for an user
-      //
-      me.initCustomerStore();
-
-      //
-      // Venue Store for Redeem Shorcuts
-      //
-      me.initVenueStore();
-
-      console.log("Client MainPage Init");
-   },
-   initCustomerStore : function()
-   {
-      var me = this;
-      Ext.regStore('CustomerStore',
-      {
-         model : 'Genesis.model.Customer',
-         autoLoad : false,
-         pageSize : 1000,
-         listeners :
-         {
-            scope : me,
-            'load' : function(store, records, successful, operation, eOpts)
-            {
-            },
-            'metachange' : function(store, proxy, eOpts)
-            {
-               var metaData = proxy.getReader().metaData;
-               //
-               // QR Code from Transfer Points
-               //
-               var qrcode = metaData['data'];
-               if (qrcode)
-               {
-                  /*
-                   console.debug("QRCode received for Points Transfer" + '\n' + //
-                   qrcode);
-                   */
-                  var app = me.getApplication();
-                  var controller = app.getController('client.Accounts');
-                  controller.callBackStack['arguments'] = [metaData];
-                  controller.fireEvent('triggerCallbacksChain');
-               }
-            }
-         },
-         grouper :
-         {
-            groupFn : function(record)
-            {
-               return record.getMerchant().get('name');
-            }
-         },
-         filters : [
-         {
-            filterFn : function(record)
-            {
-               return Customer.isValid(record.getId());
-            }
-         }],
-         sorters : [
-         {
-            sorterFn : function(o1, o2)
-            {
-               var name1 = o1.getMerchant().get('name'), name2 = o2.getMerchant().get('name');
-               if (name1 < name2)//sort string ascending
-                  return -1
-               if (name1 > name2)
-                  return 1
-               return 0 //default return value (no sorting)
-            }
-         }]
-      });
-   },
-   initVenueStore : function()
-   {
-      var me = this;
-      Ext.regStore('VenueStore',
-      {
-         model : 'Genesis.model.Venue',
-         autoLoad : false,
-         sorters : [
-         {
-            property : 'distance',
-            direction : 'ASC'
-         }],
-         listeners :
-         {
-            'metachange' : function(store, proxy, eOpts)
-            {
-               // Let Other event handlers udpate the metaData first ...
-               //
-               // No MetaData returned for now ...
-               //
-               if (store.isLoading())
-               {
-                  me.fireEvent('updatemetadata', proxy.getReader().metaData);
-               }
-            }
-         }
-      });
+      console.log("Client Login Init");
    },
    // --------------------------------------------------------------------------
    // Event Handlers
@@ -83321,9 +84452,7 @@ Ext.define('Genesis.controller.client.MainPage',
    onLocationUpdate : function(position)
    {
       var me = this, viewport = me.getViewPortCntlr(), db = Genesis.db.getLocalDB(), venue = Ext.create('Genesis.model.Venue', db['last_check_in'].venue);
-      var latitude_1 = position.coords.getLatitude(), longitude_1 = position.coords.getLongitude();
-      var latitude_2 = venue.get('latitude'), longitude_2 = venue.get('longitude');
-
+      var latitude_1 = position.coords.getLatitude(), longitude_1 = position.coords.getLongitude(), latitude_2 = venue.get('latitude'), longitude_2 = venue.get('longitude');
       var distance = 6371000 * Math.acos(Math.cos(Math.radians(latitude_1)) * Math.cos(Math.radians(latitude_2)) * Math.cos(Math.radians(longitude_2) - Math.radians(longitude_1)) + Math.sin(Math.radians(latitude_1)) * Math.sin(Math.radians(latitude_2)));
 
       //
@@ -83331,7 +84460,7 @@ Ext.define('Genesis.controller.client.MainPage',
       //
       if (distance <= Genesis.constants.minDistance)
       {
-         var app = me.getApplication(), controller = app.getController('client.Checkins');
+         var app = me.getApplication(), controller = app.getController('client' + '.Checkins');
          var customer = Ext.StoreMgr.get('CustomerStore').getById(db['last_check_in'].customerId), metaData = db['last_check_in'].metaData;
 
          console.debug("Restoring Previous Venue Location ...");
@@ -83350,52 +84479,6 @@ Ext.define('Genesis.controller.client.MainPage',
    // --------------------------------------------------------------------------
    // MainPage
    // --------------------------------------------------------------------------
-   onActivate : function(activeItem, c, oldActiveItem, eOpts)
-   {
-      if (Genesis.fn.isNative())
-      {
-         navigator.splashscreen.hide();
-      }
-      //activeItem.createView();
-      this.getInfoBtn()[(merchantMode) ? 'hide' : 'show']();
-      //Ext.Viewport.setMasked(null);
-   },
-   onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
-   {
-      //this.getInfoBtn().hide();
-   },
-   onTabBarTabChange : function(bar, newTab, oldTab, eOpts)
-   {
-      switch(newTab.config.tag)
-      {
-         default :
-         case 'rewards' :
-         {
-            Ext.defer(function()
-            {
-               try
-               {
-                  if (newTab)
-                  {
-                     newTab.setActive(false);
-                  }
-
-                  if (oldTab)
-                  {
-                     oldTab.setActive(false);
-                  }
-                  bar._activeTab = null;
-               }
-               catch(e)
-               {
-               }
-            }, 2 * 1000);
-            break;
-         }
-      }
-
-      return true;
-   },
    // --------------------------------------------------------------------------
    // Login Page
    // --------------------------------------------------------------------------
@@ -83404,9 +84487,10 @@ Ext.define('Genesis.controller.client.MainPage',
       var me = this, viewport = me.getViewPortCntlr();
 
       Genesis.db.resetStorage();
+      me.persistSyncStores(null, true);
+
       Ext.StoreMgr.get('CustomerStore').removeAll();
       Ext.StoreMgr.get('VenueStore').removeAll();
-      me.persistSyncStores(null, true);
       viewport.setLoggedIn(false);
       me._loggingIn = false;
 
@@ -84039,10 +85123,6 @@ Ext.define('Genesis.controller.client.MainPage',
    {
       this.openPage('login');
    },
-   merchantPage : function()
-   {
-      this.openPage('merchant');
-   },
    signInPage : function()
    {
       /*
@@ -84073,6 +85153,590 @@ Ext.define('Genesis.controller.client.MainPage',
    {
       this.setAnimationMode(this.self.animationMode['slide']);
       this.pushView(this.getCreateAccount());
+   },
+   // --------------------------------------------------------------------------
+   // Base Class Overrides
+   // --------------------------------------------------------------------------
+   openPage : function(subFeature)
+   {
+      var me = this;
+
+      switch (subFeature)
+      {
+         case 'login' :
+         {
+            // Remove all previous view from viewStack
+            var controller = me.getApplication().getController('client' + '.Checkins');
+            controller.fireEvent('setupCheckinInfo', 'checkin', null, null, null);
+            //me.getApplication().getController('client' + '.Prizes').fireEvent('updatePrizeViews', null);
+            me.setAnimationMode(me.self.animationMode['fade']);
+            me.pushView(me.getLogin());
+            break;
+         }
+      }
+   }
+});
+
+Ext.define('Genesis.view.MainPageBase',
+{
+   extend :  Genesis.view.ViewBase ,
+                                                                                                          
+   alias : 'widget.mainpagebaseview',
+   config :
+   {
+      models : ['frontend.MainPage'],
+      itemPerPage : 6,
+      layout : 'fit',
+      cls : 'viewport',
+      listeners : [
+      {
+         element : 'element',
+         delegate : 'div.itemWrapper',
+         event : 'tap',
+         fn : "onItemTap"
+      }],
+      scrollable : undefined
+   },
+   //disableAnimation : null,
+   isEligible : Ext.emptyFn,
+   initialize : function()
+   {
+      this.setPreRender([]);
+      this.callParent(arguments);
+   },
+   onItemTap : function(e, target, delegate, eOpts)
+   {
+      var data = Ext.create('Genesis.model.frontend.MainPage', Ext.decode(decodeURIComponent(e.delegatedTarget.getAttribute('data'))));
+      _application.getController(((merchantMode) ? 'server' : 'client') + '.MainPage').fireEvent('itemTap', data);
+   },
+   /**
+    * Removes all items currently in the Container, optionally destroying them all
+    * @param {Boolean} destroy If true, {@link Ext.Component#destroy destroys} each removed Component
+    * @param {Boolean} everything If true, completely remove all items including docked / centered and floating items
+    * @return {Ext.Component} this
+    */
+   cleanView : function()
+   {
+      this.removeAll(true);
+      this.callParent(arguments);
+   },
+   removeAll : function(destroy, everything)
+   {
+      var carousel = this.query('carousel')[0];
+      return carousel.removeAll(true);
+   },
+   createView : function()
+   {
+      var me = this, carousel = me.query('carousel')[0], app = _application;
+      var viewport = app.getController(((merchantMode) ? 'server' : 'client') + '.Viewport'), vport = viewport.getViewport();
+      var show = (!merchantMode) ? viewport.getCheckinInfo().venue != null : false;
+      var items = Ext.StoreMgr.get('MainPageStore').getRange(), list = Ext.Array.clone(items);
+
+      if (!carousel._listitems)
+      {
+         carousel._listitems = [];
+      }
+
+      if (!show)
+      {
+         Ext.Array.forEach(list, function(item, index, all)
+         {
+            switch (item.get('hide'))
+            {
+               case 'true' :
+               {
+                  Ext.Array.remove(items, item);
+                  break;
+               }
+            }
+         });
+      }
+      //
+      // Only update if changes were made
+      //
+      if ((Ext.Array.difference(items, carousel._listitems).length > 0) || //
+      (items.length != carousel._listitems.length))
+      {
+         carousel._listitems = items;
+         carousel.removeAll(true);
+         for (var i = 0; i < Math.ceil(items.length / me.getItemPerPage()); i++)
+         {
+            carousel.add(
+            {
+               xtype : 'component',
+               cls : 'mainMenuSelections',
+               tag : 'mainMenuSelections',
+               scrollable : undefined,
+               data : Ext.Array.pluck(items.slice(i * me.getItemPerPage(), ((i + 1) * me.getItemPerPage())), 'data'),
+               tpl : Ext.create('Ext.XTemplate',
+               // @formatter:off
+               '<tpl for=".">',
+                  '<div class="itemWrapper x-hasbadge" data="{[this.encodeData(values)]}">',
+                     '{[this.isEligible(values)]}',
+                     '<div class="photo"><img src="{[this.getPhoto(values.photo_url)]}" /></div>',
+                     '<div class="photoName">{name}</div>',
+                  '</div>',
+               '</tpl>',
+               // @formatter:on
+               {
+                  encodeData : function(values)
+                  {
+                     return encodeURIComponent(Ext.encode(values));
+                  },
+                  getType : function()
+                  {
+                     return values['pageCntlr'];
+                  },
+                  isEligible : me.isEligible,
+                  getPhoto : function(photoURL)
+                  {
+                     return Ext.isEmpty(photoURL) ? Ext.BLANK_IMAGE_URL : photoURL;
+                  }
+               })
+            });
+         }
+         console.debug("MainPage Icons Refreshed.");
+      }
+      else
+      {
+         console.debug("MainPage Icons Not changed.");
+      }
+      delete carousel._listitems;
+
+      this.callParent(arguments);
+   },
+   showView : function()
+   {
+      var carousel = this.query('carousel')[0];
+      this.callParent(arguments);
+      if (carousel.getInnerItems().length > 0)
+      {
+         carousel.setActiveItem(0);
+      }
+   }
+});
+
+Ext.define('Genesis.view.client.MainPage',
+{
+   extend :  Genesis.view.MainPageBase ,
+   alias : 'widget.clientmainpageview',
+   config :
+   {
+      items : ( function()
+         {
+            var items = [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
+            {
+               xtype : 'titlebar',
+               cls : 'navigationBarTop kbTitle',
+               items : [
+               {
+                  align : 'right',
+                  tag : 'info',
+                  iconCls : 'info',
+                  destroy : function()
+                  {
+                     this.actions.destroy();
+                     this.callParent(arguments);
+                  },
+                  handler : function()
+                  {
+                     if (!this.actions)
+                     {
+                        this.actions = Ext.create('Ext.ActionSheet',
+                        {
+                           defaultUnit : 'em',
+                           padding : '1.0',
+                           hideOnMaskTap : false,
+                           //layout : 'hbox',
+                           defaults :
+                           {
+                              //flex : 1,
+                              xtype : 'button',
+                              defaultUnit : 'em'
+                           },
+                           items : [
+                           {
+                              margin : '0 0 0.5 0',
+                              text : 'Logout',
+                              tag : 'logout'
+                           },
+                           {
+                              text : 'Cancel',
+                              ui : 'cancel',
+                              scope : this,
+                              handler : function()
+                              {
+                                 this.actions.hide();
+                              }
+                           }]
+                        });
+                        Ext.Viewport.add(this.actions);
+                     }
+                     this.actions.show();
+                  }
+               }]
+            }),
+            {
+               xtype : 'carousel',
+               direction : 'horizontal'
+            }];
+            return items;
+         }())
+   },
+   disableAnimation : true,
+   isEligible : function(values, xindex)
+   {
+      var eligibleRewards = (values['pageCntlr'] == 'client' + '.Redemptions');
+      var eligiblePrizes = (values['pageCntlr'] == 'client' + '.Prizes');
+      var showIcon = false;
+
+      values.index = xindex - 1;
+      if (eligibleRewards || eligiblePrizes)
+      {
+         var customers = Ext.StoreMgr.get('CustomerStore').getRange();
+         for (var i = 0; i < customers.length; i++)
+         {
+            var customer = customers[i];
+            if (eligiblePrizes)
+            {
+               if (customer.get('eligible_for_prize'))
+               {
+                  showIcon = true;
+                  break;
+               }
+            }
+            else if (eligibleRewards)
+            {
+               if (customer.get('eligible_for_reward'))
+               {
+                  showIcon = true;
+                  break;
+               }
+            }
+         }
+      }
+      return ((eligibleRewards || eligiblePrizes) ? //
+      '<span data="' + values['pageCntlr'] + '" ' + //
+      'class="x-badge round ' + ((showIcon) ? '' : 'x-item-hidden') + '">' + //
+      '✔' + '</span>' : '');
+   },
+   createView : function()
+   {
+      var me = this;
+      var carousel = this.query('carousel')[0];
+      var app = _application;
+      var viewport = app.getController(((merchantMode) ? 'server' : 'client') + '.Viewport');
+      var vport = viewport.getViewport();
+      var show = (!merchantMode) ? viewport.getCheckinInfo().venue != null : false;
+      var items = Ext.StoreMgr.get('MainPageStore').getRange();
+      var list = Ext.Array.clone(items);
+
+      me.calcCarouselSize();
+
+      if (!carousel._listitems)
+      {
+         carousel._listitems = [];
+      }
+
+      if (!show)
+      {
+         Ext.Array.forEach(list, function(item, index, all)
+         {
+            switch (item.get('hide'))
+            {
+               case 'true' :
+               {
+                  Ext.Array.remove(items, item);
+                  break;
+               }
+            }
+         });
+      }//
+      // Only update if changes were made
+      //
+      if ((Ext.Array.difference(items, carousel._listitems).length > 0) || //
+      (items.length != carousel._listitems.length))
+      {
+      }
+      else
+      {
+         //
+         // Refresh All Badges
+         //
+         var cstore = Ext.StoreMgr.get('CustomerStore');
+         if (cstore)
+         {
+            var customers = cstore.getRange();
+            var eligibleReward = false;
+            var eligiblePrize = false;
+            for (var i = 0; i < customers.length; i++)
+            {
+               var customer = customers[i];
+               if (customer.get('eligible_for_reward'))
+               {
+                  eligibleReward = true;
+                  break;
+               }
+               if (customer.get('eligible_for_prize'))
+               {
+                  eligiblePrize = true;
+                  break;
+               }
+            }
+            if (carousel.getInnerItems().length > 0)
+            {
+               var dom = Ext.DomQuery.select('span[data=client'+'.Redemptions]',carousel.element.dom)[0];
+               if (eligibleReward)
+               {
+                  dom.innerHTML = count;
+                  Ext.fly(dom).removeCls("x-item-hidden");
+               }
+               else
+               {
+                  if (!dom.className.match(/x-item-hidden/))
+                  {
+                     Ext.fly(dom).addCls("x-item-hidden");
+                  }
+               }
+
+               dom = Ext.DomQuery.select('span[data=client'+'.Prizes]',carousel.element.dom)[0];
+               if (eligiblePrize)
+               {
+                  dom.innerHTML = count;
+                  Ext.fly(dom).removeCls("x-item-hidden");
+               }
+               else
+               {
+                  if (!dom.className.match(/x-item-hidden/))
+                  {
+                     Ext.fly(dom).addCls("x-item-hidden");
+                  }
+               }
+            }
+         }
+         console.debug("MainPage Icons Not changed.");
+      }
+
+      this.callParent(arguments);
+   }
+});
+
+Ext.define('Genesis.controller.client.MainPage',
+{
+   extend :  Genesis.controller.MainPageBase ,
+   xtype : 'clientMainPageCntlr',
+   config :
+   {
+      models : ['Genesis.model.frontend.MainPage', 'Venue', 'Customer', 'User', 'Merchant', 'CustomerReward'],
+      routes :
+      {
+         //'' : 'openPage', //Default do nothing
+         'merchant' : 'merchantPage'
+      },
+      refs :
+      {
+         // Main Page
+         main :
+         {
+            selector : 'clientmainpageview',
+            autoCreate : true,
+            xtype : 'clientmainpageview'
+         },
+         mainCarousel : 'clientmainpageview',
+         infoBtn : 'button[tag=info]',
+         shortcutTabBar : 'clientmainpageview tabbar[tag=navigationBarBottom]',
+         prizesBtn : 'clientmainpageview tabbar[tag=navigationBarBottom] button[tag=prizesSC]'
+      },
+      control :
+      {
+         shortcutTabBar :
+         {
+            tabchange : 'onTabBarTabChange'
+         }
+      },
+      listeners :
+      {
+      }
+   },
+   initCallback : function()
+   {
+      var me = this;
+      var db = Genesis.db.getLocalDB();
+      if (db['auth_code'])
+      {
+         me.getApplication.getController('client' + '.Login').fireEvent('refreshCSRF');
+      }
+      else
+      {
+         me.resetView();
+         me.redirectTo('login');
+      }
+   },
+   init : function(app)
+   {
+      var me = this;
+      me.callParent(arguments);
+
+      //
+      // Customer Accounts for an user
+      //
+      me.initCustomerStore();
+
+      //
+      // Venue Store for Redeem Shorcuts
+      //
+      me.initVenueStore();
+
+      console.log("Client MainPage Init");
+   },
+   initCustomerStore : function()
+   {
+      var me = this;
+      Ext.regStore('CustomerStore',
+      {
+         model : 'Genesis.model.Customer',
+         autoLoad : false,
+         pageSize : 1000,
+         listeners :
+         {
+            scope : me,
+            'load' : function(store, records, successful, operation, eOpts)
+            {
+            },
+            'metachange' : function(store, proxy, eOpts)
+            {
+               var metaData = proxy.getReader().metaData;
+               //
+               // QR Code from Transfer Points
+               //
+               var qrcode = metaData['data'];
+               if (qrcode)
+               {
+                  /*
+                   console.debug("QRCode received for Points Transfer" + '\n' + //
+                   qrcode);
+                   */
+                  var app = me.getApplication();
+                  var controller = app.getController('client' + '.Accounts');
+                  controller.callBackStack['arguments'] = [metaData];
+                  controller.fireEvent('triggerCallbacksChain');
+               }
+            }
+         },
+         grouper :
+         {
+            groupFn : function(record)
+            {
+               return record.getMerchant().get('name');
+            }
+         },
+         filters : [
+         {
+            filterFn : function(record)
+            {
+               return Customer.isValid(record.getId());
+            }
+         }],
+         sorters : [
+         {
+            sorterFn : function(o1, o2)
+            {
+               var name1 = o1.getMerchant().get('name'), name2 = o2.getMerchant().get('name');
+               if (name1 < name2)//sort string ascending
+                  return -1
+               if (name1 > name2)
+                  return 1
+               return 0 //default return value (no sorting)
+            }
+         }]
+      });
+   },
+   initVenueStore : function()
+   {
+      var me = this;
+      Ext.regStore('VenueStore',
+      {
+         model : 'Genesis.model.Venue',
+         autoLoad : false,
+         sorters : [
+         {
+            property : 'distance',
+            direction : 'ASC'
+         }],
+         listeners :
+         {
+            'metachange' : function(store, proxy, eOpts)
+            {
+               // Let Other event handlers udpate the metaData first ...
+               //
+               // No MetaData returned for now ...
+               //
+               if (store.isLoading())
+               {
+                  me.fireEvent('updatemetadata', proxy.getReader().metaData);
+               }
+            }
+         }
+      });
+   },
+   // --------------------------------------------------------------------------
+   // Event Handlers
+   // --------------------------------------------------------------------------
+   // --------------------------------------------------------------------------
+   // MainPage
+   // --------------------------------------------------------------------------
+   onActivate : function(activeItem, c, oldActiveItem, eOpts)
+   {
+      if (Genesis.fn.isNative())
+      {
+         navigator.splashscreen.hide();
+      }
+      //activeItem.createView();
+      this.getInfoBtn()[(merchantMode) ? 'hide' : 'show']();
+      //Ext.Viewport.setMasked(null);
+   },
+   onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
+   {
+      //this.getInfoBtn().hide();
+   },
+   onTabBarTabChange : function(bar, newTab, oldTab, eOpts)
+   {
+      switch(newTab.config.tag)
+      {
+         default :
+         case 'rewards' :
+         {
+            Ext.defer(function()
+            {
+               try
+               {
+                  if (newTab)
+                  {
+                     newTab.setActive(false);
+                  }
+
+                  if (oldTab)
+                  {
+                     oldTab.setActive(false);
+                  }
+                  bar._activeTab = null;
+               }
+               catch(e)
+               {
+               }
+            }, 2 * 1000);
+            break;
+         }
+      }
+
+      return true;
+   },
+   // --------------------------------------------------------------------------
+   // Page Navigation
+   // --------------------------------------------------------------------------
+   merchantPage : function()
+   {
+      this.openPage('merchant');
    }
    // --------------------------------------------------------------------------
    // Base Class Overrides
@@ -86206,7 +87870,7 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
          case 'redeemPrize' :
          case 'redeemReward' :
          {
-            window.plugins.proximityID.preLoadSend(me, Ext.bind(function(_btn, _venue, _view)
+            window.plugins.proximityID.preLoadSend(me, false, Ext.bind(function(_btn, _venue, _view)
             {
                me.fireEvent('redeemitem', _btn, _venue, _view);
             }, me, [btn, venue, view]));
@@ -87927,7 +89591,7 @@ Ext.define('Genesis.controller.client.Rewards',
       }
       else
       {
-         window.plugins.proximityID.preLoadSend(me, Ext.bind(function(_notUseGeolocation)
+         window.plugins.proximityID.preLoadSend(me, !notUseGeolocation, Ext.bind(function(_notUseGeolocation)
          {
             //var earnPts = Ext.bind(me.onEarnPtsSC, me);
             //me.checkReferralPrompt(earnPts, earnPts);
@@ -89118,9 +90782,9 @@ Ext.define('Genesis.controller.client.Viewport',
    },
    onUpdateDeviceToken : function()
    {
-      var me = this, mainPage = me.getApplication().getController('client' + '.MainPage'), proxy = Account.getProxy();
+      var me = this, login = me.getApplication().getController('client' + '.Login'), proxy = Account.getProxy();
 
-      if (me.getLoggedIn() && Genesis.constants.device && mainPage && !mainPage.updatedDeviceToken)
+      if (me.getLoggedIn() && Genesis.constants.device && login && !login.updatedDeviceToken)
       {
          Account['setUpdateRegUserDeviceUrl']();
          console.debug("setUpdateRegUserDeviceUrl - Refreshing Device Token ...");
@@ -89139,7 +90803,7 @@ Ext.define('Genesis.controller.client.Viewport',
                proxy.supressErrorsPopup = false;
                if (operation.wasSuccessful())
                {
-                  mainPage.updatedDeviceToken = true;
+                  login.updatedDeviceToken = true;
                }
             }
          });
@@ -89458,7 +91122,7 @@ Ext.define('Genesis.controller.client.Viewport',
       if (loggedIn)
       {
          //var app = this.getApplication();
-         //var controller = app.getController(()(merchantMode) ? 'server': 'client') + '.MainPage');
+         //var controller = app.getController(()(merchantMode) ? 'server': 'client') + '.Login');
 
          me.setLoggedIn(loggedIn);
          console.debug("Going to SignIn Page ...");
@@ -89519,7 +91183,7 @@ Ext.define('Genesis.profile.MobileClient',
 Ext.define('Genesis.view.Viewport',
 {
    extend :  Ext.Container ,
-                                                              
+                                                                                                                 
    xtype : 'viewportview',
    config :
    {
@@ -90658,7 +92322,8 @@ Ext.define('Ext.device.notification.Simulator',
             }, 1);
          }
       };
-      msg._hideCallbackFn = Ext.bind(callback, this, [buttons[buttons.length - 1].itemId]);
+      var itemId = (buttons.length >= 1) ? buttons[buttons.length - 1].itemId : "";
+      msg._hideCallbackFn = Ext.bind(callback, this, [itemId]);
       msg.getModal().on('hide', msg._hideCallbackFn, this);
 
       msg.show(
@@ -91205,7 +92870,7 @@ var addToHome = (function(w)
 
 var pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false;
 
-window.debugMode = true;
+window.debugMode = false;
 window.merchantMode = false;
 window.serverHost = location.origin;
 window._application = null;
@@ -91303,7 +92968,7 @@ will need to resolve manually.
             'client.MainPage', 'widgets.client.RedeemItemDetail', 'client.Badges', 'client.JackpotWinners', 'client.MerchantAccount',
             // //
             'client.MerchantDetails', 'client.Accounts', 'client.Prizes', 'Viewport'],
-            controllers : ['mobileClient.Challenges', 'client.Rewards', 'client.Redemptions', 'client.Viewport', 'client.MainPage',
+            controllers : ['mobileClient.Challenges', 'client.Rewards', 'client.Redemptions', 'client.Viewport', 'client.Login', 'client.MainPage',
             // //
             'client.Badges', 'client.Merchants', 'client.Accounts', 'client.Settings', 'client.Checkins', 'client.JackpotWinners', //
             'client.Prizes'],
