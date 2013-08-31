@@ -17,6 +17,7 @@ window.plugins = window.plugins ||
          };
 
          _win = _win || Ext.emptyFn;
+
          Ext.Viewport.setMasked(null);
          Ext.defer(function()
          {
@@ -60,6 +61,8 @@ window.plugins = window.plugins ||
             _cntlr._actions.show();
          }, 0.25 * 1000, _cntlr);
       }, null, [cntlr, win], true);
+
+      fail = fail || Ext.emptyFn;
 
       Ext.Viewport.setMasked(
       {
