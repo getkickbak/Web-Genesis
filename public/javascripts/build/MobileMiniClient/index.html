@@ -9,11 +9,7 @@
       <meta name="apple-mobile-web-app-capable" content="yes">
       <meta name="apple-touch-fullscreen" content="yes">
       <link rel="apple-touch-icon-precomposed" href="resources/icons/icon.png">
-      <!--
-      <link href="resources/css/iphone.css" rel="stylesheet">
-      <link href="../lib/bootstrap-switch/static/stylesheets/bootstrap-switch.css" rel="stylesheet">
-      !-->
-      <link href="../lib/bootstrap-3.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
+      <link href="lib/css/bootstrap.min.css" rel="stylesheet">
       <link href="resources/css/mini_client.css" rel="stylesheet">
       <meta charset="UTF-8">
       <title>KickBak</title>
@@ -50,16 +46,15 @@
                      <div class="x-container item x-layout-box-item x-flexed x-sized" style="-webkit-box-flex: 1;">
                         <div class="x-dock x-dock-vertical x-sized">
                            <div class="x-unsized title x-dock-item x-docked-top">
-                              <div id="earnPtsMessage" class="x-innerhtml ">
-                                 Confirm before tapping against the KICKBAK Card Reader ...
-                              </div>
+                              <div id="earnPtsMessage" class="x-innerhtml"></div>
                            </div>
                            <div class="x-dock-body">
                               <div class="x-inner x-layout-fit x-stretched">
                                  <div class="itemPhoto x-layout-fit-item x-sized">
                                     <div class="x-innerhtml ">
                                        <div class="photoVCenterHelper"></div>
-                                       <div class="photoVCenterContent"><img id="earnPtsImage" src="resources/themes/images/v1/ios/prizewon/transmit.svg">
+                                       <div class="photoVCenterContent">
+                                          <img id="earnPtsImage">
                                        </div>
                                     </div>
                                  </div>
@@ -72,23 +67,34 @@
                <div class="x-container x-unsized x-dock-item x-docked-bottom">
                   <div class="x-inner x-horizontal x-align-stretch x-pack-start x-layout-box" style="padding: 0em 1em 0.5em;">
                      <div class="x-button x-button-action x-layout-box-item x-flexed x-sized" style="margin: 0em 0.5em 0.5em 0em; height: 3em !important; -webkit-box-flex: 1;">
-                        <span class="x-button-label" style="">Proceed</span>
+                        
+                        <span class="x-button-label">Proceed</span>
                      </div>
                      <div class="x-button x-button-cancel x-layout-box-item x-flexed x-sized" style="height: 3em !important; -webkit-box-flex: 1;">
-                        <span class="x-button-label" style="">Cancel</span>
+                        <span class="x-button-label">Cancel</span>
                      </div>
                   </div>
                </div>
             </div>
          </div>
       </div>
-      <script type="text/javascript" src="../lib/zepto.min.js"></script>
-      <!--
-      <script type="text/javascript" src="../lib/overthrow.sidescroller.min.js"></script>
-      <script type="text/javascript" src="../lib/iscroll-min.js"></script>
-      -->
+      <script type="text/javascript" src="lib/zepto.min.js"></script>
       <script type="text/javascript">
          window.jQuery = Zepto;
+         function checkAppCache() {
+            if (window.applicationCache) {
+               window.applicationCache.addEventListener('updateready', function(e) {
+                  if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
+                     // Browser downloaded a new app cache.
+                     // Swap it in and reload the page to get the new hotness.
+                     window.applicationCache.swapCache();
+                     window.location.reload();
+                  } else {
+                     // Manifest didn't changed. Nothing new to server.
+                  }
+               }, false);
+            }
+         }
          function hideAddressBar()
          {
             //if(!window.location.hash)
@@ -134,29 +140,9 @@
             return tH > 1 ? tH : 0;
          };
  
-         window.addEventListener("load", function(){ hideAddressBar(); });
-         window.addEventListener("orientationchange", hideAddressBar );
-         document.addEventListener('touchstart', function (e) { if ((e.target == $('body')[0]) || ($(e.target).closest('.navbar.navbar-fixed-top').length > 0)) e.preventDefault(); }, false);         
-         document.addEventListener('touchmove', function (e) { if ((e.target == $('body')[0]) || ($(e.target).closest('.navbar.navbar-fixed-top').length > 0)) e.preventDefault(); }, false);         
-
-         var myScroll = [];
-         $(document).ready(function()
-         {
-            /*
-            //myScroll[0] = new IScroll('#ext-signinpageview-1 .x-scroll-view', { scrollbars: true, mouseWheel: true, interactiveScrollbars: true });
-            myScroll[0] = new IScroll('#createaccountpageview-wrapper', { scrollbars: true, mouseWheel: true, interactiveScrollbars: true });
-            //myScroll[2] = new IScroll('#ext-passwdresetpageview-1 .x-scroll-view', { scrollbars: true, mouseWheel: true, interactiveScrollbars: true });
-            */
-            //$('body').height(window.outerHeight + getHeightOfIOSToolbars()-64);
-            //$('#bgImage').width(window.innerWidth);
-            //$('#bgImage').height(window.innerHeight+30);
-            //$('#ext-viewport').height(window.outerHeight + getHeightOfIOSToolbars()-64);
-         });
+         window.addEventListener("load", function(){ checkAppCache(); hideAddressBar(); });
       </script>
-      <script type="text/javascript" src="../lib/bootstrap-3.0.0/dist/js/bootstrap.min.js"></script>
-      <script type="text/javascript" src="../lib/holder.js"></script>
-      <!--
-      <script type="text/javascript" src="../lib/bootstrap-switch/static/js/bootstrap-switch.min.js"></script>
-      -->
+      <script type="text/javascript" src="lib/bootstrap.min.js"></script>
+      <script type="text/javascript" src="app.js"></script>
    </body>
 </html>

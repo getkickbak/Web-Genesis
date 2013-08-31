@@ -1,0 +1,22 @@
+CACHE MANIFEST
+#version 2
+#js
+app.js
+lib/bootstrap.min.js
+lib/zepto.min.js
+#css
+lib/css/bootstrap.min.css
+resources/css/mini_client.css
+resources/themes/images/v1/ios/logohomescreen3.png
+resources/themes/images/v1/ios/prizewon/loyaltycard.svg
+resources/themes/images/v1/ios/prizewon/transmit.svg
+resources/themes/images/v1/ios/prizewon/phoneInHand.svg
+#html
+index.html
+
+
+FALLBACK:
+
+
+NETWORK:
+*

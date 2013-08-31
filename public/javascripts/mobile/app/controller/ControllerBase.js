@@ -84,7 +84,7 @@ Ext.define('Genesis.controller.ControllerBase',
       return 'Tap your Phone against the ' + Genesis.constants.addCRLF() + 'KICKBAK Card Reader'
    },
    // Merchant Device
-   prepareToSendMobileDeviceMsg : 'Confirm before tapping against the KICKBAK Card Reader ...',
+   prepareToSendMobileDeviceMsg : 'Prepare to send data across to Mobile Device ...',
    lookingForMobileDeviceMsg : function()//Send
    {
       return 'Please Swipe TAG or' + Genesis.constants.addCRLF() + //

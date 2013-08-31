@@ -1,3 +1,6 @@
+body {
+   font-size: 18px;
+}
 .holderjs-fluid {
    font-size: 16px;
    font-weight: bold;
@@ -9,6 +12,83 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
    -webkit-appearance: none;
    margin: 0;
 }
+.x-button {
+   border: 1px solid #d1d2d4;
+   color: #323237;
+   background-color: #cbcbcf;
+   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(30%, #f3f3f4), color-stop(100%, #bebec3));
+   background-image: -webkit-linear-gradient(top, #f3f3f4 30%,#bebec3);
+   background-image: linear-gradient(top, #f3f3f4 30%,#bebec3);
+}
+.x-button, .x-button.x-button-back:after, .x-button.x-button-forward:after, .x-toolbar .x-button, .x-toolbar .x-button.x-button-back:after, .x-toolbar .x-button.x-button-forward:after {
+   background-image: none;
+   background-color: #ccc;
+}
+.x-button, .x-toolbar .x-button {
+   border: 1px solid #999;
+   border-top-color: #a6a6a6;
+   color: #000;
+}
+.x-button {
+   -webkit-background-clip: padding;
+   background-clip: padding-box;
+   -webkit-border-radius: 0.4em;
+   border-radius: 0.4em;
+   display: -webkit-box;
+   display: box;
+   -webkit-box-align: center;
+   box-align: center;
+   min-height: 1.8em;
+   padding: .3em .6em;
+   position: relative;
+   overflow: hidden;
+   -webkit-user-select: none;
+   z-index: 1;
+}
+.x-button-label, .x-hasbadge .x-badge {
+   -webkit-box-flex: 1;
+   box-flex: 1;
+   -webkit-box-align: center;
+   box-align: center;
+   white-space: nowrap;
+   text-overflow: ellipsis;
+   text-align: center;
+   font-weight: bold;
+   line-height: 1.2em;
+   display: block;
+   overflow: hidden;
+}
+.x-button-cancel {
+   border: 1px solid #555658 !important;
+   color: #fff;
+   background-color: #2f3031;
+   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(30%, #555658), color-stop(100%, #232324));
+   background-image: -webkit-linear-gradient(top, #555658 30%,#232324);
+   background-image: linear-gradient(top, #555658 30%,#232324);
+}
+
+.x-button-action {
+   border: 1px solid #ff910d !important;
+   color: #000;
+   background-color: #c06900;
+   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(30%, #ff910d), color-stop(100%, #a65b00));
+   background-image: -webkit-linear-gradient(top, #ff910d 30%,#a65b00);
+   background-image: linear-gradient(top, #ff910d 30%,#a65b00);
+}
+
+.x-button.x-button-cancel.x-button-pressing {
+   background-color: #1e1e1f;
+   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #2a2b2c), color-stop(10%, #373839), color-stop(65%, #434446), color-stop(100%, #454647));
+   background-image: -webkit-linear-gradient(top, #2a2b2c, #373839 10%, #434446 65%, #454647);
+   background-image: linear-gradient(top, #2a2b2c, #373839 10%, #434446 65%, #454647);
+}
+.x-button.x-button-action.x-button-pressing {
+   background-color: #9c5500;
+   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #b56300), color-stop(10%, #ef7100), color-stop(65%, #e87f00), color-stop(100%, #eb8000));
+   background-image: -webkit-linear-gradient(top, #b56300, #ef7100 10%, #e87f00 65%, #eb8000);
+   background-image: linear-gradient(top, #b56300, #ef7100 10%, #e87f00 65%, #eb8000);
+}
+
 .x-sheet, .x-sheet-action {
    padding: 0.7em;
    border-top: 1px solid #003e55;
@@ -83,6 +163,12 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
 .x-layout-box.x-vertical > .x-layout-box-item.x-flexed {
    height: 0 !important;
 }
+.x-layout-box.x-horizontal {
+   -webkit-box-orient: horizontal !important;
+}
+.x-layout-box.x-horizontal > .x-layout-box-item.x-flexed {
+   width: 0 !important;
+}
 .x-layout-box > .x-layout-box-item {
    display: -webkit-box !important;
 }
@@ -135,9 +221,8 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
    height: 100%;
    text-align: center;
 }
-.x-ios .item .itemPhoto .x-innerhtml img, .x-ios .redeemItem .itemPhoto .x-innerhtml img, .x-desktop .item .itemPhoto .x-innerhtml img, .x-desktop .redeemItem .itemPhoto .x-innerhtml img {
-   width: 171px;
-   height: 171px;
+.x-sheet .x-button-label, .x-sheet .x-hasbadge .x-badge, .x-hasbadge .x-sheet .x-badge, .x-sheet-action .x-button-label, .x-sheet-action .x-hasbadge .x-badge, .x-hasbadge .x-sheet-action .x-badge {
+   font-size: 0.72em;
 }
 .thumbnail {
    text-align: center;
@@ -160,9 +245,9 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
 }
 .bgImage {
    background-color: #0a78be 80%;
-   background-image: url("resources/themes/images/v1/ios/logohomescreen3.png"), -webkit-gradient(radial, 50% 50%, 0, 50% 50%, 80, color-stop(50%, #00adee), color-stop(80%, #0a78be));
-   background-image: url("resources/themes/images/v1/ios/logohomescreen3.png"), -webkit-radial-gradient(center center, #00adee 50%,#0a78be 80%);
-   background-image: url("resources/themes/images/v1/ios/logohomescreen3.png"), radial-gradient(center center, #00adee 50%,#0a78be 80%);
+   background-image: url("../themes/images/v1/ios/logohomescreen3.png"), -webkit-gradient(radial, 50% 50%, 0, 50% 50%, 80, color-stop(50%, #00adee), color-stop(80%, #0a78be));
+   background-image: url("../themes/images/v1/ios/logohomescreen3.png"), -webkit-radial-gradient(center center, #00adee 50%,#0a78be 80%);
+   background-image: url("../themes/images/v1/ios/logohomescreen3.png"), radial-gradient(center center, #00adee 50%,#0a78be 80%);
    background-position: center center;
    -webkit-background-size: contain;
    background-size: contain;
