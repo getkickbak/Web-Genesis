@@ -92869,7 +92869,7 @@ var addToHome = (function(w)
 
 var pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false;
 
-window.debugMode = false;
+window.debugMode = true;
 window.merchantMode = false;
 window.serverHost = location.origin;
 window._application = null;
