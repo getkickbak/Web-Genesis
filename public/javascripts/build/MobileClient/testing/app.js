@@ -74541,18 +74541,18 @@ Ext.define('Genesis.controller.ControllerBase',
    geoLocationUseLastPositionMsg : 'We are not able to locate your current location. Using your last known GPS Coordinates ...',
    getMerchantInfoMsg : 'Retrieving Merchant Information ...',
    getVenueInfoMsg : 'Retrieving Venue Information ...',
-   prepareToSendMerchantDeviceMsg : 'Prepare to send data across to Merchant Device ...',
+   prepareToSendMerchantDeviceMsg : 'Confirm before tapping against the KICKBAK Card Reader ...',
    mobilePhoneInputMsg : 'Enter Mobile Number',
    lookingForMerchantDeviceMsg : function()//Send
    {
-      return 'Tap your Phone against the ' + Genesis.constants.addCRLF() + 'Merchant Device'
+      return 'Tap your Phone against the ' + Genesis.constants.addCRLF() + 'KICKBAK Card Reader'
    },
    detectMerchantDeviceMsg : function()//Recv
    {
-      return 'Tap your Phone against the ' + Genesis.constants.addCRLF() + 'Merchant Device'
+      return 'Tap your Phone against the ' + Genesis.constants.addCRLF() + 'KICKBAK Card Reader'
    },
    // Merchant Device
-   prepareToSendMobileDeviceMsg : 'Prepare to send data across to Mobile Device ...',
+   prepareToSendMobileDeviceMsg : 'Confirm before tapping against the KICKBAK Card Reader ...',
    lookingForMobileDeviceMsg : function()//Send
    {
       return 'Please Swipe TAG or' + Genesis.constants.addCRLF() + //
@@ -75133,63 +75133,63 @@ Ext.define('Genesis.controller.ControllerBase',
       if (!me._earnRedeemPopup)
       {
          me._earnRedeemPopup = Ext.create('Ext.Sheet',
+         {
+            bottom : 0,
+            left : 0,
+            top : 0,
+            right : 0,
+            padding : '1.0',
+            hideOnMaskTap : false,
+            defaultUnit : 'em',
+            cls : 'x-mask transmit-mask',
+            layout :
             {
-               bottom : 0,
-               left : 0,
-               top : 0,
-               right : 0,
-               padding : '1.0',
-               hideOnMaskTap : false,
-               defaultUnit : 'em',
-               cls : 'x-mask transmit-mask',
-               layout :
-               {
-                  type : 'vbox',
-                  pack : 'middle'
-               },
+               type : 'vbox',
+               pack : 'middle'
+            },
+            defaults :
+            {
+               xtype : 'container',
+               defaultUnit : 'em'
+            },
+            items : [
+            {
+               width : '100%',
+               flex : 1,
+               style : 'text-align:center;display:inline-table;color:white;font-size:1.1em;',
+               html : Genesis.fb.fbConnectRequestMsg
+            },
+            {
+               docked : 'bottom',
                defaults :
                {
-                  xtype : 'container',
-                  defaultUnit : 'em'
+                  xtype : 'button',
+                  defaultUnit : 'em',
+                  scope : me
                },
+               padding : '0 1.0 1.0 1.0',
                items : [
                {
-                  width : '100%',
-                  flex : 1,
-                  style : 'text-align:center;display:inline-table;color:white;font-size:1.1em;',
-                  html : Genesis.fb.fbConnectRequestMsg
+                  margin : '0 0 0.5 0',
+                  text : 'Proceed',
+                  ui : 'action',
+                  handler : function()
+                  {
+                     me._earnRedeemPopup.hide();
+                     callback();
+                  }
                },
                {
-                  docked : 'bottom',
-                  defaults :
+                  margin : '0.5 0 0 0',
+                  text : 'Cancel',
+                  //ui : 'decline',
+                  handler : function()
                   {
-                     xtype : 'button',
-                     defaultUnit : 'em',
-                     scope : me
-                  },
-                  padding : '0 1.0 1.0 1.0',
-                  items : [
-                  {
-                     margin : '0 0 0.5 0',
-                     text : 'Proceed',
-                     ui : 'action',
-                     handler : function()
-                     {
-                        me._earnRedeemPopup.hide();
-                        callback();
-                     }
-                  },
-                  {
-                     margin : '0.5 0 0 0',
-                     text : 'Cancel',
-                     //ui : 'decline',
-                     handler : function()
-                     {
-                        me._earnRedeemPopup.hide();
-                     }
-                  }]
+                     me._earnRedeemPopup.hide();
+                  }
                }]
-            });
+            }]
+         });
          Ext.Viewport.add(me._earnRedeemPopup);
       }
       me._earnRedeemPopup.show();

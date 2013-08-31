@@ -150,7 +150,7 @@ Ext.define('Genesis.controller.server.Viewport',
       },
       activeController : null
    },
-   setupInfoMissingMsg : 'Trouble initializing Merchant Device',
+   setupInfoMissingMsg : 'Trouble initializing KICKBAK Service',
    licenseKeyInvalidMsg : 'Missing License Key',
    licenseTitle : 'LicenseKey Refresh',
    licenseRefreshMsg : function()

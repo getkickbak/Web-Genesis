@@ -96,7 +96,7 @@ Ext.define('Genesis.view.server.SettingsPage',
       },
       {
          xtype : 'fieldset',
-         title : 'Merchant Device',
+         title : 'KICKBAK Venue',
          defaults :
          {
             labelWidth : '50%'

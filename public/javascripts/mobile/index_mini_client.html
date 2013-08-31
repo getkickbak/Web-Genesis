@@ -11,75 +11,10 @@
       <link rel="apple-touch-icon-precomposed" href="resources/icons/icon.png">
       <!--
       <link href="resources/css/iphone.css" rel="stylesheet">
-      <link href="resources/css/mini_client.css" rel="stylesheet">
       <link href="../lib/bootstrap-switch/static/stylesheets/bootstrap-switch.css" rel="stylesheet">
       !-->
       <link href="../lib/bootstrap-3.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
-      <style id="holderjs-style" type="text/css">
-         .holderjs-fluid {font-size:16px;font-weight:bold;text-align:center;font-family:sans-serif;margin:0}
-      </style>
-      <style>
-            input::-webkit-outer-spin-button,
-            input::-webkit-inner-spin-button {
-               -webkit-appearance: none;
-               margin: 0;
-            }
-            .thumbnail {
-                text-align:center;
-            }            
-            .thumbnail > li {
-                display: inline-block;
-                *display:inline; /* ie7 fix */
-                float: none; /* this is the part that makes it work */
-            }
-            .frame {
-                display: table-cell;
-                text-align: center;
-                vertical-align: middle;
-                border-width: 0;
-            }
-				.overthrow-enabled .overthrow {
-				   overflow-y: auto;
-					-webkit-overflow-scrolling:touch;
-               height: 366px;
-				}
-				.bgImage {
-               background-color: #0a78be 80%;
-               background-image: url("resources/themes/images/v1/ios/logohomescreen3.png"),-webkit-gradient(radial, 50% 50%, 0, 50% 50%, 80, color-stop(50%, #00adee), color-stop(80%, #0a78be));
-               background-image: url("resources/themes/images/v1/ios/logohomescreen3.png"),-webkit-radial-gradient(center center, #00adee 50%,#0a78be 80%);
-               background-image: url("resources/themes/images/v1/ios/logohomescreen3.png"),radial-gradient(center center, #00adee 50%,#0a78be 80%);
-               background-position: center center;
-               -webkit-background-size: contain;
-               background-size: contain;
-               background-repeat: no-repeat;
-            }
-            #createaccountpageview-top-wrapper {
-               position:absolute;
-               margin-top:20px;
-               top:0;
-               bottom:0;
-               left:0;
-               right:0;
-               z-index:1;
-            }
-            #createaccountpageview-bottom-wrapper {
-               position:absolute;
-               height:50px;
-               bottom:8px;
-               left:0;
-               right:0;
-               z-index:1;
-            }
-            #earnptstpageview {
-               position:absolute;
-               margin-top:20px;
-               top:0;
-               bottom:0;
-               left:0;
-               right:0;
-               z-index:1;
-            }
-      </style>
+      <link href="resources/css/mini_client.css" rel="stylesheet">
       <meta charset="UTF-8">
       <title>KickBak</title>
    </head>
@@ -108,24 +43,42 @@
          </div>
       </div>
       <div id = "wrapper" class="container" style="">
-         <div id="earnptstpageview-top-wrapper" class="">
-            <div class="col-xs-12">
-               <div class="panel panel-primary">
-                  <div class="panel-heading">
-                     <h3 class="panel-title">Please tap your phone on the Card Reader</h3>
-                  </div>
-                  <div class="panel-body thumbnail">
-                     <img data-src="../lib/holder.js/171x171" alt="171x171" src="resources/themes/images/v1/ios/prizewon/transmit.svg" style="width:171px;">
-                  </div>
-                  <div class="panel-footer">
-                     <div class="btn-group btn-group-justified btn-group-lg">
-                        <a href="#" type="button" class="btn btn-primary">Proceed</a>
+        <div class="x-ios x-container x-sheet x-sized x-floating" id="earnptrspageview-wrapper" style="left: 0px !important; right: 0px !important; top: 0px !important; bottom: 0px !important; padding: 0px; z-index: 6 !important;">
+            <div class="x-dock x-dock-vertical x-sized">
+               <div class="x-dock-body">
+                  <div class="x-inner x-sheet-inner x-vertical x-align-stretch x-pack-center x-layout-box" style="padding: 0em;">
+                     <div class="x-container item x-layout-box-item x-flexed x-sized" style="-webkit-box-flex: 1;">
+                        <div class="x-dock x-dock-vertical x-sized">
+                           <div class="x-unsized title x-dock-item x-docked-top">
+                              <div id="earnPtsMessage" class="x-innerhtml ">
+                                 Confirm before tapping against the KICKBAK Card Reader ...
+                              </div>
+                           </div>
+                           <div class="x-dock-body">
+                              <div class="x-inner x-layout-fit x-stretched">
+                                 <div class="itemPhoto x-layout-fit-item x-sized">
+                                    <div class="x-innerhtml ">
+                                       <div class="photoVCenterHelper"></div>
+                                       <div class="photoVCenterContent"><img id="earnPtsImage" src="resources/themes/images/v1/ios/prizewon/transmit.svg">
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
                      </div>
-                     <div class="btn-group btn-group-justified btn-group-lg">
-                        <a href="#" type="button" class="btn btn-default">Cancel</a>
+                  </div>
+               </div>
+               <div class="x-container x-unsized x-dock-item x-docked-bottom">
+                  <div class="x-inner x-horizontal x-align-stretch x-pack-start x-layout-box" style="padding: 0em 1em 0.5em;">
+                     <div class="x-button x-button-action x-layout-box-item x-flexed x-sized" style="margin: 0em 0.5em 0.5em 0em; height: 3em !important; -webkit-box-flex: 1;">
+                        <span class="x-button-label" style="">Proceed</span>
+                     </div>
+                     <div class="x-button x-button-cancel x-layout-box-item x-flexed x-sized" style="height: 3em !important; -webkit-box-flex: 1;">
+                        <span class="x-button-label" style="">Cancel</span>
                      </div>
                   </div>
-              </div>
+               </div>
             </div>
          </div>
       </div>
@@ -148,6 +101,7 @@
                      //document.body.style.height = (window.outerHeight + getHeightOfIOSToolbars()) + 'px';
                      //console.log('Window Height: '+ totalHeight);
                      document.body.style.height = totalHeight + 'px';
+                     $('#earnptrspageview-wrapper')[0].style.height = totalHeight + 'px';
                   }
                   else
                   {
@@ -157,6 +111,7 @@
                else
                {
                   document.body.style.height = window.innerHeight + 'px';                  
+                  $('#earnptrspageview-wrapper')[0].style.height = window.innerHeight + 'px';
                }
                $('#createaccountpageview-bottom-wrapper')[0].style.bottom = (-1*52)+'px';
                setTimeout( function(){ window.scrollTo(0, 1); }, 50 );
