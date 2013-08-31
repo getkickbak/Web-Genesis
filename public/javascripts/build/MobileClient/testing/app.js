@@ -75157,8 +75157,7 @@ Ext.define('Genesis.controller.ControllerBase',
                   width : '100%',
                   flex : 1,
                   style : 'text-align:center;display:inline-table;color:white;font-size:1.1em;',
-                  html : me.fbConnectRequestMsg + '<img width="160" style="margin:0.7em 0;" src="' + //
-                  Genesis.constants.resourceSite + 'images/' + Genesis.constants.themeName + '/' + 'facebook_icon.png"/>'
+                  html : Genesis.fb.fbConnectRequestMsg
                },
                {
                   docked : 'bottom',

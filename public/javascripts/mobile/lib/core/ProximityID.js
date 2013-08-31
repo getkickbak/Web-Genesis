@@ -6,7 +6,7 @@ window.plugins = window.plugins ||
 {
    var preLoadSendCommon = function(cntlr, checkUseProximity, proximityWin, win, fail)
    {
-      var _viewport = _cntlr.getViewPortCntlr(), callback = Ext.bind(function(useProximity, _cntlr, _win)
+      var _viewport = cntlr.getViewPortCntlr(), callback = Ext.bind(function(useProximity, _cntlr, _win)
       {
          var viewport = _cntlr.getViewPortCntlr(), _cleanup = function()
          {
@@ -109,8 +109,6 @@ window.plugins = window.plugins ||
             }
          }
       }, 1);
-
-      return rc;
    };
 
    if (cordova)
