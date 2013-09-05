@@ -1,11 +1,12 @@
 CACHE MANIFEST
-#version 2
+#version 1
 #js
 app.js
+lib/iscroll-min.js
 lib/bootstrap.min.js
 lib/zepto.min.js
 #css
-lib/css/bootstrap.min.css
+lib/css-minimal/bootstrap.min.css
 resources/css/mini_client.css
 resources/themes/images/v1/ios/logohomescreen3.png
 resources/themes/images/v1/ios/prizewon/loyaltycard.svg

@@ -4,7 +4,7 @@ Ext.require(['Genesis.controller.ControllerBase'], function()
 {
    if (!Genesis.fn.isNative())
    {
-      window.onhashchange = function()
+      window.addEventListener('hashchange', function()
       {
          if (location.hash != ('#' + _application.getHistory().getToken()))
          {
@@ -14,7 +14,7 @@ Ext.require(['Genesis.controller.ControllerBase'], function()
             //
             onBackKeyDown();
          }
-      }
+      });
    }
 
    // add back button listener
