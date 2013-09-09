@@ -47,7 +47,7 @@ Ext.define('Genesis.data.proxy.WebSql',
        * @cfg {String} dbSize
        * Max storage size in bytes
        */
-      dbSize : 10 * 1024 * 1024,
+      dbSize : 2 * 1024 * 1024,
 
       /**
        * @cfg {String} dbTable
