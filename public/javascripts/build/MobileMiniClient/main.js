@@ -210,13 +210,19 @@ var setChildBrowserVisibility = function(visible, hash)
 
    window.addEventListener('hashchange', function()
    {
-      if (!$("#checkexplorepageview")[0].hasClass('x-item-hidden'))
+      //
+      // Only check for Hash change on MiniClient focus
+      //
+      if ($('iframe').hasClass('x-item-hidden'))
       {
-         hideCheckExplorePage();
-      }
-      else if ($("#earnptspageview")[0].style.top.split('px')[0] == 0)
-      {
-         hideEarnPtsPage();
+         if (!$("#checkexplorepageview").hasClass('x-item-hidden'))
+         {
+            hideCheckExplorePage();
+         }
+         else if ($("#earnptspageview")[0].style.top.split('px')[0] == 0)
+         {
+            hideEarnPtsPage();
+         }
       }
    });
    window.addEventListener("orientationchange", orientationChange);
