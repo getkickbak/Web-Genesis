@@ -26,7 +26,7 @@
       }, {
          "id": "prizes",
          "name": "Prizes",
-         "photo_url": "resources/themes/images/{platform_path}/mainicons/prizes.svg",
+         "photo_url": "resources/themes/images/{platform_path}/mainicons/prizes.png",
          "desc": "Shortcut to Redeem Prizes",
          "pageCntlr": "client.Prizes",
          "route": "redeemPrizesChooseSC"
