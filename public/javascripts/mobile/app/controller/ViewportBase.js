@@ -261,7 +261,24 @@ Ext.define('Genesis.controller.ViewportBase',
                {
                   if (!Genesis.fb.cb || !Genesis.fb.cb['viewName'])
                   {
-                     me.redirectTo('checkin');
+                     var me_venueId = db['ma_venueId'];
+                     // Mini App forwarding
+                     if (Ext.isDefined(me_venueId))
+                     {
+                        Genesis.db.removeLocalDBAttrib('ma_venueId');
+                        if (me_venueId > 0)
+                        {
+                           me.redirectTo('venue/' + me_venueId + '/' + customerId);
+                        }
+                        else
+                        {
+                           me.redirectTo('main');
+                        }
+                     }
+                     else
+                     {
+                        me.redirectTo('checkin');
+                     }
                   }
                }
                else

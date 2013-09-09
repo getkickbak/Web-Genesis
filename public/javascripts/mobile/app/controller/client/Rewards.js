@@ -159,7 +159,7 @@ Ext.define('Genesis.controller.client.Rewards',
       var reader = PurchaseReward.getProxy().getReader();
       var params =
       {
-      }, privKey;
+      };
 
       //
       // With or without Geolocation support
@@ -474,7 +474,7 @@ Ext.define('Genesis.controller.client.Rewards',
    },
    onRewardItem : function(notUseGeolocation)
    {
-      var me = this, task, viewport = me.getViewPortCntlr();
+      var me = this, task, privKey, viewport = me.getViewPortCntlr();
 
       me.identifiers = null;
 

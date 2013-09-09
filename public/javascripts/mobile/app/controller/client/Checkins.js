@@ -501,10 +501,12 @@ Ext.define('Genesis.controller.client.Checkins',
       // Do not reload page unless this is the first time!
       // Saves bandwidth
       //
+      /*
       if ((cestore.getCount() == 0) || forceReload)
       {
          me.getGeoLocation();
       }
+      */
    },
    onExploreShowView : function(activeItem)
    {

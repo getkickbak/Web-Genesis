@@ -112,6 +112,8 @@ window.plugins = window.plugins ||
             }
          }
       }, 1);
+      
+      return callback;
    };
 
    if (cordova)

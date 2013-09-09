@@ -77,11 +77,11 @@ Ext.define('Genesis.controller.ControllerBase',
    mobilePhoneInputMsg : 'Enter Mobile Number',
    lookingForMerchantDeviceMsg : function()//Send
    {
-      return 'Tap your Phone against the ' + Genesis.constants.addCRLF() + 'KICKBAK Card Reader'
+      return 'Tap your Phone against the ' + Genesis.constants.addCRLF() + 'KICKBAK Card Reader';
    },
    detectMerchantDeviceMsg : function()//Recv
    {
-      return 'Tap your Phone against the ' + Genesis.constants.addCRLF() + 'KICKBAK Card Reader'
+      return 'Tap your Phone against the ' + Genesis.constants.addCRLF() + 'KICKBAK Card Reader';
    },
    // Merchant Device
    prepareToSendMobileDeviceMsg : 'Prepare to send data across to Mobile Device ...',
@@ -113,11 +113,11 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    showToServerMsg : function()
    {
-      return ('Please confirm to Proceed');
+      return ('Confirm before tapping against the KICKBAK Card Reader');
    },
    showToLoyaltyCardMsg : function()
    {
-      return ('Please use your Mobile Phone Number or your KICKBAK Loyalty Card');
+      return ('Show your KICKBAK Card or use your Mobile Number');
    },
    errProcQRCodeMsg : 'Error Processing Authentication Code',
    cameraAccessMsg : 'Accessing your Camera Phone ...',

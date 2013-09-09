@@ -55,6 +55,10 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
    -webkit-border-radius: 0.5em;
    border-radius: 0.5em;
 }
+
+/*
+ * SpinMask
+ */
 .x-mask.x-has-message .x-loading-spinner-outer {
    height: 7.5em;
 }
@@ -76,6 +80,10 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
    -webkit-animation-duration: .5s;
    -webkit-animation-iteration-count: infinite;
    -webkit-animation-timing-function: linear;
+   animation-name: x-loading-spinner-rotate;
+   animation-duration: .5s;
+   animation-timing-function: linear;
+   animation-iteration-count: infinite;
 }
 .x-loading-spinner {
    font-size: 250%;
@@ -83,18 +91,11 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
    width: 1em;
    position: relative;
    -webkit-transform-origin: 0.5em 0.5em;
+   transform-origin: 0.5em 0.5em;
+   
+   /* Shared Properties for all the bars */
 }
-.x-loading-spinner > span.x-loading-top {
-   -webkit-transform: rotate(0deg);
-   -moz-transform: rotate(0deg);
-}
-.x-loading-spinner > span.x-loading-top {
-   background-color: rgba(170,170,170,0.99);
-}
-.x-loading-spinner > span {
-   left: 50%;
-   margin-left: -0.05em;
-}
+
 .x-loading-spinner > span, .x-loading-spinner > span:before, .x-loading-spinner > span:after {
    display: block;
    position: absolute;
@@ -102,46 +103,88 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
    height: 0.25em;
    top: 0;
    -webkit-transform-origin: 0.05em 0.5em;
+   transform-origin: 0.05em 0.5em;
    -webkit-border-radius: 0.05em;
    border-radius: 0.05em;
    content: " ";
+}
+
+.x-loading-spinner > span {
+   left: 50%;
+   margin-left: -0.05em;
+}
+
+.x-loading-spinner > span.x-loading-top {
+   background-color: rgba(170,170,170, 0.99);
+}
+.x-loading-spinner > span.x-loading-top::after {
+   background-color: rgba(170,170,170, 0.90);
+}
+.x-loading-spinner > span.x-loading-left::before {
+   background-color: rgba(170,170,170, 0.80);
+}
+.x-loading-spinner > span.x-loading-left {
+   background-color: rgba(170,170,170, 0.70);
+}
+.x-loading-spinner > span.x-loading-left::after {
+   background-color: rgba(170,170,170, 0.60);
+}
+.x-loading-spinner > span.x-loading-bottom::before {
+   background-color: rgba(170,170,170, 0.50);
+}
+.x-loading-spinner > span.x-loading-bottom {
+   background-color: rgba(170,170,170, 0.40);
+}
+.x-loading-spinner > span.x-loading-bottom::after {
+   background-color: rgba(170,170,170, 0.35);
+}
+.x-loading-spinner > span.x-loading-right::before {
+   background-color: rgba(170,170,170, 0.30);
+}
+.x-loading-spinner > span.x-loading-right {
+   background-color: rgba(170,170,170, 0.25);
+}
+.x-loading-spinner > span.x-loading-right::after {
+   background-color: rgba(170,170,170, 0.20);
+}
+.x-loading-spinner > span.x-loading-top::before {
+   background-color: rgba(170,170,170, 0.15);
+}
+
+/* Rotate each of the 4 Spans */
+.x-loading-spinner > span.x-loading-top {
+   -webkit-transform: rotate(0deg);
+   -moz-transform: rotate(0deg);
+   -ms-transform: rotate(0deg);
 }
 .x-loading-spinner > span.x-loading-right {
    -webkit-transform: rotate(90deg);
    -moz-transform: rotate(90deg);
-}
-.x-loading-spinner > span.x-loading-right {
-   background-color: rgba(170,170,170,0.25);
-}
-.x-loading-spinner > span {
-   left: 50%;
-   margin-left: -0.05em;
-}
-.x-loading-spinner > span, .x-loading-spinner > span:before, .x-loading-spinner > span:after {
-   display: block;
-   position: absolute;
-   width: 0.1em;
-   height: 0.25em;
-   top: 0;
-   -webkit-transform-origin: 0.05em 0.5em;
-   -webkit-border-radius: 0.05em;
-   border-radius: 0.05em;
-   content: " ";
+   -ms-transform: rotate(90deg);
 }
 .x-loading-spinner > span.x-loading-bottom {
    -webkit-transform: rotate(180deg);
    -moz-transform: rotate(180deg);
+   -ms-transform: rotate(180deg);
 }
-.x-loading-spinner > span.x-loading-bottom {
-   background-color: rgba(170,170,170,0.4);
+.x-loading-spinner > span.x-loading-left {
+   -webkit-transform: rotate(270deg);
+   -moz-transform: rotate(270deg);
+   -ms-transform: rotate(270deg);
 }
-.x-loading-spinner > span.x-loading-bottom {
-   -webkit-transform: rotate(180deg);
-   -moz-transform: rotate(180deg);
+
+/* These are the two lines that surround each of the 4 Span lines */
+.x-loading-spinner > span::before {
+   -webkit-transform: rotate(30deg);
+   -moz-transform: rotate(30deg);
+   -ms-transform: rotate(30deg);
 }
-.x-loading-spinner > span.x-loading-bottom {
-   background-color: rgba(170,170,170,0.4);
+.x-loading-spinner > span::after {
+   -webkit-transform: rotate(-30deg);
+   -moz-transform: rotate(-30deg);
+   -ms-transform: rotate(-30deg);
 }
+
 .x-mask .x-mask-message {
    position: absolute;
    bottom: 1.7em;
@@ -649,33 +692,26 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
 /*
  * IScroll CSS
  */
-#checkexplorepageview-wrapper .header {
+#checkexplorepageview .header {
 }
 
-#checkexplorepageview-wrapper .body {
+#checkexplorepageview .body {
    position: absolute;
    z-index: 1;
    top: 45px;
-   bottom: 48px;
+   bottom: 72px;
    left: 0;
    width: 100%;
    background: #ccc;
    overflow: hidden;
 }
-#checkexplorepageview-wrapper .footer {
-   height: 48px;
+#checkexplorepageview .footer {
    position: absolute;
    bottom: 0;
-   width: 100%;
-   background: red;
-   display: table;
+   left: 0;
+   right: 0;
 }
-
-#checkexplorepageview-wrapper .footer > div {
-   vertical-align: middle;
-   display: table-cell;
-}
-#checkexplorepageview-wrapper .scroller {
+#checkexplorepageview .scroller {
    position: absolute;
    z-index: 1;
    -webkit-tap-highlight-color: rgba(0,0,0,0);
@@ -697,7 +733,7 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
    text-size-adjust: none;
 }
 
-#checkexplorepageview-wrapper .scroller ul {
+#checkexplorepageview .scroller ul {
    list-style: none;
    padding: 0;
    margin: 0;
@@ -705,7 +741,7 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
    text-align: left;
 }
 
-#checkexplorepageview-wrapper .scroller li {
+#checkexplorepageview .scroller li {
    padding: 0.8em 10px;
    height: 6.3em;
    line-height: 16px;
@@ -725,7 +761,7 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
    margin-top: 0px;
 }
 .media-object {
-   padding : 32px;
+   padding: 32px;
    width: 0px;
    height: 0px;
    background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAACsklEQVR4Xu2Y24upYRTGl0PI0JSimHDjMIVETVMzpvzrziLSTIkiLpTcjJLzcfaziuz2Njufsb8La93o+3jX+65nHX55NZ+fnzu6YdOIAFIB0gIyA254BpIMQaGAUEAoIBQQCtywAoJBwaBgUDAoGLxhCMifIcGgYFAwKBgUDAoGb1iBizHYbDap3+/Tbrcjp9NJwWCQNBrNQdJflKF6vU5ms5lisdhv353S/Ro+T+11kQCNRoN6vR7p9Xr2v16vyev1kt/v52eIkkql+L3BYKBEIkFarfbberuGz+82VCzAZrOhdDrNGX17e6PVakXdbpesVis9PDzwnq1Wi9/BTCYTvb6+0mQyoff3d9LpdBSPx2k8HhOCNhqNFIlEKJvNnu3zuOLO7WbFAiyXSz7sdrvloOfzObdAIBDgM8xmM8rlcuTxeGg0GtF0OmWhcNhKpULD4ZBsNhuvw3eoGqxX6vPcwPe/VywAertarbIftADKHIYgQqEQlctlzm4ymaRSqUSLxeIgwLF4WHN/f09PT090ic//LgAynM/nuXRfXl44i8VikXs9HA6zOHd3d+R2u6ndbnOl+Hw+foZ1Oh1+D3t+fuYqutSnEhEUVwAyjhmA3oYA+2cI8Pj4SLVa7Y/zYACiIjAcM5nMoWrsdjtFo9GDDyU+/zVcT4mjWAAEgQpA1lwuF3+irx0OB1cAyhyGg6EdIBAyjeA+Pj5oMBiQxWLhykF1YABirVKfSrKPNYoFwGIMsEKhQCACDO2AXkaQx4bWgACgAAYiBNnTA0KA+5gje5qc61MVChwHiGEHQ0Z/yq7h829nu6gCfipYNf2IAHIjJDdCciMkN0JqTmG19xYKCAWEAkIBoYDak1jN/YUCQgGhgFBAKKDmFFZ7b6GAUEAoIBQQCqg9idXcXyhw6xT4AgyAjZ+ww1kxAAAAAElFTkSuQmCC');
@@ -768,8 +804,9 @@ label.error {
    background-size: contain;
    background-repeat: no-repeat;
 }
-#createaccountpageview-wrapper {
+#createaccountpageview {
    position: absolute;
+   background: transparent;
    left: 0;
    right: 0;
 }
