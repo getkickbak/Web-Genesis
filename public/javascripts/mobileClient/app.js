@@ -95,7 +95,7 @@ Ext.Loader.setPath(
          {
             viewport :
             {
-               autoMaximize : true
+               autoMaximize : false
             },
             name : 'Genesis',
             profiles : ['MobileClient'],

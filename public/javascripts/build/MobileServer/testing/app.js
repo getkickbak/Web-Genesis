@@ -73667,11 +73667,11 @@ Ext.define('Genesis.controller.ControllerBase',
    mobilePhoneInputMsg : 'Enter Mobile Number',
    lookingForMerchantDeviceMsg : function()//Send
    {
-      return 'Tap your Phone against the ' + Genesis.constants.addCRLF() + 'KICKBAK Card Reader'
+      return 'Tap your Phone against the ' + Genesis.constants.addCRLF() + 'KICKBAK Card Reader';
    },
    detectMerchantDeviceMsg : function()//Recv
    {
-      return 'Tap your Phone against the ' + Genesis.constants.addCRLF() + 'KICKBAK Card Reader'
+      return 'Tap your Phone against the ' + Genesis.constants.addCRLF() + 'KICKBAK Card Reader';
    },
    // Merchant Device
    prepareToSendMobileDeviceMsg : 'Prepare to send data across to Mobile Device ...',
@@ -73703,11 +73703,11 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    showToServerMsg : function()
    {
-      return ('Please confirm to Proceed');
+      return ('Confirm before tapping against the KICKBAK Card Reader');
    },
    showToLoyaltyCardMsg : function()
    {
-      return ('Please use your Mobile Phone Number or your KICKBAK Loyalty Card');
+      return ('Show your KICKBAK Card or use your Mobile Number');
    },
    errProcQRCodeMsg : 'Error Processing Authentication Code',
    cameraAccessMsg : 'Accessing your Camera Phone ...',
@@ -77486,7 +77486,24 @@ Ext.define('Genesis.controller.ViewportBase',
                {
                   if (!Genesis.fb.cb || !Genesis.fb.cb['viewName'])
                   {
-                     me.redirectTo('checkin');
+                     var me_venueId = db['ma_venueId'];
+                     // Mini App forwarding
+                     if (Ext.isDefined(me_venueId))
+                     {
+                        Genesis.db.removeLocalDBAttrib('ma_venueId');
+                        if (me_venueId > 0)
+                        {
+                           me.redirectTo('venue/' + me_venueId + '/' + customerId);
+                        }
+                        else
+                        {
+                           me.redirectTo('main');
+                        }
+                     }
+                     else
+                     {
+                        me.redirectTo('checkin');
+                     }
                   }
                }
                else

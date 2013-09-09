@@ -125,7 +125,7 @@
                </div>
             </div>
       </div>
-      <div id="earnptspageview" class="x-container x-sheet x-sized x-floating panTopPage"style="top: -2000px;">
+      <div id="earnptspageview" class="x-container x-sheet x-sized x-floating panTopPage x-item-hidden" style="">
          <div class="x-dock x-dock-vertical x-sized">
             <div class="x-dock-body">
                <div class="x-inner x-sheet-inner x-vertical x-align-stretch x-pack-center x-layout-box" style="padding: 0em;">
@@ -223,6 +223,7 @@
          </div>
       </div>
       <div id="mask" class="x-mask x-sized x-floating x-item-hidden" style="top: 0px !important; left: 0px !important; right: 0px !important; bottom: 0px !important; z-index: 998 !important;"></div>
+      <iframe class="iframe x-container x-sheet x-sized x-floating x-item-hidden" style="padding:0;z-index:100;"></iframe>
       <script type="text/javascript" src="lib/zepto.min.js"></script>
       <script type="text/javascript" src="lib/iscroll-min.js"></script>
       <script type="text/javascript">
@@ -303,7 +304,7 @@
                $('#mask').addClass('x-item-hidden');
             }
          };
- 
+         
          window.addEventListener("load", function(){ checkAppCache(); hideAddressBar(); });
       </script>
       <script type="text/javascript" src="zepto_touch.js"></script>

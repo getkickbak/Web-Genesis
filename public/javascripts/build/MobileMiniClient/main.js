@@ -112,13 +112,53 @@ var refreshCheckExploreVenues = function()
    $('.media').off();
    $('.media').tap(exploreVenue).swipeLeft(exploreVenue).swipeRight(exploreVenue);
 };
+var setChildBrowserVisibility = function(visible)
+{
+   var debugMode = true;
+   if (visible)
+   {
+      if ($(".iframe")[0].src == "")
+      {
+         $(".iframe")[0].src = (debugMode) ? "/javascripts/build/MobileClient/testing/index.html" : '/';
+      }
+      $(".iframe").removeClass('x-item-hidden');
+      $(".iframe").animate(
+      {
+         top : 0 + 'px',
+         height : calcHeight() + 'px',
+      },
+      {
+         duration : 0.75 * 1000,
+         easing : 'ease-out',
+         complete : function()
+         {
+         }
+      });
+   }
+   else
+   {
+      $(".iframe").animate(
+      {
+         top : (-1 * Math.max(window.screen.height, window.screen.width)) + 'px',
+         height : 0 + 'px'
+      },
+      {
+         duration : 0.75 * 1000,
+         easing : 'ease-in',
+         complete : function()
+         {
+            $(".iframe").addClass('x-item-hidden');
+         }
+      });
+   }
+};
 
 // =============================================================
 // System Utilities
 // =============================================================
 (function()
 {
-   var width, height, iscroll, debugMode = true;
+   var width, height, iscroll;
    var setImageSize = function()
    {
       var image = $('#earnPtsImage img')[0];
@@ -155,13 +195,15 @@ var refreshCheckExploreVenues = function()
    {
       setImageSize();
       hideAddressBar();
+      $('iframe')[0].style.height = //
       $('#checkexplorepageview')[0].style.height = //
       $('#loadingMask')[0].style.height = //
       $('#notification')[0].style.height = //
       $('#mask')[0].style.height = //
       $('#createaccountpageview')[0].style.height = //
       $('#earnptspageview')[0].style.height = document.body.style.height;
-      $('#checkexplorepageview')[0].style.width = document.body.clientWidth + 'px';
+      $('#checkexplorepageview')[0].style.width = //
+      $('iframe')[0].style.width = document.body.clientWidth + 'px';
       $('#createaccountpageview')[0].style.top = (calcHeight() - ((window.orientation === 0) ? 68 : ((getHeightOfIOSToolbars() >= 20) ? 68 : 68))) + 'px';
    };
    var hideCheckExplorePage = function(e)
@@ -195,7 +237,7 @@ var refreshCheckExploreVenues = function()
       {
          hideCheckExplorePage();
       }
-      else if ($("#earnptspageview")[0].style.left.split('px')[0] == 0)
+      else if ($("#earnptspageview")[0].style.top.split('px')[0] == 0)
       {
          hideEarnPtsPage();
       }
@@ -548,7 +590,7 @@ var refreshCheckExploreVenues = function()
 
       $('.x-button .x-button-icon.home').tap(function()
       {
-         location.href = (debugMode) ? "/javascripts/build/MobileClient/testing/index.html" : '/';
+         setChildBrowserVisibility(true);
       });
       switch (location.hash.split('#')[1])
       {
