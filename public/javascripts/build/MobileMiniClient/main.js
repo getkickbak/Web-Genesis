@@ -125,8 +125,8 @@ var setChildBrowserVisibility = function(visible, hash)
    }
    else
    {
-      location.hash = '#' + hash;
       $(".iframe").addClass('x-item-hidden');
+      location.hash = '#' + hash;
    }
 };
 
@@ -222,6 +222,18 @@ var setChildBrowserVisibility = function(visible, hash)
          else if ($("#earnptspageview")[0].style.top.split('px')[0] == 0)
          {
             hideEarnPtsPage();
+         }
+         else
+         {
+            switch (location.hash.split('#')[1])
+            {
+               case 'explore' :
+               {
+                  $("#checkExploreLoad").trigger('tap');
+                  location.hash = "";
+                  break;
+               }
+            }
          }
       }
    });
