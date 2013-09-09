@@ -122,35 +122,11 @@ var setChildBrowserVisibility = function(visible, hash)
          $(".iframe")[0].src = (debugMode) ? "/javascripts/build/MobileClient/testing/index.html" : '/';
       }
       $(".iframe").removeClass('x-item-hidden');
-      $(".iframe").animate(
-      {
-         top : 0 + 'px',
-         height : calcHeight() + 'px',
-      },
-      {
-         duration : 0.75 * 1000,
-         easing : 'ease-out',
-         complete : function()
-         {
-         }
-      });
    }
    else
    {
       location.hash = '#' + hash;
-      $(".iframe").animate(
-      {
-         top : (-1 * Math.max(window.screen.height, window.screen.width)) + 'px',
-         height : 0 + 'px'
-      },
-      {
-         duration : 0.75 * 1000,
-         easing : 'ease-in',
-         complete : function()
-         {
-            $(".iframe").addClass('x-item-hidden');
-         }
-      });
+      $(".iframe").addClass('x-item-hidden');
    }
 };
 
