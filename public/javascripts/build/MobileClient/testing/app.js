@@ -84740,6 +84740,10 @@ Ext.define('Genesis.controller.client.Login',
                {
                   me.getGeoLocation();
                }
+               else if (!Genesis.fn.isNative())
+               {
+                  Ext.Viewport.setMasked(null);                  
+               }
             }
             //
             // Error refresh CSRF Token. go back to Login screen
