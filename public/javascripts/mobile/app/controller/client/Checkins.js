@@ -501,12 +501,20 @@ Ext.define('Genesis.controller.client.Checkins',
       // Do not reload page unless this is the first time!
       // Saves bandwidth
       //
-      /*
       if ((cestore.getCount() == 0) || forceReload)
       {
-         me.getGeoLocation();
+         if (Genesis.fn.isNative())
+         {
+            me.getGeoLocation();
+         }
+         //
+         // Return to MiniClient
+         //
+         else
+         {
+            window.parent.setChildBrowserVisibility(false, 'explore');
+         }
       }
-      */
    },
    onExploreShowView : function(activeItem)
    {

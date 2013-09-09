@@ -112,7 +112,7 @@ var refreshCheckExploreVenues = function()
    $('.media').off();
    $('.media').tap(exploreVenue).swipeLeft(exploreVenue).swipeRight(exploreVenue);
 };
-var setChildBrowserVisibility = function(visible)
+var setChildBrowserVisibility = function(visible, hash)
 {
    var debugMode = true;
    if (visible)
@@ -137,6 +137,7 @@ var setChildBrowserVisibility = function(visible)
    }
    else
    {
+      location.hash = '#' + hash;
       $(".iframe").animate(
       {
          top : (-1 * Math.max(window.screen.height, window.screen.width)) + 'px',
