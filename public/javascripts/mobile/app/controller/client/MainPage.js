@@ -41,7 +41,7 @@ Ext.define('Genesis.controller.client.MainPage',
       var db = Genesis.db.getLocalDB();
       if (db['auth_code'])
       {
-         me.getApplication.getController('client' + '.Login').fireEvent('refreshCSRF');
+         me.getApplication().getController('client' + '.Login').fireEvent('refreshCSRF');
       }
       else
       {

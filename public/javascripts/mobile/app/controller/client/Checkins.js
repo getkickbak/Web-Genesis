@@ -503,17 +503,7 @@ Ext.define('Genesis.controller.client.Checkins',
       //
       if ((cestore.getCount() == 0) || forceReload)
       {
-         if (Genesis.fn.isNative())
-         {
-            me.getGeoLocation();
-         }
-         //
-         // Return to MiniClient
-         //
-         else
-         {
-            window.parent.setChildBrowserVisibility(false, 'explore');
-         }
+         me.getGeoLocation();
       }
    },
    onExploreShowView : function(activeItem)
@@ -627,7 +617,17 @@ Ext.define('Genesis.controller.client.Checkins',
    },
    checkinPage : function()
    {
-      this.openPage('checkin');
+      if (Genesis.fn.isNative())
+      {
+         this.openPage('checkin');
+      }
+      //
+      // Return to MiniClient
+      //
+      else
+      {
+         window.parent.setChildBrowserVisibility(false, 'explore');
+      }
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides
