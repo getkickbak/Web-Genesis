@@ -72961,6 +72961,10 @@ Ext.define('Genesis.data.proxy.WebSql',
          me.doQuery(transaction, 'DELETE FROM ' + me.getDbTable());
       }, emptyCallback, emptyCallback);
    },
+   clear : function()
+   {
+      this.emptyTable();
+   },
 
    /**
     * @private
@@ -75594,10 +75598,7 @@ Ext.define('Genesis.controller.ControllerBase',
             else
             {
                store.removeAll();
-               if (Genesis.fn.isNative())
-               {
-                  store.getProxy().clear();
-               }
+               store.getProxy().clear();
                if (!cleanOnly)
                {
                   items = Ext.StoreMgr.get(stores[i][1]).getRange();

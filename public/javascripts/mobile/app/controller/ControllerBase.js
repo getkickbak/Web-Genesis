@@ -1119,10 +1119,7 @@ Ext.define('Genesis.controller.ControllerBase',
             else
             {
                store.removeAll();
-               if (Genesis.fn.isNative())
-               {
-                  store.getProxy().clear();
-               }
+               store.getProxy().clear();
                if (!cleanOnly)
                {
                   items = Ext.StoreMgr.get(stores[i][1]).getRange();
