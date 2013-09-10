@@ -1046,7 +1046,7 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       //var updateStatement = "UPDATE Customer SET json = ? WHERE id = ?";
       //var deleteStatement = "DELETE FROM Customer WHERE id=?";
-      var dropStatement = "DROP TABLE Customer";
+      var store, dropStatement = "DROP TABLE Customer";
 
       var i, x, items, json, stores = [//
       [this.persistStore('CustomerStore'), 'CustomerStore', 'Customer' + (Genesis.fn.isNative() ? 'JSON' : 'DB')], //
@@ -1062,11 +1062,13 @@ Ext.define('Genesis.controller.ControllerBase',
       //
       for ( i = 0; i < stores.length; i++)
       {
-         if (!stores[i][0])
+         store = stores[i][0];
+         if (!store)
          {
             console.debug("Cannot find Store[" + stores[i][1] + "] to be restored!");
             continue;
          }
+        
          //
          // Customer Store
          //
@@ -1128,15 +1130,17 @@ Ext.define('Genesis.controller.ControllerBase',
                catch(e)
                {
                }
-               stores[0][0].removeAll();
-               stores[0][0].getProxy().clear();
-               stores[0][0].sync();
+               store.removeAll();
+               store.getProxy().clear();
+               store.sync();
             }
             else
             {
-               stores[i][0].removeAll();
-               stores[i][0].getProxy().clear();
-
+               store.removeAll();
+               if (Genesis.fn.isNative())
+               {
+                  store.getProxy().clear();
+               }
                if (!cleanOnly)
                {
                   items = Ext.StoreMgr.get(stores[i][1]).getRange();
@@ -1153,12 +1157,12 @@ Ext.define('Genesis.controller.ControllerBase',
                      }
                      else
                      {
-                        Ext.StoreMgr.get(stores[i][0]).add(Ext.StoreMgr.get(stores[i][1]).getRange());
+                        Ext.StoreMgr.get(store).add(Ext.StoreMgr.get(stores[i][1]).getRange());
                      }
                      console.debug("persistSyncStores  --- Found " + items.length + " records in [" + stores[i][1] + "] ...");
                   }
                }
-               stores[i][0].sync();
+               store.sync();
             }
 
             //
