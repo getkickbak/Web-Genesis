@@ -73228,16 +73228,21 @@ Ext.define('Genesis.data.proxy.WebSql',
             {
                if (dbFieldData.hasOwnProperty(key))
                {
-                  queryParts.push(key);
-                  recordQueryParts.push('?');
-
                   if (dbFieldData[key] === undefined)
-                  //if (dbFieldData[key] === undefined || (record.phantom && key == me.getPkField()))
                   {
+                     queryParts.push(key);
+                     recordQueryParts.push('?');
+
                      args.push(null);
+                  }
+                  else if (record.phantom && key == me.getPkField())
+                  {
                   }
                   else
                   {
+                     queryParts.push(key);
+                     recordQueryParts.push('?');
+
                      args.push(dbFieldData[key]);
                   }
                }
@@ -74257,7 +74262,7 @@ Ext.define('Genesis.model.CustomerDB',
       {
          type : 'browserdb',
          dbName : 'KickBakCustomer',
-         pkType : 'CHAR(36) PRIMARY KEY ASC',
+         pkType : 'INTEGER PRIMARY KEY ASC AUTOINCREMENT',
          objectStoreName : 'Customer',
          //dbVersion : '1.0',
          writer :
@@ -78046,7 +78051,7 @@ Ext.define('Genesis.model.frontend.LicenseKeyDB',
       {
          type : 'browserdb',
          dbName : 'KickBakLicenseKey',
-         pkType : 'CHAR(36) PRIMARY KEY ASC',
+         pkType : 'INTEGER PRIMARY KEY ASC AUTOINCREMENT',
          objectStoreName : 'LicenseKey',
          //dbVersion : '1.0',
          writer :

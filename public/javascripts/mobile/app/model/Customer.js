@@ -34,7 +34,7 @@ Ext.define('Genesis.model.CustomerDB',
       {
          type : 'browserdb',
          dbName : 'KickBakCustomer',
-         pkType : 'CHAR(36) PRIMARY KEY ASC',
+         pkType : 'INTEGER PRIMARY KEY ASC AUTOINCREMENT',
          objectStoreName : 'Customer',
          //dbVersion : '1.0',
          writer :

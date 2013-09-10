@@ -34,7 +34,7 @@ Ext.define('Genesis.model.frontend.LicenseKeyDB',
       {
          type : 'browserdb',
          dbName : 'KickBak',
-         pkType : 'CHAR(36) PRIMARY KEY ASC',
+         pkType : 'INTEGER PRIMARY KEY ASC AUTOINCREMENT',
          objectStoreName : 'LicenseKey',
          //dbVersion : '1.0',
          writer :
