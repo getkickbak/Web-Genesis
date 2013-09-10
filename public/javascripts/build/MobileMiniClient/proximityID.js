@@ -88,7 +88,7 @@ window.plugins = window.plugins ||
             }
          }
 
-      }, 1);
+      }, 0.25 * 1000);
 
       return callback;
    };
