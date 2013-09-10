@@ -73231,7 +73231,8 @@ Ext.define('Genesis.data.proxy.WebSql',
                   queryParts.push(key);
                   recordQueryParts.push('?');
 
-                  if (dbFieldData[key] === undefined || (record.phantom && key == me.getPkField()))
+                  if (dbFieldData[key] === undefined)
+                  //if (dbFieldData[key] === undefined || (record.phantom && key == me.getPkField()))
                   {
                      args.push(null);
                   }
