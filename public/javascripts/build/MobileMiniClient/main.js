@@ -119,7 +119,7 @@ var setChildBrowserVisibility = function(visible, hash)
    {
       if ($(".iframe")[0].src == "")
       {
-         $(".iframe")[0].src = (debugMode) ? "/javascripts/build/MobileClient/testing/index.html" : '/';
+         $(".iframe")[0].src = (debugMode) ? "/javascripts/build/MobileClient/production/index.html" : '/';
       }
       $(".iframe").removeClass('x-item-hidden');
    }
@@ -177,16 +177,8 @@ var setChildBrowserVisibility = function(visible, hash)
       $('#loadingMask')[0].style.height = //
       $('#notification')[0].style.height = //
       $('#mask')[0].style.height = //
-      $('#createaccountpageview')[0].style.height = //
       $('#earnptspageview')[0].style.height = document.body.style.height;
-      $('#checkexplorepageview')[0].style.width = //
       $('iframe')[0].style.width = document.body.clientWidth + 'px';
-      $('#createaccountpageview')[0].style.top = (calcHeight() - ((window.orientation === 0) ? 68 : ((getHeightOfIOSToolbars() >= 20) ? 68 : 68))) + 'px';
-   };
-   var hideCheckExplorePage = function(e)
-   {
-      $('#createaccountpageview').removeClass('x-item-hidden');
-      $('#checkexplorepageview').addClass('x-item-hidden');
    };
    var validateMobileNumber = function()
    {
@@ -219,17 +211,12 @@ var setChildBrowserVisibility = function(visible, hash)
          {
             case 'explore' :
             {
-               $("#checkExploreLoad").trigger('tap');
                disableHash = true;
                window.location.hash = "";
                break;
             }
             default:
-               if (!$("#checkexplorepageview").hasClass('x-item-hidden'))
-               {
-                  hideCheckExplorePage();
-               }
-               else if ($("#earnptspageview")[0].style.top.split('px')[0] == 0)
+               if ($("#earnptspageview")[0].style.top.split('px')[0] == 0)
                {
                   hideEarnPtsPage();
                }
@@ -399,15 +386,16 @@ var setChildBrowserVisibility = function(visible, hash)
       // =============================================================
       // ExplorePage Actions
       // =============================================================
-      $("#checkExploreLoad").tap(function()
+      $('.x-button .x-button-icon.home').tap(function()
       {
-         $('#createaccountpageview').addClass('x-item-hidden');
-         $('#checkexplorepageview').removeClass('x-item-hidden');
+         setChildBrowserVisibility(true);
+      });
+      $('.x-button .x-button-icon.refresh').tap(function()
+      {
          iscroll.refresh();
          refreshCheckExploreVenues();
          $('#checkexplorepageview .body').infiniteScroll('reset');
       });
-      $('#goToMain').tap(hideCheckExplorePage);
 
       // =============================================================
       // EarnPtsPage Actions
@@ -586,19 +574,6 @@ var setChildBrowserVisibility = function(visible, hash)
       });
       $('#earnPtsCancel').tap(hideEarnPtsPage);
       $('#earnPtsDismiss').tap(hideEarnPtsPage);
-
-      $('.x-button .x-button-icon.home').tap(function()
-      {
-         setChildBrowserVisibility(true);
-      });
-      switch (location.hash.split('#')[1])
-      {
-         case 'explore' :
-         {
-            $("#checkExploreLoad").trigger('tap');
-            location.hash = "";
-            break;
-         }
-      }
+      $('#earnptspageview')[0].style.top = (-1 * Math.max(window.screen.height, window.screen.width)) + 'px';
    });
 })();
