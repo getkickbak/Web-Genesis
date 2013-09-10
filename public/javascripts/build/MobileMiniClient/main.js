@@ -114,23 +114,27 @@ var refreshCheckExploreVenues = function()
 };
 var setChildBrowserVisibility = function(visible, hash)
 {
-   var debugMode = true;
+   var debugMode = true, db = Genesis.db.getLocalDB();
+
    if (visible)
    {
       if ($(".iframe")[0].src == "")
       {
          $(".iframe")[0].src = (debugMode) ? "/javascripts/build/MobileClient/production/index.html" : '/';
       }
+      else if (db['auth_code'])
+      {
+         $(".iframe")[0].contentWindow._application.getController('client' + '.Viewport').redirectTo('main');
+      }
       $(".iframe").removeClass('x-item-hidden');
    }
    else
    {
+      $("#earnPtsLoad span.x-button-label").text((db['auth_code']) ? 'Earn Points' : 'Sign In / Register');
+      
       $(".iframe").addClass('x-item-hidden');
       window.location.hash = '#' + hash;
    }
-
-   var db = Genesis.db.getLocalDB();
-   $("#earnPtsLoad span.x-button-label").text((db['auth_code']) ? 'Earn Points' : 'Sign In / Register');
 };
 
 // =============================================================
@@ -187,7 +191,7 @@ var setChildBrowserVisibility = function(visible, hash)
     var validateMobileNumber = function()
     {
     var me = gblController, rc = false, db = Genesis.db.getLocalDB(), mobile = $('#earnPtsMobileNumber')[0], mobileField =
-   $('#inputMobile')[0];
+    $('#inputMobile')[0];
     if (db['mobileNumber'])
     {
     rc = true;
@@ -403,12 +407,12 @@ var setChildBrowserVisibility = function(visible, hash)
       // EarnPtsPage Actions
       // =============================================================
       /*
-      $('#inputMobile').on('blur', function()
-      {
-         validateMobileNumber();
-         orientationChange();
-      });
-      */
+       $('#inputMobile').on('blur', function()
+       {
+       validateMobileNumber();
+       orientationChange();
+       });
+       */
       $('#earnPtsMobileNumber .input-group-addon').tap(function(e)
       {
          $('#inputMobile')[0].value = "";
