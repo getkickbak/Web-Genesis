@@ -75612,21 +75612,14 @@ Ext.define('Genesis.controller.ControllerBase',
                if (!cleanOnly)
                {
                   items = Ext.StoreMgr.get(stores[i][1]).getRange();
-                  if (Genesis.fn.isNative())
+                  for ( x = 0; x < items.length; x++)
                   {
-                     for ( x = 0; x < items.length; x++)
-                     {
-                        json = items[x].getData(true);
+                     json = items[x].getData(true);
 
-                        stores[i][0].add(Ext.create('Genesis.model.' + stores[i][2], (Genesis.fn.isNative()) ?
-                        {
-                           json : json
-                        } : json));
-                     }
-                  }
-                  else
-                  {
-                     store.add(items);
+                     stores[i][0].add(Ext.create('Genesis.model.' + stores[i][2], (Genesis.fn.isNative()) ?
+                     {
+                        json : json
+                     } : json));
                   }
                   console.debug("persistSyncStores  --- Found " + items.length + " records in [" + stores[i][1] + "] ...");
                }
