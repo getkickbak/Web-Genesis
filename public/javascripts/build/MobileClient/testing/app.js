@@ -75516,7 +75516,7 @@ Ext.define('Genesis.controller.ControllerBase',
       //var deleteStatement = "DELETE FROM Customer WHERE id=?";
       var store, dropStatement = "DROP TABLE Customer";
 
-      var i, x, items, json, stores = [//
+      var i, x, items, json = [], stores = [//
       [this.persistStore('CustomerStore'), 'CustomerStore', 'Customer' + (Genesis.fn.isNative() ? 'JSON' : 'DB')], //
       [this.persistStore('LicenseStore'), 'LicenseStore', 'frontend.LicenseKey' + (Genesis.fn.isNative() ? 'JSON' : 'DB')], //
       [this.persistStore('ReceiptStore'), 'ReceiptStore', 'frontend.Receipt'] //
@@ -75614,13 +75614,12 @@ Ext.define('Genesis.controller.ControllerBase',
                   items = Ext.StoreMgr.get(stores[i][1]).getRange();
                   for ( x = 0; x < items.length; x++)
                   {
-                     json = items[x].getData(true);
-
-                     stores[i][0].add(Ext.create('Genesis.model.' + stores[i][2], (Genesis.fn.isNative()) ?
+                     json.push(Ext.create('Genesis.model.' + stores[i][2], (Genesis.fn.isNative()) ?
                      {
-                        json : json
-                     } : json));
+                        json : items[x].getData(true)
+                     } : items[x].getData(true)));
                   }
+                  store.add(json);
                   console.debug("persistSyncStores  --- Found " + items.length + " records in [" + stores[i][1] + "] ...");
                }
                store.sync();
