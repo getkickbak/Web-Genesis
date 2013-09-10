@@ -225,7 +225,6 @@ var setChildBrowserVisibility = function(visible, hash)
                break;
             }
             default:
-               disableHash = false;
                if (!$("#checkexplorepageview").hasClass('x-item-hidden'))
                {
                   hideCheckExplorePage();
@@ -236,6 +235,10 @@ var setChildBrowserVisibility = function(visible, hash)
                }
                break;
          }
+      }
+      else
+      {
+         disableHash = false;
       }
    });
    window.addEventListener("orientationchange", orientationChange);
