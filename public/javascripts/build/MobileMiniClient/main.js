@@ -183,25 +183,28 @@ var setChildBrowserVisibility = function(visible, hash)
       $('#earnptspageview')[0].style.height = document.body.style.height;
       $('iframe')[0].style.width = document.body.clientWidth + 'px';
    };
-   var validateMobileNumber = function()
-   {
-      var me = gblController, rc = false, db = Genesis.db.getLocalDB(), mobile = $('#earnPtsMobileNumber')[0], mobileField = $('#inputMobile')[0];
-      if (db['mobileNumber'])
-      {
-         rc = true;
-      }
-      else if ((mobile.style.display == '') && (mobileField.value.length == 10))
-      {
-         Genesis.db.setLocalDBAttrib('mobileNumber', mobileField.value);
-         rc = true;
-      }
-      else
-      {
-         setNotificationVisibility(true, 'KICKBAK', me.incorrectMobileNumberFormatMsg, "Dismiss", Ext.emptyFn);
-      }
+   /*
+    var validateMobileNumber = function()
+    {
+    var me = gblController, rc = false, db = Genesis.db.getLocalDB(), mobile = $('#earnPtsMobileNumber')[0], mobileField =
+   $('#inputMobile')[0];
+    if (db['mobileNumber'])
+    {
+    rc = true;
+    }
+    else if ((mobile.style.display == '') && (mobileField.value.length == 10))
+    {
+    Genesis.db.setLocalDBAttrib('mobileNumber', mobileField.value);
+    rc = true;
+    }
+    else
+    {
+    setNotificationVisibility(true, 'KICKBAK', me.incorrectMobileNumberFormatMsg, "Dismiss", Ext.emptyFn);
+    }
 
-      return rc;
-   };
+    return rc;
+    };
+    */
 
    window.addEventListener('hashchange', function()
    {
@@ -399,11 +402,13 @@ var setChildBrowserVisibility = function(visible, hash)
       // =============================================================
       // EarnPtsPage Actions
       // =============================================================
+      /*
       $('#inputMobile').on('blur', function()
       {
          validateMobileNumber();
          orientationChange();
       });
+      */
       $('#earnPtsMobileNumber .input-group-addon').tap(function(e)
       {
          $('#inputMobile')[0].value = "";
@@ -422,10 +427,12 @@ var setChildBrowserVisibility = function(visible, hash)
          //
          var message = $('#earnptspageview .x-docked-top .x-innerhtml'), image = $('#earnPtsImage');
 
-         if (!validateMobileNumber())
-         {
-            return;
-         }
+         /*
+          if (!validateMobileNumber())
+          {
+          return;
+          }
+          */
 
          var db = Genesis.db.getLocalDB(), venue = viewport.getVenue(), venueId, position = viewport.getLastPosition();
 
