@@ -374,20 +374,7 @@ var setChildBrowserVisibility = function(visible, hash)
          db = Genesis.db.getLocalDB();
          if (db['auth_code'])
          {
-            //
-            // Mobile Number acquired proceeding with Tapless
-            //
-            if (db['mobileNumber'])
-            {
-               $('#earnPtsProceed').trigger('tap');
-            }
-            //
-            // Ask for Mobile Number before proceeding with Tapless
-            //
-            else
-            {
-               $('#earnptspageview').trigger('kickbak:mobile');
-            }
+            $('#earnPtsProceed').trigger('tap');
          }
          else
          {

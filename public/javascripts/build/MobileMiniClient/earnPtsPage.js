@@ -10,38 +10,40 @@
 
    $(document).ready(function()
    {
-      var message = $('#earnptspageview .x-docked-top .x-innerhtml'), image = $('#earnPtsImage'), mobile = $('#earnPtsMobileNumber')[0];
+      var message = $('#earnptspageview .x-docked-top .x-innerhtml'), image = $('#earnPtsImage');
+      //, mobile = $('#earnPtsMobileNumber')[0];
 
-      $.Event('kickbak:mobile');
+      //$.Event('kickbak:mobile');
       $.Event('kickbak:loyalty');
       $.Event('kickbak:preLoad');
       $.Event('kickbak:broadcast');
 
-      $('#earnptspageview').on('kickbak:mobile', function(e)
-      {
-         //
-         // Ask for Mobile Number
-         //
-         image[0].style.display = 'none';
-         image[0].style.opacity = 0;
-         mobile.style.display = '';
-         message.html('Enter your Mobile Number');
-         $('#earnPtsChoiceButtons').removeClass('x-item-hidden');
-         $('#earnPtsDismissButtons').addClass('x-item-hidden');
-         $("#earnptspageview").animate(
-         {
-            top : 0 + 'px',
-            height : calcHeight() + 'px',
-         },
-         {
-            duration : 0.75 * 1000,
-            easing : 'ease-out',
-            complete : function()
-            {
-               $('#inputMobile').focus();
-            }
-         });
-      }).on('kickbak:loyalty', function(e)
+      $('#earnptspageview')
+      /*.on('kickbak:mobile', function(e)
+       {
+       //
+       // Ask for Mobile Number
+       //
+       image[0].style.display = 'none';
+       image[0].style.opacity = 0;
+       mobile.style.display = '';
+       message.html('Enter your Mobile Number');
+       $('#earnPtsChoiceButtons').removeClass('x-item-hidden');
+       $('#earnPtsDismissButtons').addClass('x-item-hidden');
+       $("#earnptspageview").animate(
+       {
+       top : 0 + 'px',
+       height : calcHeight() + 'px',
+       },
+       {
+       duration : 0.75 * 1000,
+       easing : 'ease-out',
+       complete : function()
+       {
+       $('#inputMobile').focus();
+       }
+       });
+       })*/.on('kickbak:loyalty', function(e)
       {
          //
          // Show Loyalty Card instead
@@ -70,14 +72,15 @@
          //
          // PreLoad Mobile Phone for Tapless
          //
-         var transition = (mobile.style.display == '');
+         //var transition = (mobile.style.display == '');
+         var transition = false;
 
-         mobile.style.display = 'none';
+         //mobile.style.display = 'none';
          $('#earnPtsChoiceButtons').removeClass('x-item-hidden');
          $('#earnPtsDismissButtons').addClass('x-item-hidden');
-         
+
          $('#earnPtsImage img')[0].src = imagePath('phoneInHand');
-         image[0].style.opacity = (transition) ? 0 : 1;         
+         image[0].style.opacity = (transition) ? 0 : 1;
          image[0].style.display = '';
 
          message.html(gblController.prepareToSendMerchantDeviceMsg);
