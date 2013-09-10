@@ -1157,7 +1157,7 @@ Ext.define('Genesis.controller.ControllerBase',
                      }
                      else
                      {
-                        Ext.StoreMgr.get(store).add(Ext.StoreMgr.get(stores[i][1]).getRange());
+                        store.add(Ext.StoreMgr.get(stores[i][1]).getRange());
                      }
                      console.debug("persistSyncStores  --- Found " + items.length + " records in [" + stores[i][1] + "] ...");
                   }
