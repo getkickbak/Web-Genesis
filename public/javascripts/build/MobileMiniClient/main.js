@@ -135,7 +135,7 @@ var setChildBrowserVisibility = function(visible, hash)
 // =============================================================
 (function()
 {
-   var width, height, iscroll;
+   var width, height, iscroll, disableHash = false;
    var setImageSize = function()
    {
       var image = $('#earnPtsImage img')[0];
@@ -213,17 +213,19 @@ var setChildBrowserVisibility = function(visible, hash)
       //
       // Only check for Hash change on MiniClient focus
       //
-      if ($('iframe').hasClass('x-item-hidden'))
+      if ($('iframe').hasClass('x-item-hidden') && !disableHash)
       {
          switch (window.location.hash.split('#')[1])
          {
             case 'explore' :
             {
                $("#checkExploreLoad").trigger('tap');
-               location.hash = "";
+               disableHash = true;
+               window.location.hash = "";
                break;
             }
             default:
+               disableHash = false;
                if (!$("#checkexplorepageview").hasClass('x-item-hidden'))
                {
                   hideCheckExplorePage();
@@ -234,7 +236,6 @@ var setChildBrowserVisibility = function(visible, hash)
                }
                break;
          }
-
       }
    });
    window.addEventListener("orientationchange", orientationChange);
