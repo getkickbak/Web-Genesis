@@ -1146,10 +1146,13 @@ Ext.define('Genesis.controller.ControllerBase',
                   items = Ext.StoreMgr.get(stores[i][1]).getRange();
                   for ( x = 0; x < items.length; x++)
                   {
-                     json.push(Ext.create('Genesis.model.' + stores[i][2], (Genesis.fn.isNative()) ?
+                     var model = Ext.create('Genesis.model.' + stores[i][2], (Genesis.fn.isNative()) ?
                      {
                         json : items[x].getData(true)
-                     } : items[x].getData(true)));
+                     } : items[x].getData(true));
+                     
+                     model.phantom = true;
+                     json.push(model);
                   }
                   store.add(json);
                   console.debug("persistSyncStores  --- Found " + items.length + " records in [" + stores[i][1] + "] ...");
