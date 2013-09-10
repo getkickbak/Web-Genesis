@@ -75536,7 +75536,7 @@ Ext.define('Genesis.controller.ControllerBase',
             console.debug("Cannot find Store[" + stores[i][1] + "] to be restored!");
             continue;
          }
-        
+
          //
          // Customer Store
          //
@@ -75612,9 +75612,9 @@ Ext.define('Genesis.controller.ControllerBase',
                if (!cleanOnly)
                {
                   items = Ext.StoreMgr.get(stores[i][1]).getRange();
-                  for ( x = 0; x < items.length; x++)
+                  if (Genesis.fn.isNative())
                   {
-                     if (Genesis.fn.isNative())
+                     for ( x = 0; x < items.length; x++)
                      {
                         json = items[x].getData(true);
 
@@ -75623,12 +75623,12 @@ Ext.define('Genesis.controller.ControllerBase',
                            json : json
                         } : json));
                      }
-                     else
-                     {
-                        store.add(Ext.StoreMgr.get(stores[i][1]).getRange());
-                     }
-                     console.debug("persistSyncStores  --- Found " + items.length + " records in [" + stores[i][1] + "] ...");
                   }
+                  else
+                  {
+                     store.add(items);
+                  }
+                  console.debug("persistSyncStores  --- Found " + items.length + " records in [" + stores[i][1] + "] ...");
                }
                store.sync();
             }
