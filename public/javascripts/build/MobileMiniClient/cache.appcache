@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#version 2
+#version 1
 #js
 lib/iscroll-min.js
 lib/bootstrap/js/bootstrap.min.js

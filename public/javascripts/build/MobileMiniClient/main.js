@@ -128,6 +128,9 @@ var setChildBrowserVisibility = function(visible, hash)
       $(".iframe").addClass('x-item-hidden');
       window.location.hash = '#' + hash;
    }
+
+   var db = Genesis.db.getLocalDB();
+   $("#earnPtsLoad span.x-button-label").text((db['auth_code']) ? 'Earn Points' : 'Sign In / Register');
 };
 
 // =============================================================
@@ -364,22 +367,31 @@ var setChildBrowserVisibility = function(visible, hash)
       // =============================================================
       // WelcomePage Actions
       // =============================================================
+      var db = Genesis.db.getLocalDB();
+      $("#earnPtsLoad span.x-button-label").text((db['auth_code']) ? 'Earn Points' : 'Sign In / Register');
       $("#earnPtsLoad").tap(function()
       {
-         var db = Genesis.db.getLocalDB();
-         //
-         // Mobile Number acquired proceeding with Tapless
-         //
-         if (db['mobileNumber'])
+         db = Genesis.db.getLocalDB();
+         if (db['auth_code'])
          {
-            $('#earnPtsProceed').trigger('tap');
+            //
+            // Mobile Number acquired proceeding with Tapless
+            //
+            if (db['mobileNumber'])
+            {
+               $('#earnPtsProceed').trigger('tap');
+            }
+            //
+            // Ask for Mobile Number before proceeding with Tapless
+            //
+            else
+            {
+               $('#earnptspageview').trigger('kickbak:mobile');
+            }
          }
-         //
-         // Ask for Mobile Number before proceeding with Tapless
-         //
          else
          {
-            $('#earnptspageview').trigger('kickbak:mobile');
+            setChildBrowserVisibility(true);
          }
       });
 
