@@ -75401,7 +75401,7 @@ Ext.define('Genesis.controller.ControllerBase',
                      store.removeAll();
                      for ( x = 0; x < results.length; x++)
                      {
-                        items.push(results[x].get('json'));
+                        items.push(Ext.decode(results[x].get('json')));
                      }
                      store.setData(items);
                      console.debug("persistLoadStores  --- Restored " + results.length + " records to " + store.getStoreId());
@@ -75596,13 +75596,10 @@ Ext.define('Genesis.controller.ControllerBase',
                   items = Ext.StoreMgr.get(stores[i][1]).getRange();
                   for ( x = 0; x < items.length; x++)
                   {
-                     var model = Ext.create('Genesis.model.' + stores[i][2],
+                     json.push(Ext.create('Genesis.model.' + stores[i][2],
                      {
-                        json : items[x].getData(true)
-                     });
-
-                     model.phantom = true;
-                     json.push(model);
+                        json : Ext.encode(items[x].getData(true))
+                     }));
                   }
                   store.add(json);
                   console.debug("persistSyncStores  --- Found " + items.length + " records in [" + stores[i][1] + "] ...");
