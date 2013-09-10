@@ -74246,6 +74246,27 @@ Ext.define('Genesis.model.CustomerJSON',
    }
 });
 
+Ext.define('Genesis.model.CustomerDB',
+{
+   id : 'CustomerDB',
+   extend :  Genesis.model.CustomerJSON ,
+   config :
+   {
+      proxy :
+      {
+         type : 'browserdb',
+         dbName : 'KickBakCustomer',
+         objectStoreName : 'Customer',
+         //dbVersion : '1.0',
+         writer :
+         {
+            type : 'json',
+            writeAllFields : false
+         }
+      }
+   }
+});
+
 Ext.define('Genesis.model.Customer',
 {
    extend :  Ext.data.Model ,
@@ -74441,27 +74462,6 @@ Ext.define('Genesis.model.Customer',
             read : 'POST'
          });
          this.getProxy().setUrl(serverHost + '/api/v1/customers/receive_points');
-      }
-   }
-});
-
-Ext.define('Genesis.model.CustomerDB',
-{
-   id : 'CustomerDB',
-   extend :  Genesis.model.Customer ,
-   config :
-   {
-      proxy :
-      {
-         type : 'browserdb',
-         dbName : 'KickBakCustomer',
-         objectStoreName : 'Customer',
-         //dbVersion : '1.0',
-         writer :
-         {
-            type : 'json',
-            writeAllFields : false
-         }
       }
    }
 });
@@ -75401,7 +75401,7 @@ Ext.define('Genesis.controller.ControllerBase',
                      store.removeAll();
                      for ( x = 0; x < results.length; x++)
                      {
-                        items.push((Genesis.fn.isNative()) ? results[x].get('json') : results[x].getData(true));
+                        items.push(results[x].get('json'));
                      }
                      store.setData(items);
                      console.debug("persistLoadStores  --- Restored " + results.length + " records to " + store.getStoreId());
@@ -75596,10 +75596,10 @@ Ext.define('Genesis.controller.ControllerBase',
                   items = Ext.StoreMgr.get(stores[i][1]).getRange();
                   for ( x = 0; x < items.length; x++)
                   {
-                     var model = Ext.create('Genesis.model.' + stores[i][2], (Genesis.fn.isNative()) ?
+                     var model = Ext.create('Genesis.model.' + stores[i][2],
                      {
                         json : items[x].getData(true)
-                     } : items[x].getData(true));
+                     });
 
                      model.phantom = true;
                      json.push(model);
@@ -78037,6 +78037,27 @@ Ext.define('Genesis.model.frontend.LicenseKeyJSON',
    }
 });
 
+Ext.define('Genesis.model.frontend.LicenseKeyDB',
+{
+   extend :  Genesis.model.frontend.LicenseKeyJSON ,
+   id : 'LicenseKeyDB',
+   config :
+   {
+      proxy :
+      {
+         type : 'browserdb',
+         dbName : 'KickBakLicenseKey',
+         objectStoreName : 'LicenseKey',
+         //dbVersion : '1.0',
+         writer :
+         {
+            type : 'json',
+            writeAllFields : false
+         }
+      }
+   }
+});
+
 Ext.define('Genesis.model.frontend.LicenseKey',
 {
    extend :  Ext.data.Model ,
@@ -78071,27 +78092,6 @@ Ext.define('Genesis.model.frontend.LicenseKey',
             read : 'GET'
          });
          this.getProxy().setUrl(serverHost + '/api/v1/devices/get_encryption_key');
-      }
-   }
-});
-
-Ext.define('Genesis.model.frontend.LicenseKeyDB',
-{
-   extend :  Genesis.model.frontend.LicenseKey ,
-   id : 'LicenseKeyDB',
-   config :
-   {
-      proxy :
-      {
-         type : 'browserdb',
-         dbName : 'KickBakLicenseKey',
-         objectStoreName : 'LicenseKey',
-         //dbVersion : '1.0',
-         writer :
-         {
-            type : 'json',
-            writeAllFields : false
-         }
       }
    }
 });

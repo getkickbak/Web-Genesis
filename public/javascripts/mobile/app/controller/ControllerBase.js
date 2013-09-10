@@ -933,7 +933,7 @@ Ext.define('Genesis.controller.ControllerBase',
                      store.removeAll();
                      for ( x = 0; x < results.length; x++)
                      {
-                        items.push((Genesis.fn.isNative()) ? results[x].get('json') : results[x].getData(true));
+                        items.push(results[x].get('json'));
                      }
                      store.setData(items);
                      console.debug("persistLoadStores  --- Restored " + results.length + " records to " + store.getStoreId());
@@ -1128,10 +1128,10 @@ Ext.define('Genesis.controller.ControllerBase',
                   items = Ext.StoreMgr.get(stores[i][1]).getRange();
                   for ( x = 0; x < items.length; x++)
                   {
-                     var model = Ext.create('Genesis.model.' + stores[i][2], (Genesis.fn.isNative()) ?
+                     var model = Ext.create('Genesis.model.' + stores[i][2],
                      {
                         json : items[x].getData(true)
-                     } : items[x].getData(true));
+                     });
 
                      model.phantom = true;
                      json.push(model);

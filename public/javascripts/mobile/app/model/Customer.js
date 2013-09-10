@@ -24,6 +24,27 @@ Ext.define('Genesis.model.CustomerJSON',
    }
 });
 
+Ext.define('Genesis.model.CustomerDB',
+{
+   id : 'CustomerDB',
+   extend : 'Genesis.model.CustomerJSON',
+   config :
+   {
+      proxy :
+      {
+         type : 'browserdb',
+         dbName : 'KickBakCustomer',
+         objectStoreName : 'Customer',
+         //dbVersion : '1.0',
+         writer :
+         {
+            type : 'json',
+            writeAllFields : false
+         }
+      }
+   }
+});
+
 Ext.define('Genesis.model.Customer',
 {
    extend : 'Ext.data.Model',
@@ -219,27 +240,6 @@ Ext.define('Genesis.model.Customer',
             read : 'POST'
          });
          this.getProxy().setUrl(serverHost + '/api/v1/customers/receive_points');
-      }
-   }
-});
-
-Ext.define('Genesis.model.CustomerDB',
-{
-   id : 'CustomerDB',
-   extend : 'Genesis.model.Customer',
-   config :
-   {
-      proxy :
-      {
-         type : 'browserdb',
-         dbName : 'KickBakCustomer',
-         objectStoreName : 'Customer',
-         //dbVersion : '1.0',
-         writer :
-         {
-            type : 'json',
-            writeAllFields : false
-         }
       }
    }
 });

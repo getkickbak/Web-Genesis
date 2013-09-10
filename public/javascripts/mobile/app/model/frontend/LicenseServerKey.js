@@ -24,6 +24,27 @@ Ext.define('Genesis.model.frontend.LicenseKeyJSON',
    }
 });
 
+Ext.define('Genesis.model.frontend.LicenseKeyDB',
+{
+   extend : 'Genesis.model.frontend.LicenseKeyJSON',
+   id : 'LicenseKeyDB',
+   config :
+   {
+      proxy :
+      {
+         type : 'browserdb',
+         dbName : 'KickBakLicenseKey',
+         objectStoreName : 'LicenseKey',
+         //dbVersion : '1.0',
+         writer :
+         {
+            type : 'json',
+            writeAllFields : false
+         }
+      }
+   }
+});
+
 Ext.define('Genesis.model.frontend.LicenseKey',
 {
    extend : 'Ext.data.Model',
@@ -58,27 +79,6 @@ Ext.define('Genesis.model.frontend.LicenseKey',
             read : 'GET'
          });
          this.getProxy().setUrl(serverHost + '/api/v1/devices/get_encryption_key');
-      }
-   }
-});
-
-Ext.define('Genesis.model.frontend.LicenseKeyDB',
-{
-   extend : 'Genesis.model.frontend.LicenseKey',
-   id : 'LicenseKeyDB',
-   config :
-   {
-      proxy :
-      {
-         type : 'browserdb',
-         dbName : 'KickBakLicenseKey',
-         objectStoreName : 'LicenseKey',
-         //dbVersion : '1.0',
-         writer :
-         {
-            type : 'json',
-            writeAllFields : false
-         }
       }
    }
 });
