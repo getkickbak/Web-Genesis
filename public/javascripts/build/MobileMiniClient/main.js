@@ -126,7 +126,7 @@ var setChildBrowserVisibility = function(visible, hash)
    else
    {
       $(".iframe").addClass('x-item-hidden');
-      location.hash = '#' + hash;
+      window.location.hash = '#' + hash;
    }
 };
 
