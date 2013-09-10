@@ -215,26 +215,26 @@ var setChildBrowserVisibility = function(visible, hash)
       //
       if ($('iframe').hasClass('x-item-hidden'))
       {
-         if (!$("#checkexplorepageview").hasClass('x-item-hidden'))
+         switch (window.location.hash.split('#')[1])
          {
-            hideCheckExplorePage();
-         }
-         else if ($("#earnptspageview")[0].style.top.split('px')[0] == 0)
-         {
-            hideEarnPtsPage();
-         }
-         else
-         {
-            switch (location.hash.split('#')[1])
+            case 'explore' :
             {
-               case 'explore' :
-               {
-                  $("#checkExploreLoad").trigger('tap');
-                  location.hash = "";
-                  break;
-               }
+               $("#checkExploreLoad").trigger('tap');
+               location.hash = "";
+               break;
             }
+            default:
+               if (!$("#checkexplorepageview").hasClass('x-item-hidden'))
+               {
+                  hideCheckExplorePage();
+               }
+               else if ($("#earnptspageview")[0].style.top.split('px')[0] == 0)
+               {
+                  hideEarnPtsPage();
+               }
+               break;
          }
+
       }
    });
    window.addEventListener("orientationchange", orientationChange);
