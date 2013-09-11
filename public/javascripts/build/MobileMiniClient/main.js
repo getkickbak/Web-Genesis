@@ -300,7 +300,7 @@ var setChildBrowserVisibility = function(visible, hash)
          mouseWheel : true,
          interactiveScrollbars : false
       });
-      var i = 7, origEventHandler = iscroll.handleEvent, iscrollInfinite = $('#checkexplorepageview .body');
+      var i = 0, origEventHandler = iscroll.handleEvent, iscrollInfinite = $('#checkexplorepageview .body');
       iscrollInfinite.infiniteScroll(
       {
          threshold : window.screen.height,

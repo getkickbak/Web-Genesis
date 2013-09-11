@@ -10,6 +10,7 @@ worker/encoder.min.js
 #css
 lib/bootstrap/css/bootstrap.min.css
 resources/css/mini_client.css
+resources/themes/images/v1/checkin.svg
 resources/themes/images/v1/ios/prizewon/loyaltycard.svg
 resources/themes/images/v1/ios/prizewon/transmit.svg
 resources/themes/images/v1/ios/prizewon/phoneInHand.svg
