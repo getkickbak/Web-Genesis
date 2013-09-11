@@ -72961,9 +72961,9 @@ Ext.define('Genesis.data.proxy.WebSql',
          me.doQuery(transaction, 'DELETE FROM ' + me.getDbTable());
       }, emptyCallback, emptyCallback);
    },
-   clear : function()
+   clear : function(callback, scope)
    {
-      this.emptyTable();
+      this.emptyTable(callback, scope);
    },
 
    /**
@@ -75482,21 +75482,26 @@ Ext.define('Genesis.controller.ControllerBase',
          if ((!storeName || (storeName == stores[i][1])))
          {
             store.removeAll();
-            store.getProxy().clear();
-            if (!cleanOnly)
+            store.getProxy().clear(function()
             {
-               items = Ext.StoreMgr.get(stores[i][1]).getRange();
-               for ( x = 0; x < items.length; x++)
+               Ext.defer(function()
                {
-                  json.push(Ext.create('Genesis.model.' + stores[i][2],
+                  if (!cleanOnly)
                   {
-                     json : Ext.encode(items[x].getData(true))
-                  }));
-               }
-               store.add(json);
-               console.debug("persistSyncStores  --- Found " + items.length + " records in [" + stores[i][1] + "] ...");
-            }
-            store.sync();
+                     items = Ext.StoreMgr.get(stores[i][1]).getRange();
+                     for ( x = 0; x < items.length; x++)
+                     {
+                        json.push(Ext.create('Genesis.model.' + stores[i][2],
+                        {
+                           json : Ext.encode(items[x].getData(true))
+                        }));
+                     }
+                     store.add(json);
+                     console.debug("persistSyncStores  --- Found " + items.length + " records in [" + stores[i][1] + "] ...");
+                  }
+                  store.sync();
+               }, 1);
+            });
          }
 
          //

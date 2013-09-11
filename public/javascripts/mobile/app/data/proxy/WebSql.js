@@ -290,9 +290,9 @@ Ext.define('Genesis.data.proxy.WebSql',
          me.doQuery(transaction, 'DELETE FROM ' + me.getDbTable());
       }, emptyCallback, emptyCallback);
    },
-   clear : function()
+   clear : function(callback, scope)
    {
-      this.emptyTable();
+      this.emptyTable(callback, scope);
    },
 
    /**
