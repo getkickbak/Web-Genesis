@@ -300,7 +300,7 @@ var setChildBrowserVisibility = function(visible, hash)
          mouseWheel : true,
          interactiveScrollbars : false
       });
-      var i = 0, origEventHandler = iscroll.handleEvent, iscrollInfinite = $('#checkexplorepageview .body');
+      var i = -1, y = 0, origEventHandler = iscroll.handleEvent, iscrollInfinite = $('#checkexplorepageview .body');
       iscrollInfinite.infiniteScroll(
       {
          threshold : window.screen.height,
@@ -312,8 +312,9 @@ var setChildBrowserVisibility = function(visible, hash)
          onBottom : function(callback)
          {
             console.debug('At the end of the page. Loading more!');
-            if (++i < 19)
+            if ((++i < 19) && (i > 0))
             {
+               y++;
                $('.body ul').append(
                // @formatter:off
                '<li class="media" data="'+ i +'">'+
