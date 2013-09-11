@@ -329,6 +329,10 @@ var setChildBrowserVisibility = function(visible, hash)
                refreshCheckExploreVenues();
                callback(true);
             }
+            if (i == 0)
+            {
+               callback(true);
+            }
             else
             {
                callback(false);
