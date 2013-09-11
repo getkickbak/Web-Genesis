@@ -328,15 +328,11 @@ var setChildBrowserVisibility = function(visible, hash)
                iscroll.refresh();
                refreshCheckExploreVenues();
                callback(true);
+
+               return;
             }
-            if (i == 0)
-            {
-               callback(true);
-            }
-            else
-            {
-               callback(false);
-            }
+            
+            callback((i == 0) ? true : false);
          }
       });
 
