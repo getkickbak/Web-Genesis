@@ -131,7 +131,7 @@ var setChildBrowserVisibility = function(visible, hash)
    else
    {
       $("#earnPtsLoad span.x-button-label").text((db['auth_code']) ? 'Earn Points' : 'Sign In / Register');
-      
+
       $(".iframe").addClass('x-item-hidden');
       window.location.hash = '#' + hash;
    }
@@ -242,22 +242,22 @@ var setChildBrowserVisibility = function(visible, hash)
    $(window).resize(orientationChange);
    $(window).on('scroll', function(e)
    {
-      try
+      setTimeout(function()
       {
-         var totalHeight = parseInt(document.body.style.height.split('px')[0]) + getHeightOfIOSToolbars();
-
-         //if (window.outerHeight > window.innerHeight)
-         if (Math.abs(totalHeight - ((window.orientation === 0) ? window.screen.height : window.screen.width)) > 20)
+         try
          {
-            setTimeout(function()
+            var totalHeight = parseInt(document.body.style.height.split('px')[0]) + getHeightOfIOSToolbars();
+
+            //if (window.outerHeight > window.innerHeight)
+            if (Math.abs(totalHeight - ((window.orientation === 0) ? window.screen.height : window.screen.width)) > 20)
             {
                window.scrollTo(0, 1);
-            }, 1);
+            }
          }
-      }
-      catch(e)
-      {
-      }
+         catch(e)
+         {
+         }
+      }, 0.1 * 1000);
    });
 
    $(document.body).on('touchmove', function(e)
