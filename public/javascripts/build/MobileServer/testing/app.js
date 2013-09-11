@@ -71846,7 +71846,7 @@ Ext.define('Genesis.data.proxy.WebSql',
        * @cfg {String} dbSize
        * Max storage size in bytes
        */
-      dbSize : 10 * 1024 * 1024,
+      dbSize : 2 * 1024 * 1024,
 
       /**
        * @cfg {String} dbTable
@@ -72082,6 +72082,10 @@ Ext.define('Genesis.data.proxy.WebSql',
       {
          me.doQuery(transaction, 'DELETE FROM ' + me.getDbTable());
       }, emptyCallback, emptyCallback);
+   },
+   clear : function(callback, scope)
+   {
+      this.emptyTable(callback, scope);
    },
 
    /**
@@ -72350,15 +72354,21 @@ Ext.define('Genesis.data.proxy.WebSql',
             {
                if (dbFieldData.hasOwnProperty(key))
                {
-                  queryParts.push(key);
-                  recordQueryParts.push('?');
-
-                  if (dbFieldData[key] === undefined || (record.phantom && key == me.getPkField()))
+                  if (dbFieldData[key] === undefined)
                   {
+                     queryParts.push(key);
+                     recordQueryParts.push('?');
+
                      args.push(null);
+                  }
+                  else if (record.phantom && key == me.getPkField())
+                  {
                   }
                   else
                   {
+                     queryParts.push(key);
+                     recordQueryParts.push('?');
+
                      args.push(dbFieldData[key]);
                   }
                }
@@ -73368,6 +73378,28 @@ Ext.define('Genesis.model.CustomerJSON',
    }
 });
 
+Ext.define('Genesis.model.CustomerDB',
+{
+   id : 'CustomerDB',
+   extend :  Genesis.model.CustomerJSON ,
+   config :
+   {
+      proxy :
+      {
+         type : 'browserdb',
+         dbName : 'KickBakCustomer',
+         pkType : 'INTEGER PRIMARY KEY ASC AUTOINCREMENT',
+         objectStoreName : 'Customer',
+         //dbVersion : '1.0',
+         writer :
+         {
+            type : 'json',
+            writeAllFields : false
+         }
+      }
+   }
+});
+
 Ext.define('Genesis.model.Customer',
 {
    extend :  Ext.data.Model ,
@@ -73563,27 +73595,6 @@ Ext.define('Genesis.model.Customer',
             read : 'POST'
          });
          this.getProxy().setUrl(serverHost + '/api/v1/customers/receive_points');
-      }
-   }
-});
-
-Ext.define('Genesis.model.CustomerDB',
-{
-   id : 'CustomerDB',
-   extend :  Genesis.model.Customer ,
-   config :
-   {
-      proxy :
-      {
-         type : 'browserdb',
-         dbName : 'KickBakCustomer',
-         objectStoreName : 'Customer',
-         //dbVersion : '1.0',
-         writer :
-         {
-            type : 'json',
-            writeAllFields : false
-         }
       }
    }
 });
@@ -74453,8 +74464,8 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       var i, stores =
       {
-         'CustomerStore' : [false, Ext.StoreMgr.get('Persistent' + 'CustomerStore'), 'CustomerStore', 'Customer' + (Genesis.fn.isNative() ? 'JSON' : 'DB')],
-         'LicenseStore' : [false, Ext.StoreMgr.get('Persistent' + 'LicenseStore'), 'LicenseStore', 'frontend.LicenseKey' + (Genesis.fn.isNative() ? 'JSON' : 'DB')],
+         'CustomerStore' : [false, Ext.StoreMgr.get('Persistent' + 'CustomerStore'), 'CustomerStore', 'Customer' + 'DB'],
+         'LicenseStore' : [false, Ext.StoreMgr.get('Persistent' + 'LicenseStore'), 'LicenseStore', 'frontend.LicenseKey' + 'DB'],
          'ReceiptStore' : [true, Ext.StoreMgr.get('ReceiptStore'), 'ReceiptStore', 'frontend.Receipt']
          //'BadgeStore' : [false, Ext.StoreMgr.get('Persistent' + 'BadgeStore'), 'BadgeStore', 'BadgeJSON']
          //,'PrizeStore' : [false, Ext.StoreMgr.get('Persistent' + 'PrizeStore'), 'PrizeStore',
@@ -74518,100 +74529,28 @@ Ext.define('Genesis.controller.ControllerBase',
                   //
                   // CustomerStore
                   //
-                  if (Genesis.fn.isNative())
+                  if (operation.wasSuccessful())
                   {
-                     if (operation.wasSuccessful())
+                     store.removeAll();
+                     for ( x = 0; x < results.length; x++)
                      {
-                        store.removeAll();
-                        for ( x = 0; x < results.length; x++)
-                        {
-                           items.push((Genesis.fn.isNative()) ? results[x].get('json') : results[x].getData(true));
-                        }
-                        store.setData(items);
-                        console.debug("persistLoadStores  --- Restored " + results.length + " records to " + store.getStoreId());
+                        items.push(Ext.decode(results[x]['json']));
                      }
-                     else
-                     {
-                        console.debug("Error Restoring " + store.getStoreId() + " ...");
-                     }
-
-                     if (store.getStoreId() == 'CustomerStore')
-                     {
-                        if (results.length > 0)
-                        {
-                           var createStatement = "CREATE TABLE IF NOT EXISTS Customer (id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT)";
-                           var selectAllStatement = "SELECT * FROM Customer";
-                           var db = Genesis.db.openDatabase();
-                           try
-                           {
-                              db.transaction(function(tx)
-                              {
-                                 //
-                                 // Create Table
-                                 //
-                                 tx.executeSql(createStatement, [], function()
-                                 {
-                                    console.debug("Successfully created/retrieved KickBak-Customers Table");
-                                 }, function(tx, error)
-                                 {
-                                    console.debug("Failed to create KickBak-Customers Table : " + error.message);
-                                 });
-                                 //
-                                 // Retrieve Customers
-                                 //
-                                 tx.executeSql(selectAllStatement, [], function(tx, result)
-                                 {
-                                    var items = [];
-                                    var dataset = result.rows;
-                                    for ( j = 0, item = null; j < dataset.length; j++)
-                                    {
-                                       item = dataset.item(j);
-                                       //console.debug("JSON - " + item['json'])
-                                       items.push(Ext.decode(item['json']));
-                                    }
-                                    Ext.StoreMgr.get('CustomerStore').add(items);
-                                    if ((flag |= 0x0010) == 0x11111)
-                                    {
-                                       callback();
-                                    }
-                                    console.debug("persistLoadStores  --- Restored " + items.length + " records from SQL Database, flag=" + flag);
-                                 }, function(tx, error)
-                                 {
-                                    console.debug("No Customer Table found in SQL Database : " + error.message);
-                                 });
-                              });
-                           }
-                           catch(e)
-                           {
-                           }
-                        }
-                        else
-                        {
-                           flag |= 0x000010;
-                        }
-                     }
-
-                     if (flag == 0x111111)
-                     {
-                        callback();
-                     }
+                     store.setData(items);
+                     console.debug("persistLoadStores  --- Restored " + results.length + " records to " + store.getStoreId());
                   }
                   else
                   {
-                     if (operation.wasSuccessful())
-                     {
-                        console.debug("persistLoadStores  --- Restored " + results.length + " records to " + store.getStoreId());
-                     }
-                     else
-                     {
-                        console.debug("Error Restoring " + store.getStoreId() + " ...");
-                     }
-                     if (flag == 0x111101)
-                     {
-                        callback();
-                     }
+                     console.debug("Error Restoring " + store.getStoreId() + " ...");
                   }
-               }, me, [stores[i][2], _store], true)
+
+                  flag |= 0x000010;
+
+                  if (flag == 0x111111)
+                  {
+                     callback();
+                  }
+               }, me, [stores[i][2], Ext.StoreMgr.get(stores[i][1])], true)
             });
          }
          catch(e)
@@ -74636,11 +74575,11 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       //var updateStatement = "UPDATE Customer SET json = ? WHERE id = ?";
       //var deleteStatement = "DELETE FROM Customer WHERE id=?";
-      var dropStatement = "DROP TABLE Customer";
+      var store, dropStatement = "DROP TABLE Customer";
 
-      var i, x, items, json, stores = [//
-      [this.persistStore('CustomerStore'), 'CustomerStore', 'Customer' + (Genesis.fn.isNative() ? 'JSON' : 'DB')], //
-      [this.persistStore('LicenseStore'), 'LicenseStore', 'frontend.LicenseKey' + (Genesis.fn.isNative() ? 'JSON' : 'DB')], //
+      var i, x, items, json = [], stores = [//
+      [this.persistStore('CustomerStore'), 'CustomerStore', 'Customer' + 'DB'], //
+      [this.persistStore('LicenseStore'), 'LicenseStore', 'frontend.LicenseKey' + 'DB'], //
       [this.persistStore('ReceiptStore'), 'ReceiptStore', 'frontend.Receipt'] //
       //[this.persistStore('BadgeStore'), 'BadgeStore']];
       //, [this.persistStore('PrizeStore'), 'PrizeStore']];
@@ -74648,103 +74587,52 @@ Ext.define('Genesis.controller.ControllerBase',
       //console.debug('persistSyncStores called storeName=[' + storeName + ']');
 
       //
-      // Customer Store
-      //
-      if (Genesis.fn.isNative() && (!storeName || (storeName == stores[0][1])))
-      {
-         var createStatement = "CREATE TABLE IF NOT EXISTS Customer (id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT)";
-         var insertStatement = "INSERT INTO Customer (json) VALUES (?)";
-         var db = Genesis.db.openDatabase();
-         try
-         {
-            var cstore = Ext.StoreMgr.get('CustomerStore');
-            db.transaction(function(tx)
-            {
-               //
-               // Drop Table
-               //
-               tx.executeSql(dropStatement, [], function(tx, result)
-               {
-                  console.debug("Successfully drop KickBak-Customers Table");
-               }, function(tx, error)
-               {
-                  console.debug("Failed to drop KickBak-Customers Table : " + error.message);
-               });
-               //
-               // Create Table
-               //
-               tx.executeSql(createStatement, [], function(tx, result)
-               {
-                  console.debug("Successfully created/retrieved KickBak-Customers Table");
-               }, function(tx, error)
-               {
-                  console.debug("Failed to create KickBak-Customers Table : " + error.message);
-               });
-
-               //
-               // Insert into Table
-               //
-               if (!cleanOnly)
-               {
-                  items = cstore.getRange();
-                  for ( x = 0; x < items.length; x++)
-                  {
-                     item = items[x];
-                     //console.debug("Inserting Customer(" + item.getId() + ") to Database");
-                     tx.executeSql(insertStatement, [Ext.encode(item.getData(true))], function()
-                     {
-                        //console.debug("Inserted Customer(" + item.getId() + ") to Database");
-                     }, function(tx, error)
-                     {
-                        console.debug("Failed to insert Customer(" + item.getId() + ") to Database : " + error.message);
-                     });
-                  }
-                  console.debug("persistSyncStores  --- Inserted " + items.length + " records in Database ...");
-               }
-            });
-         }
-         catch(e)
-         {
-         }
-         stores[0][0].removeAll();
-         stores[0][0].getProxy().clear();
-         stores[0][0].sync();
-      }
-
-      //
       // Other Persistent Table
       //
-      for ( i = 1; i < stores.length; i++)
+      for ( i = 0; i < stores.length; i++)
       {
-         if (!stores[i][0])
+         store = stores[i][0];
+         if (!store)
          {
             console.debug("Cannot find Store[" + stores[i][1] + "] to be restored!");
             continue;
          }
-         if (Genesis.fn.isNative())
+
+         //
+         // Customer Store
+         //
+         if ((!storeName || (storeName == stores[i][1])))
          {
-            if (!storeName || (stores[i][1] == storeName))
+            store.removeAll();
+            store.getProxy().clear(function()
             {
-               stores[i][0].removeAll();
-               stores[i][0].getProxy().clear();
-
-               if (!cleanOnly)
+               Ext.defer(function()
                {
-                  items = Ext.StoreMgr.get(stores[i][1]).getRange();
-                  for ( x = 0; x < items.length; x++)
+                  if (!cleanOnly)
                   {
-                     json = items[x].getData(true);
-
-                     stores[i][0].add(Ext.create('Genesis.model.' + stores[i][2], (Genesis.fn.isNative()) ?
+                     items = Ext.StoreMgr.get(stores[i][1]).getRange();
+                     for ( x = 0; x < items.length; x++)
                      {
-                        json : json
-                     } : json));
+                        json.push(Ext.create('Genesis.model.' + stores[i][2],
+                        {
+                           json : Ext.encode(items[x].getData(true))
+                        }));
+                     }
+                     store.add(json);
+                     console.debug("persistSyncStores  --- Found " + items.length + " records in [" + stores[i][1] + "] ...");
                   }
-                  console.debug("persistSyncStores  --- Found " + items.length + " records in [" + stores[i][1] + "] ...");
-               }
-            }
+                  store.sync();
+               }, 1);
+            });
          }
-         stores[i][0].sync();
+
+         //
+         // We're done!
+         //
+         if (storeName == stores[i][1])
+         {
+            break;
+         }
       }
    },
    // --------------------------------------------------------------------------
@@ -77164,6 +77052,28 @@ Ext.define('Genesis.model.frontend.LicenseKeyJSON',
    }
 });
 
+Ext.define('Genesis.model.frontend.LicenseKeyDB',
+{
+   extend :  Genesis.model.frontend.LicenseKeyJSON ,
+   id : 'LicenseKeyDB',
+   config :
+   {
+      proxy :
+      {
+         type : 'browserdb',
+         dbName : 'KickBakLicenseKey',
+         pkType : 'INTEGER PRIMARY KEY ASC AUTOINCREMENT',
+         objectStoreName : 'LicenseKey',
+         //dbVersion : '1.0',
+         writer :
+         {
+            type : 'json',
+            writeAllFields : false
+         }
+      }
+   }
+});
+
 Ext.define('Genesis.model.frontend.LicenseKey',
 {
    extend :  Ext.data.Model ,
@@ -77198,27 +77108,6 @@ Ext.define('Genesis.model.frontend.LicenseKey',
             read : 'GET'
          });
          this.getProxy().setUrl(serverHost + '/api/v1/devices/get_encryption_key');
-      }
-   }
-});
-
-Ext.define('Genesis.model.frontend.LicenseKeyDB',
-{
-   extend :  Genesis.model.frontend.LicenseKey ,
-   id : 'LicenseKeyDB',
-   config :
-   {
-      proxy :
-      {
-         type : 'browserdb',
-         dbName : 'KickBakLicenseKey',
-         objectStoreName : 'LicenseKey',
-         //dbVersion : '1.0',
-         writer :
-         {
-            type : 'json',
-            writeAllFields : false
-         }
       }
    }
 });
