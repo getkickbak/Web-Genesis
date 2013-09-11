@@ -617,14 +617,16 @@ Ext.define('Genesis.controller.client.Checkins',
    },
    checkinPage : function()
    {
+      /*
       if (Genesis.fn.isNative())
       {
-         this.openPage('checkin');
+      this.openPage('checkin');
       }
+      else
+      */
       //
       // Return to MiniClient
       //
-      else
       {
          window.parent.setChildBrowserVisibility(false, 'explore');
       }

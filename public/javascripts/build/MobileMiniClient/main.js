@@ -109,8 +109,7 @@ var refreshCheckExploreVenues = function()
       console.debug("Target ID : " + venueId);
       Genesis.db.setLocalDBAttrib('ma_venueId', venueId);
    };
-   $('.media').off();
-   $('.media').tap(exploreVenue).swipeLeft(exploreVenue).swipeRight(exploreVenue);
+   $('.media').off().tap(exploreVenue).swipeLeft(exploreVenue).swipeRight(exploreVenue);
 };
 var setChildBrowserVisibility = function(visible, hash)
 {
@@ -187,28 +186,6 @@ var setChildBrowserVisibility = function(visible, hash)
       $('#earnptspageview')[0].style.height = document.body.style.height;
       $('iframe')[0].style.width = document.body.clientWidth + 'px';
    };
-   /*
-    var validateMobileNumber = function()
-    {
-    var me = gblController, rc = false, db = Genesis.db.getLocalDB(), mobile = $('#earnPtsMobileNumber')[0], mobileField =
-    $('#inputMobile')[0];
-    if (db['mobileNumber'])
-    {
-    rc = true;
-    }
-    else if ((mobile.style.display == '') && (mobileField.value.length == 10))
-    {
-    Genesis.db.setLocalDBAttrib('mobileNumber', mobileField.value);
-    rc = true;
-    }
-    else
-    {
-    setNotificationVisibility(true, 'KICKBAK', me.incorrectMobileNumberFormatMsg, "Dismiss", Ext.emptyFn);
-    }
-
-    return rc;
-    };
-    */
 
    window.addEventListener('hashchange', function()
    {

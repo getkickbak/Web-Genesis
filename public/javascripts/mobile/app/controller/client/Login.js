@@ -240,13 +240,22 @@ Ext.define('Genesis.controller.client.Login',
          me._loggingOut = false;
       }
       console.debug("Resetting Session information ...")
-      if ((Genesis.db.getLocalDB()['currFbId'] > 0) && (Genesis.fn.isNative()))
+      if (Genesis.db.getLocalDB()['currFbId'] > 0)
       {
          console.debug("Logging out of Facebook ...")
          Genesis.fb.facebook_onLogout(null, true);
       }
       me.resetView();
-      me.redirectTo('login');
+      /*
+       if (Genesis.fn.isNative())
+       {
+       me.redirectTo('login');
+       }
+       else
+       */
+      {
+         window.parent.setChildBrowserVisibility(false, 'explore');
+      }
    },
    onLogoutTap : function(b, e, eOpts, eInfo)
    {
@@ -422,7 +431,7 @@ Ext.define('Genesis.controller.client.Login',
                }
                else if (!Genesis.fn.isNative())
                {
-                  Ext.Viewport.setMasked(null);                  
+                  Ext.Viewport.setMasked(null);
                }
             }
             //
@@ -510,7 +519,7 @@ Ext.define('Genesis.controller.client.Login',
       }
 
       //Cleanup any outstanding registrations
-      if (Genesis.fn.isNative())
+      //if (Genesis.fn.isNative())
       {
          Genesis.fb.facebook_onLogout(null, Genesis.db.getLocalDB()['currFbId'] > 0);
       }
