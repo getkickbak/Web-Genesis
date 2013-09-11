@@ -291,16 +291,16 @@ var setChildBrowserVisibility = function(visible, hash)
       c.proximityRxTimeout = 40 * 1000;
       Genesis.fn.printProximityConfig();
       window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
-      /*
-       * iScroll
-       */
+      // =============================================================
+      // Venue Browse/Scroll
+      // =============================================================
       iscroll = new IScroll('#checkexplorepageview .body',
       {
          scrollbars : true,
          mouseWheel : true,
          interactiveScrollbars : false
       });
-      var i = -1, y = 0, origEventHandler = iscroll.handleEvent, iscrollInfinite = $('#checkexplorepageview .body');
+      var i = -1, origEventHandler = iscroll.handleEvent, iscrollInfinite = $('#checkexplorepageview .body');
       iscrollInfinite.infiniteScroll(
       {
          threshold : window.screen.height,
@@ -314,7 +314,6 @@ var setChildBrowserVisibility = function(visible, hash)
             console.debug('At the end of the page. Loading more!');
             if ((++i < 19) && (i > 0))
             {
-               y++;
                $('.body ul').append(
                // @formatter:off
                '<li class="media" data="'+ i +'">'+
@@ -349,6 +348,29 @@ var setChildBrowserVisibility = function(visible, hash)
                break;
          }
       }
+      iscrollInfinite.tap(function(e)
+      {
+         //
+         // Trigger when the list is empty
+         //
+         if ($('.media').length == 0)
+         {
+            $('.body ul').append(
+            // @formatter:off
+               '<li class="media" data="'+ (++i) +'">'+
+                  '<a class="pull-left" href="#"> <img class="media-object" data-src="holder.js/64x64" alt="64x64"> </a>'+
+                  '<div class="media-body">'+
+                     '<h4 class="media-heading">Nested media heading</h4>'+
+                     'Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis.'+
+                  '</div>'+
+               '</li>'
+               // @formatter:on
+            );
+            iscroll.refresh();
+            refreshCheckExploreVenues();
+         }
+      });
+
       // =============================================================
       // WelcomePage Actions
       // =============================================================
