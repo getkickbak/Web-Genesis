@@ -75485,24 +75485,26 @@ Ext.define('Genesis.controller.ControllerBase',
          //
          if ((!storeName || (storeName == stores[i][1])))
          {
-            store.removeAll();
-            Ext.defer(Ext.bind(function(_i, _store)
+            store.getProxy().clear(Ext.bind(function(_i, _store)
             {
-               if (!cleanOnly)
+               Ext.defer(function()
                {
-                  items = Ext.StoreMgr.get(stores[_i][1]).getRange();
-                  for (var x = 0; x < items.length; x++)
+                  if (!cleanOnly)
                   {
-                     json.push(Ext.create('Genesis.model.' + stores[_i][2],
+                     items = Ext.StoreMgr.get(stores[_i][1]).getRange();
+                     for (var x = 0; x < items.length; x++)
                      {
-                        json : Ext.encode(items[x].getData(true))
-                     }));
+                        json.push(Ext.create('Genesis.model.' + stores[_i][2],
+                        {
+                           json : Ext.encode(items[x].getData(true))
+                        }));
+                     }
+                     _store.add(json);
+                     console.debug("persistSyncStores  --- Found " + items.length + " records in [" + stores[_i][1] + "] ...");
                   }
-                  _store.add(json);
-                  console.debug("persistSyncStores  --- Found " + items.length + " records in [" + stores[_i][1] + "] ...");
-               }
-               _store.sync();
-            }, me, [i, store]), 1);
+                  _store.sync();
+               }, me, 1);
+            }, me, [i, store]));
          }
 
          //
