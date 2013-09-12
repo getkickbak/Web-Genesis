@@ -261,7 +261,7 @@ Ext.define('Genesis.data.proxy.IndexedDB',
    //inherit docs
    create : function(operation, callback, scope)
    {
-      var records = operation.records, length = records.length, id, record, i;
+      var records = operation.getRecords(), length = records.length, id, record, i;
 
       operation.setStarted();
 
@@ -325,7 +325,7 @@ Ext.define('Genesis.data.proxy.IndexedDB',
    //inherit docs
    update : function(operation, callback, scope)
    {
-      var records = operation.records, length = records.length, record, id, i;
+      var records = operation.getRecords(), length = records.length, record, id, i;
 
       operation.setStarted();
 
@@ -346,7 +346,7 @@ Ext.define('Genesis.data.proxy.IndexedDB',
    //inherit
    destroy : function(operation, callback, scope)
    {
-      var records = operation.records, length = records.length, i;
+      var records = operation.getRecords(), length = records.length, i;
 
       for ( i = 0; i < length; i++)
       {
