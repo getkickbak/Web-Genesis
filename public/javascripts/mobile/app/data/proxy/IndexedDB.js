@@ -314,12 +314,12 @@ Ext.define('Genesis.data.proxy.IndexedDB',
       var rec = Ext.isArray(records) ? records : [records];
       operation.setSuccessful();
       operation.setCompleted();
-      operation.resultSet = Ext.create('Ext.data.ResultSet',
+      operation.setResultSet(Ext.create('Ext.data.ResultSet',
       {
          records : rec,
          total : rec.length,
          loaded : true
-      });
+      }));
    },
 
    //inherit docs
