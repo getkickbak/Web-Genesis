@@ -84437,7 +84437,7 @@ Ext.define('Genesis.controller.client.Login',
                me._loggingOut = false;
                if (operation.wasSuccessful())
                {
-                  Genesis.db.removeLocalDBAttirib('auth_code');
+                  Genesis.db.removeLocalDBAttrib('auth_code');
                   /*
                    if (Genesis.fn.isNative())
                    {
