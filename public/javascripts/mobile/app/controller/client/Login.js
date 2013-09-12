@@ -226,6 +226,17 @@ Ext.define('Genesis.controller.client.Login',
                me._loggingOut = false;
                if (operation.wasSuccessful())
                {
+                  Genesis.db.removeLocalDBAttirib('auth_code');
+                  /*
+                   if (Genesis.fn.isNative())
+                   {
+                   me.redirectTo('login');
+                   }
+                   else
+                   */
+                  {
+                     window.parent.setChildBrowserVisibility(false, 'explore');
+                  }
                   console.log("Logout Successful!")
                }
                else
@@ -246,16 +257,6 @@ Ext.define('Genesis.controller.client.Login',
          Genesis.fb.facebook_onLogout(null, true);
       }
       me.resetView();
-      /*
-       if (Genesis.fn.isNative())
-       {
-       me.redirectTo('login');
-       }
-       else
-       */
-      {
-         window.parent.setChildBrowserVisibility(false, 'explore');
-      }
    },
    onLogoutTap : function(b, e, eOpts, eInfo)
    {
