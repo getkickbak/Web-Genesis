@@ -378,7 +378,7 @@ Ext.define('Genesis.data.proxy.WebSql',
          name = fields.items[i].getName();
          rowObj[name] = this.convertFieldToRecord(fields.items[i], row[name]);
       }
-      return rowObj;
+      return new this.getModel()(rowObj);
    },
 
    /**

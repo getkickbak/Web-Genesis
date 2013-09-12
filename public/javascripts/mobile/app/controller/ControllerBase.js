@@ -932,7 +932,7 @@ Ext.define('Genesis.controller.ControllerBase',
                      store.removeAll();
                      for ( x = 0; x < results.length; x++)
                      {
-                        items.push(Ext.decode(results[x]['json']));
+                        items.push(Ext.decode(results[x].get('json')));
                      }
                      store.setData(items);
                      console.debug("persistLoadStores  --- Restored " + results.length + " records to " + store.getStoreId());

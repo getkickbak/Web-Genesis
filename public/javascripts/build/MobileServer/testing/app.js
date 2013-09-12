@@ -72171,7 +72171,7 @@ Ext.define('Genesis.data.proxy.WebSql',
          name = fields.items[i].getName();
          rowObj[name] = this.convertFieldToRecord(fields.items[i], row[name]);
       }
-      return rowObj;
+      return new this.getModel()(rowObj);
    },
 
    /**
@@ -74532,7 +74532,7 @@ Ext.define('Genesis.controller.ControllerBase',
                      store.removeAll();
                      for ( x = 0; x < results.length; x++)
                      {
-                        items.push(Ext.decode(results[x]['json']));
+                        items.push(Ext.decode(results[x].get('json')));
                      }
                      store.setData(items);
                      console.debug("persistLoadStores  --- Restored " + results.length + " records to " + store.getStoreId());
