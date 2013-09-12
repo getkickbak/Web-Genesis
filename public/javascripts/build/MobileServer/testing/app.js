@@ -74575,14 +74575,14 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       //var updateStatement = "UPDATE Customer SET json = ? WHERE id = ?";
       //var deleteStatement = "DELETE FROM Customer WHERE id=?";
-      var store, dropStatement = "DROP TABLE Customer";
+      var me = this, store, dropStatement = "DROP TABLE Customer";
 
-      var i, x, items, json = [], stores = [//
-      [this.persistStore('CustomerStore'), 'CustomerStore', 'Customer' + 'DB'], //
-      [this.persistStore('LicenseStore'), 'LicenseStore', 'frontend.LicenseKey' + 'DB'], //
-      [this.persistStore('ReceiptStore'), 'ReceiptStore', 'frontend.Receipt'] //
-      //[this.persistStore('BadgeStore'), 'BadgeStore']];
-      //, [this.persistStore('PrizeStore'), 'PrizeStore']];
+      var i, items, json = [], stores = [//
+      [me.persistStore('CustomerStore'), 'CustomerStore', 'Customer' + 'DB'], //
+      [me.persistStore('LicenseStore'), 'LicenseStore', 'frontend.LicenseKey' + 'DB'], //
+      [me.persistStore('ReceiptStore'), 'ReceiptStore', 'frontend.Receipt'] //
+      //[me.persistStore('BadgeStore'), 'BadgeStore']];
+      //, [me.persistStore('PrizeStore'), 'PrizeStore']];
       ];
       //console.debug('persistSyncStores called storeName=[' + storeName + ']');
 
@@ -74611,7 +74611,7 @@ Ext.define('Genesis.controller.ControllerBase',
                   if (!cleanOnly)
                   {
                      items = Ext.StoreMgr.get(stores[_i][1]).getRange();
-                     for ( x = 0; x < items.length; x++)
+                     for (var x = 0; x < items.length; x++)
                      {
                         json.push(Ext.create('Genesis.model.' + stores[_i][2],
                         {
