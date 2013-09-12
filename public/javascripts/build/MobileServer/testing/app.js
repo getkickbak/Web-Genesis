@@ -73387,7 +73387,7 @@ Ext.define('Genesis.model.CustomerDB',
       {
          type : 'browserdb',
          dbName : 'KickBakCustomer',
-         pkType : 'INTEGER PRIMARY KEY ASC AUTOINCREMENT',
+         pkType : 'CHAR(36) PRIMARY KEY ASC',
          objectStoreName : 'Customer',
          //dbVersion : '1.0',
          writer :
@@ -77058,7 +77058,7 @@ Ext.define('Genesis.model.frontend.LicenseKeyDB',
       {
          type : 'browserdb',
          dbName : 'KickBakLicenseKey',
-         pkType : 'INTEGER PRIMARY KEY ASC AUTOINCREMENT',
+         pkType : 'CHAR(36) PRIMARY KEY ASC',
          objectStoreName : 'LicenseKey',
          //dbVersion : '1.0',
          writer :
