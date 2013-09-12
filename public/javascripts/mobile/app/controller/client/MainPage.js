@@ -7,7 +7,6 @@ Ext.define('Genesis.controller.client.MainPage',
       models : ['Genesis.model.frontend.MainPage', 'Venue', 'Customer', 'User', 'Merchant', 'CustomerReward'],
       routes :
       {
-         //'' : 'openPage', //Default do nothing
          'merchant' : 'merchantPage'
       },
       refs :

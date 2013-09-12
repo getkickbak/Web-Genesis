@@ -67,7 +67,7 @@ __initFb__ = function(_app, _appName)
          var me = window[_appName].fb;
 
          me.actions.hide();
-         _application.getController('client' + '.Viewport').redirectTo(Genesis.fn.isNative() ? 'checkin' : 'main');
+         _application.getController('client' + '.Viewport').redirectTo('main');
 
          callback(onOrientationChange);
       }

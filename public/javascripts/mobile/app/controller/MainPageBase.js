@@ -11,7 +11,6 @@ Ext.define('Genesis.controller.MainPageBase',
       },
       routes :
       {
-         //'' : 'openPage', //Default do nothing
          'main' : 'mainPage'
       },
       refs :

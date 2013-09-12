@@ -71,7 +71,7 @@ Ext.Loader.setPath(
          }
          else
          {
-            Ext.create('Genesis.view.Viewport');
+            viewport.redirectTo('');
             console.debug("Launched App");
          }
 
@@ -136,17 +136,20 @@ Ext.Loader.setPath(
             },
             onUpdated : function()
             {
-               Ext.device.Notification.show(
-               {
-                  title : 'Application Update',
-                  message : "This application has just successfully been updated to the latest version.",
-                  buttons : ['Reload'],
-                  disableAnimations : true,
-                  callback : function(buttonId)
-                  {
-                     window.location.reload();
-                  }
-               });
+               window.location.reload();
+               /*
+                Ext.device.Notification.show(
+                {
+                title : 'Application Update',
+                message : "This application has just successfully been updated to the latest version.",
+                buttons : ['Reload'],
+                disableAnimations : true,
+                callback : function(buttonId)
+                {
+                window.location.reload();
+                }
+                });
+                */
             }
          });
       }

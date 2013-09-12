@@ -76280,7 +76280,6 @@ Ext.define('Genesis.controller.MainPageBase',
       },
       routes :
       {
-         //'' : 'openPage', //Default do nothing
          'main' : 'mainPage'
       },
       refs :
@@ -85462,7 +85461,6 @@ Ext.define('Genesis.controller.client.MainPage',
       models : ['Genesis.model.frontend.MainPage', 'Venue', 'Customer', 'User', 'Merchant', 'CustomerReward'],
       routes :
       {
-         //'' : 'openPage', //Default do nothing
          'merchant' : 'merchantPage'
       },
       refs :
@@ -90541,6 +90539,10 @@ Ext.define('Genesis.controller.client.Viewport',
          metaData : null
       },
       lastPosition : null,
+      routes :
+      {
+         '' : 'openPage'
+      },
       refs :
       {
          shareBtn : 'button[tag=shareBtn]',
@@ -91045,6 +91047,16 @@ Ext.define('Genesis.controller.client.Viewport',
       Genesis.fn.printProximityConfig();
       window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
    },
+   openPage : function()
+   {
+      var me = this;
+
+      if (!me.intialized)
+      {
+         me.intialized = true;
+         Ext.create('Genesis.view.Viewport');
+      }
+   },
    openMainPage : function()
    {
       var me = this;
@@ -91086,7 +91098,7 @@ function _onGotoMain()
                viewport.resetView();
                if (viewport.getLoggedIn())
                {
-                  viewport.redirectTo('checkin');
+                  viewport.redirectTo('main');
                }
                else
                {
@@ -92865,7 +92877,7 @@ will need to resolve manually.
          }
          else
          {
-            Ext.create('Genesis.view.Viewport');
+            viewport.redirectTo('');
             console.debug("Launched App");
          }
 
@@ -92930,17 +92942,20 @@ will need to resolve manually.
             },
             onUpdated : function()
             {
-               Ext.device.Notification.show(
-               {
-                  title : 'Application Update',
-                  message : "This application has just successfully been updated to the latest version.",
-                  buttons : ['Reload'],
-                  disableAnimations : true,
-                  callback : function(buttonId)
-                  {
-                     window.location.reload();
-                  }
-               });
+               window.location.reload();
+               /*
+                Ext.device.Notification.show(
+                {
+                title : 'Application Update',
+                message : "This application has just successfully been updated to the latest version.",
+                buttons : ['Reload'],
+                disableAnimations : true,
+                callback : function(buttonId)
+                {
+                window.location.reload();
+                }
+                });
+                */
             }
          });
       }

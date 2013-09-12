@@ -105,6 +105,10 @@ Ext.define('Genesis.controller.client.Viewport',
          metaData : null
       },
       lastPosition : null,
+      routes :
+      {
+         '' : 'openPage'
+      },
       refs :
       {
          shareBtn : 'button[tag=shareBtn]',
@@ -609,6 +613,16 @@ Ext.define('Genesis.controller.client.Viewport',
       Genesis.fn.printProximityConfig();
       window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
    },
+   openPage : function()
+   {
+      var me = this;
+
+      if (!me.intialized)
+      {
+         me.intialized = true;
+         Ext.create('Genesis.view.Viewport');
+      }
+   },
    openMainPage : function()
    {
       var me = this;
@@ -650,7 +664,7 @@ function _onGotoMain()
                viewport.resetView();
                if (viewport.getLoggedIn())
                {
-                  viewport.redirectTo('checkin');
+                  viewport.redirectTo('main');
                }
                else
                {
