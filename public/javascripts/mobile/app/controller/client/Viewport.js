@@ -169,14 +169,6 @@ Ext.define('Genesis.controller.client.Viewport',
          {
             tap : 'onCheckedInAccountTap'
          },
-         'tabbar[tag=navigationBarBottom] button[tag=checkin]' :
-         {
-            tap : 'onCheckinTap'
-         },
-         'tabbar[tag=navigationBarBottom] button[tag=browse]' :
-         {
-            tap : 'onBrowseTap'
-         },
          'viewportview dataview[tag=mainMenuSelections]' :
          {
             select : 'onButtonTap'
@@ -516,16 +508,6 @@ Ext.define('Genesis.controller.client.Viewport',
    onCheckedInAccountTap : function(b, e, eOpts, eInfo)
    {
       this.goToMerchantMain(true);
-   },
-   onBrowseTap : function(b, e, eOpts, eInfo)
-   {
-      this.redirectTo('exploreS');
-      //this.fireEvent('openpage', 'client.Checkins', 'explore', 'coverUp');
-   },
-   onCheckinTap : function(b, e, eOpts, eInfo)
-   {
-      this.redirectTo('checkin');
-      //this.fireEvent('openpage', 'client.Checkins', 'explore', 'coverUp');
    },
    // --------------------------------------------------------------------------
    // Page Navigation Handlers

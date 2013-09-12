@@ -102,7 +102,7 @@ Ext.Loader.setPath(
             requires : ['Ext.MessageBox', 'Ext.device.Notification', 'Ext.device.Geolocation', 'Ext.device.Orientation'],
             views : ['ViewBase', 'Document', 'client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions',
             // //
-            'client.AccountsTransfer', 'client.SettingsPage', 'client.CheckinExplore', 'LoginPage', 'SignInPage', //
+            'client.AccountsTransfer', 'client.SettingsPage', 'LoginPage', 'SignInPage', //
             'client.MainPage', 'widgets.client.RedeemItemDetail', 'client.Badges', 'client.JackpotWinners', 'client.MerchantAccount',
             // //
             'client.MerchantDetails', 'client.Accounts', 'client.Prizes', 'Viewport'],

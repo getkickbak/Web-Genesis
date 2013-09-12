@@ -74915,7 +74915,7 @@ Ext.define('Genesis.controller.ControllerBase',
          var venueId = "0";
          if (!merchantMode)
          {
-            var venue = me.getViewPortCntlr().getVenue() || Ext.StoreMgr.get('CheckinExploreStore').first() || null;
+            var venue = me.getViewPortCntlr().getVenue() || null;
             venueId = venue ? venue.getId() : "0";
          }
          callback(
@@ -77356,7 +77356,7 @@ Ext.define('Genesis.controller.ViewportBase',
    },
    updateMetaDataInfo : function(metaData)
    {
-      var me = this, customer = null, viewport = me.getViewPortCntlr(), db = Genesis.db.getLocalDB(), cestore = Ext.StoreMgr.get('CheckinExploreStore');
+      var me = this, customer = null, viewport = me.getViewPortCntlr(), db = Genesis.db.getLocalDB();
       try
       {
          //
@@ -77418,9 +77418,9 @@ Ext.define('Genesis.controller.ViewportBase',
          // Short Cut to earn points, customer object wil be given by server
          //
          // Find venueId from metaData or from DataStore
-         var new_venueId = metaData['venue_id'] || ((cestore.first()) ? cestore.first().getId() : 0);
+         var new_venueId = metaData['venue_id'] || 0;
          // Find venue from DataStore or current venue info
-         venue = cestore.getById(new_venueId) || viewport.getVenue();
+         venue = viewport.getVenue();
 
          if (Ext.isDefined(metaData['venue']))
          {

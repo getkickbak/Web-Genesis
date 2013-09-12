@@ -227,16 +227,7 @@ Ext.define('Genesis.controller.client.Login',
                if (operation.wasSuccessful())
                {
                   Genesis.db.removeLocalDBAttrib('auth_code');
-                  /*
-                   if (Genesis.fn.isNative())
-                   {
-                   me.redirectTo('login');
-                   }
-                   else
-                   */
-                  {
-                     window.parent.setChildBrowserVisibility(false, 'explore');
-                  }
+                  window.parent.setChildBrowserVisibility(false, 'explore');
                   console.log("Logout Successful!")
                }
                else
@@ -520,10 +511,7 @@ Ext.define('Genesis.controller.client.Login',
       }
 
       //Cleanup any outstanding registrations
-      //if (Genesis.fn.isNative())
-      {
-         Genesis.fb.facebook_onLogout(null, Genesis.db.getLocalDB()['currFbId'] > 0);
-      }
+      Genesis.fb.facebook_onLogout(null, Genesis.db.getLocalDB()['currFbId'] > 0);
       var me = this;
       var params =
       {
@@ -830,10 +818,7 @@ Ext.define('Genesis.controller.client.Login',
          delete db['fbResponse'];
          Genesis.db.setLocalDB(db);
 
-         if (Genesis.fn.isNative())
-         {
-            Genesis.fb.facebook_onLogout(null, true);
-         }
+         Genesis.fb.facebook_onLogout(null, true);
       }
    },
    // --------------------------------------------------------------------------

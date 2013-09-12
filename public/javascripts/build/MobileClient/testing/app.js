@@ -39038,346 +39038,6 @@ Ext.define('Ext.MessageBox', {
 });
 
 
-/**
- * SegmentedButton is a container for a group of {@link Ext.Button}s. Generally a SegmentedButton would be
- * a child of a {@link Ext.Toolbar} and would be used to switch between different views.
- *
- * ## Example usage:
- *
- *     @example
- *     var segmentedButton = Ext.create('Ext.SegmentedButton', {
- *         allowMultiple: true,
- *         items: [
- *             {
- *                 text: 'Option 1'
- *             },
- *             {
- *                 text: 'Option 2',
- *                 pressed: true
- *             },
- *             {
- *                 text: 'Option 3'
- *             }
- *         ],
- *         listeners: {
- *             toggle: function(container, button, pressed){
- *                 alert("User toggled the '" + button.getText() + "' button: " + (pressed ? 'on' : 'off'));
- *             }
- *         }
- *     });
- *     Ext.Viewport.add({ xtype: 'container', padding: 10, items: [segmentedButton] });
- */
-Ext.define('Ext.SegmentedButton', {
-    extend:  Ext.Container ,
-    xtype : 'segmentedbutton',
-                             
-
-    config: {
-        /**
-         * @cfg
-         * @inheritdoc
-         */
-        baseCls: Ext.baseCSSPrefix + 'segmentedbutton',
-
-        /**
-         * @cfg {String} pressedCls
-         * CSS class when a button is in pressed state.
-         * @accessor
-         */
-        pressedCls: Ext.baseCSSPrefix + 'button-pressed',
-
-        /**
-         * @cfg {Boolean} allowMultiple
-         * Allow multiple pressed buttons.
-         * @accessor
-         */
-        allowMultiple: false,
-
-        /**
-         * @cfg {Boolean} allowDepress
-         * Allow toggling the pressed state of each button.
-         * Defaults to `true` when {@link #allowMultiple} is `true`.
-         * @accessor
-         */
-        allowDepress: false,
-
-        /**
-         * @cfg {Boolean} allowToggle Allow child buttons to be pressed when tapped on. Set to `false` to allow tapping but not toggling of the buttons.
-         * @accessor
-         */
-        allowToggle: true,
-
-        /**
-         * @cfg {Array} pressedButtons
-         * The pressed buttons for this segmented button.
-         *
-         * You can remove all pressed buttons by calling {@link #setPressedButtons} with an empty array.
-         * @accessor
-         */
-        pressedButtons: [],
-
-        /**
-         * @cfg
-         * @inheritdoc
-         */
-        layout: {
-            type : 'hbox',
-            align: 'stretch'
-        },
-
-        /**
-         * @cfg
-         * @inheritdoc
-         */
-        defaultType: 'button'
-    },
-
-    /**
-     * @event toggle
-     * Fires when any child button's pressed state has changed.
-     * @param {Ext.SegmentedButton} this
-     * @param {Ext.Button} button The toggled button.
-     * @param {Boolean} isPressed Boolean to indicate if the button was pressed or not.
-     */
-
-    initialize: function() {
-        var me = this;
-
-        me.callParent();
-
-        me.on({
-            delegate: '> button',
-            scope   : me,
-            tap: 'onButtonRelease'
-        });
-
-        me.onAfter({
-            delegate: '> button',
-            scope   : me,
-            hide: 'onButtonHiddenChange',
-            show: 'onButtonHiddenChange'
-        });
-    },
-
-    updateAllowMultiple: function(allowMultiple) {
-        if (!this.initialized && !this.getInitialConfig().hasOwnProperty('allowDepress') && allowMultiple) {
-            this.setAllowDepress(true);
-        }
-    },
-
-    /**
-     * We override `initItems` so we can check for the pressed config.
-     */
-    applyItems: function() {
-        var me = this,
-            pressedButtons = [],
-            ln, i, item, items;
-
-        //call the parent first so the items get converted into a MixedCollection
-        me.callParent(arguments);
-
-        items = this.getItems();
-        ln = items.length;
-
-        for (i = 0; i < ln; i++) {
-            item = items.items[i];
-            if (item.getInitialConfig('pressed')) {
-                pressedButtons.push(items.items[i]);
-            }
-        }
-
-        me.updateFirstAndLastCls(items);
-
-        me.setPressedButtons(pressedButtons);
-    },
-
-    /**
-     * Button sets a timeout of 10ms to remove the {@link #pressedCls} on the release event.
-     * We don't want this to happen, so lets return `false` and cancel the event.
-     * @private
-     */
-    onButtonRelease: function(button) {
-        if (!this.getAllowToggle()) {
-            return;
-        }
-        var me             = this,
-            pressedButtons = me.getPressedButtons() || [],
-            buttons        = [],
-            alreadyPressed;
-
-        if (!me.getDisabled() && !button.getDisabled()) {
-            //if we allow for multiple pressed buttons, use the existing pressed buttons
-            if (me.getAllowMultiple()) {
-                buttons = pressedButtons.concat(buttons);
-            }
-
-            alreadyPressed = (buttons.indexOf(button) !== -1) || (pressedButtons.indexOf(button) !== -1);
-
-            //if we allow for depressing buttons, and the new pressed button is currently pressed, remove it
-            if (alreadyPressed && me.getAllowDepress()) {
-                Ext.Array.remove(buttons, button);
-            } else if (!alreadyPressed || !me.getAllowDepress()) {
-                buttons.push(button);
-            }
-
-            me.setPressedButtons(buttons);
-        }
-    },
-
-    onItemAdd: function() {
-        this.callParent(arguments);
-        this.updateFirstAndLastCls(this.getItems());
-    },
-
-    onItemRemove: function() {
-        this.callParent(arguments);
-        this.updateFirstAndLastCls(this.getItems());
-    },
-
-    // @private
-    onButtonHiddenChange: function() {
-        this.updateFirstAndLastCls(this.getItems());
-    },
-
-    // @private
-    updateFirstAndLastCls: function(items) {
-        var ln = items.length,
-            basePrefix = Ext.baseCSSPrefix,
-            firstCls = basePrefix + 'first',
-            lastCls = basePrefix + 'last',
-            item, i;
-
-        //remove all existing classes
-        for (i = 0; i < ln; i++) {
-            item = items.items[i];
-            item.removeCls(firstCls);
-            item.removeCls(lastCls);
-        }
-
-        //add a first cls to the first non-hidden button
-        for (i = 0; i < ln; i++) {
-            item = items.items[i];
-            if (!item.isHidden()) {
-                item.addCls(firstCls);
-                break;
-            }
-        }
-
-        //add a last cls to the last non-hidden button
-        for (i = ln - 1; i >= 0; i--) {
-            item = items.items[i];
-            if (!item.isHidden()) {
-                item.addCls(lastCls);
-                break;
-            }
-        }
-    },
-
-    /**
-     * @private
-     */
-    applyPressedButtons: function(newButtons) {
-        var me    = this,
-            array = [],
-            button, ln, i;
-
-        if (me.getAllowToggle()) {
-            if (Ext.isArray(newButtons)) {
-                ln = newButtons.length;
-                for (i = 0; i< ln; i++) {
-                    button = me.getComponent(newButtons[i]);
-                    if (button && array.indexOf(button) === -1) {
-                        array.push(button);
-                    }
-                }
-            } else {
-                button = me.getComponent(newButtons);
-                if (button && array.indexOf(button) === -1) {
-                    array.push(button);
-                }
-            }
-        }
-
-        return array;
-    },
-
-    /**
-     * Updates the pressed buttons.
-     * @private
-     */
-    updatePressedButtons: function(newButtons, oldButtons) {
-        var me    = this,
-            items = me.getItems(),
-            pressedCls = me.getPressedCls(),
-            events = [],
-            item, button, ln, i, e;
-
-        //loop through existing items and remove the pressed cls from them
-        ln = items.length;
-        if (oldButtons && oldButtons.length) {
-            for (i = 0; i < ln; i++) {
-                item = items.items[i];
-
-                if (oldButtons.indexOf(item) != -1 && newButtons.indexOf(item) == -1) {
-                    item.removeCls([pressedCls, item.getPressedCls()]);
-                    events.push({
-                        item: item,
-                        toggle: false
-                    });
-                }
-            }
-        }
-
-        //loop through the new pressed buttons and add the pressed cls to them
-        ln = newButtons.length;
-        for (i = 0; i < ln; i++) {
-            button = newButtons[i];
-            if (!oldButtons || oldButtons.indexOf(button) == -1) {
-                button.addCls(pressedCls);
-                events.push({
-                    item: button,
-                    toggle: true
-                });
-            }
-        }
-
-        //loop through each of the events and fire them after a delay
-        ln = events.length;
-        if (ln && oldButtons !== undefined) {
-            Ext.defer(function() {
-                for (i = 0; i < ln; i++) {
-                    e = events[i];
-                    me.fireEvent('toggle', me, e.item, e.toggle);
-                }
-            }, 50);
-        }
-    },
-
-    /**
-     * Returns `true` if a specified {@link Ext.Button} is pressed.
-     * @param {Ext.Button} button The button to check if pressed.
-     * @return {Boolean} pressed
-     */
-    isPressed: function(button) {
-        var pressedButtons = this.getPressedButtons();
-        return pressedButtons.indexOf(button) != -1;
-    },
-
-    /**
-     * @private
-     */
-    doSetDisabled: function(disabled) {
-        var me = this;
-
-        me.items.each(function(item) {
-            item.setDisabled(disabled);
-        }, me);
-
-        me.callParent(arguments);
-    }
-}, function() {
-});
-
 (function() {
     var lastTime = 0,
         vendors = ['ms', 'moz', 'webkit', 'o'],
@@ -75793,7 +75453,7 @@ Ext.define('Genesis.controller.ControllerBase',
          var venueId = "0";
          if (!merchantMode)
          {
-            var venue = me.getViewPortCntlr().getVenue() || Ext.StoreMgr.get('CheckinExploreStore').first() || null;
+            var venue = me.getViewPortCntlr().getVenue() || null;
             venueId = venue ? venue.getId() : "0";
          }
          callback(
@@ -78234,7 +77894,7 @@ Ext.define('Genesis.controller.ViewportBase',
    },
    updateMetaDataInfo : function(metaData)
    {
-      var me = this, customer = null, viewport = me.getViewPortCntlr(), db = Genesis.db.getLocalDB(), cestore = Ext.StoreMgr.get('CheckinExploreStore');
+      var me = this, customer = null, viewport = me.getViewPortCntlr(), db = Genesis.db.getLocalDB();
       try
       {
          //
@@ -78296,9 +77956,9 @@ Ext.define('Genesis.controller.ViewportBase',
          // Short Cut to earn points, customer object wil be given by server
          //
          // Find venueId from metaData or from DataStore
-         var new_venueId = metaData['venue_id'] || ((cestore.first()) ? cestore.first().getId() : 0);
+         var new_venueId = metaData['venue_id'] || 0;
          // Find venue from DataStore or current venue info
-         venue = cestore.getById(new_venueId) || viewport.getVenue();
+         venue = viewport.getVenue();
 
          if (Ext.isDefined(metaData['venue']))
          {
@@ -80111,13 +79771,6 @@ Ext.define('Genesis.controller.client.Accounts',
                // We need it for checkinMerchant
                switch(me.getMode())
                {
-                  /*
-                   case 'profile' :
-                   {
-                   controller.fireEvent('checkinMerchant', 'explore', metaData, venueId, rec, operation, Ext.emptyFn);
-                   break;
-                   }
-                   */
                   case 'redeemRewardsProfile' :
                   case 'redeemPrizesProfile' :
                   default:
@@ -82608,141 +82261,6 @@ Ext.define('Genesis.view.client.UploadPhotosPage',
    }
 });
 
-Ext.define('Genesis.view.client.CheckinExplore',
-{
-   extend :  Genesis.view.ViewBase ,
-                                                                                                        
-   alias : 'widget.clientcheckinexploreview',
-   config :
-   {
-      layout : 'fit',
-      cls : 'viewport',
-      merchant : null,
-      items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
-      {
-         title : ' ',
-         items : [
-         {
-            align : 'left',
-            //ui : 'back',
-            ui : 'normal',
-            iconCls : 'home',
-            //text : 'Home',
-            tag : 'home'
-         },
-         {
-            align : 'right',
-            ui : 'normal',
-            iconCls : 'refresh',
-            tag : 'refresh'
-         }]
-      }),
-      {
-         docked : 'bottom',
-         hidden : true,
-         cls : 'toolbarBottom',
-         tag : 'toolbarBottom',
-         xtype : 'container',
-         layout :
-         {
-            type : 'vbox',
-            pack : 'center'
-         },
-         items : [
-         {
-            xtype : 'segmentedbutton',
-            allowMultiple : false,
-            defaults :
-            {
-               iconMask : true,
-               ui : 'blue',
-               flex : 1
-            },
-            items : [
-            {
-               iconCls : 'rewards',
-               tag : 'rewardsSC',
-               text : 'Earn Points'
-            }],
-            listeners :
-            {
-               toggle : function(container, button, pressed)
-               {
-                  //console.debug("User toggled the '" + button.getText() + "' button: " + ( pressed ? 'on' : 'off'));
-                  container.setPressedButtons([]);
-               }
-            }
-         }]
-      }]
-   },
-   disableAnimation : true,
-   createView : function()
-   {
-      var me = this;
-      if (!me.callParent(arguments))
-      {
-         //this.query('list')[0].refresh();
-         return;
-      }
-      var itemHeight = 1 + Genesis.constants.defaultIconSize();
-      me.getPreRender().push(Ext.create('Ext.List',
-      {
-         xtype : 'list',
-         store : 'CheckinExploreStore',
-         loadingText : null,
-         //scrollable : 'vertical',
-         plugins : [
-         {
-            type : 'pullrefresh',
-            //pullRefreshText: 'Pull down for more new Tweets!',
-            refreshFn : function(plugin)
-            {
-               me.fireEvent('exploreLoad', true);
-            }
-         },
-         {
-            type : 'listpaging',
-            autoPaging : true,
-            loadMoreText : '',
-            noMoreRecordsText : ''
-         }],
-         refreshHeightOnUpdate : false,
-         variableHeights : false,
-         deferEmptyText : false,
-         itemHeight : itemHeight + Genesis.fn.calcPx(2 * 0.65, 1),
-         emptyText : ' ',
-         tag : 'checkInExploreList',
-         cls : 'checkInExploreList',
-         // @formatter:off
-         itemTpl : Ext.create('Ext.XTemplate',
-         '<div class="photo">'+
-            '<img src="{[this.getPhoto(values)]}"/>'+
-         '</div>' +
-         '<div class="listItemDetailsWrapper">' +
-            '<div class="itemDistance">{[this.getDistance(values)]}</div>' +
-            '<div class="itemTitle">{name}</div>' +
-            '<div class="itemDesc">{[this.getAddress(values)]}</div>' +
-         '</div>',
-         // @formatter:on
-         {
-            getPhoto : function(values)
-            {
-               return values.Merchant['photo']['thumbnail_medium_url'];
-            },
-            getAddress : function(values)
-            {
-               return (values['address'] + ",<br/>" + values['city'] + ", " + values['state'] + ", " + values['country'] + ",<br/>" + values.zipcode);
-            },
-            getDistance : function(values)
-            {
-               return ((values['distance'] > 0) ? values['distance'].toFixed(1) + 'km' : '');
-            }
-         }),
-         onItemDisclosure : Ext.emptyFn
-      }));
-   }
-});
-
 Ext.define('Genesis.controller.client.Checkins',
 {
    extend :  Genesis.controller.ControllerBase ,
@@ -82755,123 +82273,36 @@ Ext.define('Genesis.controller.client.Checkins',
       models : ['Venue'],
       routes :
       {
-         'exploreS' : 'explorePageUp',
-         'explore' : 'explorePage',
          'checkin' : 'checkinPage'
       },
       refs :
       {
-         //backBtn : 'clientcheckinexploreview button[tag=back]',
-         //closeBtn : 'clientcheckinexploreview button[tag=close]',
-         exploreList : 'clientcheckinexploreview list',
-         explore :
-         {
-            selector : 'clientcheckinexploreview',
-            autoCreate : true,
-            xtype : 'clientcheckinexploreview'
-         },
-         toolbarBottom : 'clientcheckinexploreview container[tag=toolbarBottom]',
-         shareBtn : 'viewportview button[tag=shareBtn]',
-         refreshBtn : 'clientcheckinexploreview button[tag=refresh]',
-         // Login Page
-         login : 'loginpageview'
       },
       control :
       {
-         //
-         // Checkin Explore
-         //
-         explore :
-         {
-            showView : 'onExploreShowView',
-            activate : 'onExploreActivate',
-            deactivate : 'onExploreDeactivate',
-            exploreLoad : 'onExploreLoad'
-
-         },
-         refreshBtn :
-         {
-            tap : 'onRefreshTap'
-         },
-         exploreList :
-         {
-            select : 'onExploreSelect',
-            disclose : 'onExploreDisclose'
-         },
-         login :
-         {
-            activate : 'onLoginActivate'
-         }
       },
       listeners :
       {
          'checkin' : 'onCheckinTap',
-         'explore' : 'onNonCheckinTap',
          'checkinScan' : 'onCheckinScanTap',
          'checkinMerchant' : 'onCheckinHandler',
-         'setupCheckinInfo' : 'onSetupCheckinInfo',
-         'exploreLoad' : 'onExploreLoad'
+         'setupCheckinInfo' : 'onSetupCheckinInfo'
       },
       position : null
    },
    metaDataMissingMsg : 'Missing Checkin MetaData information.',
-   noCheckinCodeMsg : 'No Checkin Code found!',
    init : function()
    {
       var me = this;
-      //
-      // Store storing the Venue object for Checked-In / Explore views
-      //
-      Ext.regStore('CheckinExploreStore',
-      {
-         model : 'Genesis.model.Venue',
-         autoLoad : false,
-         sorters : [
-         {
-            property : 'distance',
-            direction : 'ASC'
-         }],
-         listeners :
-         {
-            'metachange' : function(store, proxy, eOpts)
-            {
-               // Let Other event handlers udpate the metaData first ...
-               if (store.isLoading())
-               {
-                  me.fireEvent('updatemetadata', proxy.getReader().metaData);
-               }
-            }
-         }
-      });
       me.callParent(arguments);
       console.log("Checkins Init");
-      //
-      // Prelod Page
-      //
-      me.getExplore();
-
-      backBtnCallbackListFn.push(function(activeItem)
-      {
-         if (activeItem == me.getExplore())
-         {
-            var viewport = me.getViewPortCntlr();
-            me.self.playSoundFile(viewport.sound_files['clickSound']);
-            viewport.goToMain();
-            return true;
-         }
-         return false;
-      });
    },
    checkinCommon : function(qrcode)
    {
-      var me = this;
+      var me = this, viewport = me.getViewPortCntlr(), venueId = null;
       var cstore = Ext.StoreMgr.get('CustomerStore');
-      var mode = me.callback['mode'];
-      var url = me.callback['url'];
-      var position = me.callback['position'];
-      var callback = me.callback['callback'];
-      var viewport = me.getViewPortCntlr();
-      var venueId = null;
+      var mode = me.callback['mode'], url = me.callback['url'];
+      var position = me.callback['position'], callback = me.callback['callback'];
 
       switch (me.callback['url'])
       {
@@ -82927,34 +82358,6 @@ Ext.define('Genesis.controller.client.Checkins',
    // --------------------------------------------------------------------------
    // Common Functions
    // --------------------------------------------------------------------------
-   onScannedQRcode : function(qrcode)
-   {
-      var me = this;
-      if (qrcode)
-      {
-         console.debug(me.checkinMsg);
-         Ext.Viewport.setMasked(
-         {
-            xtype : 'loadmask',
-            message : me.checkinMsg
-         });
-
-         // Retrieve GPS Coordinates
-         me.checkinCommon(qrcode);
-      }
-      else
-      {
-         console.debug(me.noCheckinCodeMsg);
-         Ext.Viewport.setMasked(null);
-         Ext.device.Notification.show(
-         {
-            title : 'Error',
-            message : me.noCheckinCodeMsg,
-            buttons : ['Dismiss']
-
-         });
-      }
-   },
    onCheckInScanNow : function(b, e, eOpts, eInfo, mode, url, type, callback)
    {
       var me = this;
@@ -82996,7 +82399,8 @@ Ext.define('Genesis.controller.client.Checkins',
    onSetupCheckinInfo : function(mode, venue, customer, metaData)
    {
       var viewport = this.getViewPortCntlr();
-      viewport.setVenue(venue)
+
+      viewport.setVenue(venue);
       viewport.setCustomer(customer);
       viewport.setMetaData(metaData);
 
@@ -83027,10 +82431,6 @@ Ext.define('Genesis.controller.client.Checkins',
              */
             break;
          }
-         case 'explore' :
-         case 'redemption' :
-         default :
-            break;
       }
    },
    onCheckinScanTap : function(b, e, eOpts, einfo)
@@ -83052,17 +82452,11 @@ Ext.define('Genesis.controller.client.Checkins',
       // Checkin directly to Venue
       me.onCheckInScanNow(null, null, null, null, 'checkin', 'setVenueCheckinUrl', 'noscan', Ext.emptyFn);
    },
-   onNonCheckinTap : function(b, e, eOpts, einfo, callback)
-   {
-      // No scanning required
-      this.onCheckInScanNow(b, e, eOpts, einfo, 'explore', 'setVenueExploreUrl', 'noscan', callback);
-   },
    onCheckinHandler : function(mode, metaData, venueId, record, operation, callback)
    {
       var me = this;
       var app = me.getApplication();
       var custore = Ext.StoreMgr.get('CustomerStore');
-      var cestore = Ext.StoreMgr.get('CheckinExploreStore');
       var mcntlr = app.getController('client.Merchants');
       var viewport = me.getViewPortCntlr();
       var vport = me.getViewport();
@@ -83074,9 +82468,9 @@ Ext.define('Genesis.controller.client.Checkins',
       callback = callback || Ext.emptyFn;
 
       // Find venueId from metaData or from DataStore
-      var new_venueId = metaData['venue_id'] || ((cestore.first()) ? cestore.first().getId() : 0);
+      var new_venueId = metaData['venue_id'] || 0;
       // Find venue from DataStore or current venue info
-      venue = cestore.getById(new_venueId) || viewport.getVenue();
+      venue = viewport.getVenue();
 
       // Find Matching Venue or pick the first one returned if no venueId is set
       console.debug("CheckIn - new_venueId:'" + new_venueId + //
@@ -83113,16 +82507,12 @@ Ext.define('Genesis.controller.client.Checkins',
       switch(mode)
       {
          case 'checkin' :
-         case 'explore' :
          {
             me.resetView();
             Ext.Viewport.setMasked(null);
             me.redirectTo('venue/' + venue.getId() + '/' + customerId);
             break;
          }
-         case 'redemption' :
-         default:
-            break;
       }
 
       callback();
@@ -83158,251 +82548,26 @@ Ext.define('Genesis.controller.client.Checkins',
       }
    },
    // --------------------------------------------------------------------------
-   // Login Page
-   // --------------------------------------------------------------------------
-   onLoginActivate : function(activeItem, c, oldActiveItem, eOpts)
-   {
-      var me = this;
-      var cestore = Ext.StoreMgr.get('CheckinExploreStore');
-      cestore.removeAll();
-   },
-   // --------------------------------------------------------------------------
    // CheckinExplore Page
    // --------------------------------------------------------------------------
-   onLocationUpdate : function(position)
-   {
-      var me = this, tbb = me.getToolbarBottom(), viewport = me.getViewPortCntlr(), params =
-      {
-      }, cestore = Ext.StoreMgr.get('CheckinExploreStore'), proxy = cestore.getProxy();
-
-      Ext.Viewport.setMasked(null);
-      if (!Genesis.db.getLocalDB()['csrf_code'])
-      {
-         viewport.on('completeRefreshCSRF', function()
-         {
-            me.onLocationUpdate(position);
-         }, viewport,
-         {
-            single : true
-         });
-      }
-      else
-      {
-         pausedDisabled = false;
-         Ext.Viewport.setMasked(
-         {
-            xtype : 'loadmask',
-            message : me.getVenueInfoMsg
-         });
-         if (position)
-         {
-            params = Ext.apply(params,
-            {
-               latitude : position.coords.getLatitude(),
-               longitude : position.coords.getLongitude()
-            });
-         }
-         tbb[(position) ? 'show' : 'hide']();
-
-         Venue['setFindNearestURL']();
-         cestore.load(
-         {
-            params : params,
-            callback : function(records, operation)
-            {
-               //Ext.Viewport.setMasked(null);
-               if (operation.wasSuccessful())
-               {
-                  Ext.Viewport.setMasked(null);
-
-                  tbb.setDisabled(false);
-                  me.setPosition(position);
-                  console.debug("Found " + records.length + " venues.");
-               }
-               else
-               {
-                  proxy.supressErrorsPopup = true;
-                  Ext.device.Notification.show(
-                  {
-                     title : 'Warning',
-                     message : me.missingVenueInfoMsg(operation.getError()),
-                     buttons : ['Dismiss'],
-                     callback : function()
-                     {
-                        proxy.supressErrorsCallbackFn();
-                     }
-                  });
-               }
-            },
-            scope : me
-         });
-      }
-   },
-   onExploreLoad : function(forceReload)
-   {
-      var me = this;
-      var cestore = Ext.StoreMgr.get('CheckinExploreStore');
-      //
-      // Do not reload page unless this is the first time!
-      // Saves bandwidth
-      //
-      if ((cestore.getCount() == 0) || forceReload)
-      {
-         me.getGeoLocation();
-      }
-   },
-   onExploreShowView : function(activeItem)
-   {
-      var list = this.getExploreList();
-      if (Ext.os.is('Android'))
-      {
-         var monitors = this.getEventDispatcher().getPublishers()['elementSize'].monitors;
-
-         console.debug("Refreshing CheckinExploreStore ...");
-         monitors[list.container.getId()].forceRefresh();
-      }
-   },
-   onExploreActivate : function(activeItem, c, oldActiveItem, eOpts)
-   {
-      var me = this;
-
-      var viewport = me.getViewPortCntlr();
-      var tbb = me.getToolbarBottom();
-      var tbbar = activeItem.query('titlebar')[0];
-
-      switch (me.animMode)
-      {
-         case 'cover' :
-            //me.getBackBtn().show();
-            //me.getCloseBtn().hide();
-            break;
-         case 'coverUp' :
-            //me.getBackBtn().hide();
-            //me.getCloseBtn().show();
-            break;
-      }
-      tbbar.removeCls('kbTitle');
-      switch (me.mode)
-      {
-         case 'checkin':
-            tbbar.setTitle(' ');
-            tbbar.addCls('kbTitle');
-            tbb.setDisabled(true);
-            //tbb.show();
-            break;
-         case 'explore' :
-            //tbb.hide();
-            break;
-      }
-      //activeItem.createView();
-      if (me.getExploreList())
-      {
-         //me.getExploreList().setVisibility(false);
-      }
-      me.fireEvent('exploreLoad', false);
-
-      //
-      // Display Add2Home Feature is necessary to remind users
-      //
-      if (!Genesis.fn.isNative())
-      {
-         addToHome.show();
-      }
-   },
-   onExploreDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
-   {
-      var cestore = Ext.StoreMgr.get('CheckinExploreStore');
-      if (!Genesis.fn.isNative())
-      {
-         addToHome.close();
-      }
-   },
-   onRefreshTap : function(b, e, eOpts)
-   {
-      var me = this;
-      me.fireEvent('exploreLoad', true);
-   },
-   onExploreSelect : function(d, model, eOpts)
-   {
-      d.deselect([model]);
-      this.onExploreDisclose(d, model);
-      return false;
-   },
    onExploreDisclose : function(list, record, target, index, e, eOpts, eInfo)
    {
-      var me = this;
-      var viewport = me.getViewPortCntlr();
+      var me = this, viewport = me.getViewPortCntlr(), record = new Ext.create('Genesis.model.Venue', record);
 
       me.self.playSoundFile(viewport.sound_files['clickSound']);
       viewport.setVenue(record);
-      switch (this.mode)
-      {
-         case 'checkin':
-         {
-            this.onCheckinTap(null, e, eOpts, eInfo);
-            break;
-         }
-         case 'explore' :
-         {
-            this.onNonCheckinTap(null, e, eOpts, eInfo);
-            break;
-         }
-      }
+      me.onCheckinTap(null, e, eOpts, eInfo);
    },
    // --------------------------------------------------------------------------
    // Page Navigation
    // --------------------------------------------------------------------------
-   explorePageUp : function()
-   {
-      this.openPage('explore', 'coverUp');
-   },
-   explorePage : function()
-   {
-      this.openPage('explore');
-   },
    checkinPage : function()
    {
-      /*
-      if (Genesis.fn.isNative())
-      {
-      this.openPage('checkin');
-      }
-      else
-      */
-      //
-      // Return to MiniClient
-      //
-      {
-         window.parent.setChildBrowserVisibility(false, 'explore');
-      }
+      window.parent.setChildBrowserVisibility(false, 'explore');
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides
    // --------------------------------------------------------------------------
-   openPage : function(subFeature, animMode)
-   {
-      var me = this;
-      var page = me.getMainPage();
-      me.mode = page.mode = subFeature;
-      me.animMode = animMode || 'cover';
-      me.setAnimationMode(me.self.animationMode[me.animMode]);
-      me.pushView(page);
-   },
-   getMainPage : function()
-   {
-      var page = this.getExplore();
-      return page;
-   },
-   openMainPage : function()
-   {
-      var page = this.getMainPage();
-      // Hack to fix bug in Sencha Touch API
-      //var plugin = page.query('list')[0].getPlugins()[0];
-      //plugin.refreshFn = plugin.getRefreshFn();
-
-      this.pushView(page);
-      console.log("Checkin Explore Opened");
-   },
    isOpenAllowed : function()
    {
       return true;
@@ -84441,16 +83606,7 @@ Ext.define('Genesis.controller.client.Login',
                if (operation.wasSuccessful())
                {
                   Genesis.db.removeLocalDBAttrib('auth_code');
-                  /*
-                   if (Genesis.fn.isNative())
-                   {
-                   me.redirectTo('login');
-                   }
-                   else
-                   */
-                  {
-                     window.parent.setChildBrowserVisibility(false, 'explore');
-                  }
+                  window.parent.setChildBrowserVisibility(false, 'explore');
                   console.log("Logout Successful!")
                }
                else
@@ -84734,10 +83890,7 @@ Ext.define('Genesis.controller.client.Login',
       }
 
       //Cleanup any outstanding registrations
-      //if (Genesis.fn.isNative())
-      {
-         Genesis.fb.facebook_onLogout(null, Genesis.db.getLocalDB()['currFbId'] > 0);
-      }
+      Genesis.fb.facebook_onLogout(null, Genesis.db.getLocalDB()['currFbId'] > 0);
       var me = this;
       var params =
       {
@@ -85044,10 +84197,7 @@ Ext.define('Genesis.controller.client.Login',
          delete db['fbResponse'];
          Genesis.db.setLocalDB(db);
 
-         if (Genesis.fn.isNative())
-         {
-            Genesis.fb.facebook_onLogout(null, true);
-         }
+         Genesis.fb.facebook_onLogout(null, true);
       }
    },
    // --------------------------------------------------------------------------
@@ -86249,13 +85399,6 @@ Ext.define('Genesis.view.client.MerchantAccount',
             tag : 'main',
             title : 'Meal Stop'
          },
-         /*
-          {
-          iconCls : 'explore',
-          tag : 'browse',
-          title : 'Explore'
-          }
-          */
          {
             iconCls : 'explore',
             tag : 'checkin',
@@ -87171,17 +86314,12 @@ Ext.define('Genesis.controller.client.Merchants',
       //me.getDescPanel().setData(vrecord);
       //me.getDescContainer().show();
 
-      var rstore = Ext.StoreMgr.get('MerchantRenderStore'), cestore = Ext.StoreMgr.get('CheckinExploreStore');
+      var rstore = Ext.StoreMgr.get('MerchantRenderStore');
       //if (rstore.getRange()[0] != vrecord)
       {
          //
          // Sync CheckinExplore with Venue object value
          //
-         var vrec = cestore.getById(vrecord.getId()), prize_jackpots = vrecord.get('prize_jackpots');
-         if (vrec && (prize_jackpots >= 0))
-         {
-            vrec.set('prize_jackpots', prize_jackpots);
-         }
          rstore.setData(vrecord);
          //
          // Update Customer Statistics
@@ -90301,10 +89439,7 @@ Ext.define('Genesis.controller.client.Settings',
                   delete db['fbResponse'];
                   Genesis.db.setLocalDB(db);
 
-                  if (Genesis.fn.isNative())
-                  {
-                     Genesis.fb.facebook_onLogout(null, true);
-                  }
+                  Genesis.fb.facebook_onLogout(null, true);
                }
                else if (!me.getSettingsPage().isHidden())
                {
@@ -90605,14 +89740,6 @@ Ext.define('Genesis.controller.client.Viewport',
          'tabbar[tag=navigationBarBottom] button[tag=main]' :
          {
             tap : 'onCheckedInAccountTap'
-         },
-         'tabbar[tag=navigationBarBottom] button[tag=checkin]' :
-         {
-            tap : 'onCheckinTap'
-         },
-         'tabbar[tag=navigationBarBottom] button[tag=browse]' :
-         {
-            tap : 'onBrowseTap'
          },
          'viewportview dataview[tag=mainMenuSelections]' :
          {
@@ -90953,16 +90080,6 @@ Ext.define('Genesis.controller.client.Viewport',
    onCheckedInAccountTap : function(b, e, eOpts, eInfo)
    {
       this.goToMerchantMain(true);
-   },
-   onBrowseTap : function(b, e, eOpts, eInfo)
-   {
-      this.redirectTo('exploreS');
-      //this.fireEvent('openpage', 'client.Checkins', 'explore', 'coverUp');
-   },
-   onCheckinTap : function(b, e, eOpts, eInfo)
-   {
-      this.redirectTo('checkin');
-      //this.fireEvent('openpage', 'client.Checkins', 'explore', 'coverUp');
    },
    // --------------------------------------------------------------------------
    // Page Navigation Handlers
@@ -92911,7 +92028,7 @@ will need to resolve manually.
                                                                                                                          
             views : ['ViewBase', 'Document', 'client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions',
             // //
-            'client.AccountsTransfer', 'client.SettingsPage', 'client.CheckinExplore', 'LoginPage', 'SignInPage', //
+            'client.AccountsTransfer', 'client.SettingsPage', 'LoginPage', 'SignInPage', //
             'client.MainPage', 'widgets.client.RedeemItemDetail', 'client.Badges', 'client.JackpotWinners', 'client.MerchantAccount',
             // //
             'client.MerchantDetails', 'client.Accounts', 'client.Prizes', 'Viewport'],

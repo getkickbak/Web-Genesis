@@ -10,123 +10,36 @@ Ext.define('Genesis.controller.client.Checkins',
       models : ['Venue'],
       routes :
       {
-         'exploreS' : 'explorePageUp',
-         'explore' : 'explorePage',
          'checkin' : 'checkinPage'
       },
       refs :
       {
-         //backBtn : 'clientcheckinexploreview button[tag=back]',
-         //closeBtn : 'clientcheckinexploreview button[tag=close]',
-         exploreList : 'clientcheckinexploreview list',
-         explore :
-         {
-            selector : 'clientcheckinexploreview',
-            autoCreate : true,
-            xtype : 'clientcheckinexploreview'
-         },
-         toolbarBottom : 'clientcheckinexploreview container[tag=toolbarBottom]',
-         shareBtn : 'viewportview button[tag=shareBtn]',
-         refreshBtn : 'clientcheckinexploreview button[tag=refresh]',
-         // Login Page
-         login : 'loginpageview'
       },
       control :
       {
-         //
-         // Checkin Explore
-         //
-         explore :
-         {
-            showView : 'onExploreShowView',
-            activate : 'onExploreActivate',
-            deactivate : 'onExploreDeactivate',
-            exploreLoad : 'onExploreLoad'
-
-         },
-         refreshBtn :
-         {
-            tap : 'onRefreshTap'
-         },
-         exploreList :
-         {
-            select : 'onExploreSelect',
-            disclose : 'onExploreDisclose'
-         },
-         login :
-         {
-            activate : 'onLoginActivate'
-         }
       },
       listeners :
       {
          'checkin' : 'onCheckinTap',
-         'explore' : 'onNonCheckinTap',
          'checkinScan' : 'onCheckinScanTap',
          'checkinMerchant' : 'onCheckinHandler',
-         'setupCheckinInfo' : 'onSetupCheckinInfo',
-         'exploreLoad' : 'onExploreLoad'
+         'setupCheckinInfo' : 'onSetupCheckinInfo'
       },
       position : null
    },
    metaDataMissingMsg : 'Missing Checkin MetaData information.',
-   noCheckinCodeMsg : 'No Checkin Code found!',
    init : function()
    {
       var me = this;
-      //
-      // Store storing the Venue object for Checked-In / Explore views
-      //
-      Ext.regStore('CheckinExploreStore',
-      {
-         model : 'Genesis.model.Venue',
-         autoLoad : false,
-         sorters : [
-         {
-            property : 'distance',
-            direction : 'ASC'
-         }],
-         listeners :
-         {
-            'metachange' : function(store, proxy, eOpts)
-            {
-               // Let Other event handlers udpate the metaData first ...
-               if (store.isLoading())
-               {
-                  me.fireEvent('updatemetadata', proxy.getReader().metaData);
-               }
-            }
-         }
-      });
       me.callParent(arguments);
       console.log("Checkins Init");
-      //
-      // Prelod Page
-      //
-      me.getExplore();
-
-      backBtnCallbackListFn.push(function(activeItem)
-      {
-         if (activeItem == me.getExplore())
-         {
-            var viewport = me.getViewPortCntlr();
-            me.self.playSoundFile(viewport.sound_files['clickSound']);
-            viewport.goToMain();
-            return true;
-         }
-         return false;
-      });
    },
    checkinCommon : function(qrcode)
    {
-      var me = this;
+      var me = this, viewport = me.getViewPortCntlr(), venueId = null;
       var cstore = Ext.StoreMgr.get('CustomerStore');
-      var mode = me.callback['mode'];
-      var url = me.callback['url'];
-      var position = me.callback['position'];
-      var callback = me.callback['callback'];
-      var viewport = me.getViewPortCntlr();
-      var venueId = null;
+      var mode = me.callback['mode'], url = me.callback['url'];
+      var position = me.callback['position'], callback = me.callback['callback'];
 
       switch (me.callback['url'])
       {
@@ -182,34 +95,6 @@ Ext.define('Genesis.controller.client.Checkins',
    // --------------------------------------------------------------------------
    // Common Functions
    // --------------------------------------------------------------------------
-   onScannedQRcode : function(qrcode)
-   {
-      var me = this;
-      if (qrcode)
-      {
-         console.debug(me.checkinMsg);
-         Ext.Viewport.setMasked(
-         {
-            xtype : 'loadmask',
-            message : me.checkinMsg
-         });
-
-         // Retrieve GPS Coordinates
-         me.checkinCommon(qrcode);
-      }
-      else
-      {
-         console.debug(me.noCheckinCodeMsg);
-         Ext.Viewport.setMasked(null);
-         Ext.device.Notification.show(
-         {
-            title : 'Error',
-            message : me.noCheckinCodeMsg,
-            buttons : ['Dismiss']
-
-         });
-      }
-   },
    onCheckInScanNow : function(b, e, eOpts, eInfo, mode, url, type, callback)
    {
       var me = this;
@@ -251,7 +136,8 @@ Ext.define('Genesis.controller.client.Checkins',
    onSetupCheckinInfo : function(mode, venue, customer, metaData)
    {
       var viewport = this.getViewPortCntlr();
-      viewport.setVenue(venue)
+
+      viewport.setVenue(venue);
       viewport.setCustomer(customer);
       viewport.setMetaData(metaData);
 
@@ -282,10 +168,6 @@ Ext.define('Genesis.controller.client.Checkins',
              */
             break;
          }
-         case 'explore' :
-         case 'redemption' :
-         default :
-            break;
       }
    },
    onCheckinScanTap : function(b, e, eOpts, einfo)
@@ -307,17 +189,11 @@ Ext.define('Genesis.controller.client.Checkins',
       // Checkin directly to Venue
       me.onCheckInScanNow(null, null, null, null, 'checkin', 'setVenueCheckinUrl', 'noscan', Ext.emptyFn);
    },
-   onNonCheckinTap : function(b, e, eOpts, einfo, callback)
-   {
-      // No scanning required
-      this.onCheckInScanNow(b, e, eOpts, einfo, 'explore', 'setVenueExploreUrl', 'noscan', callback);
-   },
    onCheckinHandler : function(mode, metaData, venueId, record, operation, callback)
    {
       var me = this;
       var app = me.getApplication();
       var custore = Ext.StoreMgr.get('CustomerStore');
-      var cestore = Ext.StoreMgr.get('CheckinExploreStore');
       var mcntlr = app.getController('client.Merchants');
       var viewport = me.getViewPortCntlr();
       var vport = me.getViewport();
@@ -329,9 +205,9 @@ Ext.define('Genesis.controller.client.Checkins',
       callback = callback || Ext.emptyFn;
 
       // Find venueId from metaData or from DataStore
-      var new_venueId = metaData['venue_id'] || ((cestore.first()) ? cestore.first().getId() : 0);
+      var new_venueId = metaData['venue_id'] || 0;
       // Find venue from DataStore or current venue info
-      venue = cestore.getById(new_venueId) || viewport.getVenue();
+      venue = viewport.getVenue();
 
       // Find Matching Venue or pick the first one returned if no venueId is set
       console.debug("CheckIn - new_venueId:'" + new_venueId + //
@@ -368,16 +244,12 @@ Ext.define('Genesis.controller.client.Checkins',
       switch(mode)
       {
          case 'checkin' :
-         case 'explore' :
          {
             me.resetView();
             Ext.Viewport.setMasked(null);
             me.redirectTo('venue/' + venue.getId() + '/' + customerId);
             break;
          }
-         case 'redemption' :
-         default:
-            break;
       }
 
       callback();
@@ -413,251 +285,26 @@ Ext.define('Genesis.controller.client.Checkins',
       }
    },
    // --------------------------------------------------------------------------
-   // Login Page
-   // --------------------------------------------------------------------------
-   onLoginActivate : function(activeItem, c, oldActiveItem, eOpts)
-   {
-      var me = this;
-      var cestore = Ext.StoreMgr.get('CheckinExploreStore');
-      cestore.removeAll();
-   },
-   // --------------------------------------------------------------------------
    // CheckinExplore Page
    // --------------------------------------------------------------------------
-   onLocationUpdate : function(position)
-   {
-      var me = this, tbb = me.getToolbarBottom(), viewport = me.getViewPortCntlr(), params =
-      {
-      }, cestore = Ext.StoreMgr.get('CheckinExploreStore'), proxy = cestore.getProxy();
-
-      Ext.Viewport.setMasked(null);
-      if (!Genesis.db.getLocalDB()['csrf_code'])
-      {
-         viewport.on('completeRefreshCSRF', function()
-         {
-            me.onLocationUpdate(position);
-         }, viewport,
-         {
-            single : true
-         });
-      }
-      else
-      {
-         pausedDisabled = false;
-         Ext.Viewport.setMasked(
-         {
-            xtype : 'loadmask',
-            message : me.getVenueInfoMsg
-         });
-         if (position)
-         {
-            params = Ext.apply(params,
-            {
-               latitude : position.coords.getLatitude(),
-               longitude : position.coords.getLongitude()
-            });
-         }
-         tbb[(position) ? 'show' : 'hide']();
-
-         Venue['setFindNearestURL']();
-         cestore.load(
-         {
-            params : params,
-            callback : function(records, operation)
-            {
-               //Ext.Viewport.setMasked(null);
-               if (operation.wasSuccessful())
-               {
-                  Ext.Viewport.setMasked(null);
-
-                  tbb.setDisabled(false);
-                  me.setPosition(position);
-                  console.debug("Found " + records.length + " venues.");
-               }
-               else
-               {
-                  proxy.supressErrorsPopup = true;
-                  Ext.device.Notification.show(
-                  {
-                     title : 'Warning',
-                     message : me.missingVenueInfoMsg(operation.getError()),
-                     buttons : ['Dismiss'],
-                     callback : function()
-                     {
-                        proxy.supressErrorsCallbackFn();
-                     }
-                  });
-               }
-            },
-            scope : me
-         });
-      }
-   },
-   onExploreLoad : function(forceReload)
-   {
-      var me = this;
-      var cestore = Ext.StoreMgr.get('CheckinExploreStore');
-      //
-      // Do not reload page unless this is the first time!
-      // Saves bandwidth
-      //
-      if ((cestore.getCount() == 0) || forceReload)
-      {
-         me.getGeoLocation();
-      }
-   },
-   onExploreShowView : function(activeItem)
-   {
-      var list = this.getExploreList();
-      if (Ext.os.is('Android'))
-      {
-         var monitors = this.getEventDispatcher().getPublishers()['elementSize'].monitors;
-
-         console.debug("Refreshing CheckinExploreStore ...");
-         monitors[list.container.getId()].forceRefresh();
-      }
-   },
-   onExploreActivate : function(activeItem, c, oldActiveItem, eOpts)
-   {
-      var me = this;
-
-      var viewport = me.getViewPortCntlr();
-      var tbb = me.getToolbarBottom();
-      var tbbar = activeItem.query('titlebar')[0];
-
-      switch (me.animMode)
-      {
-         case 'cover' :
-            //me.getBackBtn().show();
-            //me.getCloseBtn().hide();
-            break;
-         case 'coverUp' :
-            //me.getBackBtn().hide();
-            //me.getCloseBtn().show();
-            break;
-      }
-      tbbar.removeCls('kbTitle');
-      switch (me.mode)
-      {
-         case 'checkin':
-            tbbar.setTitle(' ');
-            tbbar.addCls('kbTitle');
-            tbb.setDisabled(true);
-            //tbb.show();
-            break;
-         case 'explore' :
-            //tbb.hide();
-            break;
-      }
-      //activeItem.createView();
-      if (me.getExploreList())
-      {
-         //me.getExploreList().setVisibility(false);
-      }
-      me.fireEvent('exploreLoad', false);
-
-      //
-      // Display Add2Home Feature is necessary to remind users
-      //
-      if (!Genesis.fn.isNative())
-      {
-         addToHome.show();
-      }
-   },
-   onExploreDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
-   {
-      var cestore = Ext.StoreMgr.get('CheckinExploreStore');
-      if (!Genesis.fn.isNative())
-      {
-         addToHome.close();
-      }
-   },
-   onRefreshTap : function(b, e, eOpts)
-   {
-      var me = this;
-      me.fireEvent('exploreLoad', true);
-   },
-   onExploreSelect : function(d, model, eOpts)
-   {
-      d.deselect([model]);
-      this.onExploreDisclose(d, model);
-      return false;
-   },
    onExploreDisclose : function(list, record, target, index, e, eOpts, eInfo)
    {
-      var me = this;
-      var viewport = me.getViewPortCntlr();
+      var me = this, viewport = me.getViewPortCntlr(), record = new Ext.create('Genesis.model.Venue', record);
 
       me.self.playSoundFile(viewport.sound_files['clickSound']);
       viewport.setVenue(record);
-      switch (this.mode)
-      {
-         case 'checkin':
-         {
-            this.onCheckinTap(null, e, eOpts, eInfo);
-            break;
-         }
-         case 'explore' :
-         {
-            this.onNonCheckinTap(null, e, eOpts, eInfo);
-            break;
-         }
-      }
+      me.onCheckinTap(null, e, eOpts, eInfo);
    },
    // --------------------------------------------------------------------------
    // Page Navigation
    // --------------------------------------------------------------------------
-   explorePageUp : function()
-   {
-      this.openPage('explore', 'coverUp');
-   },
-   explorePage : function()
-   {
-      this.openPage('explore');
-   },
    checkinPage : function()
    {
-      /*
-      if (Genesis.fn.isNative())
-      {
-      this.openPage('checkin');
-      }
-      else
-      */
-      //
-      // Return to MiniClient
-      //
-      {
-         window.parent.setChildBrowserVisibility(false, 'explore');
-      }
+      window.parent.setChildBrowserVisibility(false, 'explore');
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides
    // --------------------------------------------------------------------------
-   openPage : function(subFeature, animMode)
-   {
-      var me = this;
-      var page = me.getMainPage();
-      me.mode = page.mode = subFeature;
-      me.animMode = animMode || 'cover';
-      me.setAnimationMode(me.self.animationMode[me.animMode]);
-      me.pushView(page);
-   },
-   getMainPage : function()
-   {
-      var page = this.getExplore();
-      return page;
-   },
-   openMainPage : function()
-   {
-      var page = this.getMainPage();
-      // Hack to fix bug in Sencha Touch API
-      //var plugin = page.query('list')[0].getPlugins()[0];
-      //plugin.refreshFn = plugin.getRefreshFn();
-
-      this.pushView(page);
-      console.log("Checkin Explore Opened");
-   },
    isOpenAllowed : function()
    {
       return true;

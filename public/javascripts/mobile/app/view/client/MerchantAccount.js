@@ -115,13 +115,6 @@ Ext.define('Genesis.view.client.MerchantAccount',
             tag : 'main',
             title : 'Meal Stop'
          },
-         /*
-          {
-          iconCls : 'explore',
-          tag : 'browse',
-          title : 'Explore'
-          }
-          */
          {
             iconCls : 'explore',
             tag : 'checkin',

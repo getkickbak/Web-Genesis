@@ -1309,7 +1309,7 @@ Ext.define('Genesis.controller.ControllerBase',
          var venueId = "0";
          if (!merchantMode)
          {
-            var venue = me.getViewPortCntlr().getVenue() || Ext.StoreMgr.get('CheckinExploreStore').first() || null;
+            var venue = me.getViewPortCntlr().getVenue() || null;
             venueId = venue ? venue.getId() : "0";
          }
          callback(

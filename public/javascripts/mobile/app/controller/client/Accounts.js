@@ -584,13 +584,6 @@ Ext.define('Genesis.controller.client.Accounts',
                // We need it for checkinMerchant
                switch(me.getMode())
                {
-                  /*
-                   case 'profile' :
-                   {
-                   controller.fireEvent('checkinMerchant', 'explore', metaData, venueId, rec, operation, Ext.emptyFn);
-                   break;
-                   }
-                   */
                   case 'redeemRewardsProfile' :
                   case 'redeemPrizesProfile' :
                   default:

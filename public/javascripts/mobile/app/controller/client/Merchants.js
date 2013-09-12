@@ -343,17 +343,12 @@ Ext.define('Genesis.controller.client.Merchants',
       //me.getDescPanel().setData(vrecord);
       //me.getDescContainer().show();
 
-      var rstore = Ext.StoreMgr.get('MerchantRenderStore'), cestore = Ext.StoreMgr.get('CheckinExploreStore');
+      var rstore = Ext.StoreMgr.get('MerchantRenderStore');
       //if (rstore.getRange()[0] != vrecord)
       {
          //
          // Sync CheckinExplore with Venue object value
          //
-         var vrec = cestore.getById(vrecord.getId()), prize_jackpots = vrecord.get('prize_jackpots');
-         if (vrec && (prize_jackpots >= 0))
-         {
-            vrec.set('prize_jackpots', prize_jackpots);
-         }
          rstore.setData(vrecord);
          //
          // Update Customer Statistics
