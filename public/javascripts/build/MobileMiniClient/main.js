@@ -185,6 +185,8 @@ var setChildBrowserVisibility = function(visible, hash)
       $('#mask')[0].style.height = //
       $('#earnptspageview')[0].style.height = document.body.style.height;
       $('iframe')[0].style.width = document.body.clientWidth + 'px';
+      $(body)[(window.orientation == 0) ? 'addClass' : 'removeClass' ]('x-portrait');
+      $(body)[(window.orientation == 0) ? 'removeClass' : 'addClass']('x-landscape');
    };
 
    window.addEventListener('hashchange', function()
@@ -331,7 +333,7 @@ var setChildBrowserVisibility = function(visible, hash)
 
                return;
             }
-            
+
             callback((i == 0) ? true : false);
          }
       });

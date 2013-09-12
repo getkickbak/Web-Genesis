@@ -61,17 +61,23 @@
             background: transparent;
             overflow: hidden;
          }
-         #checkexplorepageview .body::before {
+         .x-portrait #checkexplorepageview .body::before {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            margin-top: -37.5%;
-            margin-left: -37.5%;
             background: url('resources/themes/images/v1/checkin.svg');
-            background-size: 100%;
-            height: 75%;
-            width: 75%;
-            content : "";
+            background-size: auto 100%;
+            height: 100%;
+            width: 100%;
+            content: "";
+            background-position: center center;
+         }
+         .x-landscape #checkexplorepageview .body::before {
+            position: absolute;
+            background: url('resources/themes/images/v1/checkin.svg');
+            background-size: 100% auto;
+            height: 100%;
+            width: 100%;
+            content: "";
+            background-position: center center;
          }
          #checkexplorepageview .footer {
             position: absolute;
