@@ -72160,7 +72160,7 @@ Ext.define('Genesis.data.proxy.WebSql',
     */
    readRecordFromRow : function(row)
    {
-      var fields = this.getModel().getFields(), name, i,
+      var Model = this.getModel(), fields = Model.getFields(), name, i,
       // Copy this object because apparently we are not allowed to alter the original parameter object, weird huh?
       rowObj = Ext.apply(
       {
@@ -72171,7 +72171,7 @@ Ext.define('Genesis.data.proxy.WebSql',
          name = fields.items[i].getName();
          rowObj[name] = this.convertFieldToRecord(fields.items[i], row[name]);
       }
-      return new this.getModel()(rowObj);
+      return new Model(rowObj);
    },
 
    /**
