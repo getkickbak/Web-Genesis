@@ -73965,7 +73965,7 @@ Ext.define('Genesis.data.proxy.IndexedDB',
     */
    getRecord : function(id, callback, scope)
    {
-      var me = this, objectStore = me.getObjectStore('r', Ext.bind(me.getRecord, me, [id, callback, scope])), Model = this.model, record;
+      var me = this, objectStore = me.getObjectStore('r', Ext.bind(me.getRecord, me, [id, callback, scope])), Model = this.getModel(), record;
 
       if (!objectStore)
          return false;
@@ -73997,7 +73997,7 @@ Ext.define('Genesis.data.proxy.IndexedDB',
     */
    getAllRecords : function(callback, scope)
    {
-      var me = this, objectStore = me.getObjectStore('r', Ext.bind(me.getAllRecords, me, [callback, scope])), Model = this.model, records = [];
+      var me = this, objectStore = me.getObjectStore('r', Ext.bind(me.getAllRecords, me, [callback, scope])), Model = this.getModel(), records = [];
 
       if (!objectStore)
          return;
@@ -74036,8 +74036,7 @@ Ext.define('Genesis.data.proxy.IndexedDB',
     */
    setRecord : function(record)
    {
-      var me = this, rawData = record.data
-      objectStore = me.getObjectStore('rw', Ext.bind(me.setRecord, me, [record]));
+      var me = this, rawData = record.data, objectStore = me.getObjectStore('rw', Ext.bind(me.setRecord, me, [record]));
 
       if (!objectStore)
          return;
@@ -74064,7 +74063,7 @@ Ext.define('Genesis.data.proxy.IndexedDB',
     */
    updateRecord : function(record)
    {
-      var me = this, objectStore = me.getObjectStore('rw', Ext.bind(me.updateRecord, me, [record])), Model = this.model, id = record.internalId || record[me.getKeyPath()], modifiedData = record.modified, newData = record.data;
+      var me = this, objectStore = me.getObjectStore('rw', Ext.bind(me.updateRecord, me, [record])), Model = this.getModel(), id = record.internalId || record[me.getKeyPath()], modifiedData = record.modified, newData = record.data;
 
       if (!objectStore)
          return false;
@@ -74114,7 +74113,7 @@ Ext.define('Genesis.data.proxy.IndexedDB',
     */
    clear : function(callback, scope)
    {
-      var me = this, objectStore = me.getObjectStore('r', Ext.bind(me.clear, me, [callback, scope])), Model = this.model, records = [];
+      var me = this, objectStore = me.getObjectStore('r', Ext.bind(me.clear, me, [callback, scope])), Model = this.getModel(), records = [];
 
       if (!objectStore)
          return;
