@@ -72258,14 +72258,20 @@ Ext.define('Genesis.data.proxy.WebSql',
             {
                if (dbFieldData.hasOwnProperty(key))
                {
-                  queryParts.push(key);
-                  recordQueryParts.push('?');
                   if (dbFieldData[key] === undefined)
                   {
+                     queryParts.push(key);
+                     recordQueryParts.push('?');
+
                      args.push(null);
+                  }
+                  else if (record.phantom && key == me.getPkField())
+                  {
                   }
                   else
                   {
+                     queryParts.push(key);
+                     recordQueryParts.push('?');
                      args.push(dbFieldData[key]);
                   }
                }
@@ -74602,7 +74608,6 @@ Ext.define('Genesis.controller.ControllerBase',
          if ((!storeName || (storeName == stores[i][1])))
          {
             store.removeAll();
-            store.sync();
             Ext.defer(Ext.bind(function(_i, _store)
             {
                if (!cleanOnly)

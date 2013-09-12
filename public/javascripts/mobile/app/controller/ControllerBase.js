@@ -1002,7 +1002,6 @@ Ext.define('Genesis.controller.ControllerBase',
          if ((!storeName || (storeName == stores[i][1])))
          {
             store.removeAll();
-            store.sync();
             Ext.defer(Ext.bind(function(_i, _store)
             {
                if (!cleanOnly)
