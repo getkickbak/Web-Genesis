@@ -575,7 +575,7 @@ var setChildBrowserVisibility = function(visible, hash)
                         {
                            console.debug("AJAX Error Response", me.identifiers);
                         }
-                        $('#earnPtsDismiss').trigger('tap', [me.networkErrorMsg]);
+                        setNotificationVisibility(true, 'Server Timeout', me.networkErrorMsg, "Dismiss", hideEarnPtsPage);
                      }
                   });
                }
