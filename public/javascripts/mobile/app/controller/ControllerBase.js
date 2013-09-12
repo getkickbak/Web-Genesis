@@ -1003,6 +1003,7 @@ Ext.define('Genesis.controller.ControllerBase',
          {
             store.getProxy().clear(Ext.bind(function(_i, _store)
             {
+               _store.removeAll(true);
                Ext.defer(function()
                {
                   if (!cleanOnly)
