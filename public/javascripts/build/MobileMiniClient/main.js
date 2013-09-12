@@ -113,9 +113,9 @@ var refreshCheckExploreVenues = function()
 };
 var setChildBrowserVisibility = function(visible, hash)
 {
-   var debugMode = true;
    delete Genesis.db._localDB;
-   
+
+   var debugMode = true, db = Genesis.db.getLocalDB();
    if (visible)
    {
       if ($(".iframe")[0].src == "")
@@ -130,7 +130,6 @@ var setChildBrowserVisibility = function(visible, hash)
    }
    else
    {
-      var db = Genesis.db.getLocalDB();
       $("#earnPtsLoad span.x-button-label").text((db['auth_code']) ? 'Earn Points' : 'Sign In / Register');
 
       $(".iframe").addClass('x-item-hidden');
