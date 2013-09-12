@@ -246,6 +246,7 @@ var setChildBrowserVisibility = function(visible, hash)
    $(document).ready(function()
    {
       orientationChange();
+      $('body').addClass(($.os.phone) ? 'x-phone' : 'x-tablet');
       //
       // Sender/Receiver Volume Settings
       // ===============================
