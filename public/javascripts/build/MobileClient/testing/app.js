@@ -75357,7 +75357,6 @@ Ext.define('Genesis.controller.ControllerBase',
             Ext.regStore('Persistent' + stores[i][2],
             {
                model : 'Genesis.model.' + stores[i][3],
-               syncRemovedRecords : true,
                autoLoad : false
             });
             stores[i][1] = Ext.StoreMgr.get('Persistent' + stores[i][2]);
@@ -75482,26 +75481,24 @@ Ext.define('Genesis.controller.ControllerBase',
          if ((!storeName || (storeName == stores[i][1])))
          {
             store.removeAll();
-            store.getProxy().clear(Ext.bind(function(_i, _store)
+            store.sync();
+            Ext.defer(Ext.bind(function(_i, _store)
             {
-               Ext.defer(function()
+               if (!cleanOnly)
                {
-                  if (!cleanOnly)
+                  items = Ext.StoreMgr.get(stores[_i][1]).getRange();
+                  for (var x = 0; x < items.length; x++)
                   {
-                     items = Ext.StoreMgr.get(stores[_i][1]).getRange();
-                     for (var x = 0; x < items.length; x++)
+                     json.push(Ext.create('Genesis.model.' + stores[_i][2],
                      {
-                        json.push(Ext.create('Genesis.model.' + stores[_i][2],
-                        {
-                           json : Ext.encode(items[x].getData(true))
-                        }));
-                     }
-                     _store.add(json);
-                     console.debug("persistSyncStores  --- Found " + items.length + " records in [" + stores[_i][1] + "] ...");
+                        json : Ext.encode(items[x].getData(true))
+                     }));
                   }
-                  _store.sync();
-               }, 1);
-            }, me, [i, store]));
+                  _store.add(json);
+                  console.debug("persistSyncStores  --- Found " + items.length + " records in [" + stores[_i][1] + "] ...");
+               }
+               _store.sync();
+            }, me, [i, store]), 1);
          }
 
          //
