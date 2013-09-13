@@ -144,7 +144,7 @@ var setChildBrowserVisibility = function(visible, hash)
             //if (window.outerHeight > window.innerHeight)
             if (Math.abs(totalHeight - ((window.orientation === 0) ? window.screen.height : window.screen.width)) > 20)
             {
-               window.scrollTo(0, 1);
+               window.scrollTo(0, 0);
             }
          }
          catch(e)
