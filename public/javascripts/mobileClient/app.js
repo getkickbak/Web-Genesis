@@ -28,7 +28,6 @@ will need to resolve manually.
 //@require @packageOverrides
 
 //@require ../mobile/lib/core/Overrides.js
-//@require ../lib/add2home.js
 
 //<debug>
 Ext.Loader.setPath(

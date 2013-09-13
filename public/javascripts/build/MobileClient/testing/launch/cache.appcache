@@ -1,0 +1,26 @@
+CACHE MANIFEST
+#version 2
+#js
+../lib/bootstrap/js/bootstrap.min.js
+../lib/zepto.min.js
+../lib/iscroll-min.js
+../lib/libmp3lame.min.js
+#workers
+../worker/encoder.min.js
+#css
+../lib/bootstrap/css/bootstrap.min.css
+resources/css/mini_client.css
+resources/css/add2home.css
+../resources/themes/images/v1/ios/mainicons/checkin.svg
+../resources/themes/images/v1/ios/prizewon/loyaltycard.svg
+../resources/themes/images/v1/ios/prizewon/transmit.svg
+../resources/themes/images/v1/ios/prizewon/phoneInHand.svg
+#html
+index.html
+
+
+FALLBACK:
+
+
+NETWORK:
+*
