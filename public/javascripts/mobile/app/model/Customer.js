@@ -26,15 +26,16 @@ Ext.define('Genesis.model.CustomerJSON',
 
 Ext.define('Genesis.model.CustomerDB',
 {
-   id : 'CustomerDB',
    extend : 'Genesis.model.CustomerJSON',
+   alternateClassName : 'CustomerDB',
+   id : 'CustomerDB',
    config :
    {
       proxy :
       {
          type : 'browserdb',
          dbName : 'KickBakCustomer',
-         pkType : 'CHAR(36) PRIMARY KEY ASC',
+         pkType : 'INTEGER PRIMARY KEY ASC',
          objectStoreName : 'Customer',
          //dbVersion : '1.0',
          writer :

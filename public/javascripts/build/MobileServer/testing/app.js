@@ -73385,15 +73385,16 @@ Ext.define('Genesis.model.CustomerJSON',
 
 Ext.define('Genesis.model.CustomerDB',
 {
-   id : 'CustomerDB',
    extend :  Genesis.model.CustomerJSON ,
+   alternateClassName : 'CustomerDB',
+   id : 'CustomerDB',
    config :
    {
       proxy :
       {
          type : 'browserdb',
          dbName : 'KickBakCustomer',
-         pkType : 'CHAR(36) PRIMARY KEY ASC',
+         pkType : 'INTEGER PRIMARY KEY ASC',
          objectStoreName : 'Customer',
          //dbVersion : '1.0',
          writer :
@@ -74575,7 +74576,7 @@ Ext.define('Genesis.controller.ControllerBase',
          }
       }
    },
-   persistSyncStores : function(storeName, cleanOnly)
+   persistSyncStores : function(storeName)
    {
       //var updateStatement = "UPDATE Customer SET json = ? WHERE id = ?";
       //var deleteStatement = "DELETE FROM Customer WHERE id=?";
@@ -74612,20 +74613,17 @@ Ext.define('Genesis.controller.ControllerBase',
                _store.removeAll(true);
                Ext.defer(function()
                {
-                  if (!cleanOnly)
+                  items = Ext.StoreMgr.get(stores[_i][1]).getRange();
+                  for (var x = 0; x < items.length; x++)
                   {
-                     items = Ext.StoreMgr.get(stores[_i][1]).getRange();
-                     for (var x = 0; x < items.length; x++)
+                     json.push(Ext.create('Genesis.model.' + stores[_i][2],
                      {
-                        json.push(Ext.create('Genesis.model.' + stores[_i][2],
-                        {
-                           json : Ext.encode(items[x].getData(true))
-                        }));
-                     }
-                     _store.add(json);
-                     console.debug("persistSyncStores  --- Found " + items.length + " records in [" + stores[_i][1] + "] ...");
+                        json : Ext.encode(items[x].getData(true))
+                     }));
                   }
+                  _store.add(json);
                   _store.sync();
+                  console.debug("persistSyncStores  --- Found " + items.length + " records in [" + stores[_i][1] + "] ...");
                }, me, 1);
             }, me, [i, store]));
          }
@@ -74637,6 +74635,43 @@ Ext.define('Genesis.controller.ControllerBase',
          {
             break;
          }
+      }
+   },
+   persistResetStores : function()
+   {
+      var me = this, store;
+
+      var i, items, json = [], stores = [//
+      [me.persistStore('CustomerStore'), 'CustomerStore', 'Customer' + 'DB'], //
+      [me.persistStore('LicenseStore'), 'LicenseStore', 'frontend.LicenseKey' + 'DB'], //
+      [me.persistStore('ReceiptStore'), 'ReceiptStore', 'frontend.Receipt'] //
+      ];
+
+      //
+      // Other Persistent Table
+      //
+      for ( i = 0; i < stores.length; i++)
+      {
+         store = stores[i][0];
+         if (!store)
+         {
+            console.debug("Cannot find Store[" + stores[i][1] + "] to be restored!");
+            continue;
+         }
+
+         //
+         // Customer Store
+         //
+         store.getProxy().dropTable(Ext.bind(function(_i, _store)
+         {
+            _store.removeAll(true);
+            Ext.defer(function()
+            {
+               _store.getProxy().initialize();
+               console.debug("persistResetStores  --- Reinitialized " + stores[_i][2] + "] ...");
+               _store.sync();
+            }, me, 1);
+         }, me, [i, store]));
       }
    },
    // --------------------------------------------------------------------------
@@ -77058,6 +77093,7 @@ Ext.define('Genesis.model.frontend.LicenseKeyJSON',
 Ext.define('Genesis.model.frontend.LicenseKeyDB',
 {
    extend :  Genesis.model.frontend.LicenseKeyJSON ,
+   alternateClassName : 'LicenseKeyDB',
    id : 'LicenseKeyDB',
    config :
    {
@@ -77065,7 +77101,7 @@ Ext.define('Genesis.model.frontend.LicenseKeyDB',
       {
          type : 'browserdb',
          dbName : 'KickBakLicenseKey',
-         pkType : 'CHAR(36) PRIMARY KEY ASC',
+         pkType : 'INTEGER PRIMARY KEY ASC',
          objectStoreName : 'LicenseKey',
          //dbVersion : '1.0',
          writer :

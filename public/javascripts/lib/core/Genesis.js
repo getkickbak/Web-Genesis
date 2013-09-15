@@ -1774,6 +1774,9 @@ Genesis.db =
          };
       }
 
+      //
+      // Legacy Code Cleanup
+      //
       var db = Genesis.db.openDatabase();
       if (db)
       {

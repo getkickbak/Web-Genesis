@@ -6,7 +6,7 @@ window.plugins = window.plugins ||
 {
    var preLoadSendCommon;
 
-   if ( typeof (window.jQuery) == 'undefined')
+   if (Genesis.fn.isNative())
    {
       preLoadSendCommon = function(cntlr, checkUseProximity, proximityWin, win, fail)
       {
@@ -119,9 +119,67 @@ window.plugins = window.plugins ||
 
          return callback;
       };
+
+      window.plugins.proximityID =
+      {
+         init : function(s_vol_ratio, r_vol_ratio)
+         {
+            cordova.exec(function()
+            {
+               console.log("ProximityIDPlugin Initialized");
+            }, function(reason)
+            {
+               console.log("Failed to initialize the ProximityIDPlugin! Reason[" + reason + "]");
+            }, "ProximityIDPlugin", "init", [s_vol_ratio + "", r_vol_ratio + ""]);
+         },
+         preLoadSend : function(cntlr, checkUseProximity, win, fail)
+         {
+            var viewport = _application.getController(((merchantMode) ? 'client' : 'server') + '.Viewport'), callback = preLoadSendCommon(cntlr, checkUseProximity, function()
+            {
+               //
+               // To give loading mask a chance to render
+               //
+               Ext.defer(function()
+               {
+                  cordova.exec(function()
+                  {
+                     callback(true);
+                  }, fail, "ProximityIDPlugin", "preLoadIdentity", []);
+               }, 0.25 * 1000, this);
+            }, win, fail);
+         },
+         send : function(win, fail)
+         {
+            cordova.exec(win, fail, "ProximityIDPlugin", "sendIdentity", []);
+         },
+         scan : function(win, fail, samples, missedThreshold, magThreshold, overlapRatio)
+         {
+            cordova.exec(win, fail, "ProximityIDPlugin", "scanIdentity", [samples, missedThreshold, magThreshold, overlapRatio]);
+         },
+         stop : function()
+         {
+            cordova.exec(function()
+            {
+               console.log("Stopped ProximityIDPlugin");
+            }, function(reason)
+            {
+               console.log("Failed to stop the ProximityIDPlugin " + reason);
+            }, "ProximityIDPlugin", "stop", []);
+         },
+         setVolume : function(vol)
+         {
+            cordova.exec(Ext.emptyFn, Ext.emptyFn, "ProximityIDPlugin", "setVolume", [vol]);
+         }
+      };
+
+      cordova.addConstructor(function()
+      {
+      });
    }
    else
    {
+      _filesAssetCount++;
+
       preLoadSendCommon = function(cntlr, checkUseProximity, proximityWin, win, fail)
       {
          var me = gblController, _viewport = cntlr.getViewPortCntlr(), callback = Ext.bind(function(useProximity, _cntlr, _win)
@@ -205,69 +263,6 @@ window.plugins = window.plugins ||
 
          return callback;
       };
-   }
-
-   if (cordova && ( typeof (window.jQuery) == 'undefined'))
-   {
-      window.plugins.proximityID =
-      {
-         init : function(s_vol_ratio, r_vol_ratio)
-         {
-            cordova.exec(function()
-            {
-               console.log("ProximityIDPlugin Initialized");
-            }, function(reason)
-            {
-               console.log("Failed to initialize the ProximityIDPlugin! Reason[" + reason + "]");
-            }, "ProximityIDPlugin", "init", [s_vol_ratio + "", r_vol_ratio + ""]);
-         },
-         preLoadSend : function(cntlr, checkUseProximity, win, fail)
-         {
-            var viewport = _application.getController(((merchantMode) ? 'client' : 'server') + '.Viewport'), callback = preLoadSendCommon(cntlr, checkUseProximity, function()
-            {
-               //
-               // To give loading mask a chance to render
-               //
-               Ext.defer(function()
-               {
-                  cordova.exec(function()
-                  {
-                     callback(true);
-                  }, fail, "ProximityIDPlugin", "preLoadIdentity", []);
-               }, 0.25 * 1000, this);
-            }, win, fail);
-         },
-         send : function(win, fail)
-         {
-            cordova.exec(win, fail, "ProximityIDPlugin", "sendIdentity", []);
-         },
-         scan : function(win, fail, samples, missedThreshold, magThreshold, overlapRatio)
-         {
-            cordova.exec(win, fail, "ProximityIDPlugin", "scanIdentity", [samples, missedThreshold, magThreshold, overlapRatio]);
-         },
-         stop : function()
-         {
-            cordova.exec(function()
-            {
-               console.log("Stopped ProximityIDPlugin");
-            }, function(reason)
-            {
-               console.log("Failed to stop the ProximityIDPlugin " + reason);
-            }, "ProximityIDPlugin", "stop", []);
-         },
-         setVolume : function(vol)
-         {
-            cordova.exec(Ext.emptyFn, Ext.emptyFn, "ProximityIDPlugin", "setVolume", [vol]);
-         }
-      };
-
-      cordova.addConstructor(function()
-      {
-      });
-   }
-   else
-   {
-      _filesAssetCount++;
 
       window.plugins.proximityID =
       {
