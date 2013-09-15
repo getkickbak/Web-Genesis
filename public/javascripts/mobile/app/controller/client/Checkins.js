@@ -300,7 +300,14 @@ Ext.define('Genesis.controller.client.Checkins',
    // --------------------------------------------------------------------------
    checkinPage : function()
    {
-      window.parent.setChildBrowserVisibility(false, 'explore');
+      if (!Genesis.fn.isNative())
+      {
+         window.parent.setChildBrowserVisibility(false, 'explore');
+      }
+      else
+      {
+         setChildBrowserVisibility(false, 'explore');
+      }
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides

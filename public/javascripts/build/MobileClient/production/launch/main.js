@@ -100,6 +100,11 @@ var setChildBrowserVisibility = function(visible, hash)
       $("#earnPtsLoad span.x-button-label").text((db['auth_code']) ? 'Earn Points' : 'Sign In / Register');
       //$(".iframe").addClass('x-item-hidden');
       window.location.hash = '#' + hash;
+      if (window.cordova)
+      {
+         $("#checkexplorepageview").removeClass('x-item-hidden');
+         $("#ext-viewport").addClass('x-item-hidden');
+      }
    }
 };
 
