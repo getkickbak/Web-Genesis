@@ -16,6 +16,8 @@ var setChildBrowserVisibility = function(visible, hash)
             {
                if (success && ((i |= flag) == 0x111))
                {
+                  $('#loadingMask')['addClass']('x-item-hidden');
+                  
                   mainAppInit = true;
                   $("#checkexplorepageview").addClass('x-item-hidden');
                   //
@@ -62,6 +64,12 @@ var setChildBrowserVisibility = function(visible, hash)
                   });
                }
             };
+
+            Ext.Viewport.setMasked(
+            {
+               xtype : 'loadmask',
+               message : 'Loading ...'
+            });
             Genesis.fn.checkloadjscssfile('../lib/sencha-touch-all.js', "js", function(success)
             {
                if (success)
@@ -91,8 +99,8 @@ var setChildBrowserVisibility = function(visible, hash)
          if (window.cordova)
          {
             $("#checkexplorepageview").addClass('x-item-hidden');
-            $("#ext-viewport").removeClass('x-item-hidden');
             _application.getController('client' + '.Viewport').redirectTo('main');
+            $("#ext-viewport").removeClass('x-item-hidden');
          }
          else
          {
@@ -108,8 +116,8 @@ var setChildBrowserVisibility = function(visible, hash)
          if (window.cordova)
          {
             $("#checkexplorepageview").addClass('x-item-hidden');
-            $("#ext-viewport").removeClass('x-item-hidden');
             _application.getController('client' + '.Viewport').redirectTo('login');
+            $("#ext-viewport").removeClass('x-item-hidden');
          }
          else
          {
