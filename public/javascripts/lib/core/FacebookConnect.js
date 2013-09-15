@@ -693,7 +693,7 @@ __initFb__ = function(_app, _appName)
                      'style="position: absolute;top:50%;left:50%;' + //
                      'margin-top:' + Genesis.fn.addUnit(-1 * (iconEm / 2 - 1.5), 'em') + ';' + //
                      'margin-left:' + Genesis.fn.addUnit(-1 * (iconEm / 2), 'em') + ';" ' + //
-                     'src="resources/themes/images/v1/facebook_icon.png"/>'
+                     'src="' + Genesis.constants.relPath() + 'resources/themes/images/v1/facebook_icon.png"/>'
                   }, createButtons()]
                }));
             viewport.popUpInProgress = true;

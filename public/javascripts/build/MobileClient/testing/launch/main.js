@@ -5,6 +5,9 @@ var setChildBrowserVisibility = function(visible, hash)
    var db = Genesis.db.getLocalDB(true);
    if (visible)
    {
+      //
+      // Initiliazation
+      //
       if (!mainAppInit)
       {
          if (window.cordova)
@@ -80,6 +83,9 @@ var setChildBrowserVisibility = function(visible, hash)
             $(".iframe").removeClass('x-item-hidden');
          }
       }
+      //
+      // Back to Main Page
+      //
       else if (db['auth_code'])
       {
          if (window.cordova)
@@ -91,6 +97,23 @@ var setChildBrowserVisibility = function(visible, hash)
          else
          {
             $(".iframe")[0].contentWindow._application.getController('client' + '.Viewport').redirectTo('main');
+            $(".iframe").removeClass('x-item-hidden');
+         }
+      }
+      //
+      // Goto Login Page
+      //
+      else
+      {
+         if (window.cordova)
+         {
+            $("#checkexplorepageview").addClass('x-item-hidden');
+            $("#ext-viewport").removeClass('x-item-hidden');
+            _application.getController('client' + '.Viewport').redirectTo('login');
+         }
+         else
+         {
+            $(".iframe")[0].contentWindow._application.getController('client' + '.Viewport').redirectTo('login');
             $(".iframe").removeClass('x-item-hidden');
          }
       }
@@ -517,6 +540,171 @@ var setChildBrowserVisibility = function(visible, hash)
          iscroll.refresh();
          refreshCheckExploreVenues();
          $('#checkexplorepageview .body').infiniteScroll('reset');
+      });
+      $('#earnPtsProceed').tap(function(e)
+      {
+         var me = gblController, task, privKey, viewport = me.getViewPortCntlr();
+
+         if (me.pendingBroadcast)
+         {
+            return;
+         }
+
+         //
+         // Check for Mobile Number Validation
+         //
+         var message = $('#earnptspageview .x-docked-top .x-innerhtml'), image = $('#earnPtsImage');
+
+         /*
+          if (!validateMobileNumber())
+          {
+          return;
+          }
+          */
+
+         var db = Genesis.db.getLocalDB(), venue = viewport.getVenue(), venueId, position = viewport.getLastPosition();
+
+         me.identifiers = null;
+
+         //
+         // Get GeoLocation and frequency markers
+         //
+         //if (!notUseGeolocation)
+         {
+            venueId = -1;
+            privKey = Genesis.fn.privKey =
+            {
+               'venueId' : venueId,
+               'venue' : Genesis.constants.debugVenuePrivKey
+            };
+            privKey['r' + venueId] = privKey['p' + venueId] = db['csrf_code'];
+         }
+
+         window.plugins.proximityID.preLoadSend(gblController, true, Ext.bind(function(notUseGeolocation)
+         {
+            me.broadcastLocalID(function(idx)
+            {
+               me.identifiers = idx;
+               $("#earnptspageview").trigger('kickbak:broadcast');
+
+               console.debug("Broadcast underway ...");
+               position = viewport.getLastPosition();
+               if (notUseGeolocation || position)
+               {
+                  var ajax, localID = me.identifiers['localID'], venue = viewport.getVenue(), venueId = null;
+                  var params =
+                  {
+                  };
+                  //
+                  // With or without Geolocation support
+                  //
+                  if (!venueId)
+                  {
+                     //
+                     // We cannot use short cut method unless we have either GeoLocation or VenueId
+                     //
+                     if (!position)
+                     {
+                        //
+                        // Stop broadcasting now ...
+                        //
+                        if (me.identifiers)
+                        {
+                           me.identifiers['cancelFn']();
+                        }
+                        hideEarnPtsPage();
+
+                        setNotificationVisibility(true, 'KICKBAK', me.cannotDetermineLocationMsg, "Dismiss", Ext.emptyFn);
+                        return;
+                     }
+
+                     params = Ext.apply(params,
+                     {
+                        data : me.self.encryptFromParams(
+                        {
+                           'frequency' : localID
+                        }, 'reward'),
+                        'latitude' : position.coords.latitude,
+                        'longitude' : position.coords.longitude
+                     });
+                  }
+                  else
+                  {
+                     params = Ext.apply(params,
+                     {
+                        data : me.self.encryptFromParams(
+                        {
+                           'frequency' : localID
+                        }, 'reward'),
+                        venue_id : venueId
+                     });
+                  }
+
+                  //
+                  // Triggers PrizeCheck and MetaDataChange
+                  // - subject CustomerReward also needs to be reset to ensure property processing of objects
+                  //
+                  console.debug("Transmitting Reward Points Request ...");
+
+                  $('#earnPtsDismiss').one('tap', dismiss = function(msg)
+                  {
+                     if (ajax)
+                     {
+                        ajax.abort();
+                     }
+                     if (me.identifiers)
+                     {
+                        me.identifiers['cancelFn']();
+                     }
+                     Ext.Viewport.setMasked(null);
+
+                     setNotificationVisibility(true, 'Rewards', ( typeof (msg) != 'string') ? me.transactionCancelledMsg : msg, "Dismiss", function()
+                     {
+                     });
+                  });
+
+                  ajax = $.ajax(
+                  {
+                     type : 'POST',
+                     url : '/api/v1/purchase_rewards/earn',
+                     // data to be added to query string:
+                     data : params,
+                     // type of data we are expecting in return:
+                     dataType : 'json',
+                     timeout : 30 * 1000,
+                     context : document,
+                     success : function(data)
+                     {
+                        //
+                        // Stop broadcasting now ...
+                        //
+                        if (me.identifiers)
+                        {
+                           me.identifiers['cancelFn']();
+                        }
+                        Ext.Viewport.setMasked(null);
+
+                        console.debug("AJAX Response", data);
+                        setNotificationVisibility(true, 'Rewards', "", "OK", function()
+                        {
+                        });
+                     },
+                     error : function(xhr, type)
+                     {
+                        if (me.identifiers)
+                        {
+                           console.debug("AJAX Error Response", me.identifiers);
+                        }
+                        $('#earnPtsDismiss').trigger('tap', [me.networkErrorMsg]);
+                     }
+                  });
+               }
+            }, function()
+            {
+               hideEarnPtsPage();
+               //Ext.Viewport.setMasked(null);
+            });
+         }, me, [false]));
       });
    });
 })();
