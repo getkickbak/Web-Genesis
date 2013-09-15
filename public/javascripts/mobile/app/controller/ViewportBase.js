@@ -262,23 +262,16 @@ Ext.define('Genesis.controller.ViewportBase',
                {
                   if (!Genesis.fb.cb || !Genesis.fb.cb['viewName'])
                   {
-                     var me_venueId = db['ma_venueId'];
+                     var ma_struct = db['ma_struct'];
                      // Mini App forwarding
-                     if (Ext.isDefined(me_venueId))
+                     if (Ext.isDefined(ma_struct) && (ma_struct['venueId'] > 0))
                      {
-                        Genesis.db.removeLocalDBAttrib('ma_venueId');
-                        if (me_venueId > 0)
-                        {
-                           me.redirectTo('venue/' + me_venueId + '/' + customerId);
-                        }
-                        else
-                        {
-                           me.redirectTo('main');
-                        }
+                        Genesis.db.removeLocalDBAttrib('ma_struct');
+                        me.redirectTo('venue/' + ma_struct['venueId'] + '/' + ma_struct['customerId']);
                      }
                      else
                      {
-                        me.redirectTo('checkin');
+                        me.redirectTo('main');
                      }
                   }
                }

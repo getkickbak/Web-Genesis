@@ -174,9 +174,9 @@ var setChildBrowserVisibility = function(visible, hash)
    {
       var exploreVenue = function(e)
       {
-         var target = e.currentTarget, venueId = parseInt(target.attributes.getNamedItem('data')['value']);
-         console.debug("Target ID : " + venueId);
-         Genesis.db.setLocalDBAttrib('ma_venueId', venueId);
+         var target = e.currentTarget, ma_struct = parseInt(target.attributes.getNamedItem('data')['value']);
+         console.debug("Target ID : ", ma_struct);
+         Genesis.db.setLocalDBAttrib('ma_struct', ma_struct);
       };
       $('.media').off().tap(exploreVenue).swipeLeft(exploreVenue).swipeRight(exploreVenue);
    };
@@ -427,7 +427,7 @@ var setChildBrowserVisibility = function(visible, hash)
             {
                $('.body ul').append(
                // @formatter:off
-               '<li class="media" data="'+ i +'">'+
+               '<li class="media" data="'+ Ext.encode({venueId : i, customerId : i}) +'">'+
                   '<a class="pull-left" href="#"> <img class="media-object" data-src="holder.js/64x64" alt="64x64"> </a>'+
                   '<div class="media-body">'+
                      '<h4 class="media-heading">Nested media heading</h4>'+
