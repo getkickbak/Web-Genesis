@@ -663,9 +663,16 @@ Genesis.constants =
    {
       return this._iconSize;
    },
+   relPath : function()
+   {
+      return ((window.jQuery) ? "../" : "");
+   },
    site : (location.origin.match(/^file/) ? "www" : location.host.split(".")[0]) + '.getkickbak.com',
    photoSite : 'https://s3.amazonaws.com/files.getkickbak.com',
-   resourceSite : "resources/" + ((_build == "MobileWeb") ? "" : "themes/"),
+   resourceSite : function()
+   {
+      return this.relPath() + "resources/" + ((_build == "MobileWeb") ? "" : "themes/");
+   },
    debugVPrivKey : 'oSG8JclEHvRy5ngkb6ehWbb6TTRFXd8t',
    debugRPrivKey : 'oSG8JclEHvRy5ngkb6ehWbb6TTRFXd8t',
    debugVenuePrivKey : 'Debug Venue',
@@ -712,21 +719,6 @@ Genesis.constants =
          me._thumbnailAttribPrefix = 'thumbnail_ios_';
          me._iconSize = 57 * ( merchantMode ? 1.5 : 1.0);
 
-         //
-         // Push Notification
-         //
-         if (debugMode)
-         {
-            me.pushNotifAppName = 'KickBak Dev Latest';
-            me.pushNotifAppId = '93D8A-5BE72';
-         }
-         else
-         {
-            me.pushNotifAppName = 'KickBak Production';
-            me.pushNotifAppId = '4fef6fb0691c12.54726991';
-         }
-         me.pushNotifType = 1;
-
          console.log("Running a iOS System");
       }
       else if (Ext.os.is('Android') || Ext.os.is('Desktop'))
@@ -743,23 +735,6 @@ Genesis.constants =
             me._iconPath = '/android/lhdpi';
             me._thumbnailAttribPrefix = 'thumbnail_android_lhdpi_';
          }
-
-         //
-         // Push Notification
-         //
-         if (debugMode)
-         {
-            me.pushNotifAppName = 'KickBak Dev Latest';
-            me.pushNotifAppId = '93D8A-5BE72';
-            me.pushNotifProjectId = '658015469194';
-         }
-         else
-         {
-            me.pushNotifAppName = 'KickBak Production';
-            me.pushNotifAppId = '4fef6fb0691c12.54726991';
-            me.pushNotifProjectId = '733275653511';
-         }
-         me.pushNotifType = 3;
 
          console.log("Running a Android or Desktop System");
       }
@@ -784,819 +759,828 @@ Genesis.constants =
    getIconPath : function(type, name, remote)
    {
       return ((!remote) ? //
-      'resources/themes/images/' + this._iconPathCommon + '/' + type + '/' + name + '.svg' : //
+      this.relPath() + 'resources/themes/images/' + this._iconPathCommon + '/' + type + '/' + name + '.svg' : //
       this.photoSite + '/' + this._iconPath + '/' + 'icons' + '/' + type + '/' + name + '.png');
    }
-}
+};
 
 // **************************************************************************
 // Utility Functions
 // **************************************************************************
-Genesis.fn =
+(function()
 {
-   isNative : function()
+   var __fn__ =
    {
-      //return Ext.isDefined(cordova);
-      return window.phoneGapAvailable;
-   },
-   // **************************************************************************
-   // Dynamic CSS/JS loading
-   // **************************************************************************
-   filesadded :
-   {
-   }, //list of files already added
-   checkloadjscssfile : function(filename, filetype, cb)
-   {
-      var decodeFilename = Url.decode(filename);
-      var index = this.filesadded[decodeFilename];
-      if (Ext.isEmpty(index))
+      isNative : function()
       {
-         index = this.filesadded[decodeFilename] = [];
-         if (Ext.isFunction(cb))
+         //return Ext.isDefined(cordova);
+         return window.phoneGapAvailable;
+      },
+      // **************************************************************************
+      // Dynamic CSS/JS loading
+      // **************************************************************************
+      filesadded :
+      {
+      }, //list of files already added
+      checkloadjscssfile : function(filename, filetype, cb)
+      {
+         var decodeFilename = Url.decode(filename);
+         var index = this.filesadded[decodeFilename];
+         if (Ext.isEmpty(index))
          {
-            index[0] = false;
-            index[1] = [cb];
-            this.loadjscssfile(filename, filetype, false);
-         }
-         else
-         {
-            index[0] = true;
-            this.loadjscssfile(filename, filetype, true);
-         }
-      }
-      else if (index[0] == true)
-      {
-         if (Ext.isFunction(cb))
-            cb(true);
-      }
-      else if (Ext.isFunction(cb))
-      {
-         if (index[1].indexOf(cb) < 0)
-         {
-            index[1].push(cb);
-         }
-      }
-      else
-      {
-         console.debug("Do nothing for file[" + filename + "]");
-      }
-   },
-   createjscssfile : function(filename, filetype)
-   {
-      var fileref;
-      filename = Url.decode(filename);
-      if (filetype == "js")
-      {
-         //if filename is a external JavaScript file
-         fileref = document.createElement('script')
-         fileref.setAttribute("type", "text/javascript")
-         fileref.setAttribute("src", filename)
-      }
-      else if (filetype == "css")
-      {
-         //if filename is an external CSS file
-         fileref = document.createElement("link")
-         fileref.setAttribute("rel", "stylesheet")
-         fileref.setAttribute("type", "text/css")
-         fileref.setAttribute("href", filename)
-      }
-
-      return fileref;
-   },
-   loadjscsstext : function(filename, filetype, text, cb)
-   {
-      var fileref;
-      filename = Url.decode(filename);
-      if (filetype == "js")
-      {
-         //if filename is a external JavaScript file
-         fileref = document.createElement('script')
-         fileref.setAttribute("type", "text/javascript")
-         fileref.setAttribute("id", filename)
-         //      fileref.innerHTML = "<!-- " + text + " -->";
-         fileref.innerHTML = text;
-      }
-      else if (filetype == "css")
-      {
-         log("Loading cssfile (" + filename + ")");
-         //if filename is an external CSS file
-         fileref = document.createElement("style")
-         fileref.setAttribute("id", filename)
-         fileref.setAttribute("rel", "stylesheet")
-         fileref.setAttribute("type", "text/css")
-         // FF, Safari
-         if ( typeof (fileref.textContent) != 'undefined')
-         {
-            fileref.textContent = text;
-         }
-         else
-         {
-            fileref.styleSheet.cssText = text;
-            // FF, IE
-         }
-      }
-      fileref.onerror = fileref.onload = fileref.onreadystatechange = function()
-      {
-         var rs = this.readyState;
-         if (rs && (rs != 'complete' && rs != 'loaded'))
-            return;
-         if (cb)
-            cb();
-      }
-      if (( typeof fileref) != undefined)
-         document.getElementsByTagName("head")[0].appendChild(fileref)
-
-      return fileref;
-   },
-   loadjscssfileCallBackFunc : function(b, t, href)
-   {
-      href = Url.decode(href);
-      if (t < 100)
-      {
-         /* apply only if the css is completely loded in DOM */
-         try
-         {
-            var url = (document.styleSheets[b].href) ? document.styleSheets[b].href.replace(location.origin, '') : '';
-            console.debug("url = " + url);
-            //if (url.search(href) < 0)
-            if (url != href)
+            index = this.filesadded[decodeFilename] = [];
+            if (Ext.isFunction(cb))
             {
-               for (var i = 0; i < document.styleSheets.length; i++)
+               index[0] = false;
+               index[1] = [cb];
+               this.loadjscssfile(filename, filetype, false);
+            }
+            else
+            {
+               index[0] = true;
+               this.loadjscssfile(filename, filetype, true);
+            }
+         }
+         else if (index[0] == true)
+         {
+            if (Ext.isFunction(cb))
+               cb(true);
+         }
+         else if (Ext.isFunction(cb))
+         {
+            if (index[1].indexOf(cb) < 0)
+            {
+               index[1].push(cb);
+            }
+         }
+         else
+         {
+            console.debug("Do nothing for file[" + filename + "]");
+         }
+      },
+      createjscssfile : function(filename, filetype)
+      {
+         var fileref;
+         filename = Url.decode(filename);
+         if (filetype == "js")
+         {
+            //if filename is a external JavaScript file
+            fileref = document.createElement('script')
+            fileref.setAttribute("type", "text/javascript")
+            fileref.setAttribute("src", filename)
+         }
+         else if (filetype == "css")
+         {
+            //if filename is an external CSS file
+            fileref = document.createElement("link")
+            fileref.setAttribute("rel", "stylesheet")
+            fileref.setAttribute("type", "text/css")
+            fileref.setAttribute("href", filename)
+         }
+
+         return fileref;
+      },
+      loadjscsstext : function(filename, filetype, text, cb)
+      {
+         var fileref;
+         filename = Url.decode(filename);
+         if (filetype == "js")
+         {
+            //if filename is a external JavaScript file
+            fileref = document.createElement('script')
+            fileref.setAttribute("type", "text/javascript")
+            fileref.setAttribute("id", filename)
+            //      fileref.innerHTML = "<!-- " + text + " -->";
+            fileref.innerHTML = text;
+         }
+         else if (filetype == "css")
+         {
+            log("Loading cssfile (" + filename + ")");
+            //if filename is an external CSS file
+            fileref = document.createElement("style")
+            fileref.setAttribute("id", filename)
+            fileref.setAttribute("rel", "stylesheet")
+            fileref.setAttribute("type", "text/css")
+            // FF, Safari
+            if ( typeof (fileref.textContent) != 'undefined')
+            {
+               fileref.textContent = text;
+            }
+            else
+            {
+               fileref.styleSheet.cssText = text;
+               // FF, IE
+            }
+         }
+         fileref.onerror = fileref.onload = fileref.onreadystatechange = function()
+         {
+            var rs = this.readyState;
+            if (rs && (rs != 'complete' && rs != 'loaded'))
+               return;
+            if (cb)
+               cb();
+         }
+         if (( typeof fileref) != undefined)
+            document.getElementsByTagName("head")[0].appendChild(fileref)
+
+         return fileref;
+      },
+      loadjscssfileCallBackFunc : function(b, t, href)
+      {
+         href = Url.decode(href);
+         if (t < 100)
+         {
+            /* apply only if the css is completely loded in DOM */
+            try
+            {
+               var url = (document.styleSheets[b].href) ? document.styleSheets[b].href.replace(location.origin, '') : '';
+               console.debug("url = " + url);
+               //if (url.search(href) < 0)
+               if (url != href)
                {
-                  url = (document.styleSheets[i].href) ? document.styleSheets[i].href.replace(location.origin, '') : '';
-                  console.debug("url = " + url);
-                  //if (url.search(href) >= 0)
-                  if (url == href)
+                  for (var i = 0; i < document.styleSheets.length; i++)
                   {
-                     b = i;
-                     break;
+                     url = (document.styleSheets[i].href) ? document.styleSheets[i].href.replace(location.origin, '') : '';
+                     console.debug("url = " + url);
+                     //if (url.search(href) >= 0)
+                     if (url == href)
+                     {
+                        b = i;
+                        break;
+                     }
+                  }
+               }
+               // FF if css not loaded an exception is fired
+               if (document.styleSheets[b].cssRules)
+               {
+                  this.cssOnReadyStateChange(href, false);
+               }
+               // IE no exception is fired!!!
+               else
+               {
+                  if (document.styleSheets[b].rules && document.styleSheets[b].rules.length)
+                  {
+                     this.cssOnReadyStateChange(href, false);
+                     return;
+                  }
+                  t++;
+                  Ext.defer(this.loadjscssfileCallBackFunc, 250, this, [b, t, href]);
+                  if ((t / 25 > 0) && (t % 25 == 0))
+                  {
+                     console.debug("IE Exception : Loading [" + href + "] index[" + b + "] try(" + t + ")");
                   }
                }
             }
-            // FF if css not loaded an exception is fired
-            if (document.styleSheets[b].cssRules)
+            catch(e)
             {
-               this.cssOnReadyStateChange(href, false);
-            }
-            // IE no exception is fired!!!
-            else
-            {
-               if (document.styleSheets[b].rules && document.styleSheets[b].rules.length)
-               {
-                  this.cssOnReadyStateChange(href, false);
-                  return;
-               }
                t++;
-               Ext.defer(this.loadjscssfileCallBackFunc, 250, this, [b, t, href]);
                if ((t / 25 > 0) && (t % 25 == 0))
                {
-                  console.debug("IE Exception : Loading [" + href + "] index[" + b + "] try(" + t + ")");
+                  console.debug(printStackTrace(
+                  {
+                     e : e
+                  }));
+                  console.debug("FF Exception : Loading [" + href + "] index[" + b + "] try(" + t + ")");
+               }
+               Ext.defer(this.loadjscssfileCallBackFunc, 250, this, [b, t, href]);
+            }
+         }
+         else
+         {
+            //this.removejscssfile(href,"css");
+            console.debug("Cannot load [" + href + "], index=[" + b + "]");
+            //Cannot load CSS, but we still need to continue processing
+            this.cssOnReadyStateChange(href, true);
+         }
+      },
+      scriptOnError : function(loadState)
+      {
+         this.scriptOnReadyStateChange.call(this, loadState, true);
+      },
+      scriptOnReadyStateChange : function(loadState, error)
+      {
+         var src = this.src;
+         //Url.decode(this.src);
+         src = src.replace(location.origin, '');
+         if (!error)
+         {
+            var rs = this.readyState;
+            if (rs && (rs != 'complete' && rs != 'loaded'))
+            {
+               //console.debug("file ["+this.src+"] not loaded yet");
+               return;
+            }
+            else if (!rs)
+            {
+               //console.debug("file ["+this.src+"] is loading");
+               //return;
+            }
+         }
+         else
+         {
+            console.debug("Error Loading JS file[" + src + "]");
+         }
+
+         var i = 0, cbList = Genesis.fn.filesadded[src];
+         if (cbList)
+         {
+            cbList[0] = true;
+            /*
+             try
+             {
+             */
+            for (; i < cbList[1].length; i++)
+            {
+               Ext.defer(function(index)
+               {
+                  cbList[1][index](!error);
+               }, 1, null, [i]);
+            }
+            /*
+             }
+             catch (e)
+             {
+             debug(printStackTrace(
+             {
+             e: e
+             }));
+             debug("Error Calling callback on JS file["+src+"] index["+i+"]\nStack: ===========\n"+e.stack);
+             }
+             */
+         }
+         else
+         {
+            console.debug("Cannot find callback on JS file[" + src + "] index[" + i + "]");
+         }
+      },
+      cssOnReadyStateChange : function(href, error)
+      {
+         //href = Url.decode(href);
+         var cbList = Genesis.fn.filesadded[href];
+         if (cbList)
+         {
+            cbList[0] = true;
+            var i = 0;
+            /*
+             try
+             {
+             */
+            for (; i < cbList[1].length; i++)
+            {
+               Ext.defer(function(index)
+               {
+                  cbList[1][index](!error);
+               }, 1, null, [i]);
+            }
+            /*
+             }
+             catch (e)
+             {
+             console.debug(printStackTrace(
+             {
+             e : e
+             }));
+             console.debug("Error Calling callback on CSS file[" + href + "] index[" + i + "]\nStack: ===========\n" + e.stack);
+             }
+             */
+         }
+         else
+         {
+            console.debug("Cannot find callback on CSSS file[" + href + "] index[" + i + "]");
+         }
+      },
+      loadjscssfile : function(filename, filetype, noCallback)
+      {
+         var fileref;
+         filename = Url.decode(filename);
+         if (filetype == "js")
+         {
+            //if filename is a external Javascript file
+            fileref = document.createElement('script')
+            fileref.setAttribute("type", "text/javascript")
+            if (!noCallback)
+            {
+               fileref.onerror = this.scriptOnError;
+               fileref.onload = fileref.onreadystatechange = this.scriptOnReadyStateChange;
+            }
+            fileref.setAttribute("src", filename)
+            document.getElementsByTagName("head")[0].appendChild(fileref)
+         }
+         else if (filetype == "css")
+         {
+            var len = document.styleSheets.length;
+
+            // if filename is an external CSS file
+            fileref = document.createElement('link')
+            fileref.setAttribute("rel", "stylesheet")
+            fileref.setAttribute("type", "text/css")
+            fileref.setAttribute("media", "screen")
+            fileref.setAttribute("href", filename)
+
+            document.getElementsByTagName("head")[0].appendChild(fileref);
+            if (!noCallback)
+            {
+               // +1 for inline style in webpage
+               Ext.defer(this.loadjscssfileCallBackFunc, 50, this, [len, 0, filename]);
+            }
+         }
+      },
+      removejscssfile : function(filename, filetype)
+      {
+         filename = Url.decode(filename);
+         var efilename = escape(filename);
+         var targetelement = (filetype == "js") ? "script" : (filetype == "css") ? "link" : "none"//determine element type to create
+         // nodelist from
+         var targetattr = (filetype == "js") ? "src" : (filetype == "css") ? "href" : "none"//determine corresponding attribute to
+         // test
+         // for
+         var allsuspects = document.getElementsByTagName(targetelement)
+         for (var i = allsuspects.length; i >= 0; i--)
+         {
+            //search backwards within nodelist for matching elements to remove
+            if (allsuspects[i])
+            {
+               var attr = escape(allsuspects[i].getAttribute(targetattr));
+               if (attr != null && ((attr == efilename) || (attr.search(efilename) != -1)))
+               {
+                  allsuspects[i].disabled = true;
+                  allsuspects[i].parentNode.removeChild(allsuspects[i])//remove element by calling parentNode.removeChild()
+                  delete Genesis.fn.filesadded[filename];
                }
             }
          }
-         catch(e)
+      },
+      findjscssfile : function(filename, filetype)
+      {
+         filename = Url.decode(filename);
+         var targetelement = (filetype == "js") ? "script" : (filetype == "css") ? "style" : "none"//determine element type to create
+         // nodelist from
+         var targetattr = (filetype == "js") ? "id" : (filetype == "css") ? "id" : "none"//determine corresponding attribute to test
+         // for
+         var allsuspects = document.getElementsByTagName(targetelement)
+         for (var i = allsuspects.length; i >= 0; i--)
          {
-            t++;
-            if ((t / 25 > 0) && (t % 25 == 0))
+            //search backwards within nodelist for matching elements to remove
+            if (allsuspects[i])
             {
-               console.debug(printStackTrace(
+               var attr = allsuspects[i].getAttribute(targetattr);
+               if (attr != null && attr.search(filename) != -1)
                {
-                  e : e
-               }));
-               console.debug("FF Exception : Loading [" + href + "] index[" + b + "] try(" + t + ")");
-            }
-            Ext.defer(this.loadjscssfileCallBackFunc, 250, this, [b, t, href]);
-         }
-      }
-      else
-      {
-         //this.removejscssfile(href,"css");
-         console.debug("Cannot load [" + href + "], index=[" + b + "]");
-         //Cannot load CSS, but we still need to continue processing
-         this.cssOnReadyStateChange(href, true);
-      }
-   },
-   scriptOnError : function(loadState)
-   {
-      this.scriptOnReadyStateChange.call(this, loadState, true);
-   },
-   scriptOnReadyStateChange : function(loadState, error)
-   {
-      var src = this.src;
-      //Url.decode(this.src);
-      src = src.replace(location.origin, '');
-      if (!error)
-      {
-         var rs = this.readyState;
-         if (rs && (rs != 'complete' && rs != 'loaded'))
-         {
-            //console.debug("file ["+this.src+"] not loaded yet");
-            return;
-         }
-         else if (!rs)
-         {
-            //console.debug("file ["+this.src+"] is loading");
-            //return;
-         }
-      }
-      else
-      {
-         console.debug("Error Loading JS file[" + src + "]");
-      }
-
-      var i = 0, cbList = Genesis.fn.filesadded[src];
-      if (cbList)
-      {
-         cbList[0] = true;
-         /*
-          try
-          {
-          */
-         for (; i < cbList[1].length; i++)
-         {
-            Ext.defer(function(index)
-            {
-               cbList[1][index](!error);
-            }, 1, null, [i]);
-         }
-         /*
-          }
-          catch (e)
-          {
-          debug(printStackTrace(
-          {
-          e: e
-          }));
-          debug("Error Calling callback on JS file["+src+"] index["+i+"]\nStack: ===========\n"+e.stack);
-          }
-          */
-      }
-      else
-      {
-         console.debug("Cannot find callback on JS file[" + src + "] index[" + i + "]");
-      }
-   },
-   cssOnReadyStateChange : function(href, error)
-   {
-      //href = Url.decode(href);
-      var cbList = Genesis.fn.filesadded[href];
-      if (cbList)
-      {
-         cbList[0] = true;
-         var i = 0;
-         /*
-          try
-          {
-          */
-         for (; i < cbList[1].length; i++)
-         {
-            Ext.defer(function(index)
-            {
-               cbList[1][index](!error);
-            }, 1, null, [i]);
-         }
-         /*
-          }
-          catch (e)
-          {
-          console.debug(printStackTrace(
-          {
-          e : e
-          }));
-          console.debug("Error Calling callback on CSS file[" + href + "] index[" + i + "]\nStack: ===========\n" + e.stack);
-          }
-          */
-      }
-      else
-      {
-         console.debug("Cannot find callback on CSSS file[" + href + "] index[" + i + "]");
-      }
-   },
-   loadjscssfile : function(filename, filetype, noCallback)
-   {
-      var fileref;
-      filename = Url.decode(filename);
-      if (filetype == "js")
-      {
-         //if filename is a external Javascript file
-         fileref = document.createElement('script')
-         fileref.setAttribute("type", "text/javascript")
-         if (!noCallback)
-         {
-            fileref.onerror = this.scriptOnError;
-            fileref.onload = fileref.onreadystatechange = this.scriptOnReadyStateChange;
-         }
-         fileref.setAttribute("src", filename)
-         document.getElementsByTagName("head")[0].appendChild(fileref)
-      }
-      else if (filetype == "css")
-      {
-         var len = document.styleSheets.length;
-
-         // if filename is an external CSS file
-         fileref = document.createElement('link')
-         fileref.setAttribute("rel", "stylesheet")
-         fileref.setAttribute("type", "text/css")
-         fileref.setAttribute("media", "screen")
-         fileref.setAttribute("href", filename)
-
-         document.getElementsByTagName("head")[0].appendChild(fileref);
-         if (!noCallback)
-         {
-            // +1 for inline style in webpage
-            Ext.defer(this.loadjscssfileCallBackFunc, 50, this, [len, 0, filename]);
-         }
-      }
-   },
-   removejscssfile : function(filename, filetype)
-   {
-      filename = Url.decode(filename);
-      var efilename = escape(filename);
-      var targetelement = (filetype == "js") ? "script" : (filetype == "css") ? "link" : "none"//determine element type to create
-      // nodelist from
-      var targetattr = (filetype == "js") ? "src" : (filetype == "css") ? "href" : "none"//determine corresponding attribute to test
-      // for
-      var allsuspects = document.getElementsByTagName(targetelement)
-      for (var i = allsuspects.length; i >= 0; i--)
-      {
-         //search backwards within nodelist for matching elements to remove
-         if (allsuspects[i])
-         {
-            var attr = escape(allsuspects[i].getAttribute(targetattr));
-            if (attr != null && ((attr == efilename) || (attr.search(efilename) != -1)))
-            {
-               allsuspects[i].disabled = true;
-               allsuspects[i].parentNode.removeChild(allsuspects[i])//remove element by calling parentNode.removeChild()
-               delete Genesis.fn.filesadded[filename];
-            }
-         }
-      }
-   },
-   findjscssfile : function(filename, filetype)
-   {
-      filename = Url.decode(filename);
-      var targetelement = (filetype == "js") ? "script" : (filetype == "css") ? "style" : "none"//determine element type to create
-      // nodelist from
-      var targetattr = (filetype == "js") ? "id" : (filetype == "css") ? "id" : "none"//determine corresponding attribute to test for
-      var allsuspects = document.getElementsByTagName(targetelement)
-      for (var i = allsuspects.length; i >= 0; i--)
-      {
-         //search backwards within nodelist for matching elements to remove
-         if (allsuspects[i])
-         {
-            var attr = allsuspects[i].getAttribute(targetattr);
-            if (attr != null && attr.search(filename) != -1)
-            {
-               return allsuspects[i];
-            }
-         }
-      }
-      return null;
-   },
-   removejscsstext : function(filename, filetype)
-   {
-      filename = Url.decode(filename);
-      var targetelement = (filetype == "js") ? "script" : (filetype == "css") ? "style" : "none"//determine element type to create
-      // nodelist from
-      var targetattr = (filetype == "js") ? "id" : (filetype == "css") ? "id" : "none"//determine corresponding attribute to test for
-      var allsuspects = document.getElementsByTagName(targetelement)
-      for (var i = allsuspects.length; i >= 0; i--)
-      {
-         //search backwards within nodelist for matching elements to remove
-         if (allsuspects[i])
-         {
-            var attr = allsuspects[i].getAttribute(targetattr);
-            if (attr != null && ((attr == filename) || (attr.search(filename) != -1)))
-            {
-               allsuspects[i].parentNode.removeChild(allsuspects[i])//remove element by calling parentNode.removeChild()
-               delete Genesis.fn.filesadded[filename];
-            }
-         }
-      }
-   },
-   replacejscssfile : function(oldfilename, newfilename, filetype)
-   {
-      newfilename = Url.decode(newfilename);
-      oldfilename = Url.decode(oldfilename);
-      var targetelement = (filetype == "js") ? "script" : (filetype == "css") ? "link" : "none"//determine element type to create
-      // nodelist using
-      var targetattr = (filetype == "js") ? "src" : (filetype == "css") ? "href" : "none"//determine corresponding attribute to test
-      // for
-      var allsuspects = document.getElementsByTagName(targetelement)
-      for (var i = allsuspects.length; i >= 0; i--)
-      {
-         //search backwards within nodelist for matching elements to remove
-         if (allsuspects[i] && allsuspects[i].getAttribute(targetattr) != null && allsuspects[i].getAttribute(targetattr).indexOf(oldfilename) != -1)
-         {
-            var newelement = this.createjscssfile(newfilename, filetype)
-            allsuspects[i].parentNode.replaceChild(newelement, allsuspects[i])
-            delete this.filesadded[oldfilename];
-            this.filesadded[newfilename] = [true];
-         }
-      }
-   },
-   // **************************************************************************
-   // Date Time
-   // **************************************************************************
-   systemTime : (new Date()).getTime(),
-   clientTime : (new Date()).getTime(),
-   weekday : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-   convertDateCommon : function(v, dateFormat, noConvert)
-   {
-      var date;
-      var format = dateFormat || this.dateFormat;
-
-      if (!( v instanceof Date))
-      {
-         if ( typeof (JSON) != 'undefined')
-         {
-            //v = (jQuery.browser.msie) ? v.split(/Z$/)[0] : v.split('.')[0];
-            //v = (Ext.os.deviceType.toLowerCase() != 'desktop') ? v : v.split('.')[0];
-            //v = (Genesis.fn.isNative()) ? v : v.split('.')[0];
-         }
-
-         if ((v === null) || (v === undefined) || v === '')
-         {
-            date = new Date();
-         }
-         else
-         {
-            if (format)
-            {
-               date = Date.parse(v, format);
-               if ((date === null) || (date === undefined) || date === '')
-               {
-                  date = new Date(v).format(format);
+                  return allsuspects[i];
                }
-               return [date, date];
-            }
-            date = new Date(v);
-            if (date.toString() == 'Invalid Date')
-            {
-               date = Date.parse(v, format);
             }
          }
-      }
-      else
+         return null;
+      },
+      removejscsstext : function(filename, filetype)
       {
-         date = v;
-      }
-      if (!noConvert)
-      {
-         var currentDate = new Date().getTime();
-         // Adjust for time drift between Client computer and Application Server
-         var offsetTime = this.currentDateTime(currentDate);
-
-         var timeExpiredSec = (offsetTime - date.getTime()) / 1000;
-
-         if (timeExpiredSec > -10)
+         filename = Url.decode(filename);
+         var targetelement = (filetype == "js") ? "script" : (filetype == "css") ? "style" : "none"//determine element type to create
+         // nodelist from
+         var targetattr = (filetype == "js") ? "id" : (filetype == "css") ? "id" : "none"//determine corresponding attribute to test
+         // for
+         var allsuspects = document.getElementsByTagName(targetelement)
+         for (var i = allsuspects.length; i >= 0; i--)
          {
-            if ((timeExpiredSec) < 2)
-               return [timeExpiredSec, 'a sec ago'];
-            if ((timeExpiredSec) < 60)
-               return [timeExpiredSec, parseInt(timeExpiredSec) + ' secs ago'];
-            timeExpiredSec = timeExpiredSec / 60;
-            if ((timeExpiredSec) < 2)
-               return [timeExpiredSec, 'a min ago'];
-            if ((timeExpiredSec) < 60)
-               return [timeExpiredSec, parseInt(timeExpiredSec) + ' mins ago'];
-            timeExpiredSec = timeExpiredSec / 60;
-            if ((timeExpiredSec) < 2)
-               return [date, '1 hr ago'];
-            if ((timeExpiredSec) < 24)
-               return [date, parseInt(timeExpiredSec) + ' hrs ago'];
-            timeExpiredSec = timeExpiredSec / 24;
-            if (((timeExpiredSec) < 2) && ((new Date().getDay() - date.getDay()) == 1))
-               return [date, 'Yesterday at ' + date.format('g:i A')];
-            if ((timeExpiredSec) < 7)
-               return [date, this.weekday[date.getDay()] + ' at ' + date.format('g:i A')];
-            timeExpiredSec = timeExpiredSec / 7;
-            if (((timeExpiredSec) < 2) && (timeExpiredSec % 7 == 0))
-               return [date, '1 wk ago'];
-            if (((timeExpiredSec) < 5) && (timeExpiredSec % 7 == 0))
-               return [date, parseInt(timeExpiredSec) + ' wks ago'];
-
-            if (timeExpiredSec < 5)
-               return [date, parseInt(timeExpiredSec * 7) + ' days ago']
-            return [date, null];
-         }
-         // Back to the Future! Client might have changed it's local clock
-         else
-         {
-         }
-      }
-
-      return [date, -1];
-   },
-   convertDateFullTime : function(v)
-   {
-      return v.format('D, M d, Y \\a\\t g:i A');
-   },
-   convertDateReminder : function(v)
-   {
-      var today = new Date();
-      var todayDate = today.getDate();
-      var todayMonth = today.getMonth();
-      var todayYear = today.getFullYear();
-      var date = v.getDate();
-      var month = v.getMonth();
-      var year = v.getFullYear();
-      if (todayDate == date && todayMonth == month && todayYear == year)
-      {
-         return 'Today ' + v.format('g:i A');
-      }
-      return v.format('D g:i A');
-   },
-   convertDate : function(v, dateFormat)
-   {
-      var rc = this.convertDateCommon(v, dateFormat);
-      if (rc[1] != -1)
-      {
-         return (rc[1] == null) ? rc[0].format('M d, Y') : rc[1];
-      }
-      else
-      {
-         return rc[0].format('D, M d, Y \\a\\t g:i A');
-      }
-   },
-   convertDateNoTime : function(v)
-   {
-      var rc = this.convertDateCommon(v, null, true);
-      if (rc[1] != -1)
-      {
-         return (rc[1] == null) ? rc[0].format('D, M d, Y') : rc[1];
-      }
-      else
-      {
-         return rc[0].format('D, M d, Y')
-      }
-   },
-   convertDateNoTimeNoWeek : function(v)
-   {
-      var rc = this.convertDateCommon(v, null, true);
-      if (rc[1] != -1)
-      {
-         rc = (rc[1] == null) ? rc[0].format('M d, Y') : rc[1];
-      }
-      else
-      {
-         rc = rc[0].format('M d, Y');
-      }
-      return rc;
-   },
-   convertDateInMins : function(v)
-   {
-      var rc = this.convertDateCommon(v, null, true);
-      if (rc[1] != -1)
-      {
-         return (rc[1] == null) ? rc[0].format('h:ia T') : rc[1];
-      }
-      else
-      {
-         return rc[0].format('h:ia T');
-      }
-   },
-   currentDateTime : function(currentDate)
-   {
-      return (this.systemTime - this.clientTime) + currentDate;
-   },
-   // **************************************************************************
-   // PX and EM Calculations
-   // **************************************************************************
-   addUnit : function(unit, metric)
-   {
-      return unit + ((!metric) ? 'px' : metric);
-   },
-   _removeUnitRegex : /(\d+)px/,
-   removeUnit : function(unit)
-   {
-      return unit.match(this._removeUnitRegex)[1];
-   },
-   //
-   // Convert to equivalent px given the fontsize
-   //
-   calcPx : function(em, fontsize)
-   {
-      return Math.floor((em * fontsize * Genesis.constants.fontSize));
-   },
-   //
-   // Convert to equivalent em given the fontsize
-   //
-   calcEm : function(px, fontsize)
-   {
-      return Math.floor(px / Genesis.constants.fontSize / fontsize);
-   },
-   // **************************************************************************
-   // File IO
-   // **************************************************************************
-   failFileHandler : function(error)
-   {
-      var errorCode =
-      {
-      };
-      errorCode[FileError.NOT_FOUND_ERR] = 'File not found';
-      errorCode[FileError.SECURITY_ERR] = 'Security error';
-      errorCode[FileError.ABORT_ERR] = 'Abort error';
-      errorCode[FileError.NOT_READABLE_ERR] = 'Not readable';
-      errorCode[FileError.ENCODING_ERR] = 'Encoding error';
-      errorCode[FileError.NO_MODIFICATION_ALLOWED_ERR] = 'No mobification allowed';
-      errorCode[FileError.INVALID_STATE_ERR] = 'Invalid state';
-      errorCode[FileError.SYFNTAX_ERR] = 'Syntax error';
-      errorCode[FileError.INVALID_MODIFICATION_ERR] = 'Invalid modification';
-      errorCode[FileError.QUOTA_EXCEEDED_ERR] = 'Quota exceeded';
-      errorCode[FileError.TYPE_MISMATCH_ERR] = 'Type mismatch';
-      errorCode[FileError.PATH_EXISTS_ERR] = 'Path does not exist';
-      var ftErrorCode =
-      {
-      };
-      ftErrorCode[FileTransferError.FILE_NOT_FOUND_ERR] = 'File not found';
-      ftErrorCode[FileTransferError.INVALID_URL_ERR] = 'Invalid URL Error';
-      ftErrorCode[FileTransferError.CONNECTION_ERR] = 'Connection Error';
-
-      console.log("File Error - [" + errorCode[error.code] + "]");
-   },
-   readFile : function(path, callback)
-   {
-      var me = this, rfile;
-      var failFileHandler = function(error)
-      {
-         me.failFileHandler(error);
-         callback(null);
-      };
-
-      if (Genesis.fn.isNative())
-      {
-         var handler = function(fileEntry)
-         {
-            fileEntry.file(function(file)
+            //search backwards within nodelist for matching elements to remove
+            if (allsuspects[i])
             {
-               var reader = new FileReader();
-               reader.onloadend = function(evt)
+               var attr = allsuspects[i].getAttribute(targetattr);
+               if (attr != null && ((attr == filename) || (attr.search(filename) != -1)))
                {
-                  callback(evt.target.result);
-               };
-               reader.readAsText(rfile);
-            }, failFileHandler);
-         };
-
-         window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem)
-         {
-            if (Ext.os.is('iOS'))
-            {
-               rfile = (fileSystem.root.fullPath + '/../' + appName + '.app' + '/www/') + path;
+                  allsuspects[i].parentNode.removeChild(allsuspects[i])//remove element by calling parentNode.removeChild()
+                  delete Genesis.fn.filesadded[filename];
+               }
             }
-            else if (Ext.os.is('Android'))
-            {
-               //rfile = ('file:///mnt/sdcard/' + appName + '/') + path;
-               rfile = (appName + '/') + path;
-            }
-            console.debug("Reading from File - [" + rfile + "]");
-            fileSystem.root.getFile(rfile, null, handler, failFileHandler);
-         }, failFileHandler);
-      }
-      else
+         }
+      },
+      replacejscssfile : function(oldfilename, newfilename, filetype)
       {
-         callback(true);
-      }
-   },
-   writeFile : function(path, content, callback)
-   {
-      var me = this, wfile;
-      var failFileHandler = function(error)
-      {
-         me.failFileHandler(error);
-         callback(false);
-      };
-
-      if (Genesis.fn.isNative())
-      {
-         var handler = function(fileEntry)
+         newfilename = Url.decode(newfilename);
+         oldfilename = Url.decode(oldfilename);
+         var targetelement = (filetype == "js") ? "script" : (filetype == "css") ? "link" : "none"//determine element type to create
+         // nodelist using
+         var targetattr = (filetype == "js") ? "src" : (filetype == "css") ? "href" : "none"//determine corresponding attribute to
+         // test
+         // for
+         var allsuspects = document.getElementsByTagName(targetelement)
+         for (var i = allsuspects.length; i >= 0; i--)
          {
-            console.debug("Created File - [" + wfile + "]");
-            fileEntry.createWriter(function(writer)
+            //search backwards within nodelist for matching elements to remove
+            if (allsuspects[i] && allsuspects[i].getAttribute(targetattr) != null && allsuspects[i].getAttribute(targetattr).indexOf(oldfilename) != -1)
             {
-               console.debug("Writing to File - [" + wfile + "], Content - [" + content + "]");
-               writer.onwrite = function(evt)
+               var newelement = this.createjscssfile(newfilename, filetype)
+               allsuspects[i].parentNode.replaceChild(newelement, allsuspects[i])
+               delete this.filesadded[oldfilename];
+               this.filesadded[newfilename] = [true];
+            }
+         }
+      },
+      // **************************************************************************
+      // Date Time
+      // **************************************************************************
+      systemTime : (new Date()).getTime(),
+      clientTime : (new Date()).getTime(),
+      weekday : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+      convertDateCommon : function(v, dateFormat, noConvert)
+      {
+         var date;
+         var format = dateFormat || this.dateFormat;
+
+         if (!( v instanceof Date))
+         {
+            if ( typeof (JSON) != 'undefined')
+            {
+               //v = (jQuery.browser.msie) ? v.split(/Z$/)[0] : v.split('.')[0];
+               //v = (Ext.os.deviceType.toLowerCase() != 'desktop') ? v : v.split('.')[0];
+               //v = (Genesis.fn.isNative()) ? v : v.split('.')[0];
+            }
+
+            if ((v === null) || (v === undefined) || v === '')
+            {
+               date = new Date();
+            }
+            else
+            {
+               if (format)
                {
-                  console.debug("Write End Callback - [" + Ext.encode(evt) + "]");
-                  callback(true);
-               };
-               writer.write(content);
-            }, failFileHandler);
-         };
-
-         window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem)
-         {
-            if (Ext.os.is('iOS'))
-            {
-               wfile = (fileSystem.root.fullPath + '/../' + appName + '.app' + '/www/') + path;
-            }
-            else if (Ext.os.is('Android'))
-            {
-               //wfile = ('file:///mnt/sdcard/' + appName + '/') + path;
-               wfile = (appName + '/') + path;
-            }
-            fileSystem.root.getDirectory(wfile.substring(0, wfile.lastIndexOf('/')),
-            {
-               create : true
-            });
-            fileSystem.root.getFile(wfile,
-            {
-               create : true,
-               exclusive : false
-            }, handler, failFileHandler);
-         }, failFileHandler);
-      }
-      else
-      {
-         callback();
-      }
-   },
-   getPrivKey : function(id, callback)
-   {
-      var me = this;
-      callback = callback || Ext.emptyFn;
-      if (!me.privKey)
-      {
-         if (!Genesis.fn.isNative())
-         {
-            // Hardcoded for now ...
-            me.privKey =
-            {
-               'v1' : me.debugVPrivKey,
-               'r1' : me.debugRPrivKey,
-               'venue' : me.debugVenuePrivKey,
-               'venueId' : 1
+                  date = Date.parse(v, format);
+                  if ((date === null) || (date === undefined) || date === '')
+                  {
+                     date = new Date(v).format(format);
+                  }
+                  return [date, date];
+               }
+               date = new Date(v);
+               if (date.toString() == 'Invalid Date')
+               {
+                  date = Date.parse(v, format);
+               }
             }
          }
          else
          {
-            me.privKey =
+            date = v;
+         }
+         if (!noConvert)
+         {
+            var currentDate = new Date().getTime();
+            // Adjust for time drift between Client computer and Application Server
+            var offsetTime = this.currentDateTime(currentDate);
+
+            var timeExpiredSec = (offsetTime - date.getTime()) / 1000;
+
+            if (timeExpiredSec > -10)
             {
+               if ((timeExpiredSec) < 2)
+                  return [timeExpiredSec, 'a sec ago'];
+               if ((timeExpiredSec) < 60)
+                  return [timeExpiredSec, parseInt(timeExpiredSec) + ' secs ago'];
+               timeExpiredSec = timeExpiredSec / 60;
+               if ((timeExpiredSec) < 2)
+                  return [timeExpiredSec, 'a min ago'];
+               if ((timeExpiredSec) < 60)
+                  return [timeExpiredSec, parseInt(timeExpiredSec) + ' mins ago'];
+               timeExpiredSec = timeExpiredSec / 60;
+               if ((timeExpiredSec) < 2)
+                  return [date, '1 hr ago'];
+               if ((timeExpiredSec) < 24)
+                  return [date, parseInt(timeExpiredSec) + ' hrs ago'];
+               timeExpiredSec = timeExpiredSec / 24;
+               if (((timeExpiredSec) < 2) && ((new Date().getDay() - date.getDay()) == 1))
+                  return [date, 'Yesterday at ' + date.format('g:i A')];
+               if ((timeExpiredSec) < 7)
+                  return [date, this.weekday[date.getDay()] + ' at ' + date.format('g:i A')];
+               timeExpiredSec = timeExpiredSec / 7;
+               if (((timeExpiredSec) < 2) && (timeExpiredSec % 7 == 0))
+                  return [date, '1 wk ago'];
+               if (((timeExpiredSec) < 5) && (timeExpiredSec % 7 == 0))
+                  return [date, parseInt(timeExpiredSec) + ' wks ago'];
+
+               if (timeExpiredSec < 5)
+                  return [date, parseInt(timeExpiredSec * 7) + ' days ago']
+               return [date, null];
+            }
+            // Back to the Future! Client might have changed it's local clock
+            else
+            {
+            }
+         }
+
+         return [date, -1];
+      },
+      convertDateFullTime : function(v)
+      {
+         return v.format('D, M d, Y \\a\\t g:i A');
+      },
+      convertDateReminder : function(v)
+      {
+         var today = new Date();
+         var todayDate = today.getDate();
+         var todayMonth = today.getMonth();
+         var todayYear = today.getFullYear();
+         var date = v.getDate();
+         var month = v.getMonth();
+         var year = v.getFullYear();
+         if (todayDate == date && todayMonth == month && todayYear == year)
+         {
+            return 'Today ' + v.format('g:i A');
+         }
+         return v.format('D g:i A');
+      },
+      convertDate : function(v, dateFormat)
+      {
+         var rc = this.convertDateCommon(v, dateFormat);
+         if (rc[1] != -1)
+         {
+            return (rc[1] == null) ? rc[0].format('M d, Y') : rc[1];
+         }
+         else
+         {
+            return rc[0].format('D, M d, Y \\a\\t g:i A');
+         }
+      },
+      convertDateNoTime : function(v)
+      {
+         var rc = this.convertDateCommon(v, null, true);
+         if (rc[1] != -1)
+         {
+            return (rc[1] == null) ? rc[0].format('D, M d, Y') : rc[1];
+         }
+         else
+         {
+            return rc[0].format('D, M d, Y')
+         }
+      },
+      convertDateNoTimeNoWeek : function(v)
+      {
+         var rc = this.convertDateCommon(v, null, true);
+         if (rc[1] != -1)
+         {
+            rc = (rc[1] == null) ? rc[0].format('M d, Y') : rc[1];
+         }
+         else
+         {
+            rc = rc[0].format('M d, Y');
+         }
+         return rc;
+      },
+      convertDateInMins : function(v)
+      {
+         var rc = this.convertDateCommon(v, null, true);
+         if (rc[1] != -1)
+         {
+            return (rc[1] == null) ? rc[0].format('h:ia T') : rc[1];
+         }
+         else
+         {
+            return rc[0].format('h:ia T');
+         }
+      },
+      currentDateTime : function(currentDate)
+      {
+         return (this.systemTime - this.clientTime) + currentDate;
+      },
+      // **************************************************************************
+      // PX and EM Calculations
+      // **************************************************************************
+      addUnit : function(unit, metric)
+      {
+         return unit + ((!metric) ? 'px' : metric);
+      },
+      _removeUnitRegex : /(\d+)px/,
+      removeUnit : function(unit)
+      {
+         return unit.match(this._removeUnitRegex)[1];
+      },
+      //
+      // Convert to equivalent px given the fontsize
+      //
+      calcPx : function(em, fontsize)
+      {
+         return Math.floor((em * fontsize * Genesis.constants.fontSize));
+      },
+      //
+      // Convert to equivalent em given the fontsize
+      //
+      calcEm : function(px, fontsize)
+      {
+         return Math.floor(px / Genesis.constants.fontSize / fontsize);
+      },
+      // **************************************************************************
+      // File IO
+      // **************************************************************************
+      failFileHandler : function(error)
+      {
+         var errorCode =
+         {
+         };
+         errorCode[FileError.NOT_FOUND_ERR] = 'File not found';
+         errorCode[FileError.SECURITY_ERR] = 'Security error';
+         errorCode[FileError.ABORT_ERR] = 'Abort error';
+         errorCode[FileError.NOT_READABLE_ERR] = 'Not readable';
+         errorCode[FileError.ENCODING_ERR] = 'Encoding error';
+         errorCode[FileError.NO_MODIFICATION_ALLOWED_ERR] = 'No mobification allowed';
+         errorCode[FileError.INVALID_STATE_ERR] = 'Invalid state';
+         errorCode[FileError.SYFNTAX_ERR] = 'Syntax error';
+         errorCode[FileError.INVALID_MODIFICATION_ERR] = 'Invalid modification';
+         errorCode[FileError.QUOTA_EXCEEDED_ERR] = 'Quota exceeded';
+         errorCode[FileError.TYPE_MISMATCH_ERR] = 'Type mismatch';
+         errorCode[FileError.PATH_EXISTS_ERR] = 'Path does not exist';
+         var ftErrorCode =
+         {
+         };
+         ftErrorCode[FileTransferError.FILE_NOT_FOUND_ERR] = 'File not found';
+         ftErrorCode[FileTransferError.INVALID_URL_ERR] = 'Invalid URL Error';
+         ftErrorCode[FileTransferError.CONNECTION_ERR] = 'Connection Error';
+
+         console.log("File Error - [" + errorCode[error.code] + "]");
+      },
+      readFile : function(path, callback)
+      {
+         var me = this, rfile;
+         var failFileHandler = function(error)
+         {
+            me.failFileHandler(error);
+            callback(null);
+         };
+
+         if (Genesis.fn.isNative())
+         {
+            var handler = function(fileEntry)
+            {
+               fileEntry.file(function(file)
+               {
+                  var reader = new FileReader();
+                  reader.onloadend = function(evt)
+                  {
+                     callback(evt.target.result);
+                  };
+                  reader.readAsText(rfile);
+               }, failFileHandler);
             };
+
+            window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem)
+            {
+               if (Ext.os.is('iOS'))
+               {
+                  rfile = (fileSystem.root.fullPath + '/../' + appName + '.app' + '/www/') + path;
+               }
+               else if (Ext.os.is('Android'))
+               {
+                  //rfile = ('file:///mnt/sdcard/' + appName + '/') + path;
+                  rfile = (appName + '/') + path;
+               }
+               console.debug("Reading from File - [" + rfile + "]");
+               fileSystem.root.getFile(rfile, null, handler, failFileHandler);
+            }, failFileHandler);
          }
-      }
-
-      return ((id) ? me.privKey[id] : me.privKey);
-   },
-   // **************************************************************************
-   // Proximity ID API Utilities
-   // **************************************************************************
-   printProximityConfig : function()
-   {
-      var c = Genesis.constants;
-      console.debug("ProximityID Configuration");
-      console.debug("=========================");
-      console.debug("\n" + //
-      "Signal Samples[" + c.numSamples + "]\n" + //
-      "Missed Threshold[" + c.conseqMissThreshold + "]\n" + //
-      "Signal Overlap Ratio[" + c.sigOverlapRatio + "]\n" + //
-      "Default Volume[" + c.s_vol + "%]\n" //
-      );
-   },
-   processSendLocalID : function(result, cancelFn)
-   {
-      var localID, identifiers = null;
-
-      if (result.freqs)
-      {
-         Genesis.constants.lastLocalID = result.freqs;
-      }
-
-      localID = Genesis.constants.lastLocalID;
-      if (localID)
-      {
-         identifiers = 'LocalID=[' + localID[0] + ', ' + localID[1] + ', ' + localID[2] + ']';
-         //console.log('Sending out ' + identifiers);
-      }
-      return (
+         else
          {
-            'message' : identifiers,
-            'localID' : localID,
-            'cancelFn' : cancelFn
-         });
-   },
-   processRecvLocalID : function(result)
-   {
-      var identifiers = null;
-      var localID = result.freqs;
-      if (localID)
+            callback(true);
+         }
+      },
+      writeFile : function(path, content, callback)
       {
-         identifiers = 'LocalID=[' + localID[0] + ', ' + localID[1] + ', ' + localID[2] + ']';
-         //console.log('Recv\'d ' + identifiers);
-      }
-      else
-      {
-         console.log('Already listening for LocalID ...');
-      }
-
-      return (
+         var me = this, wfile;
+         var failFileHandler = function(error)
          {
-            message : identifiers,
-            localID : localID
-         });
-   }
-}
+            me.failFileHandler(error);
+            callback(false);
+         };
+
+         if (Genesis.fn.isNative())
+         {
+            var handler = function(fileEntry)
+            {
+               console.debug("Created File - [" + wfile + "]");
+               fileEntry.createWriter(function(writer)
+               {
+                  console.debug("Writing to File - [" + wfile + "], Content - [" + content + "]");
+                  writer.onwrite = function(evt)
+                  {
+                     console.debug("Write End Callback - [" + Ext.encode(evt) + "]");
+                     callback(true);
+                  };
+                  writer.write(content);
+               }, failFileHandler);
+            };
+
+            window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem)
+            {
+               if (Ext.os.is('iOS'))
+               {
+                  wfile = (fileSystem.root.fullPath + '/../' + appName + '.app' + '/www/') + path;
+               }
+               else if (Ext.os.is('Android'))
+               {
+                  //wfile = ('file:///mnt/sdcard/' + appName + '/') + path;
+                  wfile = (appName + '/') + path;
+               }
+               fileSystem.root.getDirectory(wfile.substring(0, wfile.lastIndexOf('/')),
+               {
+                  create : true
+               });
+               fileSystem.root.getFile(wfile,
+               {
+                  create : true,
+                  exclusive : false
+               }, handler, failFileHandler);
+            }, failFileHandler);
+         }
+         else
+         {
+            callback();
+         }
+      },
+      getPrivKey : function(id, callback)
+      {
+         var me = this;
+         callback = callback || Ext.emptyFn;
+         if (!me.privKey)
+         {
+            if (!Genesis.fn.isNative())
+            {
+               // Hardcoded for now ...
+               me.privKey =
+               {
+                  'v1' : me.debugVPrivKey,
+                  'r1' : me.debugRPrivKey,
+                  'venue' : me.debugVenuePrivKey,
+                  'venueId' : 1
+               }
+            }
+            else
+            {
+               me.privKey =
+               {
+               };
+            }
+         }
+
+         return ((id) ? me.privKey[id] : me.privKey);
+      },
+      // **************************************************************************
+      // Proximity ID API Utilities
+      // **************************************************************************
+      printProximityConfig : function()
+      {
+         var c = Genesis.constants;
+         console.debug("ProximityID Configuration");
+         console.debug("=========================");
+         console.debug("\n" + //
+         "Signal Samples[" + c.numSamples + "]\n" + //
+         "Missed Threshold[" + c.conseqMissThreshold + "]\n" + //
+         "Signal Overlap Ratio[" + c.sigOverlapRatio + "]\n" + //
+         "Default Volume[" + c.s_vol + "%]\n" //
+         );
+      },
+      processSendLocalID : function(result, cancelFn)
+      {
+         var localID, identifiers = null;
+
+         if (result.freqs)
+         {
+            Genesis.constants.lastLocalID = result.freqs;
+         }
+
+         localID = Genesis.constants.lastLocalID;
+         if (localID)
+         {
+            identifiers = 'LocalID=[' + localID[0] + ', ' + localID[1] + ', ' + localID[2] + ']';
+            //console.log('Sending out ' + identifiers);
+         }
+         return (
+            {
+               'message' : identifiers,
+               'localID' : localID,
+               'cancelFn' : cancelFn
+            });
+      },
+      processRecvLocalID : function(result)
+      {
+         var identifiers = null;
+         var localID = result.freqs;
+         if (localID)
+         {
+            identifiers = 'LocalID=[' + localID[0] + ', ' + localID[1] + ', ' + localID[2] + ']';
+            //console.log('Recv\'d ' + identifiers);
+         }
+         else
+         {
+            console.log('Already listening for LocalID ...');
+         }
+
+         return (
+            {
+               message : identifiers,
+               localID : localID
+            });
+      }
+   };
+
+   Genesis.fn = (Genesis.fn) ? Ext.merge(Genesis.fn, __fn__) : __fn__;
+})();
 
 // **************************************************************************
 // Persistent DB API

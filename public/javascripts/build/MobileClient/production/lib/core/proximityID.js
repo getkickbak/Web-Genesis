@@ -207,7 +207,7 @@ window.plugins = window.plugins ||
       };
    }
 
-   if (cordova)
+   if (cordova && ( typeof (window.jQuery) == 'undefined'))
    {
       window.plugins.proximityID =
       {

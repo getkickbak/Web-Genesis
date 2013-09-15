@@ -1,23 +1,104 @@
+var mainAppInit = false;
+
 var setChildBrowserVisibility = function(visible, hash)
 {
    var db = Genesis.db.getLocalDB(true);
    if (visible)
    {
-      if ($(".iframe")[0].src == "")
+      if (!mainAppInit)
       {
-         $(".iframe")[0].src = '../index.html';
+         if (window.cordova)
+         {
+            var i = 0x000, callback = function(success, flag)
+            {
+               if (success && ((i |= flag) == 0x111))
+               {
+                  mainAppInit = true;
+                  $("#checkexplorepageview").addClass('x-item-hidden');
+                  //
+                  // Startup Application
+                  //
+
+                  Ext.Loader.setConfig(
+                  {
+                     enabled : false,
+                     paths :
+                     {
+                        Ext : _extPath,
+                        Genesis : _appPath,
+                        "Ext.ux" : _appPath
+                     }
+                  });
+                  Ext.application(
+                  {
+                     requires : ['Ext.MessageBox', 'Ext.device.Notification', 'Ext.device.Camera', 'Ext.device.Orientation'],
+                     profiles : ['Iphone'],
+                     views : ['Document', 'client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions',
+                     // //
+                     'client.AccountsTransfer', 'client.SettingsPage', //
+                     'LoginPage', 'SignInPage', 'client.MainPage', 'widgets.client.RedeemItemDetail', 'client.Badges', 'client.JackpotWinners', 'client.MerchantAccount',
+                     // //
+                     'client.MerchantDetails', 'client.Accounts', 'client.Prizes', 'Viewport'],
+                     controllers : ['client.Challenges', 'client.Rewards', 'client.Redemptions', //
+                     'client.Viewport', 'client.Login', 'client.MainPage', 'client.Badges', 'client.Merchants', 'client.Accounts', 'client.Settings', 'client.Checkins', 'client.JackpotWinners', 'client.Prizes'],
+                     launch : function()
+                     {
+                        _application = this;
+                        var viewport = _application.getController('client' + '.Viewport');
+
+                        console.debug("Ext App Launch");
+
+                        viewport.appName = appName;
+                        QRCodeReader.prototype.scanType = "Default";
+                        console.debug("QRCode Scanner Mode[" + QRCodeReader.prototype.scanType + "]");
+                        viewport.redirectTo('');
+                        console.debug("Launched App");
+                     },
+                     appFolder : _appPath,
+                     name : 'Genesis'
+                  });
+               }
+            };
+            Genesis.fn.checkloadjscssfile('../lib/sencha-touch-all.js', "js", function(success)
+            {
+               if (success)
+               {
+                  Genesis.fn.checkloadjscssfile('../core.js', "js", Ext.bind(callback, null, [0x001], true));
+                  Genesis.fn.checkloadjscssfile('../app/profile/Iphone.js', "js", Ext.bind(callback, null, [0x010], true));
+                  Genesis.fn.checkloadjscssfile('../client-all.js', "js", Ext.bind(callback, null, [0x100], true));
+               }
+               else
+               {
+                  setNotificationVisibility(true, 'KICKBAK', "Error Loading Application Resource Files.", "Dismiss", Ext.emptyFn);
+               }
+            });
+         }
+         else
+         {
+            mainAppInit = true;
+            $(".iframe")[0].src = '../index.html';
+            $(".iframe").removeClass('x-item-hidden');
+         }
       }
       else if (db['auth_code'])
       {
-         $(".iframe")[0].contentWindow._application.getController('client' + '.Viewport').redirectTo('main');
+         if (window.cordova)
+         {
+            $("#checkexplorepageview").addClass('x-item-hidden');
+            $("#ext-viewport").removeClass('x-item-hidden');
+            _application.getController('client' + '.Viewport').redirectTo('main');
+         }
+         else
+         {
+            $(".iframe")[0].contentWindow._application.getController('client' + '.Viewport').redirectTo('main');
+            $(".iframe").removeClass('x-item-hidden');
+         }
       }
-      $(".iframe").removeClass('x-item-hidden');
    }
    else
    {
       $("#earnPtsLoad span.x-button-label").text((db['auth_code']) ? 'Earn Points' : 'Sign In / Register');
-
-      $(".iframe").addClass('x-item-hidden');
+      //$(".iframe").addClass('x-item-hidden');
       window.location.hash = '#' + hash;
    }
 };
@@ -64,13 +145,13 @@ var setChildBrowserVisibility = function(visible, hash)
    {
       setImageSize();
       hideAddressBar();
-      $('iframe')[0].style.height = //
+      //$('iframe')[0].style.height = //
       $('#checkexplorepageview')[0].style.height = //
       $('#loadingMask')[0].style.height = //
       $('#notification')[0].style.height = //
       $('#mask')[0].style.height = //
       $('#earnptspageview')[0].style.height = document.body.style.height;
-      $('iframe')[0].style.width = document.body.clientWidth + 'px';
+      //$('iframe')[0].style.width = document.body.clientWidth + 'px';
       $('body')[(window.orientation == 0) ? 'addClass' : 'removeClass']('x-portrait');
       $('body')[(window.orientation == 0) ? 'removeClass' : 'addClass']('x-landscape');
    };
@@ -302,6 +383,19 @@ var setChildBrowserVisibility = function(visible, hash)
       // =============================================================
       orientationChange();
 
+      if ($.os.ios)
+      {
+         $('body').addClass('x-ios');
+      }
+      else if ($.os.blackberry || $.os.bb10 || $.os.rimtabletos)
+      {
+         $('body').addClass('x-blackberry');
+      }
+      else
+      //else if ($.os.android)
+      {
+         $('body').addClass('x-android');
+      }
       $('body').addClass(($.os.phone) ? 'x-phone' : 'x-tablet');
 
       $('#earnPtsCancel').tap(hideEarnPtsPage);
@@ -364,7 +458,7 @@ var setChildBrowserVisibility = function(visible, hash)
                iscrollInfinite.data().infiniteScroll.iScroll.options.onScrollMove();
                break;
          }
-      }
+      };
       iscrollInfinite.tap(function(e)
       {
          //

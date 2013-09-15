@@ -253,7 +253,7 @@ Ext.define('Genesis.controller.client.Viewport',
                viewport.setVenue(record);
                controller = me.getApplication().getController('client' + '.Checkins');
                controller.setPosition(position);
-               controller.fireEvent('checkin');
+               controller.fireEvent('checkin', true);
             }
             else
             {

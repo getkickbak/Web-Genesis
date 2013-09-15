@@ -59744,6 +59744,210 @@ Ext.define('Ext.device.Communicator', {
 /**
  * @private
  */
+Ext.define('Ext.device.connection.Abstract', {
+    extend:  Ext.Evented ,
+
+    config: {
+        online: false,
+        type: null
+    },
+
+    /**
+     * @property {String} UNKNOWN
+     * Text label for a connection type.
+     */
+    UNKNOWN: 'Unknown connection',
+
+    /**
+     * @property {String} ETHERNET
+     * Text label for a connection type.
+     */
+    ETHERNET: 'Ethernet connection',
+
+    /**
+     * @property {String} WIFI
+     * Text label for a connection type.
+     */
+    WIFI: 'WiFi connection',
+
+    /**
+     * @property {String} CELL_2G
+     * Text label for a connection type.
+     */
+    CELL_2G: 'Cell 2G connection',
+
+    /**
+     * @property {String} CELL_3G
+     * Text label for a connection type.
+     */
+    CELL_3G: 'Cell 3G connection',
+
+    /**
+     * @property {String} CELL_4G
+     * Text label for a connection type.
+     */
+    CELL_4G: 'Cell 4G connection',
+
+    /**
+     * @property {String} NONE
+     * Text label for a connection type.
+     */
+    NONE: 'No network connection',
+
+    /**
+     * True if the device is currently online
+     * @return {Boolean} online
+     */
+    isOnline: function() {
+        return this.getOnline();
+    }
+
+    /**
+     * @method getType
+     * Returns the current connection type.
+     * @return {String} type
+     */
+});
+
+/**
+ * @private
+ */
+Ext.define('Ext.device.connection.Sencha', {
+    extend:  Ext.device.connection.Abstract ,
+
+    /**
+     * @event onlinechange
+     * Fires when the connection status changes.
+     * @param {Boolean} online True if you are {@link Ext.device.Connection#isOnline online}
+     * @param {String} type The new online {@link Ext.device.Connection#getType type}
+     */
+
+    initialize: function() {
+        Ext.device.Communicator.send({
+            command: 'Connection#watch',
+            callbacks: {
+                callback: this.onConnectionChange
+            },
+            scope: this
+        });
+    },
+
+    onConnectionChange: function(e) {
+        this.setOnline(Boolean(e.online));
+        this.setType(this[e.type]);
+
+        this.fireEvent('onlinechange', this.getOnline(), this.getType());
+    }
+});
+
+/**
+ * @private
+ */
+Ext.define('Ext.device.connection.PhoneGap', {
+    extend:  Ext.device.connection.Abstract ,
+
+    syncOnline: function() {
+        var type = navigator.network.connection.type;
+        this._type = type;
+        this._online = type != Connection.NONE;
+    },
+
+    getOnline: function() {
+        this.syncOnline();
+        return this._online;
+    },
+
+    getType: function() {
+        this.syncOnline();
+        return this._type;
+    }
+});
+
+/**
+ * @private
+ */
+Ext.define('Ext.device.connection.Simulator', {
+    extend:  Ext.device.connection.Abstract ,
+
+    getOnline: function() {
+        this._online = navigator.onLine;
+        this._type = Ext.device.Connection.UNKNOWN;
+        return this._online;
+    }
+});
+
+/**
+ * This class is used to check if the current device is currently online or not. It has three different implementations:
+ *
+ * - Sencha Packager
+ * - PhoneGap
+ * - Simulator
+ *
+ * Both the Sencha Packager and PhoneGap implementations will use the native functionality to determine if the current
+ * device is online. The Simulator version will simply use `navigator.onLine`.
+ *
+ * When this singleton ({@link Ext.device.Connection}) is instantiated, it will automatically decide which version to
+ * use based on the current platform.
+ *
+ * ## Examples
+ *
+ * Determining if the current device is online:
+ *
+ *     alert(Ext.device.Connection.isOnline());
+ *
+ * Checking the type of connection the device has:
+ *
+ *     alert('Your connection type is: ' + Ext.device.Connection.getType());
+ *
+ * The available connection types are:
+ *
+ * - {@link Ext.device.Connection#UNKNOWN UNKNOWN} - Unknown connection
+ * - {@link Ext.device.Connection#ETHERNET ETHERNET} - Ethernet connection
+ * - {@link Ext.device.Connection#WIFI WIFI} - WiFi connection
+ * - {@link Ext.device.Connection#CELL_2G CELL_2G} - Cell 2G connection
+ * - {@link Ext.device.Connection#CELL_3G CELL_3G} - Cell 3G connection
+ * - {@link Ext.device.Connection#CELL_4G CELL_4G} - Cell 4G connection
+ * - {@link Ext.device.Connection#NONE NONE} - No network connection
+ * 
+ * @mixins Ext.device.connection.Abstract
+ *
+ * @aside guide native_apis
+ */
+Ext.define('Ext.device.Connection', {
+    singleton: true,
+
+               
+                                  
+                                       
+                                         
+                                         
+      
+    
+    /**
+     * @event onlinechange
+     * @inheritdoc Ext.device.connection.Sencha#onlinechange
+     */
+
+    constructor: function() {
+        var browserEnv = Ext.browser.is;
+
+        if (browserEnv.WebView) {
+            if (browserEnv.PhoneGap) {
+                return Ext.create('Ext.device.connection.PhoneGap');
+            }
+            else {
+                return Ext.create('Ext.device.connection.Sencha');
+            }
+        }
+        else {
+            return Ext.create('Ext.device.connection.Simulator');
+        }
+    }
+});
+
+/**
+ * @private
+ */
 Ext.define('Ext.device.notification.Abstract', {
     /**
      * A simple way to show a notification.
@@ -60010,210 +60214,6 @@ Ext.define('Ext.device.Notification', {
         }
         else {
             return Ext.create('Ext.device.notification.Simulator');
-        }
-    }
-});
-
-/**
- * @private
- */
-Ext.define('Ext.device.connection.Abstract', {
-    extend:  Ext.Evented ,
-
-    config: {
-        online: false,
-        type: null
-    },
-
-    /**
-     * @property {String} UNKNOWN
-     * Text label for a connection type.
-     */
-    UNKNOWN: 'Unknown connection',
-
-    /**
-     * @property {String} ETHERNET
-     * Text label for a connection type.
-     */
-    ETHERNET: 'Ethernet connection',
-
-    /**
-     * @property {String} WIFI
-     * Text label for a connection type.
-     */
-    WIFI: 'WiFi connection',
-
-    /**
-     * @property {String} CELL_2G
-     * Text label for a connection type.
-     */
-    CELL_2G: 'Cell 2G connection',
-
-    /**
-     * @property {String} CELL_3G
-     * Text label for a connection type.
-     */
-    CELL_3G: 'Cell 3G connection',
-
-    /**
-     * @property {String} CELL_4G
-     * Text label for a connection type.
-     */
-    CELL_4G: 'Cell 4G connection',
-
-    /**
-     * @property {String} NONE
-     * Text label for a connection type.
-     */
-    NONE: 'No network connection',
-
-    /**
-     * True if the device is currently online
-     * @return {Boolean} online
-     */
-    isOnline: function() {
-        return this.getOnline();
-    }
-
-    /**
-     * @method getType
-     * Returns the current connection type.
-     * @return {String} type
-     */
-});
-
-/**
- * @private
- */
-Ext.define('Ext.device.connection.Sencha', {
-    extend:  Ext.device.connection.Abstract ,
-
-    /**
-     * @event onlinechange
-     * Fires when the connection status changes.
-     * @param {Boolean} online True if you are {@link Ext.device.Connection#isOnline online}
-     * @param {String} type The new online {@link Ext.device.Connection#getType type}
-     */
-
-    initialize: function() {
-        Ext.device.Communicator.send({
-            command: 'Connection#watch',
-            callbacks: {
-                callback: this.onConnectionChange
-            },
-            scope: this
-        });
-    },
-
-    onConnectionChange: function(e) {
-        this.setOnline(Boolean(e.online));
-        this.setType(this[e.type]);
-
-        this.fireEvent('onlinechange', this.getOnline(), this.getType());
-    }
-});
-
-/**
- * @private
- */
-Ext.define('Ext.device.connection.PhoneGap', {
-    extend:  Ext.device.connection.Abstract ,
-
-    syncOnline: function() {
-        var type = navigator.network.connection.type;
-        this._type = type;
-        this._online = type != Connection.NONE;
-    },
-
-    getOnline: function() {
-        this.syncOnline();
-        return this._online;
-    },
-
-    getType: function() {
-        this.syncOnline();
-        return this._type;
-    }
-});
-
-/**
- * @private
- */
-Ext.define('Ext.device.connection.Simulator', {
-    extend:  Ext.device.connection.Abstract ,
-
-    getOnline: function() {
-        this._online = navigator.onLine;
-        this._type = Ext.device.Connection.UNKNOWN;
-        return this._online;
-    }
-});
-
-/**
- * This class is used to check if the current device is currently online or not. It has three different implementations:
- *
- * - Sencha Packager
- * - PhoneGap
- * - Simulator
- *
- * Both the Sencha Packager and PhoneGap implementations will use the native functionality to determine if the current
- * device is online. The Simulator version will simply use `navigator.onLine`.
- *
- * When this singleton ({@link Ext.device.Connection}) is instantiated, it will automatically decide which version to
- * use based on the current platform.
- *
- * ## Examples
- *
- * Determining if the current device is online:
- *
- *     alert(Ext.device.Connection.isOnline());
- *
- * Checking the type of connection the device has:
- *
- *     alert('Your connection type is: ' + Ext.device.Connection.getType());
- *
- * The available connection types are:
- *
- * - {@link Ext.device.Connection#UNKNOWN UNKNOWN} - Unknown connection
- * - {@link Ext.device.Connection#ETHERNET ETHERNET} - Ethernet connection
- * - {@link Ext.device.Connection#WIFI WIFI} - WiFi connection
- * - {@link Ext.device.Connection#CELL_2G CELL_2G} - Cell 2G connection
- * - {@link Ext.device.Connection#CELL_3G CELL_3G} - Cell 3G connection
- * - {@link Ext.device.Connection#CELL_4G CELL_4G} - Cell 4G connection
- * - {@link Ext.device.Connection#NONE NONE} - No network connection
- * 
- * @mixins Ext.device.connection.Abstract
- *
- * @aside guide native_apis
- */
-Ext.define('Ext.device.Connection', {
-    singleton: true,
-
-               
-                                  
-                                       
-                                         
-                                         
-      
-    
-    /**
-     * @event onlinechange
-     * @inheritdoc Ext.device.connection.Sencha#onlinechange
-     */
-
-    constructor: function() {
-        var browserEnv = Ext.browser.is;
-
-        if (browserEnv.WebView) {
-            if (browserEnv.PhoneGap) {
-                return Ext.create('Ext.device.connection.PhoneGap');
-            }
-            else {
-                return Ext.create('Ext.device.connection.Sencha');
-            }
-        }
-        else {
-            return Ext.create('Ext.device.connection.Simulator');
         }
     }
 });
@@ -77155,6 +77155,7 @@ Ext.define('Genesis.controller.ViewportBase',
       }
    },
    mainPageStorePathToken : /\{platform_path\}/mg,
+   mainPageStoreRelPathToken : /\{rel_path\}/mg,
    popViewInProgress : false,
    viewStack : [],
    animationFlag : 0,
@@ -77507,7 +77508,9 @@ Ext.define('Genesis.controller.ViewportBase',
          {
             if (request.status == 200 || request.status == 0)
             {
-               var text = request.responseText.replace(me.mainPageStorePathToken, Genesis.constants._iconPathCommon);
+               var text = request.responseText//
+               .replace(me.mainPageStorePathToken, Genesis.constants._iconPathCommon)//
+               .replace(me.mainPageStoreRelPathToken, Genesis.constants.relPath());
                console.log("Loaded MainPage Store ...");
                var response = Ext.decode(text);
                var data = response.data;
@@ -77825,7 +77828,7 @@ Ext.define('Genesis.controller.ViewportBase',
             {
                case 'FX' :
                {
-                  LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + ext, function()
+                  LowLatencyAudio['preload'+type](sound_file, Genesis.constants.relPath() + 'resources/audio/' + sound_file + ext, function()
                   {
                      console.debug("loaded " + sound_file);
                   }, function(err)
@@ -77836,7 +77839,7 @@ Ext.define('Genesis.controller.ViewportBase',
                }
                case 'Audio' :
                {
-                  LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + ext, 3, function()
+                  LowLatencyAudio['preload'+type](sound_file, Genesis.constants.relPath() + 'resources/audio/' + sound_file + ext, 3, function()
                   {
                      console.debug("loaded " + sound_file);
                   }, function(err)

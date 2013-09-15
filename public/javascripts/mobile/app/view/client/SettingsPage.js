@@ -105,7 +105,7 @@ Ext.define('Genesis.view.client.SettingsPage',
             xtype : 'togglefield',
             name : 'facebook',
             label : '<img src="' + //
-            Genesis.constants.resourceSite + 'images/' + Genesis.constants.themeName + '/' + 'facebook_icon.png" ' + //
+            Genesis.constants.resourceSite() + 'images/' + Genesis.constants.themeName + '/' + 'facebook_icon.png" ' + //
             'style="height:' + (2.5 / 0.8) + 'em' + ';float:left;margin-right:0.8em;"/> Facebook',
             value : 0
          },
@@ -114,7 +114,7 @@ Ext.define('Genesis.view.client.SettingsPage',
             xtype : 'togglefield',
             name : 'twitter',
             label : '<img src="' + //
-            Genesis.constants.resourceSite + 'images/' + Genesis.constants.themeName + '/' + 'twitter_icon.png" ' + //
+            Genesis.constants.resourceSite() + 'images/' + Genesis.constants.themeName + '/' + 'twitter_icon.png" ' + //
             'style="height:' + (2.5 / 0.8) + 'em' + ';float:left;margin-right:0.8em;"/> Twitter',
             value : 0
          }]

@@ -12,10 +12,16 @@
       <link href="../lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
       <link href="resources/css/add2home.css" rel="stylesheet">
       <style type="text/css">
+         .holderjs-fluid {
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            font-family: sans-serif;
+            margin: 0
+         }
          .media {
             margin-top: 0px;
-         }
-         
+         }         
          .media-object {
             padding: 32px;
             width: 0px;
@@ -320,7 +326,7 @@
             {
                document.body.style.height = calcHeight() + 'px';
                console.debug("Body Height :" + document.body.style.height);
-               setTimeout( function(){ window.scrollTo(0, 1); }, 50 );
+               setTimeout( function(){ window.scrollTo(0, 0); }, 50 );
             }
          };
          var getIOSWindowHeight = function() {

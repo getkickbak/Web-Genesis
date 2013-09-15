@@ -163,10 +163,6 @@ Ext.define('Genesis.controller.client.MainPage',
    // --------------------------------------------------------------------------
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      if (Genesis.fn.isNative())
-      {
-         navigator.splashscreen.hide();
-      }
       //activeItem.createView();
       this.getInfoBtn()[(merchantMode) ? 'hide' : 'show']();
       //Ext.Viewport.setMasked(null);

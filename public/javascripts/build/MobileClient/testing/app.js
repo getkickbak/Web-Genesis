@@ -60467,279 +60467,6 @@ Ext.define('Ext.device.Communicator', {
 /**
  * @private
  */
-Ext.define('Ext.device.notification.Abstract', {
-    /**
-     * A simple way to show a notification.
-     *
-     *     Ext.device.Notification.show({
-     *        title: 'Verification',
-     *        message: 'Is your email address is: test@sencha.com',
-     *        buttons: Ext.MessageBox.OKCANCEL,
-     *        callback: function(button) {
-     *            if (button == "ok") {
-     *                console.log('Verified');
-     *            } else {
-     *                console.log('Nope.');
-     *            }
-     *        }
-     *     });
-     *
-     * @param {Object} config An object which contains the following config options:
-     *
-     * @param {String} config.title The title of the notification
-     *
-     * @param {String} config.message The message to be displayed on the notification
-     *
-     * @param {String/String[]} [config.buttons="OK"]
-     * The buttons to be displayed on the notification. It can be a string, which is the title of the button, or an array of multiple strings.
-     * Please not that you should not use more than 2 buttons, as they may not be displayed correct on all devices.
-     *
-     * @param {Function} config.callback
-     * A callback function which is called when the notification is dismissed by clicking on the configured buttons.
-     * @param {String} config.callback.buttonId The id of the button pressed, one of: 'ok', 'yes', 'no', 'cancel'.
-     *
-     * @param {Object} config.scope The scope of the callback function
-     */
-    show: function(config) {
-        if (!config.message) {
-            throw('[Ext.device.Notification#show] You passed no message');
-        }
-
-        if (!config.buttons) {
-            config.buttons = "OK";
-        }
-
-        if (!Ext.isArray(config.buttons)) {
-            config.buttons = [config.buttons];
-        }
-
-        if (!config.scope) {
-            config.scope = this;
-        }
-
-        return config;
-    },
-
-    /**
-     * Vibrates the device.
-     */
-    vibrate: Ext.emptyFn
-});
-
-/**
- * @private
- */
-Ext.define('Ext.device.notification.PhoneGap', {
-    extend:  Ext.device.notification.Abstract ,
-                                          
-
-    show: function() {
-        var config = this.callParent(arguments),
-            buttons = (config.buttons) ? config.buttons.join(',') : null,
-            onShowCallback = function(index) {
-                if (config.callback) {
-                    config.callback.apply(config.scope, (config.buttons) ? [config.buttons[index - 1]].toLowerCase() : []);
-                }
-            };
-
-        // change Ext.MessageBox buttons into normal arrays
-        var ln = buttons.length;
-        if (ln && typeof buttons[0] != "string") {
-            var newButtons = [],
-                i;
-
-            for (i = 0; i < ln; i++) {
-                newButtons.push(buttons[i].text);
-            }
-
-            buttons = newButtons;
-        }
-
-        navigator.notification.confirm(
-            config.message, // message
-            onShowCallback, // callback
-            config.title, // title
-            buttons // array of button names
-        );
-    },
-
-    vibrate: function() {
-        navigator.notification.vibrate(2000);
-    }
-});
-
-/**
- * @private
- */
-Ext.define('Ext.device.notification.Sencha', {
-    extend:  Ext.device.notification.Abstract ,
-                                          
-
-    show: function() {
-        var config = this.callParent(arguments);
-
-        Ext.device.Communicator.send({
-            command: 'Notification#show',
-            callbacks: {
-                callback: config.callback
-            },
-            scope  : config.scope,
-            title  : config.title,
-            message: config.message,
-            buttons: config.buttons.join(',') //@todo fix this
-        });
-    },
-
-    vibrate: function() {
-        Ext.device.Communicator.send({
-            command: 'Notification#vibrate'
-        });
-    }
-});
-
-/**
- * @private
- */
-Ext.define('Ext.device.notification.Simulator', {
-    extend:  Ext.device.notification.Abstract ,
-                                 
-
-    // @private
-    msg: null,
-
-	show: function() {
-        var config = this.callParent(arguments),
-            buttons = [],
-            ln = config.buttons.length,
-            button, i, callback, msg;
-
-        //buttons
-        for (i = 0; i < ln; i++) {
-            button = config.buttons[i];
-            if (Ext.isString(button)) {
-                button = {
-                    text: config.buttons[i],
-                    itemId: config.buttons[i].toLowerCase()
-                };
-            }
-
-            buttons.push(button);
-        }
-
-        this.msg = Ext.create('Ext.MessageBox');
-
-        msg = this.msg;
-
-        callback = function(itemId) {
-            if (config.callback) {
-                config.callback.apply(config.scope, [itemId]);
-            }
-        };
-
-        this.msg.show({
-            title  : config.title,
-            message: config.message,
-            scope  : this.msg,
-            buttons: buttons,
-            fn     : callback
-        });
-    },
-
-    vibrate: function() {
-        //nice animation to fake vibration
-        var animation = [
-            "@-webkit-keyframes vibrate{",
-            "    from {",
-            "        -webkit-transform: rotate(-2deg);",
-            "    }",
-            "    to{",
-            "        -webkit-transform: rotate(2deg);",
-            "    }",
-            "}",
-
-            "body {",
-            "    -webkit-animation: vibrate 50ms linear 10 alternate;",
-            "}"
-        ];
-
-        var head = document.getElementsByTagName("head")[0];
-        var cssNode = document.createElement('style');
-        cssNode.innerHTML = animation.join('\n');
-        head.appendChild(cssNode);
-
-        setTimeout(function() {
-            head.removeChild(cssNode);
-        }, 400);
-    }
-});
-
-/**
- * Provides a cross device way to show notifications. There are three different implementations:
- *
- * - Sencha Packager
- * - PhoneGap
- * - Simulator
- *
- * When this singleton is instantiated, it will automatically use the correct implementation depending on the current device.
- *
- * Both the Sencha Packager and PhoneGap versions will use the native implementations to display the notification. The
- * Simulator implementation will use {@link Ext.MessageBox} for {@link #show} and a simply animation when you call {@link #vibrate}.
- *
- * ## Examples
- *
- * To show a simple notification:
- *
- *     Ext.device.Notification.show({
- *         title: 'Verification',
- *         message: 'Is your email address: test@sencha.com',
- *         buttons: Ext.MessageBox.OKCANCEL,
- *         callback: function(button) {
- *             if (button === "ok") {
- *                 console.log('Verified');
- *             } else {
- *                 console.log('Nope');
- *             }
- *         }
- *     });
- *
- * To make the device vibrate:
- *
- *     Ext.device.Notification.vibrate();
- * 
- * @mixins Ext.device.notification.Abstract
- *
- * @aside guide native_apis
- */
-Ext.define('Ext.device.Notification', {
-    singleton: true,
-
-               
-                                  
-                                           
-                                         
-                                           
-      
-
-    constructor: function() {
-        var browserEnv = Ext.browser.is;
-
-        if (browserEnv.WebView) {
-            if (browserEnv.PhoneGap) {
-                return Ext.create('Ext.device.notification.PhoneGap');
-            }
-            else {
-                return Ext.create('Ext.device.notification.Sencha');
-            }
-        }
-        else {
-            return Ext.create('Ext.device.notification.Simulator');
-        }
-    }
-});
-
-/**
- * @private
- */
 Ext.define('Ext.device.geolocation.Abstract', {
     config: {
         /**
@@ -61049,6 +60776,279 @@ Ext.define('Ext.device.Geolocation', {
         }
         else {
             return Ext.create('Ext.device.geolocation.Simulator');
+        }
+    }
+});
+
+/**
+ * @private
+ */
+Ext.define('Ext.device.notification.Abstract', {
+    /**
+     * A simple way to show a notification.
+     *
+     *     Ext.device.Notification.show({
+     *        title: 'Verification',
+     *        message: 'Is your email address is: test@sencha.com',
+     *        buttons: Ext.MessageBox.OKCANCEL,
+     *        callback: function(button) {
+     *            if (button == "ok") {
+     *                console.log('Verified');
+     *            } else {
+     *                console.log('Nope.');
+     *            }
+     *        }
+     *     });
+     *
+     * @param {Object} config An object which contains the following config options:
+     *
+     * @param {String} config.title The title of the notification
+     *
+     * @param {String} config.message The message to be displayed on the notification
+     *
+     * @param {String/String[]} [config.buttons="OK"]
+     * The buttons to be displayed on the notification. It can be a string, which is the title of the button, or an array of multiple strings.
+     * Please not that you should not use more than 2 buttons, as they may not be displayed correct on all devices.
+     *
+     * @param {Function} config.callback
+     * A callback function which is called when the notification is dismissed by clicking on the configured buttons.
+     * @param {String} config.callback.buttonId The id of the button pressed, one of: 'ok', 'yes', 'no', 'cancel'.
+     *
+     * @param {Object} config.scope The scope of the callback function
+     */
+    show: function(config) {
+        if (!config.message) {
+            throw('[Ext.device.Notification#show] You passed no message');
+        }
+
+        if (!config.buttons) {
+            config.buttons = "OK";
+        }
+
+        if (!Ext.isArray(config.buttons)) {
+            config.buttons = [config.buttons];
+        }
+
+        if (!config.scope) {
+            config.scope = this;
+        }
+
+        return config;
+    },
+
+    /**
+     * Vibrates the device.
+     */
+    vibrate: Ext.emptyFn
+});
+
+/**
+ * @private
+ */
+Ext.define('Ext.device.notification.PhoneGap', {
+    extend:  Ext.device.notification.Abstract ,
+                                          
+
+    show: function() {
+        var config = this.callParent(arguments),
+            buttons = (config.buttons) ? config.buttons.join(',') : null,
+            onShowCallback = function(index) {
+                if (config.callback) {
+                    config.callback.apply(config.scope, (config.buttons) ? [config.buttons[index - 1]].toLowerCase() : []);
+                }
+            };
+
+        // change Ext.MessageBox buttons into normal arrays
+        var ln = buttons.length;
+        if (ln && typeof buttons[0] != "string") {
+            var newButtons = [],
+                i;
+
+            for (i = 0; i < ln; i++) {
+                newButtons.push(buttons[i].text);
+            }
+
+            buttons = newButtons;
+        }
+
+        navigator.notification.confirm(
+            config.message, // message
+            onShowCallback, // callback
+            config.title, // title
+            buttons // array of button names
+        );
+    },
+
+    vibrate: function() {
+        navigator.notification.vibrate(2000);
+    }
+});
+
+/**
+ * @private
+ */
+Ext.define('Ext.device.notification.Sencha', {
+    extend:  Ext.device.notification.Abstract ,
+                                          
+
+    show: function() {
+        var config = this.callParent(arguments);
+
+        Ext.device.Communicator.send({
+            command: 'Notification#show',
+            callbacks: {
+                callback: config.callback
+            },
+            scope  : config.scope,
+            title  : config.title,
+            message: config.message,
+            buttons: config.buttons.join(',') //@todo fix this
+        });
+    },
+
+    vibrate: function() {
+        Ext.device.Communicator.send({
+            command: 'Notification#vibrate'
+        });
+    }
+});
+
+/**
+ * @private
+ */
+Ext.define('Ext.device.notification.Simulator', {
+    extend:  Ext.device.notification.Abstract ,
+                                 
+
+    // @private
+    msg: null,
+
+	show: function() {
+        var config = this.callParent(arguments),
+            buttons = [],
+            ln = config.buttons.length,
+            button, i, callback, msg;
+
+        //buttons
+        for (i = 0; i < ln; i++) {
+            button = config.buttons[i];
+            if (Ext.isString(button)) {
+                button = {
+                    text: config.buttons[i],
+                    itemId: config.buttons[i].toLowerCase()
+                };
+            }
+
+            buttons.push(button);
+        }
+
+        this.msg = Ext.create('Ext.MessageBox');
+
+        msg = this.msg;
+
+        callback = function(itemId) {
+            if (config.callback) {
+                config.callback.apply(config.scope, [itemId]);
+            }
+        };
+
+        this.msg.show({
+            title  : config.title,
+            message: config.message,
+            scope  : this.msg,
+            buttons: buttons,
+            fn     : callback
+        });
+    },
+
+    vibrate: function() {
+        //nice animation to fake vibration
+        var animation = [
+            "@-webkit-keyframes vibrate{",
+            "    from {",
+            "        -webkit-transform: rotate(-2deg);",
+            "    }",
+            "    to{",
+            "        -webkit-transform: rotate(2deg);",
+            "    }",
+            "}",
+
+            "body {",
+            "    -webkit-animation: vibrate 50ms linear 10 alternate;",
+            "}"
+        ];
+
+        var head = document.getElementsByTagName("head")[0];
+        var cssNode = document.createElement('style');
+        cssNode.innerHTML = animation.join('\n');
+        head.appendChild(cssNode);
+
+        setTimeout(function() {
+            head.removeChild(cssNode);
+        }, 400);
+    }
+});
+
+/**
+ * Provides a cross device way to show notifications. There are three different implementations:
+ *
+ * - Sencha Packager
+ * - PhoneGap
+ * - Simulator
+ *
+ * When this singleton is instantiated, it will automatically use the correct implementation depending on the current device.
+ *
+ * Both the Sencha Packager and PhoneGap versions will use the native implementations to display the notification. The
+ * Simulator implementation will use {@link Ext.MessageBox} for {@link #show} and a simply animation when you call {@link #vibrate}.
+ *
+ * ## Examples
+ *
+ * To show a simple notification:
+ *
+ *     Ext.device.Notification.show({
+ *         title: 'Verification',
+ *         message: 'Is your email address: test@sencha.com',
+ *         buttons: Ext.MessageBox.OKCANCEL,
+ *         callback: function(button) {
+ *             if (button === "ok") {
+ *                 console.log('Verified');
+ *             } else {
+ *                 console.log('Nope');
+ *             }
+ *         }
+ *     });
+ *
+ * To make the device vibrate:
+ *
+ *     Ext.device.Notification.vibrate();
+ * 
+ * @mixins Ext.device.notification.Abstract
+ *
+ * @aside guide native_apis
+ */
+Ext.define('Ext.device.Notification', {
+    singleton: true,
+
+               
+                                  
+                                           
+                                         
+                                           
+      
+
+    constructor: function() {
+        var browserEnv = Ext.browser.is;
+
+        if (browserEnv.WebView) {
+            if (browserEnv.PhoneGap) {
+                return Ext.create('Ext.device.notification.PhoneGap');
+            }
+            else {
+                return Ext.create('Ext.device.notification.Sencha');
+            }
+        }
+        else {
+            return Ext.create('Ext.device.notification.Simulator');
         }
     }
 });
@@ -77693,6 +77693,7 @@ Ext.define('Genesis.controller.ViewportBase',
       }
    },
    mainPageStorePathToken : /\{platform_path\}/mg,
+   mainPageStoreRelPathToken : /\{rel_path\}/mg,
    popViewInProgress : false,
    viewStack : [],
    animationFlag : 0,
@@ -78045,7 +78046,9 @@ Ext.define('Genesis.controller.ViewportBase',
          {
             if (request.status == 200 || request.status == 0)
             {
-               var text = request.responseText.replace(me.mainPageStorePathToken, Genesis.constants._iconPathCommon);
+               var text = request.responseText//
+               .replace(me.mainPageStorePathToken, Genesis.constants._iconPathCommon)//
+               .replace(me.mainPageStoreRelPathToken, Genesis.constants.relPath());
                console.log("Loaded MainPage Store ...");
                var response = Ext.decode(text);
                var data = response.data;
@@ -78363,7 +78366,7 @@ Ext.define('Genesis.controller.ViewportBase',
             {
                case 'FX' :
                {
-                  LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + ext, function()
+                  LowLatencyAudio['preload'+type](sound_file, Genesis.constants.relPath() + 'resources/audio/' + sound_file + ext, function()
                   {
                      console.debug("loaded " + sound_file);
                   }, function(err)
@@ -78374,7 +78377,7 @@ Ext.define('Genesis.controller.ViewportBase',
                }
                case 'Audio' :
                {
-                  LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + ext, 3, function()
+                  LowLatencyAudio['preload'+type](sound_file, Genesis.constants.relPath() + 'resources/audio/' + sound_file + ext, 3, function()
                   {
                      console.debug("loaded " + sound_file);
                   }, function(err)
@@ -83291,7 +83294,7 @@ Ext.define('Genesis.view.CreateAccountPage',
             xtype : 'togglefield',
             name : 'facebook',
             label : '<img src="' + //
-            Genesis.constants.resourceSite + 'images/' + Genesis.constants.themeName + '/' + 'facebook_icon.png" ' + //
+            Genesis.constants.resourceSite() + 'images/' + Genesis.constants.themeName + '/' + 'facebook_icon.png" ' + //
             'style="height:' + (2.5 / 0.8) + 'em' + ';float:left;margin-right:0.8em;"/> Facebook',
             value : 0
          },
@@ -83300,7 +83303,7 @@ Ext.define('Genesis.view.CreateAccountPage',
             xtype : 'togglefield',
             name : 'twitter',
             label : '<img src="' + //
-            Genesis.constants.resourceSite + 'images/' + Genesis.constants.themeName + '/' + 'twitter_icon.png" ' + //
+            Genesis.constants.resourceSite() + 'images/' + Genesis.constants.themeName + '/' + 'twitter_icon.png" ' + //
             'style="height:' + (2.5 / 0.8) + 'em' + ';float:left;margin-right:0.8em;"/> Twitter',
             value : 0
          }]
@@ -83800,10 +83803,7 @@ Ext.define('Genesis.controller.client.Login',
                {
                   me.getGeoLocation();
                }
-               else if (!Genesis.fn.isNative())
-               {
-                  Ext.Viewport.setMasked(null);
-               }
+               Ext.Viewport.setMasked(null);
             }
             //
             // Error refresh CSRF Token. go back to Login screen
@@ -84770,10 +84770,6 @@ Ext.define('Genesis.controller.client.MainPage',
    // --------------------------------------------------------------------------
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      if (Genesis.fn.isNative())
-      {
-         navigator.splashscreen.hide();
-      }
       //activeItem.createView();
       this.getInfoBtn()[(merchantMode) ? 'hide' : 'show']();
       //Ext.Viewport.setMasked(null);
@@ -88991,7 +88987,7 @@ Ext.define('Genesis.view.client.SettingsPage',
             xtype : 'togglefield',
             name : 'facebook',
             label : '<img src="' + //
-            Genesis.constants.resourceSite + 'images/' + Genesis.constants.themeName + '/' + 'facebook_icon.png" ' + //
+            Genesis.constants.resourceSite() + 'images/' + Genesis.constants.themeName + '/' + 'facebook_icon.png" ' + //
             'style="height:' + (2.5 / 0.8) + 'em' + ';float:left;margin-right:0.8em;"/> Facebook',
             value : 0
          },
@@ -89000,7 +88996,7 @@ Ext.define('Genesis.view.client.SettingsPage',
             xtype : 'togglefield',
             name : 'twitter',
             label : '<img src="' + //
-            Genesis.constants.resourceSite + 'images/' + Genesis.constants.themeName + '/' + 'twitter_icon.png" ' + //
+            Genesis.constants.resourceSite() + 'images/' + Genesis.constants.themeName + '/' + 'twitter_icon.png" ' + //
             'style="height:' + (2.5 / 0.8) + 'em' + ';float:left;margin-right:0.8em;"/> Twitter',
             value : 0
          }]
@@ -89825,7 +89821,7 @@ Ext.define('Genesis.controller.client.Viewport',
                viewport.setVenue(record);
                controller = me.getApplication().getController('client' + '.Checkins');
                controller.setPosition(position);
-               controller.fireEvent('checkin');
+               controller.fireEvent('checkin', true);
             }
             else
             {

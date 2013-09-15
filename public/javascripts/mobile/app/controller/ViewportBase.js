@@ -38,6 +38,7 @@ Ext.define('Genesis.controller.ViewportBase',
       }
    },
    mainPageStorePathToken : /\{platform_path\}/mg,
+   mainPageStoreRelPathToken : /\{rel_path\}/mg,
    popViewInProgress : false,
    viewStack : [],
    animationFlag : 0,
@@ -390,7 +391,9 @@ Ext.define('Genesis.controller.ViewportBase',
          {
             if (request.status == 200 || request.status == 0)
             {
-               var text = request.responseText.replace(me.mainPageStorePathToken, Genesis.constants._iconPathCommon);
+               var text = request.responseText//
+               .replace(me.mainPageStorePathToken, Genesis.constants._iconPathCommon)//
+               .replace(me.mainPageStoreRelPathToken, Genesis.constants.relPath());
                console.log("Loaded MainPage Store ...");
                var response = Ext.decode(text);
                var data = response.data;
@@ -708,7 +711,7 @@ Ext.define('Genesis.controller.ViewportBase',
             {
                case 'FX' :
                {
-                  LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + ext, function()
+                  LowLatencyAudio['preload'+type](sound_file, Genesis.constants.relPath() + 'resources/audio/' + sound_file + ext, function()
                   {
                      console.debug("loaded " + sound_file);
                   }, function(err)
@@ -719,7 +722,7 @@ Ext.define('Genesis.controller.ViewportBase',
                }
                case 'Audio' :
                {
-                  LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + ext, 3, function()
+                  LowLatencyAudio['preload'+type](sound_file, Genesis.constants.relPath() + 'resources/audio/' + sound_file + ext, 3, function()
                   {
                      console.debug("loaded " + sound_file);
                   }, function(err)
