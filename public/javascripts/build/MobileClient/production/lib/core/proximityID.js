@@ -4,11 +4,92 @@ window.plugins = window.plugins ||
 
 (function(cordova)
 {
-   var preLoadSendCommon;
-
-   if (Genesis.fn.isNative())
+   var preLoadSendCommon =
    {
-      preLoadSendCommon = function(cntlr, checkUseProximity, proximityWin, win, fail)
+      _mobile : function(cntlr, checkUseProximity, proximityWin, win, fail)
+      {
+         var me = gblController, _viewport = cntlr.getViewPortCntlr(), callback = Ext.bind(function(useProximity, _cntlr, _win)
+         {
+            _win = _win || Ext.emptyFn;
+
+            Ext.Viewport.setMasked(null);
+            Ext.defer(function()
+            {
+               if (useProximity === true)
+               {
+                  var proceed, cancel;
+                  me.pendingBroadcast = true;
+                  $('#earnPtsProceed').one('tap', proceed = function(e)
+                  {
+                     me.pendingBroadcast = false;
+                     $('#earnPtsCancel').off('tap', cancel);
+                     _win(useProximity);
+                  });
+                  $('#earnPtsCancel').one('tap', cancel = function(e)
+                  {
+                     me.pendingBroadcast = false;
+                     $('#earnPtsProceed').off('tap', proceed);
+                  });
+                  $('#earnptspageview').trigger('kickbak:preLoad');
+               }
+               else
+               {
+                  $('#earnptspageview').trigger('kickbak:loyalty');
+               }
+            }, 0.25 * 1000, _cntlr);
+         }, null, [cntlr, win], true);
+
+         fail = fail || Ext.emptyFn;
+
+         Ext.Viewport.setMasked(
+         {
+            xtype : 'loadmask',
+            message : cntlr.prepareToSendMerchantDeviceMsg
+         });
+
+         //
+         // Talk to server to see if we use Proximity Sensor or not
+         //
+         Ext.defer(function()
+         {
+            if (checkUseProximity)
+            {
+               $(document).one('locationupdate', function(position)
+               {
+                  proximityWin();
+               });
+               _viewport.getGeoLocation();
+            }
+            //
+            // We must use Loyalty Card or Phone Number
+            //
+            else
+            {
+               try
+               {
+                  var merchant = _viewport.getVenue().getMerchant(), features_config = merchant.get('features_config');
+                  //
+                  // Check if the venue supports Proximity Sensor or not
+                  //
+                  if (features_config['enable_mobile'])
+                  {
+                     proximityWin();
+                  }
+                  else
+                  {
+                     callback(false);
+                  }
+               }
+               catch(e)
+               {
+                  fail();
+               }
+            }
+         }, 0.25 * 1000);
+
+         return callback;
+      },
+      _native : function(cntlr, checkUseProximity, proximityWin, win, fail)
       {
          var _viewport = cntlr.getViewPortCntlr(), callback = Ext.bind(function(useProximity, _cntlr, _win)
          {
@@ -118,8 +199,11 @@ window.plugins = window.plugins ||
          }, 0.25 * 1000);
 
          return callback;
-      };
+      }
+   };
 
+   if (Genesis.fn.isNative())
+   {
       window.plugins.proximityID =
       {
          init : function(s_vol_ratio, r_vol_ratio)
@@ -134,7 +218,7 @@ window.plugins = window.plugins ||
          },
          preLoadSend : function(cntlr, checkUseProximity, win, fail)
          {
-            var viewport = _application.getController(((merchantMode) ? 'client' : 'server') + '.Viewport'), callback = preLoadSendCommon(cntlr, checkUseProximity, function()
+            var callback = preLoadSendCommon[(cntlr !== gblController)  ? '_native' : '_mobile'](cntlr, checkUseProximity, function()
             {
                //
                // To give loading mask a chance to render
@@ -179,90 +263,6 @@ window.plugins = window.plugins ||
    else
    {
       _filesAssetCount++;
-
-      preLoadSendCommon = function(cntlr, checkUseProximity, proximityWin, win, fail)
-      {
-         var me = gblController, _viewport = cntlr.getViewPortCntlr(), callback = Ext.bind(function(useProximity, _cntlr, _win)
-         {
-            _win = _win || Ext.emptyFn;
-
-            Ext.Viewport.setMasked(null);
-            Ext.defer(function()
-            {
-               if (useProximity === true)
-               {
-                  var proceed, cancel;
-                  me.pendingBroadcast = true;
-                  $('#earnPtsProceed').one('tap', proceed = function(e)
-                  {
-                     me.pendingBroadcast = false;
-                     $('#earnPtsCancel').off('tap', cancel);
-                     _win(useProximity);
-                  });
-                  $('#earnPtsCancel').one('tap', cancel = function(e)
-                  {
-                     me.pendingBroadcast = false;
-                     $('#earnPtsProceed').off('tap', proceed);
-                  });
-                  $('#earnptspageview').trigger('kickbak:preLoad');
-               }
-               else
-               {
-                  $('#earnptspageview').trigger('kickbak:loyalty');
-               }
-            }, 0.25 * 1000, _cntlr);
-         }, null, [cntlr, win], true);
-
-         fail = fail || Ext.emptyFn;
-
-         Ext.Viewport.setMasked(
-         {
-            xtype : 'loadmask',
-            message : cntlr.prepareToSendMerchantDeviceMsg
-         });
-
-         //
-         // Talk to server to see if we use Proximity Sensor or not
-         //
-         Ext.defer(function()
-         {
-            if (checkUseProximity)
-            {
-               $(document).one('locationupdate', function(position)
-               {
-                  proximityWin();
-               });
-               _viewport.getGeoLocation();
-            }
-            //
-            // We must use Loyalty Card or Phone Number
-            //
-            else
-            {
-               try
-               {
-                  var merchant = _viewport.getVenue().getMerchant(), features_config = merchant.get('features_config');
-                  //
-                  // Check if the venue supports Proximity Sensor or not
-                  //
-                  if (features_config['enable_mobile'])
-                  {
-                     proximityWin();
-                  }
-                  else
-                  {
-                     callback(false);
-                  }
-               }
-               catch(e)
-               {
-                  fail();
-               }
-            }
-         }, 0.25 * 1000);
-
-         return callback;
-      };
 
       window.plugins.proximityID =
       {
@@ -542,7 +542,7 @@ window.plugins = window.plugins ||
 
             me.freqs = [];
 
-            var callback = preLoadSendCommon(cntlr, checkUseProximity, function()
+            var callback = preLoadSendCommon['_mobile'](cntlr, checkUseProximity, function()
             {
                //
                // Use Web Audio
