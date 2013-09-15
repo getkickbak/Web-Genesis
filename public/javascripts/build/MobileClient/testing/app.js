@@ -90197,7 +90197,10 @@ Ext.define('Genesis.controller.client.Viewport',
       c.proximityTxTimeout = 20 * 1000;
       c.proximityRxTimeout = 40 * 1000;
       Genesis.fn.printProximityConfig();
-      window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
+      if (!Genesis.fn.isNative())
+      {
+         window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
+      }
    },
    openPage : function()
    {

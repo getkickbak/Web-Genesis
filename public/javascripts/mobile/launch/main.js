@@ -1,5 +1,55 @@
 var mainAppInit = false;
 
+var proximityInit = function()
+{
+   //
+   // Sender/Receiver Volume Settings
+   // ===============================
+   // - For Mobile Phones
+   //
+   // Client Device always transmits
+   //
+   var s_vol_ratio, r_vol_ratio, c = Genesis.constants;
+
+   if ($.os.ios)
+   //if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
+   {
+      //(tx)
+      s_vol_ratio = 1.0;
+      //Default Volume laying flat on a surface (tx)
+      c.s_vol = 50;
+
+      r_vol_ratio = 0.5;
+      //(rx)
+      c.conseqMissThreshold = 1;
+      c.magThreshold = 20000;
+      // More samples for better accuracy
+      c.numSamples = 4 * 1024;
+      //Default Overlap of FFT signal analysis over previous samples
+      c.sigOverlapRatio = 0.25;
+   }
+   else if ($.os.android || $.os.webos || $.os.blackberry || $.os.bb10 || $.os.rimtabletos)
+   //else if (Ext.os.is('Android') || Ext.os.is('BlackBerry'))
+   {
+      //(tx)
+      s_vol_ratio = 0.5;
+      //Default Volume laying flat on a surface (tx)
+      c.s_vol = 50;
+
+      //(rx)
+      r_vol_ratio = 0.5;
+      c.conseqMissThreshold = 1;
+      c.magThreshold = 20000;
+      c.numSamples = 4 * 1024;
+      //Default Overlap of FFT signal analysis over previous samples
+      c.sigOverlapRatio = 0.25;
+   }
+
+   c.proximityTxTimeout = 20 * 1000;
+   c.proximityRxTimeout = 40 * 1000;
+   Genesis.fn.printProximityConfig();
+   window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
+};
 var setChildBrowserVisibility = function(visible, hash)
 {
    var db = Genesis.db.getLocalDB(true);
@@ -17,7 +67,7 @@ var setChildBrowserVisibility = function(visible, hash)
                if (success && ((i |= flag) == 0x111))
                {
                   $('#loadingMask')['addClass']('x-item-hidden');
-                  
+
                   mainAppInit = true;
                   $("#checkexplorepageview").addClass('x-item-hidden');
                   //
@@ -340,54 +390,11 @@ var setChildBrowserVisibility = function(visible, hash)
          console.debug("Enable WAV/WebAudio Encoder");
       }
 
-      //
-      // Sender/Receiver Volume Settings
-      // ===============================
-      // - For Mobile Phones
-      //
-      // Client Device always transmits
-      //
-      var s_vol_ratio, r_vol_ratio, c = Genesis.constants;
-
-      if ($.os.ios)
-      //if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
+      if (!Genesis.fn.isNative())
       {
-         //(tx)
-         s_vol_ratio = 1.0;
-         //Default Volume laying flat on a surface (tx)
-         c.s_vol = 50;
-
-         r_vol_ratio = 0.5;
-         //(rx)
-         c.conseqMissThreshold = 1;
-         c.magThreshold = 20000;
-         // More samples for better accuracy
-         c.numSamples = 4 * 1024;
-         //Default Overlap of FFT signal analysis over previous samples
-         c.sigOverlapRatio = 0.25;
+         proximityInit();
       }
-      else if ($.os.android || $.os.webos || $.os.blackberry || $.os.bb10 || $.os.rimtabletos)
-      //else if (Ext.os.is('Android') || Ext.os.is('BlackBerry'))
-      {
-         //(tx)
-         s_vol_ratio = 0.5;
-         //Default Volume laying flat on a surface (tx)
-         c.s_vol = 50;
-
-         //(rx)
-         r_vol_ratio = 0.5;
-         c.conseqMissThreshold = 1;
-         c.magThreshold = 20000;
-         c.numSamples = 4 * 1024;
-         //Default Overlap of FFT signal analysis over previous samples
-         c.sigOverlapRatio = 0.25;
-      }
-
-      c.proximityTxTimeout = 20 * 1000;
-      c.proximityRxTimeout = 40 * 1000;
-      Genesis.fn.printProximityConfig();
-      window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
-
+      
       // =============================================================
       // Ajax Calls Customizations
       // =============================================================

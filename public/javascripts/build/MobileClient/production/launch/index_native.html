@@ -170,6 +170,7 @@
             document.addEventListener("deviceready", function()
             {
                initPushwoosh();
+               proximityInit();
 
                console.debug = (!debugMode) ? Ext.emptyFn : console.debug || console.log;
                console.warn = console.warn || console.debug;
