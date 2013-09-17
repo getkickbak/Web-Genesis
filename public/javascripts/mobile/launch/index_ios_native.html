@@ -165,22 +165,19 @@
             serverHost = 'http://www.getkickbak.com';            
          }
          
-         function onBodyLoad()
+         document.addEventListener("deviceready", function()
          {
-            document.addEventListener("deviceready", function()
-            {
-               initPushwoosh();
-               proximityInit();
+            initPushwoosh();
+            proximityInit();
+            soundInit();
 
-               console.debug = (!debugMode) ? Ext.emptyFn : console.debug || console.log;
-               console.warn = console.warn || console.debug;
+            console.debug = (!debugMode) ? Ext.emptyFn : console.debug || console.log;
+            console.warn = console.warn || console.debug;
 
-               console.debug("PhoneGap App Launch");
-            }, false);
-         }
+            navigator.splashscreen.hide();
+         }, false);
       </script>
       <script type="text/javascript" src="../lib/cordova-2.8.1.ios.js"></script>
-      <script type="text/javascript" src="../lib/core/PushNotification.js"></script>
       <script type="text/javascript" src="../lib/zepto.min.js"></script>
       <script type="text/javascript">
          window.jQuery = Zepto;
@@ -248,21 +245,10 @@
          
          window.addEventListener("load", function(){ hideAddressBar(); });
       </script>
-      <script type="text/javascript" src="util.js"></script>
-      <script type="text/javascript" src="../lib/iscroll-min.js"></script>
-      <script type="text/javascript" src="../lib/zepto_touch.js"></script>
-      <script type="text/javascript" src="../lib/zepto_data.js"></script>
-      <script type="text/javascript" src="../lib/infinitescroll.js"></script>
-      <script type="text/javascript" src="../lib/gibberish-aes.min.js"></script>
-      <script type="text/javascript" src="../lib/core/proximityID.js"></script>
-      <script type="text/javascript" src="earnPtsPage.js"></script>
-      <script type="text/javascript" src="main.js"></script>
-      <!--
-      <script type="text/javascript" src="app.js"></script>
-      -->
-      <script type="text/javascript" src="../lib/bootstrap/js/bootstrap.min.js"></script>
+      <script type="text/javascript" src="mccore.js"></script>      
+      <script type="text/javascript" src="mclient-all.js"></script>
    </head>
-   <body onload="onBodyLoad()" class="x-portrait">
+   <body class="x-portrait">
       <div id="fb-root"></div>
       <div id="checkexplorepageview" class="x-container x-sheet x-sized x-floating" style="padding:0;">
          <div class="header x-container x-toolbar-dark x-toolbar x-sized navigationBarTop x-dock-item x-docked-top kbTitle" style="height: 2.6em !important; ">

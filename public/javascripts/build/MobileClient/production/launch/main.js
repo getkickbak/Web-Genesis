@@ -99,7 +99,7 @@ var setChildBrowserVisibility = function(visible, hash)
             {
                profile = 'Android';
             }
-            
+
             var i = 0x000, callback = function(success, flag)
             {
                if (success && ((i |= flag) == 0x111))
@@ -593,13 +593,21 @@ var setLoadMask = function(visible)
          options.headers = options.headers ||
          {
          };
-         if (db['csrf_code'] && (options.type == 'POST'))
+         if (options.type == 'POST')
          {
+            if (db['auth_code'])
+            {
+               options.headers = Ext.apply(options.headers,
+               {
+                  'X-CSRF-Token' : db['csrf_code'],
+               });
+               xhr.setRequestHeader('X-CSRF-Token', db['csrf_code']);
+            }
             options.headers = Ext.apply(options.headers,
             {
-               'X-CSRF-Token' : db['csrf_code']
+               'Content-Type' : 'application/json'
             });
-            xhr.setRequestHeader('X-CSRF-Token', db['csrf_code']);
+            xhr.setRequestHeader('Content-Type', 'application/json');
          }
       });
 

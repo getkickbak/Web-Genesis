@@ -85434,7 +85434,7 @@ Ext.define('Genesis.data.Connection',
       {
          'Accept' : '*/*'
       });
-      if (db['csrf_code'] && (method == 'POST'))
+      if (db['auth_code'] && (method == 'POST'))
       {
          options.headers = Ext.apply(options.headers,
          {
