@@ -74847,6 +74847,15 @@ Ext.define('Genesis.controller.ControllerBase',
                padding : '0 1.0 1.0 1.0',
                items : [
                {
+                  margin : '0.5 0 0 0',
+                  text : 'Cancel',
+                  //ui : 'decline',
+                  handler : function()
+                  {
+                     me._earnRedeemPopup.hide();
+                  }
+               },
+               {
                   margin : '0 0 0.5 0',
                   text : 'Proceed',
                   ui : 'action',
@@ -74854,15 +74863,6 @@ Ext.define('Genesis.controller.ControllerBase',
                   {
                      me._earnRedeemPopup.hide();
                      callback();
-                  }
-               },
-               {
-                  margin : '0.5 0 0 0',
-                  text : 'Cancel',
-                  //ui : 'decline',
-                  handler : function()
-                  {
-                     me._earnRedeemPopup.hide();
                   }
                }]
             }]
@@ -77940,7 +77940,6 @@ Ext.define('Genesis.controller.ViewportBase',
          if (me.updateAuthCode(metaData))
          {
             viewport.setLoggedIn(true);
-            viewport.fireEvent('updateDeviceToken');
 
             // No Venue Checked-In from previous session
             if (!db['last_check_in'])
@@ -77958,7 +77957,7 @@ Ext.define('Genesis.controller.ViewportBase',
                      if (Ext.isDefined(ma_struct) && (ma_struct['venueId'] > 0))
                      {
                         Genesis.db.removeLocalDBAttrib('ma_struct');
-                        me.redirectTo('venue/' + ma_struct['venueId'] + '/' + ma_struct['customerId']);
+                        me.redirectTo('venue/' + ma_struct['venueId'] + '/' + ma_struct['merchant']['customerId']);
                      }
                      else
                      {
@@ -78047,8 +78046,6 @@ Ext.define('Genesis.controller.ViewportBase',
    // --------------------------------------------------------------------------
    // Event Handlers
    // --------------------------------------------------------------------------
-   onCompleteRefreshCSRF : Ext.emptyFn,
-   onUpdateDeviceToken : Ext.emptyFn,
    onActivate : function()
    {
       var me = this, file = Ext.Loader.getPath("Genesis") + "/store/" + ((!merchantMode) ? 'mainClientPage' : 'mainServerPage') + '.json', path = "", db = Genesis.db.getLocalDB();
@@ -78382,77 +78379,6 @@ Ext.define('Genesis.controller.ViewportBase',
          return true;
       });
       console.log("ViewportBase Init");
-   },
-   loadSoundFile : function(tag, sound_file, type)
-   {
-      var me = this, ext = '.' + (sound_file.split('.')[1] || 'mp3');
-      sound_file = sound_file.split('.')[0];
-      if (Genesis.fn.isNative())
-      {
-         var callback = function()
-         {
-            switch(type)
-            {
-               case 'FX' :
-               {
-                  LowLatencyAudio['preload'+type](sound_file, Genesis.constants.relPath() + 'resources/audio/' + sound_file + ext, function()
-                  {
-                     console.debug("loaded " + sound_file);
-                  }, function(err)
-                  {
-                     console.debug("Audio Error: " + err);
-                  });
-                  break;
-               }
-               case 'Audio' :
-               {
-                  LowLatencyAudio['preload'+type](sound_file, Genesis.constants.relPath() + 'resources/audio/' + sound_file + ext, 3, function()
-                  {
-                     console.debug("loaded " + sound_file);
-                  }, function(err)
-                  {
-                     console.debug("Audio Error: " + err);
-                  });
-                  break;
-               }
-            }
-         };
-         switch(type)
-         {
-            case 'Media' :
-            {
-               sound_file = new Media((Ext.os.is('Android') ? '/android_asset/www/' : '') + 'resources/audio/' + sound_file + ext, function()
-               {
-                  me.sound_files[tag].successCallback();
-               }, function(err)
-               {
-                  me.sound_files[tag].successCallback();
-                  console.debug("Audio Error: " + err);
-               });
-               break;
-            }
-            default :
-               LowLatencyAudio['unload'](sound_file, callback, callback);
-               break;
-         }
-      }
-      else if (merchantMode)
-      {
-         var elem = Ext.get(sound_file);
-         if (elem)
-         {
-            elem.dom.addEventListener('ended', function()
-            {
-               me.sound_files[tag].successCallback();
-            }, false);
-         }
-      }
-
-      me.sound_files[tag] =
-      {
-         name : sound_file,
-         type : type
-      };
    },
    openMainPage : Ext.emptyFn
 });
@@ -79336,7 +79262,8 @@ Ext.define('Genesis.controller.client.Accounts',
       listeners :
       {
          'selectMerchant' : 'onDisclose',
-         'xferItemTap' : 'onTransferTap'
+         'xferItemTap' : 'onTransferTap',
+         'refresh' : 'onRefresh'
       }
    },
    qrcodeRegExp : /%qrcode_image%/,
@@ -83718,7 +83645,6 @@ Ext.define('Genesis.controller.client.Login',
       {
          Customer['setFbLoginUrl']();
          console.debug("setFbLoginUrl - Logging in ... params(" + Ext.encode(params) + ")");
-         me.updatedDeviceToken = (Genesis.constants.device) ? true : false;
          Ext.StoreMgr.get('CustomerStore').load(
          {
             jsonData :
@@ -83802,56 +83728,6 @@ Ext.define('Genesis.controller.client.Login',
    // --------------------------------------------------------------------------
    // SignIn and CreateAccount Page
    // --------------------------------------------------------------------------
-   onRefreshCSRF : function()
-   {
-      var me = this, viewport = me.getViewPortCntlr(), proxy = Account.getProxy(), db = Genesis.db.getLocalDB();
-
-      Account['setRefreshCsrfTokenUrl']();
-      console.debug("setRefreshCsrfTokenUrl - Refreshing CSRF Token ...");
-      Ext.Viewport.setMasked(
-      {
-         xtype : 'loadmask',
-         message : me.establishConnectionMsg
-      });
-
-      me.updatedDeviceToken = (Genesis.constants.device) ? true : false;
-      Account.load(0,
-      {
-         jsonData :
-         {
-         },
-         params :
-         {
-            version : Genesis.constants.clientVersion,
-            device_pixel_ratio : window.devicePixelRatio,
-            device : Ext.encode(Genesis.constants.device)
-         },
-         callback : function(record, operation)
-         {
-            //console.debug("CSRF callback - " + operation.wasSuccessful());
-            if (operation.wasSuccessful())
-            {
-               viewport.fireEvent('completeRefreshCSRF');
-               me.persistLoadStores(Ext.emptyFn);
-
-               // Return to previous Venue
-               if (db['last_check_in'])
-               {
-                  me.getGeoLocation();
-               }
-               Ext.Viewport.setMasked(null);
-            }
-            //
-            // Error refresh CSRF Token. go back to Login screen
-            //
-            else
-            {
-               me.resetView();
-               me.redirectTo('login');
-            }
-         }
-      });
-   },
    onCreateAccountSubmit : function(b, e, eOpts, eInfo)
    {
       var me = this, account = me.getCreateAccount(), response = Genesis.db.getLocalDB()['fbResponse'] || null, values = account.getValues();
@@ -83880,7 +83756,6 @@ Ext.define('Genesis.controller.client.Login',
          });
 
          Customer['setCreateAccountUrl']();
-         me.updatedDeviceToken = (Genesis.constants.device) ? true : false;
          Ext.StoreMgr.get('CustomerStore').load(
          {
             jsonData :
@@ -83950,7 +83825,6 @@ Ext.define('Genesis.controller.client.Login',
          xtype : 'loadmask',
          message : me.loginMsg
       });
-      me.updatedDeviceToken = (Genesis.constants.device) ? true : false;
       Ext.StoreMgr.get('CustomerStore').load(
       {
          params : params,
@@ -84681,14 +84555,17 @@ Ext.define('Genesis.controller.client.MainPage',
    {
       var me = this;
       var db = Genesis.db.getLocalDB();
-      if (db['auth_code'])
-      {
-         me.getApplication().getController('client' + '.Login').fireEvent('refreshCSRF');
-      }
-      else
+      if (!db['auth_code'])
       {
          me.resetView();
          me.redirectTo('login');
+      }
+      else
+      {
+         me.persistLoadStores(function()
+         {
+            me.redirectTo('main');
+         });
       }
    },
    init : function(app)
@@ -84809,6 +84686,11 @@ Ext.define('Genesis.controller.client.MainPage',
       //activeItem.createView();
       this.getInfoBtn()[(merchantMode) ? 'hide' : 'show']();
       //Ext.Viewport.setMasked(null);
+      if (!merchantMode && Genesis.db.getLocalDB()['auth_code'] && (Ext.StoreMgr.get('CustomerStore').getCount() == 0))
+      {
+         console.log("Refresh Account List");
+         this.getApplication().getController('client' + '.Accounts').fireEvent('refresh');
+      }
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
@@ -89800,8 +89682,6 @@ Ext.define('Genesis.controller.client.Viewport',
       },
       listeners :
       {
-         'completeRefreshCSRF' : 'onCompleteRefreshCSRF',
-         'updateDeviceToken' : 'onUpdateDeviceToken'
       }
    },
    fbShareSuccessMsg : 'Posted on your Facebook Timeline!',
@@ -89875,35 +89755,6 @@ Ext.define('Genesis.controller.client.Viewport',
             }
          }
       });
-   },
-   onUpdateDeviceToken : function()
-   {
-      var me = this, login = me.getApplication().getController('client' + '.Login'), proxy = Account.getProxy();
-
-      if (me.getLoggedIn() && Genesis.constants.device && login && !login.updatedDeviceToken)
-      {
-         Account['setUpdateRegUserDeviceUrl']();
-         console.debug("setUpdateRegUserDeviceUrl - Refreshing Device Token ...");
-         proxy.supressErrorsPopup = true;
-         Account.load(0,
-         {
-            jsonData :
-            {
-            },
-            params :
-            {
-               device : Ext.encode(Genesis.constants.device)
-            },
-            callback : function(record, operation)
-            {
-               proxy.supressErrorsPopup = false;
-               if (operation.wasSuccessful())
-               {
-                  login.updatedDeviceToken = true;
-               }
-            }
-         });
-      }
    },
    // --------------------------------------------------------------------------
    // Button Handlers
@@ -90129,78 +89980,12 @@ Ext.define('Genesis.controller.client.Viewport',
 
       console.log("Client Viewport Init");
 
-      //
-      // Initialize Sound Files, make it non-blocking
-      //
-      Ext.defer(function()
-      {
-         this.sound_files =
-         {
-         };
-         var soundList = [//
-         ['rouletteSpinSound', 'roulette_spin_sound', 'Media'], //
-         ['winPrizeSound', 'win_prize_sound', 'Media'], //
-         ['losePrizeSound', 'lose_prize_sound', 'Media'], //
-         ['birthdaySound', 'birthday_surprise', 'Media'], //
-         ['promoteSound', 'promote_sound', 'FX'], //
-         ['clickSound', 'click_sound', 'FX'], //
-         //['refreshListSound', 'refresh_list_sound', 'FX'], //
-         ['beepSound', 'beep.wav', 'FX']];
-
-         for (var i = 0; i < soundList.length; i++)
-         {
-            //console.debug("Preloading " + soundList[i][0] + " ...");
-            this.loadSoundFile.apply(this, soundList[i]);
-         }
-      }, 1, me);
-
-      //
-      // Sender/Receiver Volume Settings
-      // ===============================
-      // - For Mobile Phones
-      //
-      // Client Device always transmits
-      //
-      var s_vol_ratio, r_vol_ratio, c = Genesis.constants;
-      if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
-      {
-         //(tx)
-         s_vol_ratio = (Genesis.fn.isNative()) ? 0.50 : 1.0;
-         //Default Volume laying flat on a surface (tx)
-         c.s_vol = 50;
-
-         r_vol_ratio = 0.5;
-         //(rx)
-         c.conseqMissThreshold = 1;
-         c.magThreshold = 20000;
-         // More samples for better accuracy
-         c.numSamples = 4 * 1024;
-         //Default Overlap of FFT signal analysis over previous samples
-         c.sigOverlapRatio = 0.25;
-      }
-      //else if (Ext.os.is('Android') || Ext.os.is('BlackBerry'))
-      {
-         //(tx)
-         s_vol_ratio = (Genesis.fn.isNative()) ? 0.50 : 0.5;
-         //Default Volume laying flat on a surface (tx)
-         c.s_vol = 50;
-
-         //(rx)
-         r_vol_ratio = 0.5;
-         c.conseqMissThreshold = 1;
-         c.magThreshold = 20000;
-         c.numSamples = 4 * 1024;
-         //Default Overlap of FFT signal analysis over previous samples
-         c.sigOverlapRatio = 0.25;
-      }
-
-      c.proximityTxTimeout = 20 * 1000;
-      c.proximityRxTimeout = 40 * 1000;
-      Genesis.fn.printProximityConfig();
       if (!Genesis.fn.isNative())
       {
          window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
       }
+
+      me.sound_files = gblController.sound_files;
    },
    openPage : function()
    {

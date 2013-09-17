@@ -12,6 +12,9 @@
       <link href="../lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
       <link href="resources/css/add2home.css" rel="stylesheet">
       <style type="text/css">
+         body {
+            font-size: 18px !important;
+         }
          .holderjs-fluid {
             font-size: 16px;
             font-weight: bold;
@@ -146,7 +149,7 @@
       <meta charset="UTF-8">
       <title>KickBak</title>
    </head>
-   <body class="x-ios bgImage">
+   <body class="">
       <div id="checkexplorepageview" class="x-container x-sheet x-sized x-floating" style="padding:0;">
          <div class="header x-container x-toolbar-dark x-toolbar x-sized navigationBarTop x-dock-item x-docked-top kbTitle" style="height: 2.6em !important; ">
                <div class="x-body">
@@ -282,9 +285,8 @@
       <div id="mask" class="x-mask x-sized x-floating x-item-hidden" style="top: 0px !important; left: 0px !important; right: 0px !important; bottom: 0px !important; z-index: 998 !important;"></div>
       <iframe class="iframe x-container x-sheet x-sized x-floating x-item-hidden" style=""></iframe>
       <script type="text/javascript" src="../lib/zepto.min.js"></script>
-      <script type="text/javascript" src="../lib/iscroll-min.js"></script>
       <script type="text/javascript">
-         window.jQuery = Zepto;
+         window.jQuery = Zepto, serverHost = "";
          var _filesAssetCount = 0;
          
          //
@@ -381,17 +383,7 @@
          
          window.addEventListener("load", function(){ checkAppCache(); hideAddressBar(); });
       </script>
-      <script type="text/javascript" src="../lib/zepto_touch.js"></script>
-      <script type="text/javascript" src="../lib/zepto_data.js"></script>
-      <script type="text/javascript" src="../lib/infinitescroll.js"></script>
-      <script type="text/javascript" src="../lib/gibberish-aes.min.js"></script>
-      <script type="text/javascript" src="util.js"></script>
-      <script type="text/javascript" src="../lib/core/proximityID.js"></script>
-      <script type="text/javascript" src="earnPtsPage.js"></script>
-      <script type="text/javascript" src="main.js"></script>
-      <!--
-      <script type="text/javascript" src="app.js"></script>
-      -->
-      <script type="text/javascript" src="../lib/bootstrap/js/bootstrap.min.js"></script>
+      <script type="text/javascript" src="mccore.js"></script>
+      <script type="text/javascript" src="mclient-all.js"></script>
    </body>
 </html>

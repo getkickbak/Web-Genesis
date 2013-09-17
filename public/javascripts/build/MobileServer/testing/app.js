@@ -74309,6 +74309,15 @@ Ext.define('Genesis.controller.ControllerBase',
                padding : '0 1.0 1.0 1.0',
                items : [
                {
+                  margin : '0.5 0 0 0',
+                  text : 'Cancel',
+                  //ui : 'decline',
+                  handler : function()
+                  {
+                     me._earnRedeemPopup.hide();
+                  }
+               },
+               {
                   margin : '0 0 0.5 0',
                   text : 'Proceed',
                   ui : 'action',
@@ -74316,15 +74325,6 @@ Ext.define('Genesis.controller.ControllerBase',
                   {
                      me._earnRedeemPopup.hide();
                      callback();
-                  }
-               },
-               {
-                  margin : '0.5 0 0 0',
-                  text : 'Cancel',
-                  //ui : 'decline',
-                  handler : function()
-                  {
-                     me._earnRedeemPopup.hide();
                   }
                }]
             }]
@@ -77402,7 +77402,6 @@ Ext.define('Genesis.controller.ViewportBase',
          if (me.updateAuthCode(metaData))
          {
             viewport.setLoggedIn(true);
-            viewport.fireEvent('updateDeviceToken');
 
             // No Venue Checked-In from previous session
             if (!db['last_check_in'])
@@ -77420,7 +77419,7 @@ Ext.define('Genesis.controller.ViewportBase',
                      if (Ext.isDefined(ma_struct) && (ma_struct['venueId'] > 0))
                      {
                         Genesis.db.removeLocalDBAttrib('ma_struct');
-                        me.redirectTo('venue/' + ma_struct['venueId'] + '/' + ma_struct['customerId']);
+                        me.redirectTo('venue/' + ma_struct['venueId'] + '/' + ma_struct['merchant']['customerId']);
                      }
                      else
                      {
@@ -77509,8 +77508,6 @@ Ext.define('Genesis.controller.ViewportBase',
    // --------------------------------------------------------------------------
    // Event Handlers
    // --------------------------------------------------------------------------
-   onCompleteRefreshCSRF : Ext.emptyFn,
-   onUpdateDeviceToken : Ext.emptyFn,
    onActivate : function()
    {
       var me = this, file = Ext.Loader.getPath("Genesis") + "/store/" + ((!merchantMode) ? 'mainClientPage' : 'mainServerPage') + '.json', path = "", db = Genesis.db.getLocalDB();
@@ -77844,77 +77841,6 @@ Ext.define('Genesis.controller.ViewportBase',
          return true;
       });
       console.log("ViewportBase Init");
-   },
-   loadSoundFile : function(tag, sound_file, type)
-   {
-      var me = this, ext = '.' + (sound_file.split('.')[1] || 'mp3');
-      sound_file = sound_file.split('.')[0];
-      if (Genesis.fn.isNative())
-      {
-         var callback = function()
-         {
-            switch(type)
-            {
-               case 'FX' :
-               {
-                  LowLatencyAudio['preload'+type](sound_file, Genesis.constants.relPath() + 'resources/audio/' + sound_file + ext, function()
-                  {
-                     console.debug("loaded " + sound_file);
-                  }, function(err)
-                  {
-                     console.debug("Audio Error: " + err);
-                  });
-                  break;
-               }
-               case 'Audio' :
-               {
-                  LowLatencyAudio['preload'+type](sound_file, Genesis.constants.relPath() + 'resources/audio/' + sound_file + ext, 3, function()
-                  {
-                     console.debug("loaded " + sound_file);
-                  }, function(err)
-                  {
-                     console.debug("Audio Error: " + err);
-                  });
-                  break;
-               }
-            }
-         };
-         switch(type)
-         {
-            case 'Media' :
-            {
-               sound_file = new Media((Ext.os.is('Android') ? '/android_asset/www/' : '') + 'resources/audio/' + sound_file + ext, function()
-               {
-                  me.sound_files[tag].successCallback();
-               }, function(err)
-               {
-                  me.sound_files[tag].successCallback();
-                  console.debug("Audio Error: " + err);
-               });
-               break;
-            }
-            default :
-               LowLatencyAudio['unload'](sound_file, callback, callback);
-               break;
-         }
-      }
-      else if (merchantMode)
-      {
-         var elem = Ext.get(sound_file);
-         if (elem)
-         {
-            elem.dom.addEventListener('ended', function()
-            {
-               me.sound_files[tag].successCallback();
-            }, false);
-         }
-      }
-
-      me.sound_files[tag] =
-      {
-         name : sound_file,
-         type : type
-      };
    },
    openMainPage : Ext.emptyFn
 });
@@ -84266,7 +84192,7 @@ window.addEventListener('message', function(e)
          appWindow = e.source;
          appOrigin = e.origin;
 
-         console.debug("Webview connection Established.")
+         console.debug("Webview connection Established.");
          break;
       }
       case  'licenseKey_ack' :
@@ -84626,7 +84552,8 @@ Ext.define('Genesis.controller.server.Viewport',
       var params =
       {
          'venue_id' : venueId
-      }
+      };
+      
       console.debug("Loaded License Key for Venue(" + venueId + ")...");
       Venue['setGetMerchantVenueExploreURL'](venueId);
       Venue.load(venueId,
@@ -84821,6 +84748,26 @@ Ext.define('Genesis.controller.server.Viewport',
             Genesis.db.setLocalDBAttrib('displayMode', 'Fixed');
          }
       }
+   },
+   loadSoundFile : function(tag, sound_file, type)
+   {
+      var me = this, ext = '.' + (sound_file.split('.')[1] || 'mp3');
+      sound_file = sound_file.split('.')[0];
+
+      var elem = Ext.get(sound_file);
+      if (elem)
+      {
+         elem.dom.addEventListener('ended', function()
+         {
+            me.sound_files[tag].successCallback();
+         }, false);
+      }
+
+      me.sound_files[tag] =
+      {
+         name : sound_file,
+         type : type
+      };
    }
 });
 

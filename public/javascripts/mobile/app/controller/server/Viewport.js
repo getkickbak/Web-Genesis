@@ -114,7 +114,7 @@ window.addEventListener('message', function(e)
          appWindow = e.source;
          appOrigin = e.origin;
 
-         console.debug("Webview connection Established.")
+         console.debug("Webview connection Established.");
          break;
       }
       case  'licenseKey_ack' :
@@ -474,7 +474,8 @@ Ext.define('Genesis.controller.server.Viewport',
       var params =
       {
          'venue_id' : venueId
-      }
+      };
+      
       console.debug("Loaded License Key for Venue(" + venueId + ")...");
       Venue['setGetMerchantVenueExploreURL'](venueId);
       Venue.load(venueId,
@@ -669,5 +670,25 @@ Ext.define('Genesis.controller.server.Viewport',
             Genesis.db.setLocalDBAttrib('displayMode', 'Fixed');
          }
       }
+   },
+   loadSoundFile : function(tag, sound_file, type)
+   {
+      var me = this, ext = '.' + (sound_file.split('.')[1] || 'mp3');
+      sound_file = sound_file.split('.')[0];
+
+      var elem = Ext.get(sound_file);
+      if (elem)
+      {
+         elem.dom.addEventListener('ended', function()
+         {
+            me.sound_files[tag].successCallback();
+         }, false);
+      }
+
+      me.sound_files[tag] =
+      {
+         name : sound_file,
+         type : type
+      };
    }
 });

@@ -300,7 +300,6 @@ Ext.define('Genesis.controller.client.Login',
       {
          Customer['setFbLoginUrl']();
          console.debug("setFbLoginUrl - Logging in ... params(" + Ext.encode(params) + ")");
-         me.updatedDeviceToken = (Genesis.constants.device) ? true : false;
          Ext.StoreMgr.get('CustomerStore').load(
          {
             jsonData :
@@ -384,56 +383,6 @@ Ext.define('Genesis.controller.client.Login',
    // --------------------------------------------------------------------------
    // SignIn and CreateAccount Page
    // --------------------------------------------------------------------------
-   onRefreshCSRF : function()
-   {
-      var me = this, viewport = me.getViewPortCntlr(), proxy = Account.getProxy(), db = Genesis.db.getLocalDB();
-
-      Account['setRefreshCsrfTokenUrl']();
-      console.debug("setRefreshCsrfTokenUrl - Refreshing CSRF Token ...");
-      Ext.Viewport.setMasked(
-      {
-         xtype : 'loadmask',
-         message : me.establishConnectionMsg
-      });
-
-      me.updatedDeviceToken = (Genesis.constants.device) ? true : false;
-      Account.load(0,
-      {
-         jsonData :
-         {
-         },
-         params :
-         {
-            version : Genesis.constants.clientVersion,
-            device_pixel_ratio : window.devicePixelRatio,
-            device : Ext.encode(Genesis.constants.device)
-         },
-         callback : function(record, operation)
-         {
-            //console.debug("CSRF callback - " + operation.wasSuccessful());
-            if (operation.wasSuccessful())
-            {
-               viewport.fireEvent('completeRefreshCSRF');
-               me.persistLoadStores(Ext.emptyFn);
-
-               // Return to previous Venue
-               if (db['last_check_in'])
-               {
-                  me.getGeoLocation();
-               }
-               Ext.Viewport.setMasked(null);
-            }
-            //
-            // Error refresh CSRF Token. go back to Login screen
-            //
-            else
-            {
-               me.resetView();
-               me.redirectTo('login');
-            }
-         }
-      });
-   },
    onCreateAccountSubmit : function(b, e, eOpts, eInfo)
    {
       var me = this, account = me.getCreateAccount(), response = Genesis.db.getLocalDB()['fbResponse'] || null, values = account.getValues();
@@ -462,7 +411,6 @@ Ext.define('Genesis.controller.client.Login',
          });
 
          Customer['setCreateAccountUrl']();
-         me.updatedDeviceToken = (Genesis.constants.device) ? true : false;
          Ext.StoreMgr.get('CustomerStore').load(
          {
             jsonData :
@@ -532,7 +480,6 @@ Ext.define('Genesis.controller.client.Login',
          xtype : 'loadmask',
          message : me.loginMsg
       });
-      me.updatedDeviceToken = (Genesis.constants.device) ? true : false;
       Ext.StoreMgr.get('CustomerStore').load(
       {
          params : params,

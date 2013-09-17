@@ -117,7 +117,8 @@ Ext.define('Genesis.controller.client.Accounts',
       listeners :
       {
          'selectMerchant' : 'onDisclose',
-         'xferItemTap' : 'onTransferTap'
+         'xferItemTap' : 'onTransferTap',
+         'refresh' : 'onRefresh'
       }
    },
    qrcodeRegExp : /%qrcode_image%/,

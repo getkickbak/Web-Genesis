@@ -38,14 +38,17 @@ Ext.define('Genesis.controller.client.MainPage',
    {
       var me = this;
       var db = Genesis.db.getLocalDB();
-      if (db['auth_code'])
-      {
-         me.getApplication().getController('client' + '.Login').fireEvent('refreshCSRF');
-      }
-      else
+      if (!db['auth_code'])
       {
          me.resetView();
          me.redirectTo('login');
+      }
+      else
+      {
+         me.persistLoadStores(function()
+         {
+            me.redirectTo('main');
+         });
       }
    },
    init : function(app)
@@ -166,6 +169,11 @@ Ext.define('Genesis.controller.client.MainPage',
       //activeItem.createView();
       this.getInfoBtn()[(merchantMode) ? 'hide' : 'show']();
       //Ext.Viewport.setMasked(null);
+      if (!merchantMode && Genesis.db.getLocalDB()['auth_code'] && (Ext.StoreMgr.get('CustomerStore').getCount() == 0))
+      {
+         console.log("Refresh Account List");
+         this.getApplication().getController('client' + '.Accounts').fireEvent('refresh');
+      }
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {

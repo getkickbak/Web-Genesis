@@ -702,6 +702,15 @@ Ext.define('Genesis.controller.ControllerBase',
                padding : '0 1.0 1.0 1.0',
                items : [
                {
+                  margin : '0.5 0 0 0',
+                  text : 'Cancel',
+                  //ui : 'decline',
+                  handler : function()
+                  {
+                     me._earnRedeemPopup.hide();
+                  }
+               },
+               {
                   margin : '0 0 0.5 0',
                   text : 'Proceed',
                   ui : 'action',
@@ -709,15 +718,6 @@ Ext.define('Genesis.controller.ControllerBase',
                   {
                      me._earnRedeemPopup.hide();
                      callback();
-                  }
-               },
-               {
-                  margin : '0.5 0 0 0',
-                  text : 'Cancel',
-                  //ui : 'decline',
-                  handler : function()
-                  {
-                     me._earnRedeemPopup.hide();
                   }
                }]
             }]

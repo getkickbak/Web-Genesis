@@ -1071,6 +1071,15 @@ Ext.define('Genesis.controller.client.Challenges',
                   title : me.confirmRecvReferralsMsg,
                   buttons : [
                   {
+                     text : 'Cancel',
+                     ui : 'cancel',
+                     handler : function()
+                     {
+                        viewport.popUpInProgress = true;
+                        me._referralActions.hide();
+                     }
+                  },
+                  {
                      text : 'Proceed',
                      ui : 'action',
                      handler : function()
@@ -1087,15 +1096,6 @@ Ext.define('Genesis.controller.client.Challenges',
                            position : null
                         };
                         me.scanQRCode();
-                     }
-                  },
-                  {
-                     text : 'Cancel',
-                     ui : 'cancel',
-                     handler : function()
-                     {
-                        viewport.popUpInProgress = true;
-                        me._referralActions.hide();
                      }
                   }]
                });

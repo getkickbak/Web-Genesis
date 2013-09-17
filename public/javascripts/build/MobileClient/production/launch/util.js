@@ -11,21 +11,63 @@ var _codec = null, gblController = // ControllerBase
    geoLocationTimeoutErrorMsg : 'Cannot locate your current location. Try again or enable permission to do so!',
    geoLocationPermissionErrorMsg : function()
    {
-      if ($.os.ios)
+      var rc;
+      if (!Gensis.fn.isNative())
       {
-         return 'Enable Location Servies and/or Reset Location Services (Settings > General > Reset > Reset Location Warnings).';
-      }
-      else if ($.os.android)
-      {
-         return 'Enable Location Servies and/or Reset Location Services (Settings > Location access > Access to my location).';
+         if ($.os.ios)
+         {
+            rc = 'Enable Location Servies and/or Reset Location Services (Settings > General > Reset > Reset Location Warnings).';
+         }
+         else if ($.os.android)
+         {
+            rc = 'Enable Location Servies and/or Reset Location Services (Settings > Location access > Access to my location).';
+         }
+         else
+         {
+            rc = 'Enable Location Servies on your mobile device.';
+         }
       }
       else
       {
-         return 'Enable Location Servies on your mobile device.';
+         rc = 'This feature must require your GeoLocation to proceed.';
+         if ($.os.android)
+         {
+            rc += // ((Ext.os.version.isLessThan('4.1')) ? //
+            'Enable Location Services under Main Screen of your phone: \"Settings App >> Location Services >> GPS satellites\"';
+         }
+         else if ($.os.ios)
+         {
+            rc += ((parseFloat($.os.version) < 6.0) ? //
+            'Enable Location Services under Main Screen of your phone: \"Settings App >> Location Services >> KICKBAK\"' :
+            // //
+            'Enable Location Services under Main Screen of your phone: \"Settings App >> Privacy >> Location Services >> KICKBAK\"'//
+            );
+         }
+         else if ($.os.blackberry || $.os.bb10 || $.os.rimtabletos)
+         {
+            rc += 'Enable Location Services under Main Screen of your phone: \"Settings App >> Site Permissions\"';
+         }
+         else
+         {
+            rc += 'Enable Location Services under Main Screen of your phone: \"Settings App >> Location Services\"';
+         }
+
       }
+
+      return rc;
    },
    geoLocationUnavailableMsg : 'To better serve you, please turn on your Location Services',
    geoLocationUseLastPositionMsg : 'We are not able to locate your current location. Using your last known GPS Coordinates ...',
+   getMerchantInfoMsg : 'Retrieving Merchant Information ...',
+   getVenueInfoMsg : 'Retrieving Venue Information ...',
+   noVenueInfoMsg : function(errors)
+   {
+      return ('No Venues found in your proximity!');
+   },
+   missingVenueInfoMsg : function(errors)
+   {
+      return ('Error loading Venue information.');
+   },
    prepareToSendMerchantDeviceMsg : 'Confirm before tapping against the KICKBAK Card Reader ...',
    showToServerMsg : function()
    {
@@ -91,10 +133,12 @@ var _codec = null, gblController = // ControllerBase
    _cntlr :
    {
       lastPosition : null,
-      on : function(event, callback, options)
-      {
-         $('document').on('kickbak:locationupdate', callback);
-      },
+      /*
+       on : function(event, callback, options)
+       {
+       $('document').on('kickbak:locationupdate', callback);
+       },
+       */
       getGeoLocation : function()
       {
          Genesis.fn.getLocation();
@@ -144,6 +188,115 @@ var _codec = null, gblController = // ControllerBase
          cancel();
          fail();
       });
+   },
+   loadSoundFile : function(tag, sound_file, type)
+   {
+      var me = this, ext = '.' + (sound_file.split('.')[1] || 'mp3');
+      sound_file = sound_file.split('.')[0];
+
+      if (Genesis.fn.isNative())
+      {
+         var callback = function()
+         {
+            switch(type)
+            {
+               case 'FX' :
+               {
+                  LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + ext, function()
+                  {
+                     console.debug("loaded " + sound_file);
+                  }, function(err)
+                  {
+                     console.debug("Audio Error: " + err);
+                  });
+                  break;
+               }
+               case 'Audio' :
+               {
+                  LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + ext, 3, function()
+                  {
+                     console.debug("loaded " + sound_file);
+                  }, function(err)
+                  {
+                     console.debug("Audio Error: " + err);
+                  });
+                  break;
+               }
+            }
+         };
+         switch(type)
+         {
+            case 'Media' :
+            {
+               sound_file = new Media(($.os.android ? '/android_asset/www/' : '') + Genesis.constants.relPath() + 'resources/audio/' + sound_file + ext, function()
+               {
+                  me.sound_files[tag].successCallback();
+               }, function(err)
+               {
+                  me.sound_files[tag].successCallback();
+                  console.debug("Audio Error: " + err);
+               });
+               break;
+            }
+            default :
+               LowLatencyAudio['unload'](sound_file, callback, callback);
+               break;
+         }
+      }
+
+      me.sound_files[tag] =
+      {
+         name : sound_file,
+         type : type
+      };
+   },
+   playSoundFile : function(sound_file, successCallback, failCallback)
+   {
+      if (Genesis.fn.isNative())
+      {
+         switch (sound_file['type'])
+         {
+            case 'FX' :
+            case 'Audio' :
+               LowLatencyAudio.play(sound_file['name'], successCallback || Ext.emptyFn, failCallback || Ext.emptyFn);
+               break;
+            case 'Media' :
+               sound_file['successCallback'] = successCallback || Ext.emptyFn;
+               sound_file['name'].play();
+               break;
+         }
+      }
+      else
+      {
+         if (successCallback)
+         {
+            successCallback();
+         }
+      }
+   },
+   stopSoundFile : function(sound_file)
+   {
+      if (Genesis.fn.isNative())
+      {
+         switch (sound_file['type'])
+         {
+            case 'FX' :
+            case 'Audio' :
+               LowLatencyAudio.stop(sound_file['name']);
+               break;
+            case 'Media' :
+               sound_file['name'].stop();
+               break;
+         }
+      }
+      else
+      {
+         /*
+          var sound = Ext.get(sound_file['name']).dom;
+          sound.pause();
+          sound.currentTime = 0;
+          */
+      }
    }
 };
 
@@ -360,13 +513,6 @@ gblController.self = gblController;
 
          return clone || item;
       },
-      Viewport :
-      {
-         setMasked : function(config)
-         {
-            $('#loadingMask')[config ? 'removeClass' : 'addClass']('x-item-hidden');
-         }
-      },
       emptyFn : function()
       {
       }
@@ -455,6 +601,8 @@ Genesis = ( typeof (Genesis) != 'undefined') ? Genesis :
 {
    constants :
    {
+      clientVersion : '2.2.0',
+      serverVersion : '2.2.0',
       s_vol : 50,
       lastLocalID : null,
       //Default Volume laying flat on a surface (tx)
@@ -709,7 +857,7 @@ Genesis = ( typeof (Genesis) != 'undefined') ? Genesis :
       },
       scriptOnReadyStateChange : function(loadState, error)
       {
-         var src = this.src;
+         var src = this.src, profile;
          //Url.decode(this.src);
          src = src.replace(location.origin, '');
          //
@@ -717,7 +865,16 @@ Genesis = ( typeof (Genesis) != 'undefined') ? Genesis :
          //
          if (location.host == "")
          {
-            src = ".." + src.replace(location.pathname.replace('/launch/index_native.html', ''), '');
+            if ($.os.ios)
+            {
+               profile = 'ios_';
+            }
+            else
+            //else if ($.os.android)
+            {
+               profile = 'android_';
+            }
+            src = ".." + src.replace(location.pathname.replace('/launch/index_' + profile + 'native.html', ''), '');
          }
          if (!error)
          {
@@ -928,7 +1085,7 @@ Genesis = ( typeof (Genesis) != 'undefined') ? Genesis :
                      {
                         setNotificationVisibility(true, "Permission Denied", gblController.geoLocationPermissionErrorMsg, "Dismiss", function()
                         {
-                           Ext.Viewport.setMasked(null);
+                           setLoadMask(false);
                         });
                         break;
                      }
@@ -937,7 +1094,7 @@ Genesis = ( typeof (Genesis) != 'undefined') ? Genesis :
                      {
                         setNotificationVisibility(true, "Location Services", gblController.geoLocationUnavailableMsg, "Dismiss", function()
                         {
-                           Ext.Viewport.setMasked(null);
+                           setLoadMask(false);
                         });
                         break;
                      }
@@ -946,7 +1103,7 @@ Genesis = ( typeof (Genesis) != 'undefined') ? Genesis :
                      {
                         setNotificationVisibility(true, "Location Services", gblController.geoLocationTimeoutErrorMsg, "Dismiss", function()
                         {
-                           Ext.Viewport.setMasked(null);
+                           setLoadMask(false);
                         });
                         break;
                      }
@@ -977,7 +1134,7 @@ Genesis = ( typeof (Genesis) != 'undefined') ? Genesis :
          {
             setNotificationVisibility(true, "Location Services", gblController.unsupportBrowserMsg, "Dismiss", function()
             {
-               Ext.Viewport.setMasked(null);
+               setLoadMask(false);
             });
          }
       },
@@ -1007,6 +1164,8 @@ Genesis = ( typeof (Genesis) != 'undefined') ? Genesis :
 //---------------------------------------------------------------------------------------------------------------------------------
 (function()
 {
+   $.Event('kickbak:updateDeviceToken');
+
    var me = Genesis.constants;
    if ($.os.ios)
    {
@@ -1036,11 +1195,7 @@ Genesis = ( typeof (Genesis) != 'undefined') ? Genesis :
                {
                   setNotificationVisibility(true, 'KICKBAK Notification', notification.aps.alert, 'Dismiss', function()
                   {
-                     Ext.Viewport.setMasked(
-                     {
-                        xtype : 'loadmask',
-                        message : 'Loading ...'
-                     });
+                     setLoadMask(true);
                   });
                   var viewport = _application.getController('client' + '.Viewport');
                   viewport.setApsPayload(userData)
@@ -1070,10 +1225,7 @@ Genesis = ( typeof (Genesis) != 'undefined') ? Genesis :
                'device_id' : deviceToken
             };
 
-            if (_application && (( viewport = _application.getController('client' + '.Viewport')) != null))
-            {
-               viewport.fireEvent('updateDeviceToken');
-            }
+            $(document).trigger('kickbak:updateDeviceToken');
          }, function(status)
          {
             console.debug('failed to register : ' + JSON.stringify(status));
@@ -1114,11 +1266,7 @@ Genesis = ( typeof (Genesis) != 'undefined') ? Genesis :
                {
                   setNotificationVisibility(true, 'KICKBAK Notification', title, 'Dismiss', function()
                   {
-                     Ext.Viewport.setMasked(
-                     {
-                        xtype : 'loadmask',
-                        message : 'Loading ...'
-                     });
+                     setLoadMask(true);
                   });
                   //
                   // Launch MainApp
@@ -1153,14 +1301,12 @@ Genesis = ( typeof (Genesis) != 'undefined') ? Genesis :
                   'device_id' : deviceToken
                };
 
-               if (_application && (( viewport = _application.getController('client' + '.Viewport')) != null))
-               {
-                  viewport.fireEvent('updateDeviceToken');
-               }
+               $(document).trigger('kickbak:updateDeviceToken');
             }, function(status)
             {
                console.debug('failed to register : ' + JSON.stringify(status));
                Genesis.constants.device = null;
+               $(document).trigger('kickbak:updateDeviceToken');
             });
          };
 

@@ -1,16 +1,15 @@
 <!DOCTYPE html>
-<html manifest="cache.appcache" lang="en-US">
+<html lang="en-US">
    <head>
       <meta name="format-detection" content="telephone=no">
       <meta name="format-detection" content="address=no">
       <meta name="format-detection" content="email=no">
-      <meta name="apple-mobile-web-app-status-bar-style" content="black">
       <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-      <meta name="apple-mobile-web-app-capable" content="yes">
-      <meta name="apple-touch-fullscreen" content="yes">
-      <link rel="apple-touch-icon-precomposed" href="resources/icons/icon.png">
-      <link href="../lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-      <link href="resources/css/add2home.css" rel="stylesheet">
+      <link rel="stylesheet" type="text/css" href="../lib/bootstrap/css/bootstrap.min.css">
+      <link rel="stylesheet" type="text/css" media="only screen and (-webkit-max-device-pixel-ratio: 0.99)" href="resources/css/android-phone-lhdpi.css">
+      <link rel="stylesheet" type="text/css" media="only screen and (-webkit-device-pixel-ratio: 1.0)" href="resources/css/android-phone-mxhdpi.css">
+      <link rel="stylesheet" type="text/css" media="only screen and (-webkit-max-device-pixel-ratio: 1.99)" href="resources/css/android-phone-lhdpi.css">
+      <link rel="stylesheet" type="text/css" media="only screen and (-webkit-min-device-pixel-ratio: 2.0)" href="resources/css/android-phone-mxhdpi.css">
       <style type="text/css">
          body {
             font-size: 18px !important;
@@ -144,12 +143,116 @@
             z-index: 100;
          }
       </style>
-      <link href="resources/css/mini_client.css" rel="stylesheet">
-      <script type="text/javascript" src="../lib/add2home.js"></script>
-      <meta charset="UTF-8">
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
       <title>KickBak</title>
+      <script type="text/javascript">
+         _build = "MobileClientNative";
+      </script>
+      <script type="text/javascript">
+         var launched = 0x000,  pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false, phoneGapAvailable = true;
+         var appName = 'GetKickBak', _appPath = "../app", _extPath = '../lib/touch-2.1.1/src', serverHost, merchantMode = false, _application, _filesAssetCount = 0;
+         var debugMode = false;
+         
+         if (debugMode)
+         {
+            //serverHost = 'http://192.168.0.52:3000';
+            //serverHost = 'http://192.168.0.46:3000';
+            //serverHost = 'http://76.10.173.153';
+            serverHost = 'http://www.dev1getkickbak.com';
+            //serverHost = 'http://www.devgetkickbak.com';
+         }
+         else
+         {
+            serverHost = 'http://www.getkickbak.com';            
+         }
+         
+         document.addEventListener("deviceready", function()
+         {
+            document.addEventListener("backbutton", onBackKeyDown, false);
+            
+            initPushwoosh();
+            proximityInit();
+            soundInit();
+
+            console.debug = (!debugMode) ? Ext.emptyFn : console.debug || console.log;
+            console.warn = console.warn || console.debug;
+
+            navigator.splashscreen.hide();
+         }, false);
+      </script>
+      <script type="text/javascript" src="../lib/cordova-2.8.1.android.js"></script>
+      <script type="text/javascript" src="../lib/zepto.min.js"></script>
+      <script type="text/javascript">
+         window.jQuery = Zepto;
+         function hideAddressBar()
+         {
+            /*
+            //if(!window.location.hash)
+            {
+               document.body.style.height = calcHeight() + 'px';
+               console.log("Body Height :" + document.body.style.height);
+               setTimeout( function(){ window.scrollTo(0, 0); }, 50 );
+            }
+            */
+         };
+         var getIOSWindowHeight = function() {
+            // Get zoom level of mobile Safari
+            // Note, that such zoom detection might not work correctly in other browsers
+            // We use width, instead of height, because there are no vertical toolbars :)
+            var zoomLevel = document.documentElement.clientWidth / window.innerWidth;
+
+             // window.innerHeight returns height of the visible area. 
+             // We multiply it by zoom and get out real height.
+            return window.innerHeight * zoomLevel;
+         };
+
+         // You can also get height of the toolbars that are currently displayed
+         var getHeightOfIOSToolbars = function() {
+            var tH = (window.orientation === 0 ? screen.height : screen.width) -  getIOSWindowHeight();
+            return tH > 1 ? tH : 0;
+         };
+         var calcHeight = function()
+         {
+            if (getHeightOfIOSToolbars() > 20)
+            {
+               return ((window.orientation === 0) ? window.screen.height - 60 : window.screen.width - 48);
+            }
+            else
+            {
+               var header = (window.cordova) ? 20 : 0;
+               return (((window.orientation === 0) ? window.screen.height : window.screen.width) - 20);
+            }
+         };
+         var setNotificationVisibility = function(visible, title, message, buttonText, callback)
+         {
+            $('#notification')[0].style.display = (visible) ? "" : "none";
+            if (visible)
+            {
+               $('#notification').removeClass('x-item-hidden');
+               $('#mask').removeClass('x-item-hidden');
+               $('#notification .x-title .x-innerhtml').text(title);
+               $('#notification .x-msgbox-text .x-innerhtml').html(message);
+               $('#notification .x-msgbox-buttons .x-button-label').text(buttonText);
+               $('#notification .x-msgbox-buttons .x-button').one('tap', function()
+               {
+                  setNotificationVisibility(false);
+                  callback();
+               });
+            }
+            else
+            {
+               $('#notification').addClass('x-item-hidden');
+               $('#mask').addClass('x-item-hidden');
+            }
+         };
+         
+         window.addEventListener("load", function(){ hideAddressBar(); });
+      </script>
+      <script type="text/javascript" src="mccore.js"></script>      
+      <script type="text/javascript" src="mclient-all.js"></script>
    </head>
-   <body class="">
+   <body class="x-portrait">
+      <div id="fb-root"></div>
       <div id="checkexplorepageview" class="x-container x-sheet x-sized x-floating" style="padding:0;">
          <div class="header x-container x-toolbar-dark x-toolbar x-sized navigationBarTop x-dock-item x-docked-top kbTitle" style="height: 2.6em !important; ">
                <div class="x-body">
@@ -283,107 +386,13 @@
          </div>
       </div>
       <div id="mask" class="x-mask x-sized x-floating x-item-hidden" style="top: 0px !important; left: 0px !important; right: 0px !important; bottom: 0px !important; z-index: 998 !important;"></div>
-      <iframe class="iframe x-container x-sheet x-sized x-floating x-item-hidden" style=""></iframe>
-      <script type="text/javascript" src="../lib/zepto.min.js"></script>
       <script type="text/javascript">
-         window.jQuery = Zepto, serverHost = "";
-         var _filesAssetCount = 0;
-         
-         //
-         // Add2Home Feature Configuration
-         //
-         var addToHomeConfig =
+         window.onerror = function(msg, url, linenum)
          {
-            animationIn : 'bubble',
-            animationOut : 'drop',
-            lifespan : 10000,
-            returningVisitor : false,
-            expire : 2,
-            //arrow : false,
-            //touchIcon : true,
-            autostart : false,
-            startDelay : 0
-         };
-         
-         var checkAppCache = function() {
-            if (window.applicationCache) {
-               window.applicationCache.addEventListener('updateready', function(e) {
-                  if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
-                     // Browser downloaded a new app cache.
-                     // Swap it in and reload the page to get the new hotness.
-                     window.applicationCache.swapCache();
-                     setNotificationVisibility(true, 'Application Update', "This application has just successfully been updated to the latest version.", "Reload", function()
-                     {
-                        window.location.reload();
-                     });
-                  } else {
-                     // Manifest didn't changed. Nothing new to server.
-                  }
-               }, false);
-            }
+            console.debug("Error on Line#" + linenum + "\n" + msg);
          }
-         var hideAddressBar = function()
-         {
-            //if(!window.location.hash)
-            {
-               document.body.style.height = calcHeight() + 'px';
-               console.debug("Body Height :" + document.body.style.height);
-               setTimeout( function(){ window.scrollTo(0, 0); }, 50 );
-            }
-         };
-         var getIOSWindowHeight = function() {
-            // Get zoom level of mobile Safari
-            // Note, that such zoom detection might not work correctly in other browsers
-            // We use width, instead of height, because there are no vertical toolbars :)
-            var zoomLevel = document.documentElement.clientWidth / window.innerWidth;
-
-             // window.innerHeight returns height of the visible area. 
-             // We multiply it by zoom and get out real height.
-            return window.innerHeight * zoomLevel;
-         };
-
-         // You can also get height of the toolbars that are currently displayed
-         var getHeightOfIOSToolbars = function() {
-            var tH = (window.orientation === 0 ? screen.height : screen.width) -  getIOSWindowHeight();
-            return tH > 1 ? tH : 0;
-         };
-         var calcHeight = function()
-         {
-            if (getHeightOfIOSToolbars() >= 20)
-            {
-               return ((window.orientation === 0) ? window.screen.height - 60 : window.screen.width - 48);
-            }
-            else
-            {
-               return ((window.orientation === 0) ? window.screen.height : window.screen.width);
-            }
-         };
-         var setNotificationVisibility = function(visible, title, message, buttonText, callback)
-         {
-            $('#notification')[0].style.display = (visible) ? "" : "none";
-            if (visible)
-            {
-               $('#notification').removeClass('x-item-hidden');
-               $('#mask').removeClass('x-item-hidden');
-               $('#notification .x-title .x-innerhtml').text(title);
-               $('#notification .x-msgbox-text .x-innerhtml').html(message);
-               $('#notification .x-msgbox-buttons .x-button-label').text(buttonText);
-               $('#notification .x-msgbox-buttons .x-button').one('tap', function()
-               {
-                  setNotificationVisibility(false);
-                  callback();
-               });
-            }
-            else
-            {
-               $('#notification').addClass('x-item-hidden');
-               $('#mask').addClass('x-item-hidden');
-            }
-         };
-         
-         window.addEventListener("load", function(){ checkAppCache(); hideAddressBar(); });
       </script>
-      <script type="text/javascript" src="mccore.js"></script>
-      <script type="text/javascript" src="mclient-all.js"></script>
+      <!-- Cache images -->
+      <div class="clientPhotoCache"></div>
    </body>
 </html>

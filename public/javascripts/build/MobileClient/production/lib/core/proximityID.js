@@ -12,7 +12,7 @@ window.plugins = window.plugins ||
          {
             _win = _win || Ext.emptyFn;
 
-            Ext.Viewport.setMasked(null);
+            setLoadMask(false);
             Ext.defer(function()
             {
                if (useProximity === true)
@@ -41,12 +41,7 @@ window.plugins = window.plugins ||
 
          fail = fail || Ext.emptyFn;
 
-         Ext.Viewport.setMasked(
-         {
-            xtype : 'loadmask',
-            message : cntlr.prepareToSendMerchantDeviceMsg
-         });
-
+         setLoadMask(true);
          //
          // Talk to server to see if we use Proximity Sensor or not
          //

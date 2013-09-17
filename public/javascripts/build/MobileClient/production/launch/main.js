@@ -50,9 +50,36 @@ var proximityInit = function()
    Genesis.fn.printProximityConfig();
    window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
 };
+var soundInit = function()
+{
+   var me = gblController;
+   //
+   // Initialize Sound Files, make it non-blocking
+   //
+   me.sound_files =
+   {
+   };
+   var soundList = [//
+   ['rouletteSpinSound', 'roulette_spin_sound', 'Media'], //
+   ['winPrizeSound', 'win_prize_sound', 'Media'], //
+   ['losePrizeSound', 'lose_prize_sound', 'Media'], //
+   ['birthdaySound', 'birthday_surprise', 'Media'], //
+   ['promoteSound', 'promote_sound', 'FX'], //
+   ['clickSound', 'click_sound', 'FX'], //
+   //['refreshListSound', 'refresh_list_sound', 'FX'], //
+   ['beepSound', 'beep.wav', 'FX']];
+
+   for (var i = 0; i < soundList.length; i++)
+   {
+      //console.debug("Preloading " + soundList[i][0] + " ...");
+      me.loadSoundFile.apply(me, soundList[i]);
+   }
+};
 var setChildBrowserVisibility = function(visible, hash)
 {
    var db = Genesis.db.getLocalDB(true);
+
+   hash = hash || '';
    if (visible)
    {
       //
@@ -62,6 +89,17 @@ var setChildBrowserVisibility = function(visible, hash)
       {
          if (window.cordova)
          {
+            var profile;
+            if ($.os.ios)
+            {
+               profile = 'Iphone';
+            }
+            else
+            //else if ($.os.android)
+            {
+               profile = 'Android';
+            }
+            
             var i = 0x000, callback = function(success, flag)
             {
                if (success && ((i |= flag) == 0x111))
@@ -84,10 +122,11 @@ var setChildBrowserVisibility = function(visible, hash)
                         "Ext.ux" : _appPath
                      }
                   });
+
                   Ext.application(
                   {
                      requires : ['Ext.MessageBox', 'Ext.device.Notification', 'Ext.device.Camera', 'Ext.device.Orientation'],
-                     profiles : ['Iphone'],
+                     profiles : [profile],
                      views : ['Document', 'client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions',
                      // //
                      'client.AccountsTransfer', 'client.SettingsPage', //
@@ -115,17 +154,13 @@ var setChildBrowserVisibility = function(visible, hash)
                }
             };
 
-            Ext.Viewport.setMasked(
-            {
-               xtype : 'loadmask',
-               message : 'Loading ...'
-            });
+            setLoadMask(true);
             Genesis.fn.checkloadjscssfile('../lib/sencha-touch-all.js', "js", function(success)
             {
                if (success)
                {
                   Genesis.fn.checkloadjscssfile('../core.js', "js", Ext.bind(callback, null, [0x001], true));
-                  Genesis.fn.checkloadjscssfile('../app/profile/Iphone.js', "js", Ext.bind(callback, null, [0x010], true));
+                  Genesis.fn.checkloadjscssfile('../app/profile/' + profile + '.js', "js", Ext.bind(callback, null, [0x010], true));
                   Genesis.fn.checkloadjscssfile('../client-all.js', "js", Ext.bind(callback, null, [0x100], true));
                }
                else
@@ -187,6 +222,10 @@ var setChildBrowserVisibility = function(visible, hash)
          $("#ext-viewport").addClass('x-item-hidden');
       }
    }
+};
+var setLoadMask = function(visible)
+{
+   $('#loadingMask')[visible ? 'removeClass' : 'addClass']('x-item-hidden');
 };
 
 // =============================================================
@@ -260,7 +299,9 @@ var setChildBrowserVisibility = function(visible, hash)
    {
       var exploreVenue = function(e)
       {
-         var target = e.currentTarget, ma_struct = parseInt(target.attributes.getNamedItem('data')['value']);
+         var me = gblController, target = e.currentTarget, ma_struct = parseInt(target.attributes.getNamedItem('data')['value']);
+
+         me.playSoundFile(me.sound_files['clickSound']);
          console.debug("Target ID : ", ma_struct);
          Genesis.db.setLocalDBAttrib('ma_struct', ma_struct);
       };
@@ -268,6 +309,132 @@ var setChildBrowserVisibility = function(visible, hash)
    };
    var appLaunchCallbackFn = function()
    {
+   };
+   var getNearestVenues = function(start, refresh)
+   {
+      var me = gblController, viewport = me.getViewPortCntlr();
+
+      setLoadMask(true);
+      $(document).one('locationupdate', function(e, position)
+      {
+         var params =
+         {
+            latitude : position.coords.latitude,
+            longitude : position.coords.longitude,
+            start : start,
+            end : start + 20
+         };
+         ajax = $.ajax(
+         {
+            type : 'GET',
+            url : serverHost + '/api/v1/venues/find_nearest',
+            // data to be added to query string:
+            data : params,
+            // type of data we are expecting in return:
+            dataType : 'json',
+            timeout : 30 * 1000,
+            context : document,
+            success : function(data)
+            {
+               setLoadMask(false);
+               if (!data)
+               {
+                  setNotificationVisibility(true, 'Warning', me.missingVenueInfoMsg(), "Dismiss", Ext.emptyFn);
+                  return;
+               }
+               else if (data.data.length == 0)
+               {
+                  setNotificationVisibility(true, 'Explore', me.noVenueInfoMsg(), "Dismiss", Ext.emptyFn);
+                  return;
+               }
+
+               var venues = "";
+               console.debug("AJAX Response", data);
+
+               if (refresh)
+               {
+                  $('.body ul').html(venues);
+                  $('#checkexplorepageview .body').infiniteScroll('reset');
+               }
+
+               for (var i = 0; i < data.length; i++)
+               {
+                  var venue = data[i];
+                  // @formatter:off
+                  venues +=  //
+                  '<li class="media" data="'+ Ext.encode(venue) +'">'+
+                     '<a class="pull-left" href="#"> <img src="' + venue['merchant']['photo']['thumbnail_medium_url'] + '"class="media-object" data-src="holder.js/64x64" alt="64x64"> </a>'+
+                     '<div class="media-body">'+
+                        '<h4 class="media-heading">' + venue['name'] + '</h4>'+
+                        'Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis.'+
+                     '</div>'+
+                  '</li>';
+                  // @formatter:on
+               }
+               $('.body ul').append(venues);
+               iscroll.refresh();
+               refreshCheckExploreVenues();
+
+               if (refresh)
+               {
+                  $('#checkexplorepageview .body').infiniteScroll('reset');
+               }
+            },
+            error : function(xhr, type)
+            {
+               setLoadMask(false);
+               setNotificationVisibility(true, 'Warning', me.missingVenueInfoMsg(), "Dismiss", Ext.emptyFn);
+            }
+         });
+      });
+      viewport.getGeoLocation();
+   };
+   var refreshCSRFToken = function()
+   {
+      var me = gblController, db = Genesis.db.getLocalDB();
+
+      if (!Genesis.constants.device)
+      {
+         console.log("Error Registering with PushNotification");
+      }
+
+      if (db['auth_code'])
+      {
+         var params =
+         {
+            version : Genesis.constants.clientVersion,
+            device_pixel_ratio : window.devicePixelRatio,
+            device : Ext.encode(Genesis.constants.device)
+         };
+
+         setLoadMask(true);
+         ajax = $.ajax(
+         {
+            type : 'GET',
+            url : serverHost + '/api/v1/tokens/get_csrf_token',
+            // data to be added to query string:
+            data : params,
+            // type of data we are expecting in return:
+            dataType : 'json',
+            timeout : 30 * 1000,
+            context : document,
+            success : function(data)
+            {
+               // Return to previous Venue
+               if (db['last_check_in'])
+               {
+                  me.getGeoLocation();
+               }
+               setLoadMask(false);
+            },
+            error : function(xhr, type)
+            {
+               setLoadMask(false);
+               //me.resetView();
+               //me.redirectTo('login');
+            }
+         });
+      }
    };
 
    window.addEventListener('hashchange', function()
@@ -326,78 +493,96 @@ var setChildBrowserVisibility = function(visible, hash)
    });
    $(document).ready(function()
    {
+      var me = gblController, viewport = gblController.getViewPortCntlr();
+
       // =============================================================
       // Custom Events
       // =============================================================
       $.Event('ajaxBeforeSend');
       $.Event('locationupdate');
 
-      // =============================================================
-      // WebAudio Support
-      // =============================================================
-
-      //var canPlayAudio = (new Audio()).canPlayType('audio/wav; codecs=1');
-      //if (!canPlayAudio)
-      if ( typeof (webkitAudioContext) == 'undefined')
+      if (!Genesis.fn.isNative())
       {
-         //
-         // If Worker is not supported, preload it
-         //
-         if ( typeof (Worker) == 'undefined')
+         // =============================================================
+         // WebAudio Support
+         // =============================================================
+
+         //var canPlayAudio = (new Audio()).canPlayType('audio/wav; codecs=1');
+         //if (!canPlayAudio)
+         if ( typeof (webkitAudioContext) == 'undefined')
          {
-            console.debug("HTML5 Workers not supported");
-
-            var mp3Flags = 0x00;
-            var callback = function(success, flag)
+            //
+            // If Worker is not supported, preload it
+            //
+            if ( typeof (Worker) == 'undefined')
             {
-               if (!success)
+               console.debug("HTML5 Workers not supported");
+
+               var mp3Flags = 0x00;
+               var callback = function(success, flag)
                {
-                  setNotificationVisibility(true, 'KICKBAK', "Error Loading Application Resource Files.", "Reload", function()
+                  if (!success)
                   {
-                     window.location.reload();
-                  });
-               }
-               else
-               {
-                  if ((mp3Flags |= flag) == 0x11)
-                  {
-                     appLaunchCallbackFn(true, 0x100);
-                     console.debug("Enable MP3 Encoder");
+                     setNotificationVisibility(true, 'KICKBAK', "Error Loading Application Resource Files.", "Reload", function()
+                     {
+                        window.location.reload();
+                     });
                   }
-               }
-            };
+                  else
+                  {
+                     if ((mp3Flags |= flag) == 0x11)
+                     {
+                        appLaunchCallbackFn(true, 0x100);
+                        console.debug("Enable MP3 Encoder");
+                     }
+                  }
+               };
 
-            Genesis.fn.checkloadjscssfile('../lib/libmp3lame.min.js', "js", Ext.bind(callback, null, [0x01], true));
-            Genesis.fn.checkloadjscssfile('../worker/encoder.min.js', "js", function(success)
-            {
-               if (success)
+               Genesis.fn.checkloadjscssfile('../lib/libmp3lame.min.js', "js", Ext.bind(callback, null, [0x01], true));
+               Genesis.fn.checkloadjscssfile('../worker/encoder.min.js', "js", function(success)
                {
-                  _codec = new Worker('../worker/encoder.min.js');
-               }
-               callback(success, 0x10);
-            });
+                  if (success)
+                  {
+                     _codec = new Worker('../worker/encoder.min.js');
+                  }
+                  callback(success, 0x10);
+               });
+            }
+            else
+            {
+               _codec = new Worker('worker/encoder.min.js');
+               appLaunchCallbackFn(true, 0x100);
+               console.debug("Enable MP3 Encoder");
+            }
          }
          else
          {
-            _codec = new Worker('worker/encoder.min.js');
             appLaunchCallbackFn(true, 0x100);
-            console.debug("Enable MP3 Encoder");
+            console.debug("Enable WAV/WebAudio Encoder");
          }
-      }
-      else
-      {
-         appLaunchCallbackFn(true, 0x100);
-         console.debug("Enable WAV/WebAudio Encoder");
+
+         // =============================================================
+         // SystemInit
+         // =============================================================
+         proximityInit();
+         soundInit();
       }
 
-      if (!Genesis.fn.isNative())
-      {
-         proximityInit();
-      }
-      
       // =============================================================
       // Ajax Calls Customizations
       // =============================================================
+      $.ajaxSettings.accepts.json = "*/*";
+      var _param = $.param;
+      $.param = function(obj, traditional)
+      {
+         var db = Genesis.db.getLocalDB();
+
+         if (db['auth_code'])
+         {
+            obj['auth_token'] = db['auth_code'];
+         }
+         return _param(obj, traditional);
+      }
       $(document).on('ajaxBeforeSend', function(e, xhr, options)
       {
          var db = Genesis.db.getLocalDB();
@@ -408,18 +593,27 @@ var setChildBrowserVisibility = function(visible, hash)
          options.headers = options.headers ||
          {
          };
-         options.headers = Ext.apply(options.headers =
-         {
-            'Accept' : '*/*'
-         });
          if (db['csrf_code'] && (options.type == 'POST'))
          {
             options.headers = Ext.apply(options.headers,
             {
                'X-CSRF-Token' : db['csrf_code']
             });
+            xhr.setRequestHeader('X-CSRF-Token', db['csrf_code']);
          }
       });
+
+      // =============================================================
+      // Refresh CSRF Token
+      // =============================================================
+      if (Genesis.constants.device)
+      {
+         refreshCSRFToken();
+      }
+      else if (Genesis.db.getLocalDB()['auth_code'])
+      {
+         $(document).on('kickbak:updateDeviceToken', refreshCSRFToken);
+      }
 
       // =============================================================
       // System Initializations
@@ -441,8 +635,13 @@ var setChildBrowserVisibility = function(visible, hash)
       }
       $('body').addClass(($.os.phone) ? 'x-phone' : 'x-tablet');
 
-      $('#earnPtsCancel').tap(hideEarnPtsPage);
-      $('#earnPtsDismiss').tap(hideEarnPtsPage);
+      var _hide_ = function(e)
+      {
+         me.playSoundFile(me.sound_files['clickSound']);
+         hideEarnPtsPage(e);
+      };
+      $('#earnPtsCancel').tap(_hide_);
+      $('#earnPtsDismiss').tap(_hide_);
       $('#earnptspageview')[0].style.top = (-1 * Math.max(window.screen.height, window.screen.width)) + 'px';
 
       // =============================================================
@@ -454,7 +653,7 @@ var setChildBrowserVisibility = function(visible, hash)
          mouseWheel : true,
          interactiveScrollbars : false
       });
-      var i = -1, origEventHandler = iscroll.handleEvent, iscrollInfinite = $('#checkexplorepageview .body');
+      var ajax, i = -1, origEventHandler = iscroll.handleEvent, iscrollInfinite = $('#checkexplorepageview .body');
       iscrollInfinite.infiniteScroll(
       {
          threshold : window.screen.height,
@@ -465,28 +664,12 @@ var setChildBrowserVisibility = function(visible, hash)
          },
          onBottom : function(callback)
          {
-            console.debug('At the end of the page. Loading more!');
-            if ((++i < 19) && (i > 0))
+            if ($('.media').length > 0)
             {
-               $('.body ul').append(
-               // @formatter:off
-               '<li class="media" data="'+ Ext.encode({venueId : i, customerId : i}) +'">'+
-                  '<a class="pull-left" href="#"> <img class="media-object" data-src="holder.js/64x64" alt="64x64"> </a>'+
-                  '<div class="media-body">'+
-                     '<h4 class="media-heading">Nested media heading</h4>'+
-                     'Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis.'+
-                  '</div>'+
-               '</li>'
-               // @formatter:on
-               );
-               iscroll.refresh();
-               refreshCheckExploreVenues();
-               callback(true);
-
-               return;
+               console.debug('At the end of the page. Loading more!');
+               getNearestVenues($('.media').length);
             }
-
-            callback((i == 0) ? true : false);
+            callback(true);
          }
       });
 
@@ -509,29 +692,18 @@ var setChildBrowserVisibility = function(visible, hash)
          //
          if ($('.media').length == 0)
          {
-            $('.body ul').append(
-            // @formatter:off
-               '<li class="media" data="'+ (++i) +'">'+
-                  '<a class="pull-left" href="#"> <img class="media-object" data-src="holder.js/64x64" alt="64x64"> </a>'+
-                  '<div class="media-body">'+
-                     '<h4 class="media-heading">Nested media heading</h4>'+
-                     'Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis.'+
-                  '</div>'+
-               '</li>'
-               // @formatter:on
-            );
-            iscroll.refresh();
-            refreshCheckExploreVenues();
+            me.playSoundFile(me.sound_files['clickSound']);
+            getNearestVenues(0);
          }
       });
 
       // =============================================================
       // WelcomePage Actions
       // =============================================================
-      var db = Genesis.db.getLocalDB();
-      $("#earnPtsLoad span.x-button-label").text((db['auth_code']) ? 'Earn Points' : 'Sign In / Register');
+      setChildBrowserVisibility(false);
       $("#earnPtsLoad").tap(function()
       {
+         me.playSoundFile(me.sound_files['clickSound']);
          db = Genesis.db.getLocalDB();
          if (db['auth_code'])
          {
@@ -546,37 +718,35 @@ var setChildBrowserVisibility = function(visible, hash)
       // =============================================================
       // ExplorePage Actions
       // =============================================================
-      $('.x-button .x-button-icon.home').tap(function()
+      $('#checkexplorepageview .header .x-layout-box-item').tap(function(e)
       {
-         setChildBrowserVisibility(true);
-      });
-      $('.x-button .x-button-icon.refresh').tap(function()
-      {
-         iscroll.refresh();
-         refreshCheckExploreVenues();
-         $('#checkexplorepageview .body').infiniteScroll('reset');
+         me.playSoundFile(me.sound_files['clickSound']);
+         //refresh
+         if ($(e.currentTarget).has('.x-button .x-button-icon.refresh').length > 0)
+         {
+            getNearestVenues(0, true);
+         }
+         else
+         //home
+         //else if ($(e.currentTarget).has('.x-button .x-button-icon.home'))
+         {
+            setChildBrowserVisibility(true);
+         }
       });
       $('#earnPtsProceed').tap(function(e)
       {
-         var me = gblController, task, privKey, viewport = me.getViewPortCntlr();
+         var task, privKey;
 
          if (me.pendingBroadcast)
          {
             return;
          }
 
+         me.playSoundFile(me.sound_files['clickSound']);
          //
          // Check for Mobile Number Validation
          //
          var message = $('#earnptspageview .x-docked-top .x-innerhtml'), image = $('#earnPtsImage');
-
-         /*
-          if (!validateMobileNumber())
-          {
-          return;
-          }
-          */
-
          var db = Genesis.db.getLocalDB(), venue = viewport.getVenue(), venueId, position = viewport.getLastPosition();
 
          me.identifiers = null;
@@ -663,6 +833,8 @@ var setChildBrowserVisibility = function(visible, hash)
 
                   $('#earnPtsDismiss').one('tap', dismiss = function(msg)
                   {
+
+                     me.playSoundFile(me.sound_files['clickSound']);
                      if (ajax)
                      {
                         ajax.abort();
@@ -671,7 +843,7 @@ var setChildBrowserVisibility = function(visible, hash)
                      {
                         me.identifiers['cancelFn']();
                      }
-                     Ext.Viewport.setMasked(null);
+                     setLoadMask(false);
 
                      setNotificationVisibility(true, 'Rewards', ( typeof (msg) != 'string') ? me.transactionCancelledMsg : msg, "Dismiss", function()
                      {
@@ -681,7 +853,7 @@ var setChildBrowserVisibility = function(visible, hash)
                   ajax = $.ajax(
                   {
                      type : 'POST',
-                     url : '/api/v1/purchase_rewards/earn',
+                     url : serverHost + '/api/v1/purchase_rewards/earn',
                      // data to be added to query string:
                      data : params,
                      // type of data we are expecting in return:
@@ -690,6 +862,16 @@ var setChildBrowserVisibility = function(visible, hash)
                      context : document,
                      success : function(data)
                      {
+                        if (!data)
+                        {
+                           if (me.identifiers)
+                           {
+                              console.debug("AJAX Error Response", me.identifiers);
+                           }
+                           $('#earnPtsDismiss').trigger('tap', [me.networkErrorMsg]);
+                           return;
+                        }
+
                         //
                         // Stop broadcasting now ...
                         //
@@ -697,7 +879,7 @@ var setChildBrowserVisibility = function(visible, hash)
                         {
                            me.identifiers['cancelFn']();
                         }
-                        Ext.Viewport.setMasked(null);
+                        setLoadMask(false);
 
                         console.debug("AJAX Response", data);
                         setNotificationVisibility(true, 'Rewards', "", "OK", function()
@@ -717,7 +899,7 @@ var setChildBrowserVisibility = function(visible, hash)
             }, function()
             {
                hideEarnPtsPage();
-               //Ext.Viewport.setMasked(null);
+               //setLoadMask(false);
             });
          }, me, [false]));
       });
