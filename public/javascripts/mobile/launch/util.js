@@ -1169,20 +1169,20 @@ Genesis = ( typeof (Genesis) != 'undefined') ? Genesis :
    var me = Genesis.constants;
    if ($.os.ios)
    {
-      if (debugMode)
-      {
-         me.pushNotifAppName = 'KickBak Dev Latest';
-         me.pushNotifAppId = '93D8A-5BE72';
-      }
-      else
-      {
-         me.pushNotifAppName = 'KickBak Production';
-         me.pushNotifAppId = '4fef6fb0691c12.54726991';
-      }
-      me.pushNotifType = 1;
-
       initPushwoosh = function()
       {
+         if (debugMode)
+         {
+            me.pushNotifAppName = 'KickBak Dev Latest';
+            me.pushNotifAppId = '93D8A-5BE72';
+         }
+         else
+         {
+            me.pushNotifAppName = 'KickBak Production';
+            me.pushNotifAppId = '4fef6fb0691c12.54726991';
+         }
+         me.pushNotifType = 1;
+
          var pushNotification = window.plugins.pushNotification;
 
          document.addEventListener('push-notification', function(event)
@@ -1238,22 +1238,22 @@ Genesis = ( typeof (Genesis) != 'undefined') ? Genesis :
    }
    else if ($.os.android)
    {
-      if (debugMode)
-      {
-         me.pushNotifAppName = 'KickBak Dev Latest';
-         me.pushNotifAppId = '93D8A-5BE72';
-         me.pushNotifProjectId = '658015469194';
-      }
-      else
-      {
-         me.pushNotifAppName = 'KickBak Production';
-         me.pushNotifAppId = '4fef6fb0691c12.54726991';
-         me.pushNotifProjectId = '733275653511';
-      }
-      me.pushNotifType = 3;
-
       initPushwoosh = function()
       {
+         if (debugMode)
+         {
+            me.pushNotifAppName = 'KickBak Dev Latest';
+            me.pushNotifAppId = '93D8A-5BE72';
+            me.pushNotifProjectId = '658015469194';
+         }
+         else
+         {
+            me.pushNotifAppName = 'KickBak Production';
+            me.pushNotifAppId = '4fef6fb0691c12.54726991';
+            me.pushNotifProjectId = '733275653511';
+         }
+         me.pushNotifType = 3;
+
          var pushNotification = window.plugins.pushNotification;
          document.addEventListener('push-notification', function(event)
          {

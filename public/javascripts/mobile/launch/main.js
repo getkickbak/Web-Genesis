@@ -104,6 +104,8 @@ var setChildBrowserVisibility = function(visible, hash)
             {
                if (success && ((i |= flag) == 0x111))
                {
+                  i = 0;
+                  
                   $('#loadingMask')['addClass']('x-item-hidden');
 
                   mainAppInit = true;
@@ -228,6 +230,16 @@ var setLoadMask = function(visible)
    $('#loadingMask')[visible ? 'removeClass' : 'addClass']('x-item-hidden');
 };
 
+/*
+            if (Ext.os.is('Android') && Genesis.fn.isNative())
+            {
+               navigator.app.exitApp();
+            }
+            else if (!Genesis.fn.isNative())
+            {
+               window.location.reload();
+            }
+ */
 // =============================================================
 // System Utilities
 // =============================================================

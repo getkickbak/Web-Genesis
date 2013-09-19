@@ -6,11 +6,8 @@
  * Copyright (c) 2010, IBM Corporation
  */
 
-(function()
+(function(cordovaRef)
 {
-
-   var cordovaRef = window.PhoneGap || window.Cordova || window.cordova;
-
    //-------------------------------------------------------------------
    BarcodeScanner = function()
    {
@@ -101,5 +98,5 @@
       }
       window.plugins.barcodeScanner = new BarcodeScanner();
    });
-})();
+})(window.cordova || window.Cordova || window.PhoneGap);
 

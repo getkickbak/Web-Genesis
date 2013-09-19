@@ -4,10 +4,9 @@
  *
  */
 
-(function()
+/* This increases plugin compatibility */
+(function(cordovaRef)
 {
-   /* This increases plugin compatibility */
-   var cordovaRef = window.PhoneGap || window.Cordova || window.cordova;
 
    /**
     * The Java to JavaScript Gateway 'magic' class
@@ -37,4 +36,4 @@
       }
    });
 
-})();
+})(window.cordova || window.Cordova || window.PhoneGap);

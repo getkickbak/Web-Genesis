@@ -18,6 +18,13 @@ Ext.define('Genesis.controller.client.MainPage',
             autoCreate : true,
             xtype : 'clientmainpageview'
          },
+         // Login Page
+         login :
+         {
+            selector : 'loginpageview',
+            autoCreate : true,
+            xtype : 'loginpageview'
+         },
          mainCarousel : 'clientmainpageview',
          infoBtn : 'button[tag=info]',
          shortcutTabBar : 'clientmainpageview tabbar[tag=navigationBarBottom]',

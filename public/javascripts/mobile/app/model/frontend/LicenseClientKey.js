@@ -19,7 +19,15 @@ Ext.define('Genesis.model.frontend.LicenseKeyJSON',
          }
       },
       identifier : 'uuid',
-      fields : ['json', 'id'],
+      fields : [
+      {
+         name : 'json',
+         type : 'string'
+      },
+      {
+         name : 'id',
+         type : 'int'
+      }],
       idProperty : 'id'
    }
 });
@@ -34,7 +42,7 @@ Ext.define('Genesis.model.frontend.LicenseKeyDB',
       proxy :
       {
          type : 'browserdb',
-         dbName : 'KickBak',
+         dbName : 'KickBakLicenseKey',
          pkType : 'INTEGER PRIMARY KEY ASC',
          objectStoreName : 'LicenseKey',
          //dbVersion : '1.0',

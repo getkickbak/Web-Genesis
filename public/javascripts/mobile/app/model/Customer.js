@@ -19,7 +19,15 @@ Ext.define('Genesis.model.CustomerJSON',
          }
       },
       identifier : 'uuid',
-      fields : ['json', 'id'],
+      fields : [
+      {
+         name : 'json',
+         type : 'string'
+      },
+      {
+         name : 'id',
+         type : 'int'
+      }],
       idProperty : 'id'
    }
 });

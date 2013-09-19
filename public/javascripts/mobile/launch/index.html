@@ -351,7 +351,14 @@
          {
             if (getHeightOfIOSToolbars() >= 20)
             {
-               return ((window.orientation === 0) ? window.screen.height - 60 : window.screen.width - 48);
+               if ($.os.ios)
+               {
+                  return ((window.orientation === 0) ? window.screen.height - 60 : window.screen.width - 48);
+               }
+               else
+               {                  
+                  return (((window.orientation === 0) ? window.screen.height : window.screen.width) - getHeightOfIOSToolbars());
+               }
             }
             else
             {

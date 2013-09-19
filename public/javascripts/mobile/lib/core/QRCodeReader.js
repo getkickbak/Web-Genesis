@@ -3,7 +3,7 @@
  */
 (function()
 {
-   var cordovaRef = window.PhoneGap || window.Cordova || window.cordova;
+   var cordovaRef = window.cordova;
    // old to new fallbacks
 
    QRCodeReader = function()

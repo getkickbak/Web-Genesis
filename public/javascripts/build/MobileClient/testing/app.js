@@ -72569,15 +72569,18 @@ Ext.define('Genesis.data.proxy.WebSql',
 
       this.database = db;
 
-      db.transaction(function(transaction)
+      Ext.defer(function()
       {
-         pk = me.getPkField() || (me.getReader() && me.getReader().getIdProperty()) || pk;
-         me.setPkField(pk);
+         db.transaction(function(transaction)
+         {
+            pk = me.getPkField() || (me.getReader() && me.getReader().getIdProperty()) || pk;
+            me.setPkField(pk);
 
-         query = 'CREATE TABLE IF NOT EXISTS ' + me.getDbTable() + ' (' + pk + ' ' + me.getPkType() + ', ' + me.getDbFields().join(', ') + ')';
+            query = 'CREATE TABLE IF NOT EXISTS ' + me.getDbTable() + ' (' + pk + ' ' + me.getPkType() + ', ' + me.getDbFields().join(', ') + ')';
 
-         me.doQuery(transaction, query);
-      });
+            me.doQuery(transaction, query);
+         });
+      }, 0.1 * 1000);
    },
 
    /**
@@ -72594,7 +72597,6 @@ Ext.define('Genesis.data.proxy.WebSql',
             callback.call(scope || me);
          }
       };
-
       me.database.transaction(function(transaction)
       {
          me.doQuery(transaction, 'DROP TABLE IF EXISTS ' + me.getDbTable());
@@ -73916,7 +73918,15 @@ Ext.define('Genesis.model.CustomerJSON',
          }
       },
       identifier : 'uuid',
-      fields : ['json', 'id'],
+      fields : [
+      {
+         name : 'json',
+         type : 'string'
+      },
+      {
+         name : 'id',
+         type : 'int'
+      }],
       idProperty : 'id'
    }
 });
@@ -76039,14 +76049,7 @@ Ext.define('Genesis.controller.MainPageBase',
          {
             var viewport = me.getViewPortCntlr();
             me.self.playSoundFile(viewport.sound_files['clickSound']);
-            if (Ext.os.is('Android') && Genesis.fn.isNative())
-            {
-               navigator.app.exitApp();
-            }
-            else if (!Genesis.fn.isNative())
-            {
-               window.location.reload();
-            }
+            setChildBrowserVisibility(false, 'explore');
             return true;
          }
          return false;
@@ -78060,6 +78063,10 @@ Ext.define('Genesis.controller.ViewportBase',
          else if (Ext.os.is('Android'))
          {
             path = "file:///android_asset/www/";
+            if (Genesis.fn.isNative() && (_build == 'MobileClientNative'))
+            {
+               path += "launch/";
+            }
          }
       }
       file = path + file;
@@ -78072,68 +78079,74 @@ Ext.define('Genesis.controller.ViewportBase',
          {
             if (request.status == 200 || request.status == 0)
             {
-               var text = request.responseText//
-               .replace(me.mainPageStorePathToken, Genesis.constants._iconPathCommon)//
-               .replace(me.mainPageStoreRelPathToken, Genesis.constants.relPath());
-               console.log("Loaded MainPage Store ...");
-               var response = Ext.decode(text);
-               var data = response.data;
-               for (var i = 0; i < data.length; i++)
+               try
                {
-                  var item = data[i];
-                  var index = data.indexOf(item);
-                  if (merchantMode)
+                  var text = request.responseText.replace(me.mainPageStorePathToken, Genesis.constants._iconPathCommon).replace(me.mainPageStoreRelPathToken, Genesis.constants.relPath());
+                  var response = Ext.decode(text), data = response.data;
+
+                  for (var i = 0; i < data.length; i++)
                   {
-                     if (Ext.isDefined(enablePrizes))
+                     var item = data[i];
+                     var index = data.indexOf(item);
+
+                     if (merchantMode)
                      {
-                        if (!enablePrizes)
+                        if (Ext.isDefined(enablePrizes))
                         {
-                           if (item['id'] == 'redeemPrizes')
+                           if (!enablePrizes)
+                           {
+                              if (item['id'] == 'redeemPrizes')
+                              {
+                                 data.splice(index, 1);
+                                 if (index == i)
+                                 {
+                                    i--;
+                                 }
+                              }
+                           }
+                        }
+                        if (Ext.isDefined(enableChallenges))
+                        {
+                           if (!enableChallenges)
+                           {
+                              if (item['id'] == 'challenges')
+                              {
+                                 data.splice(index, 1);
+                                 if (index == i)
+                                 {
+                                    i--;
+                                 }
+                              }
+                           }
+                        }
+                     }
+                     //
+                     // MobileClient do not support Referrals and Transfers
+                     //
+                     else if (_build == 'MobileWebClient')
+                     {
+                        switch (item['id'])
+                        {
+                           case 'transfer':
+                           case 'referrals' :
                            {
                               data.splice(index, 1);
                               if (index == i)
                               {
                                  i--;
                               }
-                           }
-                        }
-                     }
-                     if (Ext.isDefined(enableChallenges))
-                     {
-                        if (!enableChallenges)
-                        {
-                           if (item['id'] == 'challenges')
-                           {
-                              data.splice(index, 1);
-                              if (index == i)
-                              {
-                                 i--;
-                              }
+                              break;
                            }
                         }
                      }
                   }
-                  //
-                  // MobileClient do not support Referrals and Transfers
-                  //
-                  else if (_build == 'MobileWebClient')
-                  {
-                     switch (item['id'])
-                     {
-                        case 'transfer':
-                        case 'referrals' :
-                        {
-                           data.splice(index, 1);
-                           if (index == i)
-                           {
-                              i--;
-                           }
-                           break;
-                        }
-                     }
-                  }
+                  Ext.StoreMgr.get('MainPageStore').setData(response.data);
+                  console.log("Loaded MainPage Store ...");
                }
-               Ext.StoreMgr.get('MainPageStore').setData(response.data);
+               catch(e)
+               {
+                  console.log("Exception = " + e);
+               }
             }
          }
       };
@@ -84535,6 +84548,13 @@ Ext.define('Genesis.controller.client.MainPage',
             autoCreate : true,
             xtype : 'clientmainpageview'
          },
+         // Login Page
+         login :
+         {
+            selector : 'loginpageview',
+            autoCreate : true,
+            xtype : 'loginpageview'
+         },
          mainCarousel : 'clientmainpageview',
          infoBtn : 'button[tag=info]',
          shortcutTabBar : 'clientmainpageview tabbar[tag=navigationBarBottom]',
@@ -89569,6 +89589,11 @@ Ext.require(['Genesis.controller.ControllerBase'], function()
          }
       }
    };
+
+   if (Genesis.fn.isNative())
+   {
+      document.addEventListener("backbutton", onBackKeyDown, false);
+   }
 });
 
 Ext.define('Genesis.controller.client.Viewport',

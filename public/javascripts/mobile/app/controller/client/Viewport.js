@@ -83,6 +83,11 @@ Ext.require(['Genesis.controller.ControllerBase'], function()
          }
       }
    };
+
+   if (Genesis.fn.isNative())
+   {
+      document.addEventListener("backbutton", onBackKeyDown, false);
+   }
 });
 
 Ext.define('Genesis.controller.client.Viewport',

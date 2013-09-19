@@ -369,6 +369,10 @@ Ext.define('Genesis.controller.ViewportBase',
          else if (Ext.os.is('Android'))
          {
             path = "file:///android_asset/www/";
+            if (Genesis.fn.isNative() && (_build == 'MobileClientNative'))
+            {
+               path += "launch/";
+            }
          }
       }
       file = path + file;
@@ -381,68 +385,74 @@ Ext.define('Genesis.controller.ViewportBase',
          {
             if (request.status == 200 || request.status == 0)
             {
-               var text = request.responseText//
-               .replace(me.mainPageStorePathToken, Genesis.constants._iconPathCommon)//
-               .replace(me.mainPageStoreRelPathToken, Genesis.constants.relPath());
-               console.log("Loaded MainPage Store ...");
-               var response = Ext.decode(text);
-               var data = response.data;
-               for (var i = 0; i < data.length; i++)
+               try
                {
-                  var item = data[i];
-                  var index = data.indexOf(item);
-                  if (merchantMode)
+                  var text = request.responseText.replace(me.mainPageStorePathToken, Genesis.constants._iconPathCommon).replace(me.mainPageStoreRelPathToken, Genesis.constants.relPath());
+                  var response = Ext.decode(text), data = response.data;
+
+                  for (var i = 0; i < data.length; i++)
                   {
-                     if (Ext.isDefined(enablePrizes))
+                     var item = data[i];
+                     var index = data.indexOf(item);
+
+                     if (merchantMode)
                      {
-                        if (!enablePrizes)
+                        if (Ext.isDefined(enablePrizes))
                         {
-                           if (item['id'] == 'redeemPrizes')
+                           if (!enablePrizes)
+                           {
+                              if (item['id'] == 'redeemPrizes')
+                              {
+                                 data.splice(index, 1);
+                                 if (index == i)
+                                 {
+                                    i--;
+                                 }
+                              }
+                           }
+                        }
+                        if (Ext.isDefined(enableChallenges))
+                        {
+                           if (!enableChallenges)
+                           {
+                              if (item['id'] == 'challenges')
+                              {
+                                 data.splice(index, 1);
+                                 if (index == i)
+                                 {
+                                    i--;
+                                 }
+                              }
+                           }
+                        }
+                     }
+                     //
+                     // MobileClient do not support Referrals and Transfers
+                     //
+                     else if (_build == 'MobileWebClient')
+                     {
+                        switch (item['id'])
+                        {
+                           case 'transfer':
+                           case 'referrals' :
                            {
                               data.splice(index, 1);
                               if (index == i)
                               {
                                  i--;
                               }
-                           }
-                        }
-                     }
-                     if (Ext.isDefined(enableChallenges))
-                     {
-                        if (!enableChallenges)
-                        {
-                           if (item['id'] == 'challenges')
-                           {
-                              data.splice(index, 1);
-                              if (index == i)
-                              {
-                                 i--;
-                              }
+                              break;
                            }
                         }
                      }
                   }
-                  //
-                  // MobileClient do not support Referrals and Transfers
-                  //
-                  else if (_build == 'MobileWebClient')
-                  {
-                     switch (item['id'])
-                     {
-                        case 'transfer':
-                        case 'referrals' :
-                        {
-                           data.splice(index, 1);
-                           if (index == i)
-                           {
-                              i--;
-                           }
-                           break;
-                        }
-                     }
-                  }
+                  Ext.StoreMgr.get('MainPageStore').setData(response.data);
+                  console.log("Loaded MainPage Store ...");
                }
-               Ext.StoreMgr.get('MainPageStore').setData(response.data);
+               catch(e)
+               {
+                  console.log("Exception = " + e);
+               }
             }
          }
       };

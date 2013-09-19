@@ -8,125 +8,162 @@
 // www.pushwoosh.com
 //
 // MIT Licensed
+if (window.cordova || window.Cordova || window.PhoneGap)
+{
+   (function(cordova)
+   {
 
-(function(cordova) {
+      function PushNotification()
+      {
+      }
 
-	function PushNotification() {}
+      // Call this to register for push notifications and retreive a deviceToken
+      PushNotification.prototype.registerDevice = function(config, success, fail)
+      {
+         cordova.exec(success, fail, "PushNotification", "registerDevice", config ? [config] : []);
+      };
 
-	// Call this to register for push notifications and retreive a deviceToken
-	PushNotification.prototype.registerDevice = function(config, success, fail) {
-		cordova.exec(success, fail, "PushNotification", "registerDevice", config ? [config] : []);
-	};
+      // Call this to set tags for the device
+      PushNotification.prototype.setTags = function(config, success, fail)
+      {
+         cordova.exec(success, fail, "PushNotification", "setTags", config ? [config] : []);
+      };
 
-	// Call this to set tags for the device
-	PushNotification.prototype.setTags = function(config, success, fail) {
-		cordova.exec(success, fail, "PushNotification", "setTags", config ? [config] : []);
-	};
-	
-	// Call this to send geo location for the device
-	PushNotification.prototype.sendLocation = function(config, success, fail) {
-		cordova.exec(success, fail, "PushNotification", "sendLocation", config ? [config] : []);
-	};
-	
-	PushNotification.prototype.onDeviceReady = function() {
-		cordova.exec(null, null, "PushNotification", "onDeviceReady", []);
-	};
+      // Call this to send geo location for the device
+      PushNotification.prototype.sendLocation = function(config, success, fail)
+      {
+         cordova.exec(success, fail, "PushNotification", "sendLocation", config ? [config] : []);
+      };
 
-	//Android Only----
-	PushNotification.prototype.unregisterDevice = function(success, fail) {
-		cordova.exec(success, fail, "PushNotification", "unregisterDevice", []);
-	};
+      PushNotification.prototype.onDeviceReady = function()
+      {
+         cordova.exec(null, null, "PushNotification", "onDeviceReady", []);
+      };
 
-	//config params: {msg:"message", seconds:30, userData:"optional"}
-	PushNotification.prototype.createLocalNotification = function(config, success, fail) {
-		cordova.exec(success, fail, "PushNotification", "createLocalNotification", config ? [config] : []);
-	};
+      //Android Only----
+      PushNotification.prototype.unregisterDevice = function(success, fail)
+      {
+         cordova.exec(success, fail, "PushNotification", "unregisterDevice", []);
+      };
 
-	PushNotification.prototype.clearLocalNotification = function() {
-		cordova.exec(null, null, "PushNotification", "clearLocalNotification", []);
-	};
-	
-	//advanced background task to track device position and not drain the battery
-	PushNotification.prototype.startGeoPushes = function(success, fail) {
-		cordova.exec(success, fail, "PushNotification", "startGeoPushes", []);
-	};
+      //config params: {msg:"message", seconds:30, userData:"optional"}
+      PushNotification.prototype.createLocalNotification = function(config, success, fail)
+      {
+         cordova.exec(success, fail, "PushNotification", "createLocalNotification", config ? [config] : []);
+      };
 
-	PushNotification.prototype.stopGeoPushes = function(success, fail) {
-		cordova.exec(success, fail, "PushNotification", "stopGeoPushes", []);
-	};
-	
-	//sets multi notification mode on
-	PushNotification.prototype.setMultiNotificationMode = function(success, fail) {
-		cordova.exec(success, fail, "PushNotification", "setMultiNotificationMode", []);
-	};
-	
-	//sets single notification mode
-	PushNotification.prototype.setSingleNotificationMode = function(success, fail) {
-		cordova.exec(success, fail, "PushNotification", "setSingleNotificationMode", []);
-	};
+      PushNotification.prototype.clearLocalNotification = function()
+      {
+         cordova.exec(null, null, "PushNotification", "clearLocalNotification", []);
+      };
 
-	//type: 0 default, 1 no sound, 2 always
-	PushNotification.prototype.setSoundType = function(type, success, fail) {
-		cordova.exec(success, fail, "PushNotification", "setSoundType", [type]);
-	};	
+      //advanced background task to track device position and not drain the battery
+      PushNotification.prototype.startGeoPushes = function(success, fail)
+      {
+         cordova.exec(success, fail, "PushNotification", "startGeoPushes", []);
+      };
 
-	//type: 0 default, 1 no vibration, 2 always
-	PushNotification.prototype.setVibrateType = function(type, success, fail) {
-		cordova.exec(success, fail, "PushNotification", "setVibrateType", [type]);
-	};	
+      PushNotification.prototype.stopGeoPushes = function(success, fail)
+      {
+         cordova.exec(success, fail, "PushNotification", "stopGeoPushes", []);
+      };
 
-	PushNotification.prototype.setLightScreenOnNotification = function(on, success, fail) {
-		cordova.exec(success, fail, "PushNotification", "setLightScreenOnNotification", [on]);
-	};
+      //sets multi notification mode on
+      PushNotification.prototype.setMultiNotificationMode = function(success, fail)
+      {
+         cordova.exec(success, fail, "PushNotification", "setMultiNotificationMode", []);
+      };
 
-	//set to enable led blinking when notification arrives and display is off
-	PushNotification.prototype.setEnableLED = function(on, success, fail) {
-		cordova.exec(success, fail, "PushNotification", "setEnableLED", [on]);
-	};
-	
-	//{goal:'name', count:3} (count is optional)
-	PushNotification.prototype.sendGoalAchieved = function(config, success, fail) {
-		cordova.exec(success, fail, "PushNotification", "sendGoalAchieved", config ? [config] : []);
-	};
+      //sets single notification mode
+      PushNotification.prototype.setSingleNotificationMode = function(success, fail)
+      {
+         cordova.exec(success, fail, "PushNotification", "setSingleNotificationMode", []);
+      };
 
-	//Android End----
-	
-	//iOS only----
-	PushNotification.prototype.startLocationTracking = function(backgroundMode, success, fail) {
-		cordova.exec(success, fail, "PushNotification", "startLocationTracking", backgroundMode ? [{mode : backgroundMode}] : []);
-	};
-	 
-	PushNotification.prototype.stopLocationTracking = function(success, fail) {
-		cordova.exec(success, fail, "PushNotification", "stopLocationTracking", []);
-	};
+      //type: 0 default, 1 no sound, 2 always
+      PushNotification.prototype.setSoundType = function(type, success, fail)
+      {
+         cordova.exec(success, fail, "PushNotification", "setSoundType", [type]);
+      };
 
-	// Call this to get a detailed status of remoteNotifications
-	PushNotification.prototype.getRemoteNotificationStatus = function(callback) {
-		cordova.exec(callback, callback, "PushNotification", "getRemoteNotificationStatus", []);
-	};
+      //type: 0 default, 1 no vibration, 2 always
+      PushNotification.prototype.setVibrateType = function(type, success, fail)
+      {
+         cordova.exec(success, fail, "PushNotification", "setVibrateType", [type]);
+      };
 
-	// Call this to set the application icon badge
-	PushNotification.prototype.setApplicationIconBadgeNumber = function(badgeNumber, callback) {
-		cordova.exec(callback, callback, "PushNotification", "setApplicationIconBadgeNumber", [{badge: badgeNumber}]);
-	};
+      PushNotification.prototype.setLightScreenOnNotification = function(on, success, fail)
+      {
+         cordova.exec(success, fail, "PushNotification", "setLightScreenOnNotification", [on]);
+      };
 
-	// Call this to clear all notifications from the notification center
-	PushNotification.prototype.cancelAllLocalNotifications = function(callback) {
-		cordova.exec(callback, callback, "PushNotification", "cancelAllLocalNotifications", []);
-	};
-	//iOS End----
+      //set to enable led blinking when notification arrives and display is off
+      PushNotification.prototype.setEnableLED = function(on, success, fail)
+      {
+         cordova.exec(success, fail, "PushNotification", "setEnableLED", [on]);
+      };
 
-	// Event spawned when a notification is received while the application is active
-	PushNotification.prototype.notificationCallback = function(notification) {
-		var ev = document.createEvent('HTMLEvents');
-		ev.notification = notification;
-		ev.initEvent('push-notification', true, true, arguments);
-		document.dispatchEvent(ev);
-	};
+      //{goal:'name', count:3} (count is optional)
+      PushNotification.prototype.sendGoalAchieved = function(config, success, fail)
+      {
+         cordova.exec(success, fail, "PushNotification", "sendGoalAchieved", config ? [config] : []);
+      };
 
-	cordova.addConstructor(function() {
-		if(!window.plugins) window.plugins = {};
-		window.plugins.pushNotification = new PushNotification();
-	});
+      //Android End----
 
-})(window.cordova || window.Cordova || window.PhoneGap);
+      //iOS only----
+      PushNotification.prototype.startLocationTracking = function(backgroundMode, success, fail)
+      {
+         cordova.exec(success, fail, "PushNotification", "startLocationTracking", backgroundMode ? [
+         {
+            mode : backgroundMode
+         }] : []);
+      };
+
+      PushNotification.prototype.stopLocationTracking = function(success, fail)
+      {
+         cordova.exec(success, fail, "PushNotification", "stopLocationTracking", []);
+      };
+
+      // Call this to get a detailed status of remoteNotifications
+      PushNotification.prototype.getRemoteNotificationStatus = function(callback)
+      {
+         cordova.exec(callback, callback, "PushNotification", "getRemoteNotificationStatus", []);
+      };
+
+      // Call this to set the application icon badge
+      PushNotification.prototype.setApplicationIconBadgeNumber = function(badgeNumber, callback)
+      {
+         cordova.exec(callback, callback, "PushNotification", "setApplicationIconBadgeNumber", [
+         {
+            badge : badgeNumber
+         }]);
+      };
+
+      // Call this to clear all notifications from the notification center
+      PushNotification.prototype.cancelAllLocalNotifications = function(callback)
+      {
+         cordova.exec(callback, callback, "PushNotification", "cancelAllLocalNotifications", []);
+      };
+      //iOS End----
+
+      // Event spawned when a notification is received while the application is active
+      PushNotification.prototype.notificationCallback = function(notification)
+      {
+         var ev = document.createEvent('HTMLEvents');
+         ev.notification = notification;
+         ev.initEvent('push-notification', true, true, arguments);
+         document.dispatchEvent(ev);
+      };
+
+      cordova.addConstructor(function()
+      {
+         if (!window.plugins)
+            window.plugins =
+            {
+            };
+         window.plugins.pushNotification = new PushNotification();
+      });
+
+   })(window.cordova || window.Cordova || window.PhoneGap);
+}

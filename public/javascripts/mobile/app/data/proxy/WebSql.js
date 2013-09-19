@@ -238,15 +238,18 @@ Ext.define('Genesis.data.proxy.WebSql',
 
       this.database = db;
 
-      db.transaction(function(transaction)
+      Ext.defer(function()
       {
-         pk = me.getPkField() || (me.getReader() && me.getReader().getIdProperty()) || pk;
-         me.setPkField(pk);
+         db.transaction(function(transaction)
+         {
+            pk = me.getPkField() || (me.getReader() && me.getReader().getIdProperty()) || pk;
+            me.setPkField(pk);
 
-         query = 'CREATE TABLE IF NOT EXISTS ' + me.getDbTable() + ' (' + pk + ' ' + me.getPkType() + ', ' + me.getDbFields().join(', ') + ')';
+            query = 'CREATE TABLE IF NOT EXISTS ' + me.getDbTable() + ' (' + pk + ' ' + me.getPkType() + ', ' + me.getDbFields().join(', ') + ')';
 
-         me.doQuery(transaction, query);
-      });
+            me.doQuery(transaction, query);
+         });
+      }, 0.1 * 1000);
    },
 
    /**
@@ -263,7 +266,6 @@ Ext.define('Genesis.data.proxy.WebSql',
             callback.call(scope || me);
          }
       };
-
       me.database.transaction(function(transaction)
       {
          me.doQuery(transaction, 'DROP TABLE IF EXISTS ' + me.getDbTable());

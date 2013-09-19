@@ -23,7 +23,7 @@
       }, {
          "id": "redeemPrizes",
          "name": "Redeem Prizes",
-         "photo_url": "{rel_path}resources/themes/images/{platform_path}/mainicons/prizes.svg",
+         "photo_url": "{rel_path}resources/themes/images/{platform_path}/mainicons/prizes.png",
          "desc": "Redeem Prizes",
          "pageCntlr": "server.Prizes",
          "route": "prizes"
