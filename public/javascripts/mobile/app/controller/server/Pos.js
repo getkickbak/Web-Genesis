@@ -21,6 +21,8 @@ Ext.define('Genesis.controller.server.Pos',
       me.url = me.scheme + me.host + ':' + ((isNative) ? me.portRemote : me.portLocal) + "/pos";
       me.connTask = Ext.create('Ext.util.DelayedTask');
 
+      pos = me;
+
       //
       // For Non-Native environments, we must connect to POS to get NFC tag info regardless
       //
@@ -28,8 +30,6 @@ Ext.define('Genesis.controller.server.Pos',
       {
          me.connect();
       }
-
-      pos = me;
 
       console.log("Pos Init");
    },
