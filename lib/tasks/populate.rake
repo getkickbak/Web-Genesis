@@ -543,7 +543,7 @@ namespace :db do
             trans_record.save
             customer.points += merchant.reward_model.signup_points
           end
-          amount = rand(30) + 1.00
+          amount = rand(30) + 1.64647564736
           purchase_record = EarnRewardRecord.new(
             :type => :purchase,
             :venue_id => venues[rand(2)].id,

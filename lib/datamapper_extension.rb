@@ -6,6 +6,10 @@ module DataMapper
         typecasted = original_typecast_to_primitive(value)
         typecasted.round(@scale) if typecasted.respond_to?(:round)
       end
+      def typecast(value)
+        typecasted = super(value)
+        typecasted.round(@scale) if typecasted.respond_to?(:round)
+      end
     end
   end
 end
