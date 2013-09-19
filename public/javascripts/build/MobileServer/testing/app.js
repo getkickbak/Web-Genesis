@@ -80196,10 +80196,7 @@ Ext.define('Genesis.controller.server.Pos',
       //
       if (!isNative)
       {
-         me.wssocket = new WebSocket(me.url, 'json');
-         //wssocket.binaryType = 'arraybuffer';
-
-         me.setupWsCallback();
+         me.connect();
       }
 
       pos = me;
@@ -80221,17 +80218,18 @@ Ext.define('Genesis.controller.server.Pos',
 
       me.wssocket.onopen = function(event)
       {
+         Ext.Viewport.setMasked(null);
+         //
+         // Retrieve new connections after 5mins of inactivity
+         //
+         console.debug("WebSocketClient::onopen");
+
+         me.lastDisconnectTime = Genesis.db.getLocalDB()['lastPosDisconnectTime'] || 0;
+         Genesis.db.setLocalDBAttrib('lastPosConnectTime', Date.now());
+
          if (me.isEnabled())
          {
-            Ext.Viewport.setMasked(null);
-            //
-            // Retrieve new connections after 5mins of inactivity
-            //
-            console.debug("WebSocketClient::onopen");
-
-            me.lastDisconnectTime = Genesis.db.getLocalDB()['lastPosDisconnectTime'] || 0;
             me.initReceipt |= 0x10;
-            Genesis.db.setLocalDBAttrib('lastPosConnectTime', Date.now());
          }
          me.fireEvent('onopen');
       };
@@ -80251,7 +80249,10 @@ Ext.define('Genesis.controller.server.Pos',
          //
          Genesis.db.setLocalDBAttrib('lastPosDisconnectTime', Date.now());
          me.connTask.delay(timeout, me.connect, me.wssocket);
-         me.initReceipt &= ~0x10;
+         if (me.isEnabled())
+         {
+            me.initReceipt &= ~0x10;
+         }
          me.fireEvent('onclose');
       };
       me.wssocket.onmessage = function(event)
@@ -80331,8 +80332,8 @@ Ext.define('Genesis.controller.server.Pos',
    {
       var me = pos;
 
-      if (Ext.Viewport && !me.wssocket && me.isEnabled() && //
-      ((Genesis.fn.isNative() && Ext.device.Connection.isOnline()) || (!Genesis.fn.isNative() && navigator.onLine)))
+      if (Ext.Viewport && !me.wssocket && //
+      ((me.isEnabled() && Genesis.fn.isNative() && Ext.device.Connection.isOnline()) || (!Genesis.fn.isNative() && navigator.onLine)))
       {
          me.wssocket = new WebSocket(me.url, 'json');
 
