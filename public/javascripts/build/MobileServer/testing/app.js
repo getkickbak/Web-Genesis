@@ -73691,7 +73691,7 @@ Ext.define('Genesis.controller.ControllerBase',
    getMerchantInfoMsg : 'Retrieving Merchant Information ...',
    getVenueInfoMsg : 'Retrieving Venue Information ...',
    prepareToSendMerchantDeviceMsg : 'Confirm before tapping against the KICKBAK Card Reader ...',
-   mobilePhoneInputMsg : 'Enter Mobile Number',
+   mobilePhoneInputMsg : 'Mobile Number',
    lookingForMerchantDeviceMsg : function()//Send
    {
       return 'Tap your Phone against the ' + Genesis.constants.addCRLF() + 'KICKBAK Card Reader';
