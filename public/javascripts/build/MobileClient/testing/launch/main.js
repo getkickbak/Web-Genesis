@@ -105,7 +105,7 @@ var setChildBrowserVisibility = function(visible, hash)
                if (success && ((i |= flag) == 0x111))
                {
                   i = 0;
-                  
+
                   $('#loadingMask')['addClass']('x-item-hidden');
 
                   mainAppInit = true;
@@ -231,15 +231,15 @@ var setLoadMask = function(visible)
 };
 
 /*
-            if (Ext.os.is('Android') && Genesis.fn.isNative())
-            {
-               navigator.app.exitApp();
-            }
-            else if (!Genesis.fn.isNative())
-            {
-               window.location.reload();
-            }
- */
+if (Ext.os.is('Android') && Genesis.fn.isNative())
+{
+navigator.app.exitApp();
+}
+else if (!Genesis.fn.isNative())
+{
+window.location.reload();
+}
+*/
 // =============================================================
 // System Utilities
 // =============================================================
@@ -282,13 +282,16 @@ var setLoadMask = function(visible)
    {
       setImageSize();
       hideAddressBar();
-      //$('iframe')[0].style.height = //
+      if (!Genesis.fn.isNative())
+      {
+         $('iframe')[0].style.height = document.body.style.height;
+         $('iframe')[0].style.width = document.body.clientWidth + 'px';
+      }
       $('#checkexplorepageview')[0].style.height = //
       $('#loadingMask')[0].style.height = //
       $('#notification')[0].style.height = //
       $('#mask')[0].style.height = //
       $('#earnptspageview')[0].style.height = document.body.style.height;
-      //$('iframe')[0].style.width = document.body.clientWidth + 'px';
       $('body')[(window.orientation == 0) ? 'addClass' : 'removeClass']('x-portrait');
       $('body')[(window.orientation == 0) ? 'removeClass' : 'addClass']('x-landscape');
    };
@@ -479,30 +482,34 @@ var setLoadMask = function(visible)
    });
    window.addEventListener("orientationchange", orientationChange);
    $(window).resize(orientationChange);
-   $(window).on('scroll', function(e)
+
+   if (!($.os.ios && (parseFloat($.os.version) >= 7.0)))
    {
-      setTimeout(function()
+      $(window).on('scroll', function(e)
       {
-         try
+         setTimeout(function()
          {
-            var totalHeight = parseInt(document.body.style.height.split('px')[0]) + getHeightOfIOSToolbars();
-
-            //if (window.outerHeight > window.innerHeight)
-            if (Math.abs(totalHeight - ((window.orientation === 0) ? window.screen.height : window.screen.width)) > 20)
+            try
             {
-               window.scrollTo(0, 0);
-            }
-         }
-         catch(e)
-         {
-         }
-      }, 0.1 * 1000);
-   });
+               var totalHeight = parseInt(document.body.style.height.split('px')[0]) + getHeightOfIOSToolbars();
 
-   $(document.body).on('touchmove', function(e)
-   {
-      e.preventDefault();
-   });
+               //if (window.outerHeight > window.innerHeight)
+               if (Math.abs(totalHeight - ((window.orientation === 0) ? window.screen.height : window.screen.width)) > 20)
+               {
+                  window.scrollTo(0, 0);
+               }
+            }
+            catch(e)
+            {
+            }
+         }, 0.1 * 1000);
+      });
+
+      $(document.body).on('touchmove', function(e)
+      {
+         e.preventDefault();
+      });
+   }
    $(document).ready(function()
    {
       var me = gblController, viewport = gblController.getViewPortCntlr();

@@ -349,7 +349,7 @@
          };
          var calcHeight = function()
          {
-            if (getHeightOfIOSToolbars() >= 20)
+            if (getHeightOfIOSToolbars() > 20)
             {
                if ($.os.ios)
                {
@@ -362,7 +362,14 @@
             }
             else
             {
-               return ((window.orientation === 0) ? window.screen.height : window.screen.width);
+               if ($.os.ios)
+               {
+                  return (((window.orientation === 0) ? window.screen.height : window.screen.width) - 20);                  
+               }
+               else
+               {
+                  return ((window.orientation === 0) ? window.screen.height : window.screen.width);                  
+               }
             }
          };
          var setNotificationVisibility = function(visible, title, message, buttonText, callback)
