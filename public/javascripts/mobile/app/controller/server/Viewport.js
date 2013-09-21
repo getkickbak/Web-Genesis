@@ -475,7 +475,7 @@ Ext.define('Genesis.controller.server.Viewport',
       {
          'venue_id' : venueId
       };
-      
+
       console.debug("Loaded License Key for Venue(" + venueId + ")...");
       Venue['setGetMerchantVenueExploreURL'](venueId);
       Venue.load(venueId,
@@ -631,29 +631,8 @@ Ext.define('Genesis.controller.server.Viewport',
          }
       }, 1, me);
 
-      //if (Genesis.fn.isNative())
-      {
-         //
-         // Volume Settings
-         // ===============
-         s_vol_ratio = 0.4;
-         //Default Volume laying flat on a surface
-         c.s_vol = 40;
-
-         r_vol_ratio = 0.5;
-         // Read fresh data as soon as there's a miss
-         c.conseqMissThreshold = 1;
-         c.magThreshold = 20000;
-         c.numSamples = 4 * 1024;
-         //Default Overlap of FFT signal analysis over previous samples
-         c.sigOverlapRatio = 0.25;
-
-         c.proximityTxTimeout = 20 * 1000;
-         c.proximityRxTimeout = 40 * 1000;
-         Genesis.fn.printProximityConfig();
-         window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
-      }
-
+      proximityInit();
+      
       if (pos.isEnabled() && Genesis.fn.isNative())
       {
          console.debug("Server Viewport - establishPosConn");

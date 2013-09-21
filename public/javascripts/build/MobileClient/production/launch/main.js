@@ -281,17 +281,6 @@ window.location.reload();
    var orientationChange = function()
    {
       setImageSize();
-      hideAddressBar();
-      if (!Genesis.fn.isNative())
-      {
-         $('iframe')[0].style.height = document.body.style.height;
-         $('iframe')[0].style.width = document.body.clientWidth + 'px';
-      }
-      $('#checkexplorepageview')[0].style.height = //
-      $('#loadingMask')[0].style.height = //
-      $('#notification')[0].style.height = //
-      $('#mask')[0].style.height = //
-      $('#earnptspageview')[0].style.height = document.body.style.height;
       $('body')[(window.orientation == 0) ? 'addClass' : 'removeClass']('x-portrait');
       $('body')[(window.orientation == 0) ? 'removeClass' : 'addClass']('x-landscape');
    };
@@ -369,7 +358,10 @@ window.location.reload();
                if (refresh)
                {
                   $('.body ul').html(venues);
-                  $('#checkexplorepageview .body').infiniteScroll('reset');
+                  if (!($.os.ios && (parseFloat($.os.version) >= 7.0)))
+                  {
+                     $('#checkexplorepageview .body').infiniteScroll('reset');
+                  }
                }
 
                for (var i = 0; i < data.length; i++)
@@ -387,12 +379,15 @@ window.location.reload();
                   // @formatter:on
                }
                $('.body ul').append(venues);
-               iscroll.refresh();
                refreshCheckExploreVenues();
 
-               if (refresh)
+               if (!($.os.ios && (parseFloat($.os.version) >= 7.0)))
                {
-                  $('#checkexplorepageview .body').infiniteScroll('reset');
+                  iscroll.refresh();
+                  if (refresh)
+                  {
+                     $('#checkexplorepageview .body').infiniteScroll('reset');
+                  }
                }
             },
             error : function(xhr, type)
@@ -650,15 +645,18 @@ window.location.reload();
       if ($.os.ios)
       {
          $('body').addClass('x-ios');
+         $('body').addClass('x-ios-' + parseInt(($.os.version)));
       }
       else if ($.os.blackberry || $.os.bb10 || $.os.rimtabletos)
       {
          $('body').addClass('x-blackberry');
+         $('body').addClass('x-blackberry-' + parseInt(($.os.version)));
       }
       else
       //else if ($.os.android)
       {
          $('body').addClass('x-android');
+         $('body').addClass('x-android-' + parseInt(($.os.version)));
       }
       $('body').addClass(($.os.phone) ? 'x-phone' : 'x-tablet');
 
@@ -674,44 +672,49 @@ window.location.reload();
       // =============================================================
       // Venue Browse/Scroll
       // =============================================================
-      iscroll = new IScroll('#checkexplorepageview .body',
+      var ajax, i = -1, iscrollInfinite = $('#checkexplorepageview .body');
+      if (!($.os.ios && (parseFloat($.os.version) >= 7.0)))
       {
-         scrollbars : true,
-         mouseWheel : true,
-         interactiveScrollbars : false
-      });
-      var ajax, i = -1, origEventHandler = iscroll.handleEvent, iscrollInfinite = $('#checkexplorepageview .body');
-      iscrollInfinite.infiniteScroll(
-      {
-         threshold : window.screen.height,
-         iScroll : iscroll,
-         onEnd : function()
+         $('#checkexplorepageview .body > div:first-child').addClass('scroller');
+         iscroll = new IScroll('#checkexplorepageview .body',
          {
-            console.debug('No More Results');
-         },
-         onBottom : function(callback)
+            scrollbars : true,
+            mouseWheel : true,
+            interactiveScrollbars : false
+         });
+         var origEventHandler = iscroll.handleEvent;
+         iscrollInfinite.infiniteScroll(
          {
-            if ($('.media').length > 0)
+            threshold : window.screen.height,
+            iScroll : iscroll,
+            onEnd : function()
             {
-               console.debug('At the end of the page. Loading more!');
-               getNearestVenues($('.media').length);
+               console.debug('No More Results');
+            },
+            onBottom : function(callback)
+            {
+               if ($('.media').length > 0)
+               {
+                  console.debug('At the end of the page. Loading more!');
+                  getNearestVenues($('.media').length);
+               }
+               callback(true);
             }
-            callback(true);
-         }
-      });
+         });
 
-      iscroll.handleEvent = function(e)
-      {
-         origEventHandler.call(iscroll, e);
-         switch ( e.type )
+         iscroll.handleEvent = function(e)
          {
-            case 'touchmove':
-            case 'MSPointerMove':
-            case 'mousemove':
-               iscrollInfinite.data().infiniteScroll.iScroll.options.onScrollMove();
-               break;
-         }
-      };
+            origEventHandler.call(iscroll, e);
+            switch ( e.type )
+            {
+               case 'touchmove':
+               case 'MSPointerMove':
+               case 'mousemove':
+                  iscrollInfinite.data().infiniteScroll.iScroll.options.onScrollMove();
+                  break;
+            }
+         };
+      }
       iscrollInfinite.tap(function(e)
       {
          //
@@ -723,7 +726,6 @@ window.location.reload();
             getNearestVenues(0);
          }
       });
-
       // =============================================================
       // WelcomePage Actions
       // =============================================================

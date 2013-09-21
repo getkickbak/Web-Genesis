@@ -63,7 +63,7 @@
          #checkexplorepageview .body {
             position: absolute;
             z-index: 1;
-            top: 45px;
+            top: 46px;
             bottom: 72px;
             left: 0;
             width: 100%;
@@ -82,7 +82,7 @@
          .x-landscape #checkexplorepageview .body::before {
             position: absolute;
             background: url('../resources/themes/images/v1/ios/mainicons/checkin.svg') no-repeat;
-            background-size: 37.5% auto;
+            background-size: 30% auto;
             height: 100%;
             width: 100%;
             content: "";
@@ -93,6 +93,9 @@
             bottom: 0;
             left: 0;
             right: 0;
+         }
+         .x-ios-7 #checkexplorepageview .scroller {
+            
          }
          #checkexplorepageview .scroller {
             position: absolute;
@@ -116,7 +119,7 @@
             text-size-adjust: none;
          }
          
-         #checkexplorepageview .scroller ul {
+         #checkexplorepageview .media-list {
             list-style: none;
             padding: 0;
             margin: 0;
@@ -124,7 +127,7 @@
             text-align: left;
          }
          
-         #checkexplorepageview .scroller li {
+         #checkexplorepageview .media-list li {
             padding: 0.8em 10px;
             height: 6.3em;
             line-height: 16px;
@@ -177,22 +180,45 @@
 
             navigator.splashscreen.hide();
          }, false);
+         setInterval(function()
+         {
+            if ((typeof($) != 'undefined') && (typeof(Genesis) != 'undefined') && //
+            (_winHeight != window.innerHeight))
+            {
+               if ($.os.ios && (parseFloat($.os.version) < 7.0))
+               {
+                  _winHeight = ((window.orientation === 0) ? window.screen.height - 64 : window.screen.width - 52);
+               }
+               else
+               {                  
+                  _winHeight = window.innerHeight;
+               }
+               document.body.style.height = _winHeight + 'px';
+               console.debug("Body Height :" + document.body.style.height);
+               
+               if (!Genesis.fn.isNative())
+               {
+                  var style = $('iframe')[0].style;
+                  style.height = document.body.style.height;
+                  style.width = document.body.clientWidth + 'px';
+               }
+               $('#checkexplorepageview')[0].style.height = //
+               $('#loadingMask')[0].style.height = //
+               $('#notification')[0].style.height = //
+               $('#mask')[0].style.height = //
+               $('#earnptspageview')[0].style.height = document.body.style.height;
+               
+               if (!($.os.ios && (parseFloat($.os.version) >= 7.0)))
+               {
+                  setTimeout( function(){ window.scrollTo(0, 0); }, 50 );               
+               }
+            }
+         }, 0.1 * 1000);         
       </script>
       <script type="text/javascript" src="../lib/cordova-2.8.1.android.js"></script>
       <script type="text/javascript" src="../lib/zepto.min.js"></script>
       <script type="text/javascript">
          window.jQuery = Zepto;
-         function hideAddressBar()
-         {
-            /*
-            //if(!window.location.hash)
-            {
-               document.body.style.height = calcHeight() + 'px';
-               console.log("Body Height :" + document.body.style.height);
-               setTimeout( function(){ window.scrollTo(0, 0); }, 50 );
-            }
-            */
-         };
          var getIOSWindowHeight = function() {
             // Get zoom level of mobile Safari
             // Note, that such zoom detection might not work correctly in other browsers
@@ -208,18 +234,6 @@
          var getHeightOfIOSToolbars = function() {
             var tH = (window.orientation === 0 ? screen.height : screen.width) -  getIOSWindowHeight();
             return tH > 1 ? tH : 0;
-         };
-         var calcHeight = function()
-         {
-            if (getHeightOfIOSToolbars() > 20)
-            {
-               return ((window.orientation === 0) ? window.screen.height - 60 : window.screen.width - 48);
-            }
-            else
-            {
-               var header = (window.cordova) ? 20 : 0;
-               return (((window.orientation === 0) ? window.screen.height : window.screen.width) - 20);
-            }
          };
          var setNotificationVisibility = function(visible, title, message, buttonText, callback)
          {
@@ -243,8 +257,6 @@
                $('#mask').addClass('x-item-hidden');
             }
          };
-         
-         window.addEventListener("load", function(){ hideAddressBar(); });
       </script>
       <script type="text/javascript" src="mccore.js"></script>      
       <script type="text/javascript" src="mclient-all.js"></script>
@@ -281,7 +293,7 @@
                </div>
             </div>
          <div class="body">
-            <div class="scroller">
+            <div class="">
                <ul class="media-list">
                </ul>
             </div>

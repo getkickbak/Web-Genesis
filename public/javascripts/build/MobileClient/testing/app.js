@@ -74229,7 +74229,7 @@ Ext.define('Genesis.controller.ControllerBase',
    getMerchantInfoMsg : 'Retrieving Merchant Information ...',
    getVenueInfoMsg : 'Retrieving Venue Information ...',
    prepareToSendMerchantDeviceMsg : 'Confirm before tapping against the KICKBAK Card Reader ...',
-   mobilePhoneInputMsg : 'Enter Mobile Number',
+   mobilePhoneInputMsg : 'Mobile Number',
    lookingForMerchantDeviceMsg : function()//Send
    {
       return 'Tap your Phone against the ' + Genesis.constants.addCRLF() + 'KICKBAK Card Reader';
@@ -77691,6 +77691,75 @@ Ext.define('Genesis.model.frontend.LicenseKey',
       }
    }
 });
+
+proximityInit = function()
+{
+   //
+   // Sender/Receiver Volume Settings
+   // ===============================
+   // - For Mobile Phones
+   //
+   // Client Device always transmits
+   //
+   var s_vol_ratio, r_vol_ratio, c = Genesis.constants;
+
+   if (!merchantMode)
+   {
+      if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
+      {
+         //(tx)
+         s_vol_ratio = 1.0;
+         //Default Volume laying flat on a surface (tx)
+         c.s_vol = 50;
+
+         r_vol_ratio = 0.5;
+         //(rx)
+         c.conseqMissThreshold = 1;
+         c.magThreshold = 20000;
+         // More samples for better accuracy
+         c.numSamples = 4 * 1024;
+         //Default Overlap of FFT signal analysis over previous samples
+         c.sigOverlapRatio = 0.25;
+      }
+      else if (Ext.os.is('Android') || Ext.os.is('BlackBerry'))
+      {
+         //(tx)
+         s_vol_ratio = 0.5;
+         //Default Volume laying flat on a surface (tx)
+         c.s_vol = 50;
+
+         //(rx)
+         r_vol_ratio = 0.5;
+         c.conseqMissThreshold = 1;
+         c.magThreshold = 20000;
+         c.numSamples = 4 * 1024;
+         //Default Overlap of FFT signal analysis over previous samples
+         c.sigOverlapRatio = 0.25;
+      }
+   }
+   else
+   {
+      //
+      // Volume Settings
+      // ===============
+      s_vol_ratio = 0.4;
+      //Default Volume laying flat on a surface
+      c.s_vol = 40;
+
+      r_vol_ratio = 0.5;
+      // Read fresh data as soon as there's a miss
+      c.conseqMissThreshold = 1;
+      c.magThreshold = 20000;
+      c.numSamples = 4 * 1024;
+      //Default Overlap of FFT signal analysis over previous samples
+      c.sigOverlapRatio = 0.25;
+   }
+   c.proximityTxTimeout = 20 * 1000;
+   c.proximityRxTimeout = 40 * 1000;
+
+   Genesis.fn.printProximityConfig();
+   window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
+};
 
 Ext.define('Genesis.controller.ViewportBase',
 {
@@ -90007,7 +90076,7 @@ Ext.define('Genesis.controller.client.Viewport',
 
       if (!Genesis.fn.isNative())
       {
-         window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
+         proximityInit();
       }
 
       me.sound_files = gblController.sound_files;

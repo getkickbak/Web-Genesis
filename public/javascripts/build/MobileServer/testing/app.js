@@ -77154,6 +77154,75 @@ Ext.define('Genesis.model.frontend.LicenseKey',
    }
 });
 
+proximityInit = function()
+{
+   //
+   // Sender/Receiver Volume Settings
+   // ===============================
+   // - For Mobile Phones
+   //
+   // Client Device always transmits
+   //
+   var s_vol_ratio, r_vol_ratio, c = Genesis.constants;
+
+   if (!merchantMode)
+   {
+      if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
+      {
+         //(tx)
+         s_vol_ratio = 1.0;
+         //Default Volume laying flat on a surface (tx)
+         c.s_vol = 50;
+
+         r_vol_ratio = 0.5;
+         //(rx)
+         c.conseqMissThreshold = 1;
+         c.magThreshold = 20000;
+         // More samples for better accuracy
+         c.numSamples = 4 * 1024;
+         //Default Overlap of FFT signal analysis over previous samples
+         c.sigOverlapRatio = 0.25;
+      }
+      else if (Ext.os.is('Android') || Ext.os.is('BlackBerry'))
+      {
+         //(tx)
+         s_vol_ratio = 0.5;
+         //Default Volume laying flat on a surface (tx)
+         c.s_vol = 50;
+
+         //(rx)
+         r_vol_ratio = 0.5;
+         c.conseqMissThreshold = 1;
+         c.magThreshold = 20000;
+         c.numSamples = 4 * 1024;
+         //Default Overlap of FFT signal analysis over previous samples
+         c.sigOverlapRatio = 0.25;
+      }
+   }
+   else
+   {
+      //
+      // Volume Settings
+      // ===============
+      s_vol_ratio = 0.4;
+      //Default Volume laying flat on a surface
+      c.s_vol = 40;
+
+      r_vol_ratio = 0.5;
+      // Read fresh data as soon as there's a miss
+      c.conseqMissThreshold = 1;
+      c.magThreshold = 20000;
+      c.numSamples = 4 * 1024;
+      //Default Overlap of FFT signal analysis over previous samples
+      c.sigOverlapRatio = 0.25;
+   }
+   c.proximityTxTimeout = 20 * 1000;
+   c.proximityRxTimeout = 40 * 1000;
+
+   Genesis.fn.printProximityConfig();
+   window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
+};
+
 Ext.define('Genesis.controller.ViewportBase',
 {
    extend :  Genesis.controller.ControllerBase ,
@@ -84567,7 +84636,7 @@ Ext.define('Genesis.controller.server.Viewport',
       {
          'venue_id' : venueId
       };
-      
+
       console.debug("Loaded License Key for Venue(" + venueId + ")...");
       Venue['setGetMerchantVenueExploreURL'](venueId);
       Venue.load(venueId,
@@ -84723,29 +84792,8 @@ Ext.define('Genesis.controller.server.Viewport',
          }
       }, 1, me);
 
-      //if (Genesis.fn.isNative())
-      {
-         //
-         // Volume Settings
-         // ===============
-         s_vol_ratio = 0.4;
-         //Default Volume laying flat on a surface
-         c.s_vol = 40;
-
-         r_vol_ratio = 0.5;
-         // Read fresh data as soon as there's a miss
-         c.conseqMissThreshold = 1;
-         c.magThreshold = 20000;
-         c.numSamples = 4 * 1024;
-         //Default Overlap of FFT signal analysis over previous samples
-         c.sigOverlapRatio = 0.25;
-
-         c.proximityTxTimeout = 20 * 1000;
-         c.proximityRxTimeout = 40 * 1000;
-         Genesis.fn.printProximityConfig();
-         window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
-      }
-
+      proximityInit();
+      
       if (pos.isEnabled() && Genesis.fn.isNative())
       {
          console.debug("Server Viewport - establishPosConn");

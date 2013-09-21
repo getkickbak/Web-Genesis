@@ -501,7 +501,7 @@ Ext.define('Genesis.controller.client.Viewport',
 
       if (!Genesis.fn.isNative())
       {
-         window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
+         proximityInit();
       }
 
       me.sound_files = gblController.sound_files;

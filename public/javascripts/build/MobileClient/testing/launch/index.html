@@ -52,11 +52,7 @@
             margin-top: 20px;
          }
          #checkexplorepageview {
-            position : absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom:0;
+            position : relative;
          }
          #checkexplorepageview .header {
          }
@@ -64,12 +60,18 @@
          #checkexplorepageview .body {
             position: absolute;
             z-index: 1;
-            top: 45px;
+            top: 46px;
             bottom: 72px;
             left: 0;
             width: 100%;
             background: transparent;
             overflow: hidden;
+         }
+         .x-ios-7 #checkexplorepageview .body {
+            position: static;
+         }
+         #checkexplorepageview .body.withTb {
+            padding-bottom : 72px;
          }
          .x-portrait #checkexplorepageview .body::before {
             position: absolute;
@@ -83,7 +85,7 @@
          .x-landscape #checkexplorepageview .body::before {
             position: absolute;
             background: url('../resources/themes/images/v1/ios/mainicons/checkin.svg') no-repeat;
-            background-size: 37.5% auto;
+            background-size: 30% auto;
             height: 100%;
             width: 100%;
             content: "";
@@ -94,6 +96,12 @@
             bottom: 0;
             left: 0;
             right: 0;
+         }
+         .x-ios-7 #checkexplorepageview .footer {
+            position: fixed;
+         }
+         .x-ios-7 #checkexplorepageview .body {
+            position: fixed;
          }
          #checkexplorepageview .scroller {
             position: absolute;
@@ -117,7 +125,7 @@
             text-size-adjust: none;
          }
          
-         #checkexplorepageview .scroller ul {
+         #checkexplorepageview .media-list {
             list-style: none;
             padding: 0;
             margin: 0;
@@ -125,7 +133,7 @@
             text-align: left;
          }
          
-         #checkexplorepageview .scroller li {
+         #checkexplorepageview .media-list li {
             padding: 0.8em 10px;
             height: 6.3em;
             line-height: 16px;
@@ -150,7 +158,7 @@
       <title>KickBak</title>
    </head>
    <body class="">
-      <div id="checkexplorepageview" class="x-container x-sheet x-sized x-floating" style="padding:0;">
+      <div id="checkexplorepageview" class="x-container x-sheet x-sized" style="padding:0;">
          <div class="header x-container x-toolbar-dark x-toolbar x-sized navigationBarTop x-dock-item x-docked-top kbTitle" style="height: 2.6em !important; ">
                <div class="x-body">
                   <div class="x-center">
@@ -180,13 +188,13 @@
                </div>
             </div>
          <div class="body">
-            <div class="scroller">
+            <div class="">
                <ul class="media-list">
                </ul>
             </div>
          </div>
          <div class="footer x-container x-unsized x-dock-item x-docked-bottom" style="">
-            <div class="x-inner x-horizontal x-align-stretch x-pack-start x-layout-box" style="padding: 0em 1em 0.5em;">
+            <div class="x-inner x-horizontal x-align-stretch x-pack-start x-layout-box" style="padding: 0.5em 1em;">
                <div id="earnPtsLoad" class="x-button x-button-action x-layout-box-item x-flexed x-sized" style="height: 3em !important; -webkit-box-flex: 1;">
                   <span class="x-button-label"></span>
                </div>
@@ -287,7 +295,7 @@
       <script type="text/javascript" src="../lib/zepto.min.js"></script>
       <script type="text/javascript">
          window.jQuery = Zepto, serverHost = "";
-         var _filesAssetCount = 0;
+         var _filesAssetCount = 0, _winHeight = 0;
          
          //
          // Add2Home Feature Configuration
@@ -322,15 +330,6 @@
                }, false);
             }
          }
-         var hideAddressBar = function()
-         {
-            //if(!window.location.hash)
-            {
-               document.body.style.height = calcHeight() + 'px';
-               console.debug("Body Height :" + document.body.style.height);
-               setTimeout( function(){ window.scrollTo(0, 0); }, 50 );
-            }
-         };
          var getIOSWindowHeight = function() {
             // Get zoom level of mobile Safari
             // Note, that such zoom detection might not work correctly in other browsers
@@ -346,31 +345,6 @@
          var getHeightOfIOSToolbars = function() {
             var tH = (window.orientation === 0 ? screen.height : screen.width) -  getIOSWindowHeight();
             return tH > 1 ? tH : 0;
-         };
-         var calcHeight = function()
-         {
-            if (getHeightOfIOSToolbars() > 20)
-            {
-               if ($.os.ios)
-               {
-                  return ((window.orientation === 0) ? window.screen.height - 60 : window.screen.width - 48);
-               }
-               else
-               {                  
-                  return (((window.orientation === 0) ? window.screen.height : window.screen.width) - getHeightOfIOSToolbars());
-               }
-            }
-            else
-            {
-               if ($.os.ios)
-               {
-                  return (((window.orientation === 0) ? window.screen.height : window.screen.width) - 20);                  
-               }
-               else
-               {
-                  return ((window.orientation === 0) ? window.screen.height : window.screen.width);                  
-               }
-            }
          };
          var setNotificationVisibility = function(visible, title, message, buttonText, callback)
          {
@@ -394,8 +368,49 @@
                $('#mask').addClass('x-item-hidden');
             }
          };
-         
-         window.addEventListener("load", function(){ checkAppCache(); hideAddressBar(); });
+         setInterval(function()
+         {
+            if ((typeof($) != 'undefined') && (typeof(Genesis) != 'undefined') && //
+            (_winHeight != window.innerHeight))
+            {
+               if ($.os.ios && (parseFloat($.os.version) < 7.0) && (getHeightOfIOSToolbars() > 60))
+               {
+                  _winHeight = ((window.orientation === 0) ? window.screen.height - 64 : window.screen.width - 52);
+               }
+               else
+               {                  
+                  _winHeight = window.innerHeight;
+               }
+               document.body.style.height = _winHeight + 'px';
+               console.debug("Body Height :" + _winHeight + 'px');
+               
+               if (!Genesis.fn.isNative())
+               {
+                  var style = $('iframe')[0].style;
+                  style.height = _winHeight + 'px';
+                  style.width = document.body.clientWidth + 'px';
+               }
+               $('#checkexplorepageview')[0].style['min-height'] = //
+               $('#loadingMask')[0].style.height = //
+               $('#notification')[0].style.height = //
+               $('#mask')[0].style.height = //
+               $('#earnptspageview')[0].style.height = _winHeight + 'px';
+               
+               if (!($.os.ios && (parseFloat($.os.version) >= 7.0)))
+               {
+                  setTimeout( function(){ window.scrollTo(0, 0); }, 50 );               
+               }
+               else
+               {
+                  var action = ((getHeightOfIOSToolbars() < 60) || ($('.media').length <= 5)) ? 'addTb' : 'removeTb';
+                  
+                  $('#checkexplorepageview .footer')[(action == 'addTb') ? 'removeClass' : 'addClass']('x-item-hidden');
+                  $('#checkexplorepageview .body')[(action == 'addTb') ? 'addClass' : 'removeClass']('withTb');
+                  //$('#checkexplorepageview .body')[0].style.height = parseInt((_winHeight - (2.6*18))) + 'px';
+               }
+            }
+         }, 0.1 * 1000);
+         window.addEventListener("load", checkAppCache);
       </script>
       <script type="text/javascript" src="mccore.js"></script>
       <script type="text/javascript" src="mclient-all.js"></script>

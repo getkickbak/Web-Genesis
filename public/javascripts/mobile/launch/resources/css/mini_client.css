@@ -466,7 +466,7 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
    background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%,#555658), color-stop(85%,#000000));
    background-image: -webkit-linear-gradient(top,#555658 10%,#000000 85%);
    background-image: linear-gradient(top,#555658 10%,#000000 85%);
-   color: #f3f3f4;
+   /*color: #f3f3f4;*/
 }
 .x-toolbar {
    padding: 0 0.2em;
