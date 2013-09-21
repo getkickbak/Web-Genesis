@@ -1,4 +1,79 @@
 var onBackKeyDown = Ext.emptyFn;
+proximityInit = function()
+{
+   //
+   // Sender/Receiver Volume Settings
+   // ===============================
+   // - For Mobile Phones
+   //
+   // Client Device always transmits
+   //
+   var s_vol_ratio, r_vol_ratio, c = Genesis.constants;
+
+   if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
+   {
+      //(tx)
+      s_vol_ratio = 1.0;
+      //Default Volume laying flat on a surface (tx)
+      c.s_vol = 50;
+
+      r_vol_ratio = 0.5;
+      //(rx)
+      c.conseqMissThreshold = 1;
+      c.magThreshold = 20000;
+      // More samples for better accuracy
+      c.numSamples = 4 * 1024;
+      //Default Overlap of FFT signal analysis over previous samples
+      c.sigOverlapRatio = 0.25;
+   }
+   else if (Ext.os.is('Android') || Ext.os.is('BlackBerry'))
+   {
+      //(tx)
+      s_vol_ratio = 0.5;
+      //Default Volume laying flat on a surface (tx)
+      c.s_vol = 50;
+
+      //(rx)
+      r_vol_ratio = 0.5;
+      c.conseqMissThreshold = 1;
+      c.magThreshold = 20000;
+      c.numSamples = 4 * 1024;
+      //Default Overlap of FFT signal analysis over previous samples
+      c.sigOverlapRatio = 0.25;
+   }
+   c.proximityTxTimeout = 20 * 1000;
+   c.proximityRxTimeout = 40 * 1000;
+
+   Genesis.fn.printProximityConfig();
+   window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
+};
+soundInit = function(viewport)
+{
+   Ext.defer(function()
+   {
+      //
+      // Initialize Sound Files, make it non-blocking
+      //
+      viewport.sound_files =
+      {
+      };
+      var soundList = [//
+      ['rouletteSpinSound', 'roulette_spin_sound', 'Media'], //
+      ['winPrizeSound', 'win_prize_sound', 'Media'], //
+      ['losePrizeSound', 'lose_prize_sound', 'Media'], //
+      ['birthdaySound', 'birthday_surprise', 'Media'], //
+      ['promoteSound', 'promote_sound', 'FX'], //
+      ['clickSound', 'click_sound', 'FX'], //
+      //['refreshListSound', 'refresh_list_sound', 'FX'], //
+      ['beepSound', 'beep.wav', 'FX']];
+
+      for (var i = 0; i < soundList.length; i++)
+      {
+         //console.debug("Preloading " + soundList[i][0] + " ...");
+         viewport.loadSoundFile.apply(me, soundList[i]);
+      }
+   }, 1, viewport);
+};
 
 Ext.require(['Genesis.controller.ControllerBase'], function()
 {
@@ -502,9 +577,12 @@ Ext.define('Genesis.controller.client.Viewport',
       if (!Genesis.fn.isNative())
       {
          proximityInit();
+         soundInit(me);
       }
-
-      me.sound_files = gblController.sound_files;
+      else
+      {
+         me.sound_files = gblController.sound_files;
+      }
    },
    openPage : function()
    {

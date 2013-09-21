@@ -1,5 +1,58 @@
 // add back button listener
 var onBackKeyDown = Ext.emptyFn, appWindow, appOrigin;
+proximityInit = function()
+{
+   //
+   // Sender/Receiver Volume Settings
+   // ===============================
+   // - For Mobile Phones
+   //
+   // Client Device always transmits
+   //
+   var s_vol_ratio, r_vol_ratio, c = Genesis.constants;
+
+   //
+   // Volume Settings
+   // ===============
+   s_vol_ratio = 0.4;
+   //Default Volume laying flat on a surface
+   c.s_vol = 40;
+
+   r_vol_ratio = 0.5;
+   // Read fresh data as soon as there's a miss
+   c.conseqMissThreshold = 1;
+   c.magThreshold = 20000;
+   c.numSamples = 4 * 1024;
+   //Default Overlap of FFT signal analysis over previous samples
+   c.sigOverlapRatio = 0.25;
+   c.proximityTxTimeout = 20 * 1000;
+   c.proximityRxTimeout = 40 * 1000;
+
+   Genesis.fn.printProximityConfig();
+   window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
+};
+soundInit = function(viewport)
+{
+   Ext.defer(function()
+   {
+      viewport.sound_files =
+      {
+      };
+      var soundList = [//
+      ['clickSound', 'click_sound', 'FX'], //
+      ['nfcEnd', 'nfc_end', 'FX'], //
+      ['nfcError', 'nfc_error', 'FX'], //
+      //['refreshListSound', 'refresh_list_sound', 'FX'], //
+      ['beepSound', 'beep.wav', 'FX']];
+
+      for ( i = 0; i < soundList.length; i++)
+      {
+         //console.debug("Preloading " + soundList[i][0] + " ...");
+         viewport.loadSoundFile.apply(viewport, soundList[i]);
+      }
+   }, 1, viewport);
+};
+
 Ext.require(['Genesis.controller.ControllerBase'], function()
 {
    onBackKeyDown = function(e)
@@ -612,27 +665,9 @@ Ext.define('Genesis.controller.server.Viewport',
       //
       // Initialize Sound Files, make it non-blocking
       //
-      Ext.defer(function()
-      {
-         this.sound_files =
-         {
-         };
-         var soundList = [//
-         ['clickSound', 'click_sound', 'FX'], //
-         ['nfcEnd', 'nfc_end', 'FX'], //
-         ['nfcError', 'nfc_error', 'FX'], //
-         //['refreshListSound', 'refresh_list_sound', 'FX'], //
-         ['beepSound', 'beep.wav', 'FX']];
-
-         for ( i = 0; i < soundList.length; i++)
-         {
-            //console.debug("Preloading " + soundList[i][0] + " ...");
-            this.loadSoundFile.apply(this, soundList[i]);
-         }
-      }, 1, me);
-
       proximityInit();
-      
+      soundInit(me);
+
       if (pos.isEnabled() && Genesis.fn.isNative())
       {
          console.debug("Server Viewport - establishPosConn");
