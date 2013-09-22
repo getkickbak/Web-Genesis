@@ -67,10 +67,10 @@
             background: transparent;
             overflow: hidden;
          }
-         .x-ios-7 #checkexplorepageview .body {
+         #checkexplorepageview.noIScroll .body {
             position: static;
          }
-         #checkexplorepageview .body.withTb {
+         #checkexplorepageview.withTb .body {
             padding-bottom : 72px;
          }
          .x-portrait #checkexplorepageview .body::before {
@@ -97,10 +97,7 @@
             left: 0;
             right: 0;
          }
-         .x-ios-7 #checkexplorepageview .footer {
-            position: fixed;
-         }
-         .x-ios-7 #checkexplorepageview .body {
+         #checkexplorepageview.withTb .footer {
             position: fixed;
          }
          #checkexplorepageview .scroller {
@@ -405,7 +402,7 @@
                      var action = ((getHeightOfIOSToolbars() < 60) || ($('.media').length <= 5)) ? 'addTb' : 'removeTb';
                      
                      $('#checkexplorepageview .footer')[(action == 'addTb') ? 'removeClass' : 'addClass']('x-item-hidden');
-                     $('#checkexplorepageview .body')[(action == 'addTb') ? 'addClass' : 'removeClass']('withTb');
+                     $('#checkexplorepageview')[(action == 'addTb') ? 'addClass' : 'removeClass']('withTb');
                      //$('#checkexplorepageview .body')[0].style.height = parseInt((_winHeight - (2.6*18))) + 'px';
                   }
                }

@@ -715,6 +715,10 @@ window.location.reload();
             }
          };
       }
+      else
+      {
+         $('#checkexplorepageview').addClass('noIScroll');
+      }
       iscrollInfinite.tap(function(e)
       {
          //
