@@ -295,7 +295,7 @@
       <script type="text/javascript" src="../lib/zepto.min.js"></script>
       <script type="text/javascript">
          window.jQuery = Zepto, serverHost = "";
-         var _filesAssetCount = 0, _winHeight = 0;
+         var _filesAssetCount = 0, _winHeight = 0, _winWidth = 0;
          
          //
          // Add2Home Feature Configuration
@@ -370,43 +370,55 @@
          };
          setInterval(function()
          {
-            if ((typeof($) != 'undefined') && (typeof(Genesis) != 'undefined') && //
-            (_winHeight != window.innerHeight))
+            if ((typeof($) != 'undefined') && (typeof(Genesis) != 'undefined'))
             {
-               if ($.os.ios && (parseFloat($.os.version) < 7.0) && (getHeightOfIOSToolbars() > 60))
+               if (_winHeight != window.innerHeight)
                {
-                  _winHeight = ((window.orientation === 0) ? window.screen.height - 64 : window.screen.width - 52);
-               }
-               else
-               {                  
-                  _winHeight = window.innerHeight;
-               }
-               document.body.style.height = _winHeight + 'px';
-               console.debug("Body Height :" + _winHeight + 'px');
-               
-               if (!Genesis.fn.isNative())
-               {
-                  var style = $('iframe')[0].style;
-                  style.height = _winHeight + 'px';
-                  style.width = document.body.clientWidth + 'px';
-               }
-               $('#checkexplorepageview')[0].style['min-height'] = //
-               $('#loadingMask')[0].style.height = //
-               $('#notification')[0].style.height = //
-               $('#mask')[0].style.height = //
-               $('#earnptspageview')[0].style.height = _winHeight + 'px';
-               
-               if (!($.os.ios && (parseFloat($.os.version) >= 7.0)))
-               {
-                  setTimeout( function(){ window.scrollTo(0, 0); }, 50 );               
-               }
-               else
-               {
-                  var action = ((getHeightOfIOSToolbars() < 60) || ($('.media').length <= 5)) ? 'addTb' : 'removeTb';
+                  if ($.os.ios && (parseFloat($.os.version) < 7.0) && (getHeightOfIOSToolbars() > 60))
+                  {
+                     _winHeight = ((window.orientation === 0) ? window.screen.height - 64 : window.screen.width - 52);
+                  }
+                  else
+                  {                  
+                     _winHeight = window.innerHeight;
+                  }
+                  document.body.style.height = _winHeight + 'px';
+                  console.debug("Body Height :" + _winHeight + 'px');
                   
-                  $('#checkexplorepageview .footer')[(action == 'addTb') ? 'removeClass' : 'addClass']('x-item-hidden');
-                  $('#checkexplorepageview .body')[(action == 'addTb') ? 'addClass' : 'removeClass']('withTb');
-                  //$('#checkexplorepageview .body')[0].style.height = parseInt((_winHeight - (2.6*18))) + 'px';
+                  if (!Genesis.fn.isNative())
+                  {
+                     var style = $('iframe')[0].style;
+                     style.height = _winHeight + 'px';
+                  }
+                  $('#checkexplorepageview')[0].style['min-height'] = //
+                  $('#loadingMask')[0].style.height = //
+                  $('#notification')[0].style.height = //
+                  $('#mask')[0].style.height = //
+                  $('#earnptspageview')[0].style.height = _winHeight + 'px';
+                  
+                  if (!($.os.ios && (parseFloat($.os.version) >= 7.0)))
+                  {
+                     setTimeout( function(){ window.scrollTo(0, 0); }, 50 );               
+                  }
+                  else
+                  {
+                     var action = ((getHeightOfIOSToolbars() < 60) || ($('.media').length <= 5)) ? 'addTb' : 'removeTb';
+                     
+                     $('#checkexplorepageview .footer')[(action == 'addTb') ? 'removeClass' : 'addClass']('x-item-hidden');
+                     $('#checkexplorepageview .body')[(action == 'addTb') ? 'addClass' : 'removeClass']('withTb');
+                     //$('#checkexplorepageview .body')[0].style.height = parseInt((_winHeight - (2.6*18))) + 'px';
+                  }
+               }
+
+               if (_winWidth != document.body.clientWidth)
+               {
+                  _winWidth = document.body.clientWidth;
+                  console.debug('Body Width :' + _winWidth + 'px');
+                  if (!Genesis.fn.isNative())
+                  {
+                     var style = $('iframe')[0].style;
+                     style.width = _winWidth + 'px';
+                  }
                }
             }
          }, 0.1 * 1000);
