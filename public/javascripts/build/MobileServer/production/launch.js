@@ -26,8 +26,8 @@ chrome.app.runtime.onLaunched.addListener(function()
       minWidth : w,
       bounds :
       {
-         top : top,
-         left : left,
+         left : Math.round(left / 2),
+         top : Math.round(top / 2),
          width : w,
          height : h
       },
