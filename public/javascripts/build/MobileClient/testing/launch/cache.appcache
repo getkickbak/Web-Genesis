@@ -1,6 +1,6 @@
 CACHE MANIFEST
-#version 3
-# js
+#version 1
+#js
 mccore.js
 mclient-all.js
 ../lib/libmp3lame.min.js

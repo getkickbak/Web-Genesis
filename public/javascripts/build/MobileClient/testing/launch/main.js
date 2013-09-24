@@ -87,7 +87,7 @@ var setChildBrowserVisibility = function(visible, hash)
       //
       if (!mainAppInit)
       {
-         if (window.cordova)
+         if (Genesis.fn.isNative())
          {
             var profile;
             if ($.os.ios)
@@ -183,13 +183,13 @@ var setChildBrowserVisibility = function(visible, hash)
       //
       else if (db['auth_code'])
       {
-         if (window.cordova)
+         if (Genesis.fn.isNative())
          {
             $("#checkexplorepageview").addClass('x-item-hidden');
             _application.getController('client' + '.Viewport').redirectTo('main');
             $("#ext-viewport").removeClass('x-item-hidden');
          }
-         else
+         else if ($(".iframe")[0].contentWindow._application)
          {
             $(".iframe")[0].contentWindow._application.getController('client' + '.Viewport').redirectTo('main');
             $(".iframe").removeClass('x-item-hidden');
@@ -200,13 +200,13 @@ var setChildBrowserVisibility = function(visible, hash)
       //
       else
       {
-         if (window.cordova)
+         if (Genesis.fn.isNative())
          {
             $("#checkexplorepageview").addClass('x-item-hidden');
             _application.getController('client' + '.Viewport').redirectTo('login');
             $("#ext-viewport").removeClass('x-item-hidden');
          }
-         else
+         else if ($(".iframe")[0].contentWindow._application)
          {
             $(".iframe")[0].contentWindow._application.getController('client' + '.Viewport').redirectTo('login');
             $(".iframe").removeClass('x-item-hidden');
@@ -216,12 +216,15 @@ var setChildBrowserVisibility = function(visible, hash)
    else
    {
       $("#earnPtsLoad span.x-button-label").text((db['auth_code']) ? 'Earn Points' : 'Sign In / Register');
-      //$(".iframe").addClass('x-item-hidden');
       window.location.hash = '#' + hash;
-      if (window.cordova)
+      if (Genesis.fn.isNative())
       {
          $("#checkexplorepageview").removeClass('x-item-hidden');
          $("#ext-viewport").addClass('x-item-hidden');
+      }
+      else
+      {
+         $(".iframe").addClass('x-item-hidden');
       }
    }
 };
