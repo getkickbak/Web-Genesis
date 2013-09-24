@@ -72,8 +72,7 @@
          {
             $("#earnptspageview").animate(
             {
-               top : 0 + 'px',
-               height : calcHeight() + 'px',
+               top : 0 + 'px'
             },
             {
                duration : 0.75 * 1000,

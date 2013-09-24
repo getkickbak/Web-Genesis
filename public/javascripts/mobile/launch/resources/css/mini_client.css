@@ -181,6 +181,7 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
    position: absolute;
    bottom: 1.7em;
    -webkit-box-flex: 0 !important;
+   box-flex: 0 !important;
    max-width: 13em;
    min-width: 8.5em;
 }
@@ -227,6 +228,7 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
    position: relative;
    overflow: hidden;
    -webkit-user-select: none;
+   user-select: none;
    z-index: 1;
 }
 .x-button-label, .x-hasbadge .x-badge {
@@ -319,6 +321,7 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
 }
 .x-dock {
    display: -webkit-box;
+   display: box;
 }
 .x-dock, .x-dock-body {
    height: 100%;
@@ -328,6 +331,7 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
 }
 .x-dock .x-dock-body {
    display: -webkit-box;
+   display: box;
    -webkit-box-flex: 1;
    box-flex: 1;
 }
@@ -356,6 +360,7 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
 }
 .x-layout-box {
    display: -webkit-box;
+   display: box;
 }
 .x-inner, .x-body {
    width: 100%;
@@ -366,28 +371,33 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
 }
 .x-layout-box.x-horizontal {
    -webkit-box-orient: horizontal !important;
+   box-orient: horizontal !important;
 }
 .x-layout-box.x-horizontal > .x-layout-box-item.x-flexed {
    width: 0 !important;
 }
 .x-layout-box > .x-layout-box-item {
    display: -webkit-box !important;
+   display: box !important;
 }
 .x-innerhtml {
    width: 100%;
 }
 .x-layout-fit.x-stretched > .x-layout-fit-item {
    display: -webkit-box;
+   display: box;
    -webkit-box-flex: 1;
    box-flex: 1;
 }
 .x-stretched.x-container {
    display: -webkit-box;
+   display: box;
    -webkit-box-orient: vertical;
    box-orient: vertical;
 }
 .x-stretched.x-container > .x-inner, .x-stretched.x-container > .x-body, .x-stretched.x-container > .x-body > .x-inner {
    display: -webkit-box;
+   display: box;
    -webkit-box-flex: 1;
    box-flex: 1;
    -webkit-box-orient: vertical;
@@ -403,6 +413,7 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
 }
 .x-layout-box > .x-layout-box-item {
    display: -webkit-box !important;
+   display: box !important;
 }
 .x-dock.x-unsized > .x-dock-body, .x-dock.x-stretched > .x-dock-body {
    -webkit-box-orient: vertical;
@@ -614,6 +625,7 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
    background: transparent;
    border: 1px solid #f3f3f4;
    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.3), 0 1px 1px rgba(255,255,255,0.3) !important;
+   box-shadow: inset 0 1px 1px rgba(0,0,0,0.3), 0 1px 1px rgba(255,255,255,0.3) !important;
 }
 .x-msgbox-buttons .x-button {
    min-width: 4.5em;
