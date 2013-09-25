@@ -32,12 +32,12 @@ var proximityInit = function()
    //else if (Ext.os.is('Android') || Ext.os.is('BlackBerry'))
    {
       //(tx)
-      s_vol_ratio = 0.5;
+      s_vol_ratio = 0.4;
       //Default Volume laying flat on a surface (tx)
-      c.s_vol = 50;
+      c.s_vol = 40;
 
       //(rx)
-      r_vol_ratio = 0.5;
+      r_vol_ratio = 0.4;
       c.conseqMissThreshold = 1;
       c.magThreshold = 20000;
       c.numSamples = 4 * 1024;
@@ -291,8 +291,7 @@ window.location.reload();
    {
       $("#earnptspageview").animate(
       {
-         top : (-1 * Math.max(window.screen.height, window.screen.width)) + 'px',
-         height : 0 + 'px'
+         top : (-1 * Math.max(window.screen.height, window.screen.width)) + 'px'
       },
       {
          duration : 0.75 * 1000,
@@ -404,11 +403,12 @@ window.location.reload();
    };
    var refreshCSRFToken = function()
    {
-      var me = gblController, db = Genesis.db.getLocalDB();
+      var me = gblController, db = Genesis.db.getLocalDB(), device = Genesis.constants.device;
 
-      if (!Genesis.constants.device)
+      if (!device)
       {
          console.log("Error Registering with PushNotification");
+         device = null;
       }
 
       if (db['auth_code'])
@@ -417,7 +417,7 @@ window.location.reload();
          {
             version : Genesis.constants.clientVersion,
             device_pixel_ratio : window.devicePixelRatio,
-            device : Ext.encode(Genesis.constants.device)
+            device : Ext.encode(device)
          };
 
          setLoadMask(true);
@@ -433,6 +433,7 @@ window.location.reload();
             context : document,
             success : function(data)
             {
+               Genesis.db.setLocalDBAttrib('csrf_code', data['metaData']['csrf_token']);
                // Return to previous Venue
                if (db['last_check_in'])
                {
@@ -631,11 +632,11 @@ window.location.reload();
       // =============================================================
       // Refresh CSRF Token
       // =============================================================
-      if (Genesis.constants.device)
+      if (Genesis.constants.device || !Genesis.fn.isNative())
       {
          refreshCSRFToken();
       }
-      else if (Genesis.db.getLocalDB()['auth_code'])
+      else
       {
          $(document).on('kickbak:updateDeviceToken', refreshCSRFToken);
       }

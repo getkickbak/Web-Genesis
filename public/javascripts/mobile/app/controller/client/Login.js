@@ -106,7 +106,6 @@ Ext.define('Genesis.controller.client.Login',
       },
       listeners :
       {
-         'refreshCSRF' : 'onRefreshCSRF',
          'facebookTap' : 'onMainFacebookTap',
          'toggleFB' :
          {

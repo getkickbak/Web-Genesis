@@ -369,8 +369,10 @@
          {
             if ((typeof($) != 'undefined') && (typeof(Genesis) != 'undefined'))
             {
+               var changed = false;
                if (_winHeight != window.innerHeight)
                {
+                  changed = true;
                   if ($.os.ios && (parseFloat($.os.version) < 7.0) && (getHeightOfIOSToolbars() > 60))
                   {
                      _winHeight = ((window.orientation === 0) ? window.screen.height - 64 : window.screen.width - 52);
@@ -409,6 +411,7 @@
 
                if (_winWidth != document.body.clientWidth)
                {
+                  changed = true;
                   _winWidth = document.body.clientWidth;
                   console.debug('Body Width :' + _winWidth + 'px');
                   if (!Genesis.fn.isNative())
@@ -416,6 +419,11 @@
                      var style = $('iframe')[0].style;
                      style.width = _winWidth + 'px';
                   }
+               }
+               var _window = $('iframe')[0].contentWindow;
+               if (changed && !Genesis.fn.isNative() && _window._application)
+               {
+                  _window.Ext.Viewport.fireEvent('orientationchange', _window.Ext.Viewport,(_winHeight > _winWidth) ? 'portrait' : 'landscape', _winWidth, _winHeight, null);
                }
             }
          }, 0.1 * 1000);

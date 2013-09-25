@@ -76012,7 +76012,10 @@ Ext.define('Genesis.controller.MainPageBase',
       var me = this;
       me.callParent(arguments);
 
-      Genesis.db.removeLocalDBAttrib('csrf_code');
+      if (Genesis.fn.isNative())
+      {
+         Genesis.db.removeLocalDBAttrib('csrf_code');
+      }
       Ext.regStore('MainPageStore',
       {
          model : 'Genesis.model.frontend.MainPage',
@@ -83464,7 +83467,6 @@ Ext.define('Genesis.controller.client.Login',
       },
       listeners :
       {
-         'refreshCSRF' : 'onRefreshCSRF',
          'facebookTap' : 'onMainFacebookTap',
          'toggleFB' :
          {
