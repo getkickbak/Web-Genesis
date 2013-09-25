@@ -2065,9 +2065,9 @@ var proximityInit = function()
    //else if (Ext.os.is('Android') || Ext.os.is('BlackBerry'))
    {
       //(tx)
-      s_vol_ratio = 0.4;
+      s_vol_ratio = 0.3;
       //Default Volume laying flat on a surface (tx)
-      c.s_vol = 40;
+      c.s_vol = 30;
 
       //(rx)
       r_vol_ratio = 0.4;
