@@ -266,7 +266,7 @@ Ext.Loader.setPath(
                }
             };
 
-            Genesis.fn.checkloadjscssfile(_hostPathPrefix + 'lib/libmp3lame.min.js', "js", Ext.bind(callback, null, [0x01], true));
+            Genesis.fn.checkloadjscssfile(_hostPath + 'lib/libmp3lame.min.js', "js", Ext.bind(callback, null, [0x01], true));
             Genesis.fn.checkloadjscssfile(_hostPath + "worker/encoder.min.js", "js", function(success)
             {
                if (success)

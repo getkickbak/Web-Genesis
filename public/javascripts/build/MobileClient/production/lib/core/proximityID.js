@@ -316,23 +316,23 @@ window.plugins = window.plugins ||
                //
                // Create Cross Fade
                //
-               if ((i + offset) < (me.duration / 10))
+               /*
+               if ((i + offset) < (me.duration / 15))
                {
-                  _s_vol = s_vol * (i + offset + 1) / (me.duration / 10);
+                  _s_vol = s_vol * (i + offset + 1) / (me.duration / 15);
                }
-               else if ((i + offset) > (me.duration * 9 / 10))
+               else if ((i + offset) > (me.duration * 8.5 / 10))
                {
-                  _s_vol = s_vol * (me.duration - (i + offset + 1)) / (me.duration / 10);
+                  _s_vol = s_vol * 10 * (1 - ((i + offset + 1) / me.duration));
                }
-
+               */
                // convert to 16 bit pcm sound array
                // assumes the sample buffer is normalised.
-               for ( j = 0; j < me.freqs.length; j++)
+               for ( j = 0; j < (me.freqs.length); j++)
                {
                   data[i] += Math.sin(c[j] * (i + offset));
                }
-               data[i] = _s_vol * data[i] / me.freqs.length;
-
+               data[i] = _s_vol * data[i] / (me.freqs.length);
             }
 
             return data;
@@ -377,14 +377,16 @@ window.plugins = window.plugins ||
                //
                // Create Cross Fade
                //
-               if (i < me.duration / 10)
+               /*
+               if (i < (me.duration / 15))
                {
-                  _s_vol = s_vol * (i + 1) / (me.duration / 10);
+                  _s_vol = s_vol * (i + 1) / (me.duration / 15);
                }
-               else if (i > (me.duration * 9 / 10))
+               else if (i > (me.duration * 8.5 / 10))
                {
-                  _s_vol = s_vol * (me.duration - (i + 1)) / (me.duration / 10);
+                  _s_vol = s_vol * 10 * (1 - ((i + 1) / me.duration));
                }
+               */
                // convert to 16 bit pcm sound array
                // assumes the sample buffer is normalised.
                for (var j = 0; j < me.freqs.length; j++)

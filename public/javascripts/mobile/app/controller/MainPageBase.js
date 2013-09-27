@@ -75,7 +75,14 @@ Ext.define('Genesis.controller.MainPageBase',
          {
             var viewport = me.getViewPortCntlr();
             me.self.playSoundFile(viewport.sound_files['clickSound']);
-            setChildBrowserVisibility(false, 'explore');
+            if (!Genesis.fn.isNative())
+            {
+               window.parent.setChildBrowserVisibility(false, 'explore');
+            }
+            else
+            {
+               setChildBrowserVisibility(false, 'explore');
+            }
             return true;
          }
          return false;

@@ -955,7 +955,7 @@ Genesis.constants =
       },
       scriptOnError : function(loadState)
       {
-         this.scriptOnReadyStateChange.call(this, loadState, true);
+         Genesis.fn.scriptOnReadyStateChange.call(this, loadState, true);
       },
       scriptOnReadyStateChange : function(loadState, error)
       {

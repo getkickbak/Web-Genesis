@@ -76052,7 +76052,14 @@ Ext.define('Genesis.controller.MainPageBase',
          {
             var viewport = me.getViewPortCntlr();
             me.self.playSoundFile(viewport.sound_files['clickSound']);
-            setChildBrowserVisibility(false, 'explore');
+            if (!Genesis.fn.isNative())
+            {
+               window.parent.setChildBrowserVisibility(false, 'explore');
+            }
+            else
+            {
+               setChildBrowserVisibility(false, 'explore');
+            }
             return true;
          }
          return false;
@@ -83587,7 +83594,14 @@ Ext.define('Genesis.controller.client.Login',
                if (operation.wasSuccessful())
                {
                   Genesis.db.removeLocalDBAttrib('auth_code');
-                  window.parent.setChildBrowserVisibility(false, 'explore');
+                  if (!Genesis.fn.isNative())
+                  {
+                     window.parent.setChildBrowserVisibility(false, 'explore');
+                  }
+                  else
+                  {
+                     setChildBrowserVisibility(false, 'explore');
+                  }
                   console.log("Logout Successful!")
                }
                else
@@ -89757,6 +89771,10 @@ Ext.define('Genesis.controller.client.Viewport',
          {
             tap : 'onCheckedInAccountTap'
          },
+         'tabbar[tag=navigationBarBottom] button[tag=checkin]' :
+         {
+            tap : 'onExploreTap'
+         },
          'viewportview dataview[tag=mainMenuSelections]' :
          {
             select : 'onButtonTap'
@@ -90065,6 +90083,10 @@ Ext.define('Genesis.controller.client.Viewport',
    onCheckedInAccountTap : function(b, e, eOpts, eInfo)
    {
       this.goToMerchantMain(true);
+   },
+   onExploreTap : function(b, e, eOpts, eInfo)
+   {
+      this.redirectTo('checkin');
    },
    // --------------------------------------------------------------------------
    // Page Navigation Handlers
@@ -91789,7 +91811,7 @@ will need to resolve manually.
                }
             };
 
-            Genesis.fn.checkloadjscssfile(_hostPathPrefix + 'lib/libmp3lame.min.js', "js", Ext.bind(callback, null, [0x01], true));
+            Genesis.fn.checkloadjscssfile(_hostPath + 'lib/libmp3lame.min.js', "js", Ext.bind(callback, null, [0x01], true));
             Genesis.fn.checkloadjscssfile(_hostPath + "worker/encoder.min.js", "js", function(success)
             {
                if (success)

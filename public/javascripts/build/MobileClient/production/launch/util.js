@@ -14,11 +14,11 @@ var _codec = null, gblController = // ControllerBase
       var rc;
       if (!Gensis.fn.isNative())
       {
-         if ($.os.ios)
+         if ($.os && $.os.ios)
          {
             rc = 'Enable Location Servies and/or Reset Location Services (Settings > General > Reset > Reset Location Warnings).';
          }
-         else if ($.os.android)
+         else if ($.os && $.os.android)
          {
             rc = 'Enable Location Servies and/or Reset Location Services (Settings > Location access > Access to my location).';
          }
@@ -30,12 +30,12 @@ var _codec = null, gblController = // ControllerBase
       else
       {
          rc = 'This feature must require your GeoLocation to proceed.';
-         if ($.os.android)
+         if ($.os && $.os.android)
          {
             rc += // ((Ext.os.version.isLessThan('4.1')) ? //
             'Enable Location Services under Main Screen of your phone: \"Settings App >> Location Services >> GPS satellites\"';
          }
-         else if ($.os.ios)
+         else if ($.os && $.os.ios)
          {
             rc += ((parseFloat($.os.version) < 6.0) ? //
             'Enable Location Services under Main Screen of your phone: \"Settings App >> Location Services >> KICKBAK\"' :
@@ -43,7 +43,7 @@ var _codec = null, gblController = // ControllerBase
             'Enable Location Services under Main Screen of your phone: \"Settings App >> Privacy >> Location Services >> KICKBAK\"'//
             );
          }
-         else if ($.os.blackberry || $.os.bb10 || $.os.rimtabletos)
+         else if ($.os && ($.os.blackberry || $.os.bb10 || $.os.rimtabletos))
          {
             rc += 'Enable Location Services under Main Screen of your phone: \"Settings App >> Site Permissions\"';
          }
@@ -228,7 +228,7 @@ var _codec = null, gblController = // ControllerBase
          {
             case 'Media' :
             {
-               sound_file = new Media(($.os.android ? '/android_asset/www/' : '') + Genesis.constants.relPath() + 'resources/audio/' + sound_file + ext, function()
+               sound_file = new Media((($.os && $.os.android) ? '/android_asset/www/' : '') + Genesis.constants.relPath() + 'resources/audio/' + sound_file + ext, function()
                {
                   me.sound_files[tag].successCallback();
                }, function(err)
@@ -853,7 +853,7 @@ Genesis = ( typeof (Genesis) != 'undefined') ? Genesis :
       },
       scriptOnError : function(loadState)
       {
-         this.scriptOnReadyStateChange.call(this, loadState, true);
+         Geensis.fn.scriptOnReadyStateChange.call(this, loadState, true);
       },
       scriptOnReadyStateChange : function(loadState, error)
       {
@@ -1167,133 +1167,59 @@ Genesis = ( typeof (Genesis) != 'undefined') ? Genesis :
    $.Event('kickbak:updateDeviceToken');
 
    var me = Genesis.constants;
-   if ($.os.ios)
+   if ($.os)
    {
-      initPushwoosh = function()
+      if ($.os.ios)
       {
-         if (debugMode)
+         initPushwoosh = function()
          {
-            me.pushNotifAppName = 'KickBak Dev Latest';
-            me.pushNotifAppId = '93D8A-5BE72';
-         }
-         else
-         {
-            me.pushNotifAppName = 'KickBak Production';
-            me.pushNotifAppId = '4fef6fb0691c12.54726991';
-         }
-         me.pushNotifType = 1;
-
-         var pushNotification = window.plugins.pushNotification;
-
-         document.addEventListener('push-notification', function(event)
-         {
-            if (event.notification)
+            if (debugMode)
             {
-               var notification = event.notification, userData = notification.u;
-               //if ( typeof (userData) != "undefined")
-               console.debug('push notifcation - [' + JSON.stringify(notification) + ']');
-               {
-                  setNotificationVisibility(true, 'KICKBAK Notification', notification.aps.alert, 'Dismiss', function()
-                  {
-                     setLoadMask(true);
-                  });
-                  var viewport = _application.getController('client' + '.Viewport');
-                  viewport.setApsPayload(userData)
-                  viewport.getGeoLocation();
-                  //navigator.notification.alert(notification.aps.alert);
-                  //pushNotification.setApplicationIconBadgeNumber(0)
-               }
-            }
-         });
-
-         pushNotification.onDeviceReady();
-
-         pushNotification.registerDevice(
-         {
-            alert : true,
-            badge : true,
-            sound : true,
-            pw_appid : Genesis.constants.pushNotifAppId,
-            appname : Genesis.constants.pushNotifAppName
-         }, function(status)
-         {
-            var deviceToken = status['deviceToken'], viewport;
-            console.debug('registerDevice: ' + deviceToken);
-            Genesis.constants.device =
-            {
-               'device_type' : Genesis.constants.pushNotifType, //1 for iOS, 3 for Android
-               'device_id' : deviceToken
-            };
-
-            $(document).trigger('kickbak:updateDeviceToken');
-         }, function(status)
-         {
-            console.debug('failed to register : ' + JSON.stringify(status));
-            Genesis.constants.device = null;
-            //navigator.notification.alert(JSON.stringify(['failed to register ', status]));
-         });
-
-         //pushNotification.setApplicationIconBadgeNumber(0);
-      };
-   }
-   else if ($.os.android)
-   {
-      initPushwoosh = function()
-      {
-         if (debugMode)
-         {
-            me.pushNotifAppName = 'KickBak Dev Latest';
-            me.pushNotifAppId = '93D8A-5BE72';
-            me.pushNotifProjectId = '658015469194';
-         }
-         else
-         {
-            me.pushNotifAppName = 'KickBak Production';
-            me.pushNotifAppId = '4fef6fb0691c12.54726991';
-            me.pushNotifProjectId = '733275653511';
-         }
-         me.pushNotifType = 3;
-
-         var pushNotification = window.plugins.pushNotification;
-         document.addEventListener('push-notification', function(event)
-         {
-            if (event.notification)
-            {
-               var notification = event.notification, title = notification.title, userData = notification.userdata, viewport = _application.getController('client' + '.Viewport');
-
-               console.debug('push notifcation - [' + JSON.stringify(notification) + ']');
-               //if ( typeof (userData) != "undefined")
-               {
-                  setNotificationVisibility(true, 'KICKBAK Notification', title, 'Dismiss', function()
-                  {
-                     setLoadMask(true);
-                  });
-                  //
-                  // Launch MainApp
-                  //
-                  viewport.setApsPayload(userData)
-                  viewport.getGeoLocation();
-               }
+               me.pushNotifAppName = 'KickBak Dev Latest';
+               me.pushNotifAppId = '93D8A-5BE72';
             }
             else
             {
-               console.warn('push notifcation - Null Notification');
+               me.pushNotifAppName = 'KickBak Production';
+               me.pushNotifAppId = '4fef6fb0691c12.54726991';
             }
-         });
-         pushNotification.onDeviceReady();
+            me.pushNotifType = 1;
 
-         //var callback = function(rc)
-         {
-            // rc could be registrationId or errorCode
+            var pushNotification = window.plugins.pushNotification;
 
-            // CHANGE projectid & appid
+            document.addEventListener('push-notification', function(event)
+            {
+               if (event.notification)
+               {
+                  var notification = event.notification, userData = notification.u;
+                  //if ( typeof (userData) != "undefined")
+                  console.debug('push notifcation - [' + JSON.stringify(notification) + ']');
+                  {
+                     setNotificationVisibility(true, 'KICKBAK Notification', notification.aps.alert, 'Dismiss', function()
+                     {
+                        setLoadMask(true);
+                     });
+                     var viewport = _application.getController('client' + '.Viewport');
+                     viewport.setApsPayload(userData)
+                     viewport.getGeoLocation();
+                     //navigator.notification.alert(notification.aps.alert);
+                     //pushNotification.setApplicationIconBadgeNumber(0)
+                  }
+               }
+            });
+
+            pushNotification.onDeviceReady();
+
             pushNotification.registerDevice(
             {
-               projectid : Genesis.constants.pushNotifProjectId,
-               appid : Genesis.constants.pushNotifAppId
+               alert : true,
+               badge : true,
+               sound : true,
+               pw_appid : Genesis.constants.pushNotifAppId,
+               appname : Genesis.constants.pushNotifAppName
             }, function(status)
             {
-               var deviceToken = status, viewport;
+               var deviceToken = status['deviceToken'], viewport;
                console.debug('registerDevice: ' + deviceToken);
                Genesis.constants.device =
                {
@@ -1306,15 +1232,91 @@ Genesis = ( typeof (Genesis) != 'undefined') ? Genesis :
             {
                console.debug('failed to register : ' + JSON.stringify(status));
                Genesis.constants.device = null;
-               $(document).trigger('kickbak:updateDeviceToken');
+               //navigator.notification.alert(JSON.stringify(['failed to register ', status]));
             });
-         };
 
-         //pushNotification.unregisterDevice(callback, callback);
+            //pushNotification.setApplicationIconBadgeNumber(0);
+         };
+      }
+      else if ($.os.android)
+      {
+         initPushwoosh = function()
+         {
+            if (debugMode)
+            {
+               me.pushNotifAppName = 'KickBak Dev Latest';
+               me.pushNotifAppId = '93D8A-5BE72';
+               me.pushNotifProjectId = '658015469194';
+            }
+            else
+            {
+               me.pushNotifAppName = 'KickBak Production';
+               me.pushNotifAppId = '4fef6fb0691c12.54726991';
+               me.pushNotifProjectId = '733275653511';
+            }
+            me.pushNotifType = 3;
+
+            var pushNotification = window.plugins.pushNotification;
+            document.addEventListener('push-notification', function(event)
+            {
+               if (event.notification)
+               {
+                  var notification = event.notification, title = notification.title, userData = notification.userdata, viewport = _application.getController('client' + '.Viewport');
+
+                  console.debug('push notifcation - [' + JSON.stringify(notification) + ']');
+                  //if ( typeof (userData) != "undefined")
+                  {
+                     setNotificationVisibility(true, 'KICKBAK Notification', title, 'Dismiss', function()
+                     {
+                        setLoadMask(true);
+                     });
+                     //
+                     // Launch MainApp
+                     //
+                     viewport.setApsPayload(userData)
+                     viewport.getGeoLocation();
+                  }
+               }
+               else
+               {
+                  console.warn('push notifcation - Null Notification');
+               }
+            });
+            pushNotification.onDeviceReady();
+
+            //var callback = function(rc)
+            {
+               // rc could be registrationId or errorCode
+
+               // CHANGE projectid & appid
+               pushNotification.registerDevice(
+               {
+                  projectid : Genesis.constants.pushNotifProjectId,
+                  appid : Genesis.constants.pushNotifAppId
+               }, function(status)
+               {
+                  var deviceToken = status, viewport;
+                  console.debug('registerDevice: ' + deviceToken);
+                  Genesis.constants.device =
+                  {
+                     'device_type' : Genesis.constants.pushNotifType, //1 for iOS, 3 for Android
+                     'device_id' : deviceToken
+                  };
+
+                  $(document).trigger('kickbak:updateDeviceToken');
+               }, function(status)
+               {
+                  console.debug('failed to register : ' + JSON.stringify(status));
+                  Genesis.constants.device = null;
+                  $(document).trigger('kickbak:updateDeviceToken');
+               });
+            };
+
+            //pushNotification.unregisterDevice(callback, callback);
+         }
+      }
+      else
+      {
       }
    }
-   else
-   {
-   }
-
 })();

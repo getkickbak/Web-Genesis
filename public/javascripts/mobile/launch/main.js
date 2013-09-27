@@ -11,7 +11,7 @@ var proximityInit = function()
    //
    var s_vol_ratio, r_vol_ratio, c = Genesis.constants;
 
-   if ($.os.ios)
+   if (!$.os || $.os.ios)
    //if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
    {
       //(tx)
@@ -32,9 +32,9 @@ var proximityInit = function()
    //else if (Ext.os.is('Android') || Ext.os.is('BlackBerry'))
    {
       //(tx)
-      s_vol_ratio = 0.3;
+      s_vol_ratio = 0.25;
       //Default Volume laying flat on a surface (tx)
-      c.s_vol = 30;
+      c.s_vol = 25;
 
       //(rx)
       r_vol_ratio = 0.4;
@@ -90,7 +90,11 @@ var setChildBrowserVisibility = function(visible, hash)
          if (Genesis.fn.isNative())
          {
             var profile;
-            if ($.os.ios)
+            if (!$.os)
+            {
+               profile = 'Desktop';
+            }
+            else if ($.os.ios)
             {
                profile = 'Iphone';
             }
@@ -254,7 +258,7 @@ window.location.reload();
       var image = $('#earnPtsImage img')[0];
 
       // specific OS
-      if ($.os.ios)
+      if (!$.os || $.os.ios)
       {
          width = height = 2 * 57 * 1.5;
       }
@@ -270,7 +274,7 @@ window.location.reload();
          }
       }
       var ratio = 1;
-      if ($.os.phone)
+      if ($.os && $.os.phone)
       {
          ratio = (window.orientation === 0) ? 1 : window.screen.width / window.screen.height;
       }
@@ -360,7 +364,7 @@ window.location.reload();
                if (refresh)
                {
                   $('.body ul').html(venues);
-                  if (!($.os.ios && (parseFloat($.os.version) >= 7.0)))
+                  if (!($.os && $.os.ios && (parseFloat($.os.version) >= 7.0)))
                   {
                      $('#checkexplorepageview .body').infiniteScroll('reset');
                   }
@@ -383,7 +387,7 @@ window.location.reload();
                $('.body ul').append(venues);
                refreshCheckExploreVenues();
 
-               if (!($.os.ios && (parseFloat($.os.version) >= 7.0)))
+               if (!($.os && $.os.ios && (parseFloat($.os.version) >= 7.0)))
                {
                   iscroll.refresh();
                   if (refresh)
@@ -482,7 +486,7 @@ window.location.reload();
    window.addEventListener("orientationchange", orientationChange);
    $(window).resize(orientationChange);
 
-   if (!($.os.ios && (parseFloat($.os.version) >= 7.0)))
+   if (!($.os && $.os.ios && (parseFloat($.os.version) >= 7.0)))
    {
       $(window).on('scroll', function(e)
       {
@@ -646,10 +650,10 @@ window.location.reload();
       // =============================================================
       orientationChange();
 
-      if ($.os.ios)
+      if (!$.os || $.os.ios)
       {
          $('body').addClass('x-ios');
-         $('body').addClass('x-ios-' + parseInt(($.os.version)));
+         $('body').addClass('x-ios-' + parseInt((($.os) ? $.os.version : '6')));
       }
       else if ($.os.blackberry || $.os.bb10 || $.os.rimtabletos)
       {
@@ -662,7 +666,14 @@ window.location.reload();
          $('body').addClass('x-android');
          $('body').addClass('x-android-' + parseInt(($.os.version)));
       }
-      $('body').addClass(($.os.phone) ? 'x-phone' : 'x-tablet');
+      if (!$.os)
+      {
+         $('body').addClass('x-desktop');
+      }
+      else
+      {
+         $('body').addClass(($.os.phone) ? 'x-phone' : 'x-tablet');
+      }
 
       var _hide_ = function(e)
       {

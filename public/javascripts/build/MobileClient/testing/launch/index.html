@@ -373,7 +373,7 @@
                if (_winHeight != window.innerHeight)
                {
                   changed = true;
-                  if ($.os.ios && (parseFloat($.os.version) < 7.0) && (getHeightOfIOSToolbars() > 60))
+                  if ($.os && $.os.ios && (parseFloat($.os.version) < 7.0) && (getHeightOfIOSToolbars() > 60))
                   {
                      _winHeight = ((window.orientation === 0) ? window.screen.height - 64 : window.screen.width - 52);
                   }
@@ -395,7 +395,7 @@
                   $('#mask')[0].style.height = //
                   $('#earnptspageview')[0].style.height = _winHeight + 'px';
                   
-                  if (!($.os.ios && (parseFloat($.os.version) >= 7.0)))
+                  if (!($.os && $.os.ios && (parseFloat($.os.version) >= 7.0)))
                   {
                      setTimeout( function(){ window.scrollTo(0, 0); }, 50 );               
                   }
