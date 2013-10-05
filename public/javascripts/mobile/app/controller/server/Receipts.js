@@ -45,7 +45,7 @@ Ext.merge(WebSocket.prototype,
             if (match)
             {
                matchFlag |= 0x00100;
-               receipt['table'] = match[1];
+               receipt['tableName'] = match[1];
                continue;
             }
 
@@ -108,12 +108,12 @@ Ext.merge(WebSocket.prototype,
          var receipt = this.createReceipt(receipts[i]);
          if (receipt)
          {
-            if (receipt.get('table'))
+            if (receipt.get('tableName'))
             {
                //console.debug("WebSocketClient::receiptIncomingHandler");
                tableList.push(Ext.create('Genesis.model.frontend.Table',
                {
-                  id : receipt.get('table')
+                  id : receipt.get('tableName')
                }));
             }
 
@@ -124,7 +124,7 @@ Ext.merge(WebSocket.prototype,
                "Date: " + Genesis.fn.convertDateFullTime(new Date(receipt.get('id') * 1000)) + '\n' + //
                "Subtotal: $" + receipt.get('subtotal').toFixed(2) + '\n' + //
                "Price: $" + receipt.get('price').toFixed(2) + '\n' + //
-               "table: " + receipt.get('table') + '\n' + //
+               "tableName: " + receipt.get('tableName') + '\n' + //
                "itemsPurchased: " + receipt.get('itemsPurchased') + '\n' + //
                "Title: " + receipt.get('title') + '\n' + //
                "Receipt: [\n" + Ext.decode(receipt.get('receipt')) + "\n]" + //
@@ -196,7 +196,8 @@ Ext.define('Genesis.controller.server.Receipts',
       refs :
       {
          posMode : 'serversettingspageview togglefield[tag=posMode]',
-         displayMode : 'serversettingspageview selectfield[tag=displayMode]'
+         displayMode : 'serversettingspageview selectfield[tag=displayMode]',
+         sensitivity : 'serversettingspageview spinnerfield[tag=sensitivity]'
       },
       control :
       {
@@ -207,6 +208,10 @@ Ext.define('Genesis.controller.server.Receipts',
          displayMode :
          {
             change : 'onDisplayModeChange'
+         },
+         sensitivity :
+         {
+            change : 'onSensitivityChange'
          }
       },
       listeners :
@@ -575,10 +580,10 @@ Ext.define('Genesis.controller.server.Receipts',
                   //console.debug("WebSocketClient::receiptIncomingHandler");
                   tableList[j++] = Ext.create('Genesis.model.frontend.Table',
                   {
-                     id : record.get('table')
+                     id : record.get('tableName')
                   });
 
-                  if (store.tableFilterId == record.get('table'))
+                  if (store.tableFilterId == record.get('tableName'))
                   {
                      updateTableFilter = false;
                   }
@@ -812,6 +817,13 @@ Ext.define('Genesis.controller.server.Receipts',
       console.debug("onDisplayModeChange - " + newValue);
       me.receiptCleanFn(newValue);
       me.batteryStatusFn();
+   },
+   onSensitivityChange : function(field, newValue, oldValue, eOpts)
+   {
+      var me = this;
+      Genesis.db.setLocalDBAttrib("sensitivity", newValue);
+      me.getSensitivity().setLabel('Sensitivity (' + newValue + ')');
+      console.debug("onSensitivityChange - " + newValue);
    },
    onAddEarnedReceipt : function(receipt)
    {

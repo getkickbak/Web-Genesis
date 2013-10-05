@@ -23,7 +23,7 @@
  * Copyright 2011 by David Flanagan
  * http://creativecommons.org/licenses/by-nc-sa/3.0/
  */
-if (self.console && self.console.log)
+if (self.console && self.console.log && ( typeof (_filesAssetCount) != 'undefined'))
 {
    _filesAssetCount++;
    if ( typeof (MessageChannel) != 'undefined')
@@ -62,7 +62,6 @@ if (self.console && self.console.log)
             console.debug.apply(console, args);
             // Pass the args to the real log
          }
-         
          // Send one end of the channel to the worker
          w.postMessage("console", [channel.port2]);
 
@@ -85,9 +84,9 @@ else
 
    // Now run the script that was originally passed to Worker()
    var url = location.hash.slice(1);
-   
+
    importScripts(url);
-   
+
    self._onmessage = self.onmessage;
    self.onmessage = function(e)
    {

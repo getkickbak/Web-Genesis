@@ -28,7 +28,7 @@ Ext.define('Genesis.view.server.SettingsPage',
       }),
       {
          xtype : 'fieldset',
-         title : 'About Kickbak',
+         title : 'Settings',
          defaults :
          {
             labelWidth : '50%'
@@ -72,6 +72,16 @@ Ext.define('Genesis.view.server.SettingsPage',
                   ui : 'normal'
                }
             }
+         },
+         {
+            xtype : 'spinnerfield',
+            label : 'Sensitivity Level',
+            tag : 'sensitivity',
+            name : 'sensitivity',
+            minValue : 0,
+            maxValue : 120,
+            stepValue : 5.0,
+            cycle : false
          }
          /*,
           {

@@ -22,14 +22,18 @@ window.plugins = window.plugins ||
                   $('#earnPtsProceed').one('tap', proceed = function(e)
                   {
                      me.pendingBroadcast = false;
+                     $('#earnPtsProceed').off('tap', proceed).off('click', proceed);
                      $('#earnPtsCancel').off('tap', cancel);
                      _win(useProximity);
-                  });
+                     return false;
+                  }).one('click', proceed);
                   $('#earnPtsCancel').one('tap', cancel = function(e)
                   {
                      me.pendingBroadcast = false;
+                     $('#earnPtsCancel').off('tap', cancel).off('click', cancel);
                      $('#earnPtsProceed').off('tap', proceed);
-                  });
+                     return false;
+                  }).one('click', cancel);
                   $('#earnptspageview').trigger('kickbak:preLoad');
                }
                else
@@ -210,6 +214,8 @@ window.plugins = window.plugins ||
             {
                console.log("Failed to initialize the ProximityIDPlugin! Reason[" + reason + "]");
             }, "ProximityIDPlugin", "init", [s_vol_ratio + "", r_vol_ratio + ""]);
+
+            window.AudioContext = window.AudioContext || window.webkitAudioContext;
          },
          preLoadSend : function(cntlr, checkUseProximity, win, fail)
          {
@@ -300,7 +306,24 @@ window.plugins = window.plugins ||
             Genesis.constants.s_vol = s_vol_ratio * 100;
             // Reduce volume by 50%
             Genesis.constants.r_vol = r_vol_ratio * 100;
+
+            window.AudioContext = window.AudioContext || window.webkitAudioContext;
             console.debug("Initialized Proximity API");
+         },
+         b64toF32 : function(input)
+         {
+            var binary = atob(input);
+            var len = binary.length;
+            var buffer = new ArrayBuffer(len);
+            var view = new Float32Array(buffer);
+            /*
+             while (--len)
+             {
+             view[len] = binary.charCodeAt(len);
+             }
+             */
+
+            return view;
          },
          generateData : function(offset, length)
          {
@@ -319,11 +342,11 @@ window.plugins = window.plugins ||
                /*
                if ((i + offset) < (me.duration / 15))
                {
-                  _s_vol = s_vol * (i + offset + 1) / (me.duration / 15);
+               _s_vol = s_vol * (i + offset + 1) / (me.duration / 15);
                }
                else if ((i + offset) > (me.duration * 8.5 / 10))
                {
-                  _s_vol = s_vol * 10 * (1 - ((i + offset + 1) / me.duration));
+               _s_vol = s_vol * 10 * (1 - ((i + offset + 1) / me.duration));
                }
                */
                // convert to 16 bit pcm sound array
@@ -339,27 +362,28 @@ window.plugins = window.plugins ||
          },
          webAudioFnHandler : function(s_vol, callback)
          {
-            var me = this;
+            var me = this, context = me.context, gain = me.gainNode;
 
             // Create the audio context
-            if (!me.context)
+            if (!context)
             {
-               me.context = new webkitAudioContext();
-               me.gainNode = me.context.createGainNode();
-               me.gainNode.connect(me.context.destination);
+               context = me.context = new window.AudioContext();
+               context.createGain = context.createGain || context.createGainNode;
+               gain = me.gainNode = context.createGain();
+               gain.connect(context.destination);
             }
 
             me.getFreqs();
             // Reduce the volume.
-            me.gainNode.gain.value = s_vol;
+            gain.gain.value = s_vol;
 
             me.oscillators = [];
             for ( i = 0; i < me.freqs.length; i++)
             {
-               var osc = me.oscillators[i] = me.context.createOscillator();
+               var osc = me.oscillators[i] = context.createOscillator();
                osc.type = 0;
                osc.frequency.value = me.freqs[i];
-               osc.connect(me.gainNode);
+               osc.connect(gain);
             }
 
             console.debug("OSC Gain : " + s_vol);
@@ -380,11 +404,11 @@ window.plugins = window.plugins ||
                /*
                if (i < (me.duration / 15))
                {
-                  _s_vol = s_vol * (i + 1) / (me.duration / 15);
+               _s_vol = s_vol * (i + 1) / (me.duration / 15);
                }
                else if (i > (me.duration * 8.5 / 10))
                {
-                  _s_vol = s_vol * 10 * (1 - ((i + 1) / me.duration));
+               _s_vol = s_vol * 10 * (1 - ((i + 1) / me.duration));
                }
                */
                // convert to 16 bit pcm sound array
@@ -554,7 +578,7 @@ window.plugins = window.plugins ||
                //
                // Use Web Audio
                //
-               if ( typeof (webkitAudioContext) != 'undefined')
+               if ( typeof (window.AudioContext) != 'undefined')
                {
                   me.webAudioFnHandler(s_vol, callback);
                }
@@ -614,35 +638,32 @@ window.plugins = window.plugins ||
                fail();
             }
          },
+         onFreqCalculated : function(freqs, error)
+         {
+            var me = this;
+
+            if (freqs && me._onFreqSuccess)
+            {
+               me._onFreqSuccess(
+               {
+                  freqs : freqs
+               });
+            }
+            else if (me._onFreqFail)
+            {
+               me._onFreqFail(error);
+            }
+            delete me._onFreqSuccess;
+            delete me._onFreqFail;
+         },
          scan : function(win, fail, samples, missedThreshold, magThreshold, overlapRatio)
          {
-            var me = this, context = me.context, matchCount = 0;
+            var me = this, context = me.context;
 
-            if (!me.context)
+            if (Genesis.fn.isNative())
+            //if (true)
             {
-               context = me.context = new webkitAudioContext();
-            }
-
-            if (!me.javascriptNode)
-            {
-               // setup a javascript node
-               me.javascriptNode = context.createJavaScriptNode(me.bufSize, 1, 1);
-               // when the javascript node is called
-               // we use information from the analyser node
-               // to draw the volume
-               me.javascriptNode.onaudioprocess = function(e)
-               {
-                  me.fftWorker.postMessage(
-                  {
-                     cmd : 'forward',
-                     buf : e.inputBuffer.getChannelData(0)
-                  });
-               };
-
-               //var analyser = me.analyser = context.createAnalyser();
-               //analyser.smoothingTimeConstant = 0;
-               //analyser.fftSize = me.fftSize;
-               //me.analyser.connect(me.javascriptNode);
+               me.matchCount = 0;
                if (!me.fftWorker)
                {
                   var worker = me.fftWorker = new Worker('worker/fft.min.js');
@@ -666,26 +687,22 @@ window.plugins = window.plugins ||
                               {
                                  if (me.freqs[i] != result['freqs'][i])
                                  {
+                                    me.matchCount = -1;
+                                    delete me.freqs;
                                     break;
                                  }
                               }
-                              if (i != result['freqs'].length)
-                              {
-                                 matchCount = 0;
-                                 delete me.freqs;
-                              }
-                              else
-                              {
-                                 matchCount++;
-                              }
+
+                              me.matchCount++;
                            }
                            else
                            {
                               me.freqs = result['freqs'];
                            }
 
-                           if (matchCount >= me.MATCH_THRESHOLD)
+                           if (me.matchCount >= me.MATCH_THRESHOLD)
                            {
+                              me.matchCount = 0;
                               win(
                               {
                                  freqs : me.freqs
@@ -705,37 +722,74 @@ window.plugins = window.plugins ||
                      }
                   });
                }
-            }
 
-            if (navigator.webkitGetUserMedia)
-            {
-               navigator.webkitGetUserMedia(
+               if (!me.context)
                {
-                  audio : true
-               }, function(stream)
+                  context = me.context = new window.AudioContext();
+                  context.createScriptProcessor = context.createScriptProcessor || context.createJavaScriptNode;
+               }
+
+               if (!me.javascriptNode)
                {
-                  if (me.microphone)
+                  // setup a javascript node
+                  me.javascriptNode = context.createScriptProcessor(me.bufSize, 1, 1);
+                  me.javascriptNode.onaudioprocess = function(e)
                   {
-                     me.microphone.disconnect();
-                  }
-                  delete me.freqs;
-                  me.microphone = me.convertToMono(context.createMediaStreamSource(stream));
-                  // connect to destination, else it isn't called
-                  me.javascriptNode.connect(me.context.destination);
-                  //me.microphone.connect(me.analyser);
-                  me.microphone.connect(me.javascriptNode);
-                  console.debug("Local Identity detecting host ...");
-               });
-            }
-            else
-            {
-               Ext.device.Notification.show(
+                     me.fftWorker.postMessage(
+                     {
+                        cmd : 'forward',
+                        buf : e.inputBuffer.getChannelData(0)
+                     });
+                  };
+               }
+
+               if (navigator.webkitGetUserMedia)
                {
-                  title : 'Local Identity',
-                  message : me.unsupportedBrowserMsg,
-                  buttons : ['OK'],
-                  callback : Ext.emptyFn
-               });
+                  navigator.webkitGetUserMedia(
+                  {
+                     audio : true
+                  }, function(stream)
+                  {
+                     if (me.microphone)
+                     {
+                        me.microphone.disconnect();
+                     }
+                     delete me.freqs;
+                     me.javascriptNode.connect(me.context.destination);
+                     me.microphone = me.convertToMono(context.createMediaStreamSource(stream));
+                     me.microphone.connect(me.javascriptNode);
+                     console.debug("Local Identity detecting host ...");
+                  });
+               }
+               else
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Local Identity',
+                     message : me.unsupportedBrowserMsg,
+                     buttons : ['OK'],
+                     callback : Ext.emptyFn
+                  });
+               }
+            }
+            //
+            // Call Native code to get Data Stream
+            //
+            else if (merchantMode)
+            {
+               delete me.freqs;
+               if (window.pos)
+               {
+                  window.pos.wssocket.send('proximityID_start' + Genesis.db.getLocalDB()['sensitivity']);
+                  me._onFreqSuccess = win;
+                  me._onFreqFail = fail;
+               }
+               else
+               {
+                  //
+                  // Nothing to do, wait until POS connection is established before trying
+                  //
+               }
             }
          },
          stop : function()
@@ -765,6 +819,15 @@ window.plugins = window.plugins ||
                me.javascriptNode.disconnect();
                me.microphone.disconnect();
                delete me.microphone;
+            }
+
+            if (!Genesis.fn.isNative() && merchantMode)
+            {
+               if (window.pos)
+               {
+                  me.incomingDataExpected = false;
+                  window.pos.wssocket.send('proximityID_stop');
+               }
             }
          },
          setVolume : function(vol)

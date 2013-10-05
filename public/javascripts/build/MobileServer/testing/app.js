@@ -65913,6 +65913,157 @@ Ext.define('Ext.field.DatePicker', {
 /**
  * @aside guide forms
  *
+ * The Number field creates an HTML5 number input and is usually created inside a form. Because it creates an HTML
+ * number input field, most browsers will show a specialized virtual keyboard for entering numbers. The Number field
+ * only accepts numerical input and also provides additional spinner UI that increases or decreases the current value
+ * by a configured {@link #stepValue step value}. Here's how we might use one in a form:
+ *
+ *     @example
+ *     Ext.create('Ext.form.Panel', {
+ *         fullscreen: true,
+ *         items: [
+ *             {
+ *                 xtype: 'fieldset',
+ *                 title: 'How old are you?',
+ *                 items: [
+ *                     {
+ *                         xtype: 'numberfield',
+ *                         label: 'Age',
+ *                         minValue: 18,
+ *                         maxValue: 150,
+ *                         name: 'age'
+ *                     }
+ *                 ]
+ *             }
+ *         ]
+ *     });
+ *
+ * Or on its own, outside of a form:
+ *
+ *     Ext.create('Ext.field.Number', {
+ *         label: 'Age',
+ *         value: '26'
+ *     });
+ *
+ * ## minValue, maxValue and stepValue
+ *
+ * The {@link #minValue} and {@link #maxValue} configurations are self-explanatory and simply constrain the value
+ * entered to the range specified by the configured min and max values. The other option exposed by this component
+ * is {@link #stepValue}, which enables you to set how much the value changes every time the up and down spinners
+ * are tapped on. For example, to create a salary field that ticks up and down by $1,000 each tap we can do this:
+ *
+ *     @example
+ *     Ext.create('Ext.form.Panel', {
+ *         fullscreen: true,
+ *         items: [
+ *             {
+ *                 xtype: 'fieldset',
+ *                 title: 'Are you rich yet?',
+ *                 items: [
+ *                     {
+ *                         xtype: 'numberfield',
+ *                         label: 'Salary',
+ *                         value: 30000,
+ *                         minValue: 25000,
+ *                         maxValue: 50000,
+ *                         stepValue: 1000
+ *                     }
+ *                 ]
+ *             }
+ *         ]
+ *     });
+ *
+ * This creates a field that starts with a value of $30,000, steps up and down in $1,000 increments and will not go
+ * beneath $25,000 or above $50,000.
+ *
+ * Because number field inherits from {@link Ext.field.Text textfield} it gains all of the functionality that text
+ * fields provide, including getting and setting the value at runtime, validations and various events that are fired as
+ * the user interacts with the component. Check out the {@link Ext.field.Text} docs to see the additional functionality
+ * available.
+ */
+Ext.define('Ext.field.Number', {
+    extend:  Ext.field.Text ,
+    xtype: 'numberfield',
+    alternateClassName: 'Ext.form.Number',
+
+    config: {
+        /**
+         * @cfg
+         * @inheritdoc
+         */
+        component: {
+            type: 'number'
+        },
+
+        /**
+         * @cfg
+         * @inheritdoc
+         */
+        ui: 'number'
+    },
+
+    proxyConfig: {
+        /**
+         * @cfg {Number} minValue The minimum value that this Number field can accept
+         * @accessor
+         */
+        minValue: null,
+
+        /**
+         * @cfg {Number} maxValue The maximum value that this Number field can accept
+         * @accessor
+         */
+        maxValue: null,
+
+        /**
+         * @cfg {Number} stepValue The amount by which the field is incremented or decremented each time the spinner is tapped.
+         * Defaults to undefined, which means that the field goes up or down by 1 each time the spinner is tapped
+         * @accessor
+         */
+        stepValue: null
+    },
+
+    doInitValue : function() {
+        var value = this.getInitialConfig().value;
+
+        if (value) {
+            value = this.applyValue(value);
+        }
+
+        this.originalValue = value;
+    },
+
+    applyValue: function(value) {
+        var minValue = this.getMinValue(),
+            maxValue = this.getMaxValue();
+
+        if (Ext.isNumber(minValue)) {
+            value = Math.max(value, minValue);
+        }
+
+        if (Ext.isNumber(maxValue)) {
+            value = Math.min(value, maxValue);
+        }
+
+        value = parseFloat(value);
+        return (isNaN(value)) ? '' : value;
+    },
+
+    getValue: function() {
+        var value = parseFloat(this.callParent(), 10);
+        return (isNaN(value)) ? null : value;
+    },
+
+    doClearIconTap: function(me, e) {
+        me.getComponent().setValue('');
+        me.getValue();
+        me.hideClearIcon();
+    }
+});
+
+/**
+ * @aside guide forms
+ *
  * Simple Select field wrapper. Example usage:
  *
  *     @example
@@ -67329,6 +67480,446 @@ Ext.define('Ext.field.Slider', {
 
         return this.getValue() !== this.originalValue;
     }
+});
+
+/**
+ * A wrapper class which can be applied to any element. Fires a "tap" event while
+ * touching the device. The interval between firings may be specified in the config but
+ * defaults to 20 milliseconds.
+ */
+Ext.define('Ext.util.TapRepeater', {
+                                 
+
+    mixins: {
+        observable:  Ext.mixin.Observable 
+    },
+
+    /**
+     * @event touchstart
+     * Fires when the touch is started.
+     * @param {Ext.util.TapRepeater} this
+     * @param {Ext.event.Event} e
+     */
+
+    /**
+     * @event tap
+     * Fires on a specified interval during the time the element is pressed.
+     * @param {Ext.util.TapRepeater} this
+     * @param {Ext.event.Event} e
+     */
+
+    /**
+     * @event touchend
+     * Fires when the touch is ended.
+     * @param {Ext.util.TapRepeater} this
+     * @param {Ext.event.Event} e
+     */
+
+    config: {
+        el: null,
+        accelerate: true,
+        interval: 10,
+        delay: 250,
+        preventDefault: true,
+        stopDefault: false,
+        timer: 0,
+        pressCls: null
+    },
+
+    /**
+     * Creates new TapRepeater.
+     * @param {Mixed} el The element to listen on
+     * @param {Object} config
+     */
+    constructor: function(config) {
+        var me = this;
+        me.initConfig(config);
+    },
+
+    updateEl: function(newEl, oldEl) {
+        var eventCfg = {
+                touchstart: 'onTouchStart',
+                touchend: 'onTouchEnd',
+                tap: 'eventOptions',
+                scope: this
+            };
+        if (oldEl) {
+            oldEl.un(eventCfg)
+        }
+        newEl.on(eventCfg);
+    },
+
+    // @private
+    eventOptions: function(e) {
+        if (this.getPreventDefault()) {
+            e.preventDefault();
+        }
+        if (this.getStopDefault()) {
+            e.stopEvent();
+        }
+    },
+
+    // @private
+    destroy: function() {
+        this.clearListeners();
+        Ext.destroy(this.el);
+    },
+
+    // @private
+    onTouchStart: function(e) {
+        var me = this,
+            pressCls = me.getPressCls();
+        clearTimeout(me.getTimer());
+        if (pressCls) {
+            me.getEl().addCls(pressCls);
+        }
+        me.tapStartTime = new Date();
+
+        me.fireEvent('touchstart', me, e);
+        me.fireEvent('tap', me, e);
+
+        // Do not honor delay or interval if acceleration wanted.
+        if (me.getAccelerate()) {
+            me.delay = 400;
+        }
+        me.setTimer(Ext.defer(me.tap, me.getDelay() || me.getInterval(), me, [e]));
+    },
+
+    // @private
+    tap: function(e) {
+        var me = this;
+        me.fireEvent('tap', me, e);
+        me.setTimer(Ext.defer(me.tap, me.getAccelerate() ? me.easeOutExpo(Ext.Date.getElapsed(me.tapStartTime),
+            400,
+            -390,
+            12000) : me.getInterval(), me, [e]));
+    },
+
+    // Easing calculation
+    // @private
+    easeOutExpo: function(t, b, c, d) {
+        return (t == d) ? b + c : c * ( - Math.pow(2, -10 * t / d) + 1) + b;
+    },
+
+    // @private
+    onTouchEnd: function(e) {
+        var me = this;
+        clearTimeout(me.getTimer());
+        me.getEl().removeCls(me.getPressCls());
+        me.fireEvent('touchend', me, e);
+    }
+});
+
+/**
+ * @aside guide forms
+ *
+ * Wraps an HTML5 number field. Example usage:
+ *
+ *     @example miniphone
+ *     var spinner = Ext.create('Ext.field.Spinner', {
+ *         label: 'Spinner Field',
+ *         minValue: 0,
+ *         maxValue: 100,
+ *         increment: 2,
+ *         cycle: true
+ *     });
+ *     Ext.Viewport.add({ xtype: 'container', items: [spinner] });
+ *
+ */
+Ext.define('Ext.field.Spinner', {
+    extend:  Ext.field.Number ,
+    xtype: 'spinnerfield',
+    alternateClassName: 'Ext.form.Spinner',
+                                       
+
+    /**
+     * @event spin
+     * Fires when the value is changed via either spinner buttons.
+     * @param {Ext.field.Spinner} this
+     * @param {Number} value
+     * @param {String} direction 'up' or 'down'.
+     */
+
+    /**
+     * @event spindown
+     * Fires when the value is changed via the spinner down button.
+     * @param {Ext.field.Spinner} this
+     * @param {Number} value
+     */
+
+    /**
+     * @event spinup
+     * Fires when the value is changed via the spinner up button.
+     * @param {Ext.field.Spinner} this
+     * @param {Number} value
+     */
+
+    /**
+     * @event change
+     * Fires just before the field blurs if the field value has changed.
+     * @param {Ext.field.Text} this This field.
+     * @param {Number} newValue The new value.
+     * @param {Number} oldValue The original value.
+     */
+
+    /**
+     * @event updatedata
+     * @hide
+     */
+
+    /**
+     * @event action
+     * @hide
+     */
+
+    config: {
+        /**
+         * @cfg
+         * @inheritdoc
+         */
+        cls: Ext.baseCSSPrefix + 'spinner',
+
+        /**
+         * @cfg {Number} [minValue=-infinity] The minimum allowed value.
+         * @accessor
+         */
+        minValue: Number.NEGATIVE_INFINITY,
+
+        /**
+         * @cfg {Number} [maxValue=infinity] The maximum allowed value.
+         * @accessor
+         */
+        maxValue: Number.MAX_VALUE,
+
+        /**
+         * @cfg {Number} stepValue Value that is added or subtracted from the current value when a spinner is used.
+         * @accessor
+         */
+        stepValue: 0.1,
+
+        /**
+         * @cfg {Boolean} accelerateOnTapHold True if autorepeating should start slowly and accelerate.
+         * @accessor
+         */
+        accelerateOnTapHold: true,
+
+        /**
+         * @cfg {Boolean} cycle When set to `true`, it will loop the values of a minimum or maximum is reached.
+         * If the maximum value is reached, the value will be set to the minimum.
+         * @accessor
+         */
+        cycle: false,
+
+        /**
+         * @cfg {Boolean} clearIcon
+         * @hide
+         * @accessor
+         */
+        clearIcon: false,
+
+        /**
+         * @cfg {Number} defaultValue The default value for this field when no value has been set.
+         * It is also used when the value is set to `NaN`.
+         */
+        defaultValue: 0,
+
+        /**
+         * @cfg {Number} tabIndex
+         * @hide
+         */
+        tabIndex: -1,
+
+        /**
+         * @cfg {Boolean} groupButtons
+         * `true` if you want to group the buttons to the right of the fields. `false` if you want the buttons
+         * to be at either side of the field.
+         */
+        groupButtons: true,
+
+        /**
+         * @cfg
+         * @inheritdoc
+         */
+        component: {
+            disabled: true
+        }
+    },
+
+    constructor: function() {
+        var me = this;
+
+        me.callParent(arguments);
+
+        if (!me.getValue()) {
+            me.suspendEvents();
+            me.setValue(me.getDefaultValue());
+            me.resumeEvents();
+        }
+    },
+
+    syncEmptyCls: Ext.emptyFn,
+
+    /**
+     * Updates the {@link #component} configuration
+     */
+    updateComponent: function(newComponent) {
+        this.callParent(arguments);
+
+        var innerElement = this.innerElement,
+            cls = this.getCls();
+
+        if (newComponent) {
+            this.spinDownButton = Ext.Element.create({
+                cls : cls + '-button ' + cls + '-button-down',
+                html: '-'
+            });
+
+            this.spinUpButton = Ext.Element.create({
+                cls : cls + '-button ' + cls + '-button-up',
+                html: '+'
+            });
+
+            this.downRepeater = this.createRepeater(this.spinDownButton, this.onSpinDown);
+            this.upRepeater = this.createRepeater(this.spinUpButton,     this.onSpinUp);
+        }
+    },
+
+    updateGroupButtons: function(newGroupButtons, oldGroupButtons) {
+        var me = this,
+            innerElement = me.innerElement,
+            cls = me.getBaseCls() + '-grouped-buttons';
+
+        me.getComponent();
+
+        if (newGroupButtons != oldGroupButtons) {
+            if (newGroupButtons) {
+                this.addCls(cls);
+                innerElement.appendChild(me.spinDownButton);
+                innerElement.appendChild(me.spinUpButton);
+            } else {
+                this.removeCls(cls);
+                innerElement.insertFirst(me.spinDownButton);
+                innerElement.appendChild(me.spinUpButton);
+            }
+        }
+    },
+
+    applyValue: function(value) {
+        value = parseFloat(value);
+        if (isNaN(value) || value === null) {
+            value = this.getDefaultValue();
+        }
+
+        //round the value to 1 decimal
+        value = Math.round(value * 10) / 10;
+
+        return this.callParent([value]);
+    },
+
+    // @private
+    createRepeater: function(el, fn) {
+        var me = this,
+            repeater = Ext.create('Ext.util.TapRepeater', {
+                el: el,
+                accelerate: me.getAccelerateOnTapHold()
+            });
+
+        repeater.on({
+            tap: fn,
+            touchstart: 'onTouchStart',
+            touchend: 'onTouchEnd',
+            scope: me
+        });
+
+        return repeater;
+    },
+
+    // @private
+    onSpinDown: function() {
+        if (!this.getDisabled() && !this.getReadOnly()) {
+            this.spin(true);
+        }
+    },
+
+    // @private
+    onSpinUp: function() {
+        if (!this.getDisabled() && !this.getReadOnly()) {
+            this.spin(false);
+        }
+    },
+
+    // @private
+    onTouchStart: function(repeater) {
+        if (!this.getDisabled() && !this.getReadOnly()) {
+            repeater.getEl().addCls(Ext.baseCSSPrefix + 'button-pressed');
+        }
+    },
+
+    // @private
+    onTouchEnd: function(repeater) {
+        repeater.getEl().removeCls(Ext.baseCSSPrefix + 'button-pressed');
+    },
+
+    // @private
+    spin: function(down) {
+        var me = this,
+            originalValue = me.getValue(),
+            stepValue = me.getStepValue(),
+            direction = down ? 'down' : 'up',
+            minValue = me.getMinValue(),
+            maxValue = me.getMaxValue(),
+            value;
+
+        if (down) {
+            value = originalValue - stepValue;
+        }
+        else {
+            value = originalValue + stepValue;
+        }
+
+        //if cycle is true, then we need to check fi the value hasn't changed and we cycle the value
+        if (me.getCycle()) {
+            if (originalValue == minValue && value < minValue) {
+                value = maxValue;
+            }
+
+            if (originalValue == maxValue && value > maxValue) {
+                value = minValue;
+            }
+        }
+
+        me.setValue(value);
+        value = me.getValue();
+
+        me.fireEvent('spin', me, value, direction);
+        me.fireEvent('spin' + direction, me, value);
+    },
+
+    /**
+     * @private
+     */
+    doSetDisabled: function(disabled) {
+        Ext.Component.prototype.doSetDisabled.apply(this, arguments);
+    },
+
+    /**
+     * @private
+     */
+    setDisabled: function() {
+        Ext.Component.prototype.setDisabled.apply(this, arguments);
+    },
+
+    reset: function() {
+        this.setValue(this.getDefaultValue());
+    },
+
+    // @private
+    destroy: function() {
+        var me = this;
+        Ext.destroy(me.downRepeater, me.upRepeater, me.spinDownButton, me.spinUpButton);
+        me.callParent(arguments);
+    }
+}, function() {
 });
 
 /**
@@ -71840,7 +72431,7 @@ Ext.define('Genesis.data.proxy.WebSql',
        * @cfg {String} dbDescription
        * Description of the database
        */
-      dbDescription : '',
+      dbDescription : 'Kickbak Database',
 
       /**
        * @cfg {String} dbSize
@@ -72027,22 +72618,44 @@ Ext.define('Genesis.data.proxy.WebSql',
     */
    initialize : function()
    {
-      var me = this, pk = 'id', db = openDatabase(me.getDbName(), me.getDbVersion(), me.getDbDescription(), me.getDbSize()), query;
-
-      this.database = db;
-
-      Ext.defer(function()
+      var me = this, pk = 'id';
+      var _init_ = function()
       {
-         db.transaction(function(transaction)
+         Ext.defer(function()
          {
-            pk = me.getPkField() || (me.getReader() && me.getReader().getIdProperty()) || pk;
-            me.setPkField(pk);
+            if ((launched & 0x010))
+            {
+               var db = window.openDatabase(me.getDbName(), me.getDbVersion(), me.getDbDescription(), me.getDbSize()), query;
 
-            query = 'CREATE TABLE IF NOT EXISTS ' + me.getDbTable() + ' (' + pk + ' ' + me.getPkType() + ', ' + me.getDbFields().join(', ') + ')';
+               db.transaction(function(transaction)
+               {
+                  pk = me.getPkField() || (me.getReader() && me.getReader().getIdProperty()) || pk;
+                  me.setPkField(pk);
 
-            me.doQuery(transaction, query);
-         });
-      }, 0.1 * 1000);
+                  query = 'CREATE TABLE IF NOT EXISTS ' + me.getDbTable() + ' (' + pk + ' ' + me.getPkType() + ', ' + me.getDbFields().join(', ') + ')';
+                  //console.debug("WebSql Init - QUERY - " + query);
+
+                  me.doQuery(transaction, query, null, function()
+                  {
+                     //console.debug("WebSql Init - " + me.getDbName() + "," + me.getDbTable());
+                     me.database = db;
+                  });
+               }, function()
+               {
+                  //console.debug("WebSql Init Fail - " + me.getDbName() + "," + me.getDbTable());
+               }, function()
+               {
+                  //console.debug("WebSql Init Success - " + me.getDbName() + "," + me.getDbTable());
+               });
+            }
+            else
+            {
+               _init_();
+            }
+         }, 0.1 * 1000, me);
+      };
+
+      _init_();
    },
 
    /**
@@ -72052,17 +72665,31 @@ Ext.define('Genesis.data.proxy.WebSql',
     */
    dropTable : function(callback, scope)
    {
-      var me = this, dropCallback = function()
+      var me = this;
+      var _drop_ = function()
       {
-         if (callback)
+         var dropCallback = function()
          {
-            callback.call(scope || me);
+            if (callback)
+            {
+               callback.call(scope || me);
+            }
+         };
+
+         if (me.datababase)
+         {
+            me.database.transaction(function(transaction)
+            {
+               me.doQuery(transaction, 'DROP TABLE IF EXISTS ' + me.getDbTable());
+            }, dropCallback, dropCallback);
+         }
+         else
+         {
+            Ext.defer(me.dropTable, 0.1 * 1000, me, arguments);
          }
       };
-      me.database.transaction(function(transaction)
-      {
-         me.doQuery(transaction, 'DROP TABLE IF EXISTS ' + me.getDbTable());
-      }, dropCallback, dropCallback);
+
+      _drop_();
    },
 
    /**
@@ -72539,96 +73166,104 @@ Ext.define('Genesis.data.proxy.WebSql',
       {
       }, wheres = [], sorters = operation.getSorters(), sortProperty, orderBy = [], args = [], limit = operation.getLimit(), start = operation.getStart(), customClauses = me.getCustomWhereClauses(), customParams = me.getCustomWhereParameters(), query = 'SELECT t.* FROM ' + me.getDbTable() + ' t';
 
-      if (params)
+      if (me.database)
       {
-         for (var key in params)
+         //console.debug("WebSql read - " + me.getDbName() + "," + me.getDbTable());
+         if (params)
          {
-            if (params.hasOwnProperty(key))
+            for (var key in params)
             {
-               wheres.push('t.' + key + ' = ? ');
-               args.push(params[key]);
+               if (params.hasOwnProperty(key))
+               {
+                  wheres.push('t.' + key + ' = ? ');
+                  args.push(params[key]);
+               }
             }
          }
-      }
 
-      if (customClauses.length)
-      {
-         wheres = Ext.Array.merge(wheres, customClauses);
-      }
-      if (customParams.length)
-      {
-         args = Ext.Array.merge(args, customParams);
-      }
-
-      if (wheres.length)
-      {
-         query += ' WHERE ' + wheres.join(' AND ');
-      }
-
-      if (sorters)
-      {
-         for (var i = 0; i < sorters.length; i++)
+         if (customClauses.length)
          {
-            sortProperty = sorters[i].getProperty();
-            if (!sortProperty)
-            {
-               sortProperty = sorters[i].getSortProperty();
-            }
-            orderBy.push('t.' + sortProperty + ' ' + sorters[i].getDirection());
+            wheres = Ext.Array.merge(wheres, customClauses);
          }
-      }
-
-      if (orderBy.length)
-      {
-         query += ' ORDER BY ' + orderBy.join(', ');
-      }
-
-      if (limit || start)
-      {
-         start = start || 0;
-         query += ' LIMIT ' + limit + ' OFFSET ' + start;
-      }
-
-      me.database.transaction(function(transaction)
-      {
-         me.doQuery(transaction, query, args, function(transaction, resultset)
+         if (customParams.length)
          {
-            var length = resultset.rows.length, row;
+            args = Ext.Array.merge(args, customParams);
+         }
 
-            for (var i = 0; i < length; i++)
+         if (wheres.length)
+         {
+            query += ' WHERE ' + wheres.join(' AND ');
+         }
+
+         if (sorters)
+         {
+            for (var i = 0; i < sorters.length; i++)
             {
-               row = resultset.rows.item(i);
-               records.push(me.readRecordFromRow(row));
+               sortProperty = sorters[i].getProperty();
+               if (!sortProperty)
+               {
+                  sortProperty = sorters[i].getSortProperty();
+               }
+               orderBy.push('t.' + sortProperty + ' ' + sorters[i].getDirection());
             }
+         }
 
-            operation.setCompleted();
+         if (orderBy.length)
+         {
+            query += ' ORDER BY ' + orderBy.join(', ');
+         }
 
-            operation.setResultSet(Ext.create('Ext.data.ResultSet',
+         if (limit || start)
+         {
+            start = start || 0;
+            query += ' LIMIT ' + limit + ' OFFSET ' + start;
+         }
+
+         me.database.transaction(function(transaction)
+         {
+            me.doQuery(transaction, query, args, function(transaction, resultset)
             {
-               records : records,
-               count : records.length,
-               total : records.length,
-               loaded : true
-            }));
-            operation.setRecords(records);
-            operation.setSuccessful();
+               var length = resultset.rows.length, row;
 
-            if ( typeof callback == 'function')
+               for (var i = 0; i < length; i++)
+               {
+                  row = resultset.rows.item(i);
+                  records.push(me.readRecordFromRow(row));
+               }
+
+               operation.setCompleted();
+
+               operation.setResultSet(Ext.create('Ext.data.ResultSet',
+               {
+                  records : records,
+                  count : records.length,
+                  total : records.length,
+                  loaded : true
+               }));
+               operation.setRecords(records);
+               operation.setSuccessful();
+
+               if ( typeof callback == 'function')
+               {
+                  callback.call(scope || this, operation);
+               }
+            });
+
+         }, function(error)
+         {
+            // Error
+            operation.setException(error);
+
+            if (Ext.isFunction(callback))
             {
                callback.call(scope || this, operation);
             }
          });
-
-      }, function(error)
+      }
+      else
       {
-         // Error
-         operation.setException(error);
-
-         if (Ext.isFunction(callback))
-         {
-            callback.call(scope || this, operation);
-         }
-      });
+         Ext.defer(me.read, 0.1 * 1000, me, arguments);
+      }
    },
 
    /**
@@ -73640,7 +74275,7 @@ Ext.define('Genesis.controller.ControllerBase',
    noPeerDiscoveredMsg : 'No Peers were discovered',
    noPeerIdFoundMsg : function(msg)
    {
-      return ("No ID Found! ErrorCode(" + msg + ")");
+      return ("No ID Found! (" + msg + ")");
    },
    notAtVenuePremise : 'You must be inside the Merchant\'s premises to continue.',
    errorLoadingAccountProfileMsg : 'Error Loading Account Profile',
@@ -77865,7 +78500,68 @@ Ext.define('Genesis.controller.ViewportBase',
       });
       console.log("ViewportBase Init");
    },
-   openMainPage : Ext.emptyFn
+   openMainPage : Ext.emptyFn,
+   loadSoundFile : function(tag, sound_file, type)
+   {
+      var me = this, ext = '.' + (sound_file.split('.')[1] || 'mp3');
+      sound_file = sound_file.split('.')[0];
+
+      if (Genesis.fn.isNative())
+      {
+         var callback = function()
+         {
+            switch(type)
+            {
+               case 'FX' :
+               {
+                  LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + ext, function()
+                  {
+                     console.debug("loaded " + sound_file);
+                  }, function(err)
+                  {
+                     console.debug("Audio Error: " + err);
+                  });
+                  break;
+               }
+               case 'Audio' :
+               {
+                  LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + ext, 3, function()
+                  {
+                     console.debug("loaded " + sound_file);
+                  }, function(err)
+                  {
+                     console.debug("Audio Error: " + err);
+                  });
+                  break;
+               }
+            }
+         };
+         switch(type)
+         {
+            case 'Media' :
+            {
+               sound_file = new Media((Ext.os.is('Android') ? '/android_asset/www/' : '') + Genesis.constants.relPath() + 'resources/audio/' + sound_file + ext, function()
+               {
+                  me.sound_files[tag].successCallback();
+               }, function(err)
+               {
+                  me.sound_files[tag].successCallback();
+                  console.debug("Audio Error: " + err);
+               });
+               break;
+            }
+            default :
+               LowLatencyAudio['unload'](sound_file, callback, callback);
+               break;
+         }
+      }
+
+      me.sound_files[tag] =
+      {
+         name : sound_file,
+         type : type
+      };
+   }
 });
 
 Ext.define('Genesis.view.widgets.Calculator',
@@ -80241,6 +80937,7 @@ Ext.define('Genesis.controller.server.Pos',
          {
             me.initReceipt |= 0x10;
          }
+         me.wssocket.send('proximityID_stop');
          me.fireEvent('onopen');
       };
       me.wssocket.onerror = function(event)
@@ -80279,6 +80976,11 @@ Ext.define('Genesis.controller.server.Pos',
             //
             switch (cmd)
             {
+               case 'proximityID_freq' :
+               {
+                  window.plugins.proximityID.onFreqCalculated(inputStream['freqs'], inputStream['error']);
+                  break;
+               }
                case 'receipt_incoming' :
                {
                   Genesis.fn.systemTime = inputStream['systemTime'] * 1000;
@@ -81110,7 +81812,7 @@ Ext.define('Genesis.model.frontend.Receipt',
       {
          name : 'price',
          type : 'float'
-      }, 'title', 'table', 'receipt'],
+      }, 'title', 'tableName', 'receipt'],
       idProperty : 'id',
       hasMany : [
       {
@@ -81197,7 +81899,7 @@ Ext.merge(WebSocket.prototype,
             if (match)
             {
                matchFlag |= 0x00100;
-               receipt['table'] = match[1];
+               receipt['tableName'] = match[1];
                continue;
             }
 
@@ -81260,12 +81962,12 @@ Ext.merge(WebSocket.prototype,
          var receipt = this.createReceipt(receipts[i]);
          if (receipt)
          {
-            if (receipt.get('table'))
+            if (receipt.get('tableName'))
             {
                //console.debug("WebSocketClient::receiptIncomingHandler");
                tableList.push(Ext.create('Genesis.model.frontend.Table',
                {
-                  id : receipt.get('table')
+                  id : receipt.get('tableName')
                }));
             }
 
@@ -81276,7 +81978,7 @@ Ext.merge(WebSocket.prototype,
                "Date: " + Genesis.fn.convertDateFullTime(new Date(receipt.get('id') * 1000)) + '\n' + //
                "Subtotal: $" + receipt.get('subtotal').toFixed(2) + '\n' + //
                "Price: $" + receipt.get('price').toFixed(2) + '\n' + //
-               "table: " + receipt.get('table') + '\n' + //
+               "tableName: " + receipt.get('tableName') + '\n' + //
                "itemsPurchased: " + receipt.get('itemsPurchased') + '\n' + //
                "Title: " + receipt.get('title') + '\n' + //
                "Receipt: [\n" + Ext.decode(receipt.get('receipt')) + "\n]" + //
@@ -81348,7 +82050,8 @@ Ext.define('Genesis.controller.server.Receipts',
       refs :
       {
          posMode : 'serversettingspageview togglefield[tag=posMode]',
-         displayMode : 'serversettingspageview selectfield[tag=displayMode]'
+         displayMode : 'serversettingspageview selectfield[tag=displayMode]',
+         sensitivity : 'serversettingspageview spinnerfield[tag=sensitivity]'
       },
       control :
       {
@@ -81359,6 +82062,10 @@ Ext.define('Genesis.controller.server.Receipts',
          displayMode :
          {
             change : 'onDisplayModeChange'
+         },
+         sensitivity :
+         {
+            change : 'onSensitivityChange'
          }
       },
       listeners :
@@ -81727,10 +82434,10 @@ Ext.define('Genesis.controller.server.Receipts',
                   //console.debug("WebSocketClient::receiptIncomingHandler");
                   tableList[j++] = Ext.create('Genesis.model.frontend.Table',
                   {
-                     id : record.get('table')
+                     id : record.get('tableName')
                   });
 
-                  if (store.tableFilterId == record.get('table'))
+                  if (store.tableFilterId == record.get('tableName'))
                   {
                      updateTableFilter = false;
                   }
@@ -81964,6 +82671,13 @@ Ext.define('Genesis.controller.server.Receipts',
       console.debug("onDisplayModeChange - " + newValue);
       me.receiptCleanFn(newValue);
       me.batteryStatusFn();
+   },
+   onSensitivityChange : function(field, newValue, oldValue, eOpts)
+   {
+      var me = this;
+      Genesis.db.setLocalDBAttrib("sensitivity", newValue);
+      me.getSensitivity().setLabel('Sensitivity (' + newValue + ')');
+      console.debug("onSensitivityChange - " + newValue);
    },
    onAddEarnedReceipt : function(receipt)
    {
@@ -83533,7 +84247,7 @@ Ext.define('Genesis.view.server.SettingsPage',
       }),
       {
          xtype : 'fieldset',
-         title : 'About Kickbak',
+         title : 'Settings',
          defaults :
          {
             labelWidth : '50%'
@@ -83577,6 +84291,16 @@ Ext.define('Genesis.view.server.SettingsPage',
                   ui : 'normal'
                }
             }
+         },
+         {
+            xtype : 'spinnerfield',
+            label : 'Sensitivity Level',
+            tag : 'sensitivity',
+            name : 'sensitivity',
+            minValue : 0,
+            maxValue : 120,
+            stepValue : 5.0,
+            cycle : false
          }
          /*,
           {
@@ -84042,7 +84766,8 @@ Ext.define('Genesis.controller.server.Settings',
       form.setValues(
       {
          posMode : ((db['isPosEnabled'] === undefined) || (db['isPosEnabled'])) ? 1 : 0,
-         displayMode : db["displayMode"] || 'Mobile'
+         displayMode : db["displayMode"] || (!isNative ? 'Fixed' : 'Mobile'),
+         sensitivity : db["sensitivity"]
       });
       var field = form.query('togglefield[tag=posMode]')[0];
       field.setReadOnly(db['enablePosIntegration'] ? false : true);
@@ -84051,12 +84776,14 @@ Ext.define('Genesis.controller.server.Settings',
       //
       // Disable DisplayMode in Non-Native mode
       //
-      if (!isNative)
-      {
-         field = form.query('selectfield[tag=displayMode]')[0];
-         field.setReadOnly(true);
-         field.disable();
-      }
+      field = form.query('selectfield[tag=displayMode]')[0];
+      field[!isNative ? 'hide' : 'show']();
+      field = form.query('spinnerfield[tag=sensitivity]')[0];
+      field[!isNative ? 'show' : 'hide']();
+      field.setLabel('Sensitivity (' + db["sensitivity"] + ')');
+      field.getComponent().element.setMinWidth(0);
+      //field.setReadOnly(true);
+      //field.disable();
    },
    onDeactivate : function(activeItem, c, oldActiveItem, eOpts)
    {
@@ -84400,7 +85127,23 @@ Ext.define('Genesis.controller.server.Viewport',
                   {
                      lstore.getProxy()._errorCallback = Ext.bind(me.initNotification, me, [me.licenseKeyInvalidMsg]);
                   }
-                  Genesis.db.setLocalDBAttrib('uuid', uuid);
+                  var db = Genesis.db.getLocalDB();
+
+                  db['uuid'] = uuid;
+                  if (!Genesis.fn.isNative())
+                  {
+                     if (!db['sensitivity'])
+                     {
+                        db['sensitivity'] = 105;
+                     }
+
+                     //
+                     // Set Display mode to "Fixed" in Non-Native Mode
+                     //
+                     db['displayMode'] = 'Fixed';
+                     //console.debug("Updated Default Settings");
+                  }
+                  Genesis.db.setLocalDB(db);
                }
             });
          }
@@ -84776,36 +85519,29 @@ Ext.define('Genesis.controller.server.Viewport',
          window.plugins.WifiConnMgr.establishPosConn();
       }
 
-      if (!Genesis.fn.isNative())
+      if (Genesis.fn.isNative())
       {
-         //
-         // Set Display mode to "Fixed" in Non-Native Mode
-         //
-         if (Genesis.db.getLocalDB()['displayMode'] != 'Fixed')
-         {
-            Genesis.db.setLocalDBAttrib('displayMode', 'Fixed');
-         }
+         document.addEventListener("backbutton", onBackKeyDown, false);
       }
    },
    loadSoundFile : function(tag, sound_file, type)
    {
-      var me = this, ext = '.' + (sound_file.split('.')[1] || 'mp3');
-      sound_file = sound_file.split('.')[0];
+      var me = this;
 
-      var elem = Ext.get(sound_file);
-      if (elem)
+      me.callParent(arguments);
+
+      if (!Genesis.fn.isNative())
       {
-         elem.dom.addEventListener('ended', function()
+         var ext = '.' + (sound_file.split('.')[1] || 'mp3'), sound_file = sound_file.split('.')[0], elem = Ext.get(sound_file);
+
+         if (elem)
          {
-            me.sound_files[tag].successCallback();
-         }, false);
+            elem.dom.addEventListener('ended', function()
+            {
+               me.sound_files[tag].successCallback();
+            }, false);
+         }
       }
-
-      me.sound_files[tag] =
-      {
-         name : sound_file,
-         type : type
-      };
    }
 });
 

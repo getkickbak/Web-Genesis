@@ -315,7 +315,7 @@ Ext.define('Genesis.controller.client.Login',
             {
                version : Genesis.constants.clientVersion,
                device_pixel_ratio : window.devicePixelRatio,
-               device : Ext.encode(Genesis.constants.device)
+               device : Ext.encode(Genesis.constants.device || null)
             }, params),
             callback : function(records, operation)
             {
@@ -427,7 +427,7 @@ Ext.define('Genesis.controller.client.Login',
                version : Genesis.constants.clientVersion,
                device_pixel_ratio : window.devicePixelRatio,
                user : Ext.encode(params),
-               device : Ext.encode(Genesis.constants.device)
+               device : Ext.encode(Genesis.constants.device || null)
             },
             callback : function(records, operation)
             {
@@ -468,7 +468,7 @@ Ext.define('Genesis.controller.client.Login',
       {
          version : Genesis.constants.clientVersion,
          device_pixel_ratio : window.devicePixelRatio,
-         device : Ext.encode(Genesis.constants.device)
+         device : Ext.encode(Genesis.constants.device || null)
       };
 
       if (username)
@@ -543,7 +543,7 @@ Ext.define('Genesis.controller.client.Login',
       var me = this;
       var params =
       {
-         device : Ext.encode(Genesis.constants.device)
+         device : Ext.encode(Genesis.constants.device || null)
       };
 
       if (username)
@@ -633,7 +633,7 @@ Ext.define('Genesis.controller.client.Login',
       var me = this;
       var params =
       {
-         device : Ext.encode(Genesis.constants.device)
+         device : Ext.encode(Genesis.constants.device || null)
       };
 
       if (oldpassword && newpassword)

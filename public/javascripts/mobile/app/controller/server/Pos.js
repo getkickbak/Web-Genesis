@@ -61,6 +61,7 @@ Ext.define('Genesis.controller.server.Pos',
          {
             me.initReceipt |= 0x10;
          }
+         me.wssocket.send('proximityID_stop');
          me.fireEvent('onopen');
       };
       me.wssocket.onerror = function(event)
@@ -99,6 +100,11 @@ Ext.define('Genesis.controller.server.Pos',
             //
             switch (cmd)
             {
+               case 'proximityID_freq' :
+               {
+                  window.plugins.proximityID.onFreqCalculated(inputStream['freqs'], inputStream['error']);
+                  break;
+               }
                case 'receipt_incoming' :
                {
                   Genesis.fn.systemTime = inputStream['systemTime'] * 1000;

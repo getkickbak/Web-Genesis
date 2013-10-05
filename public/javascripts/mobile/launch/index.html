@@ -344,20 +344,25 @@
             return tH > 1 ? tH : 0;
          };
          var setNotificationVisibility = function(visible, title, message, buttonText, callback)
-         {
+         {            
+            var desktop = !($.os && ($.os.phone || $.os.tablet)), pfEvent = (desktop) ? 'click' : 'tap';
+            
             $('#notification')[0].style.display = (visible) ? "" : "none";
             if (visible)
             {
+               var _click_ = function()
+               {
+                  setNotificationVisibility(false);
+                  callback();
+                  return false;
+               };
+               
                $('#notification').removeClass('x-item-hidden');
                $('#mask').removeClass('x-item-hidden');
                $('#notification .x-title .x-innerhtml').text(title);
                $('#notification .x-msgbox-text .x-innerhtml').html(message);
                $('#notification .x-msgbox-buttons .x-button-label').text(buttonText);
-               $('#notification .x-msgbox-buttons .x-button').one('tap', function()
-               {
-                  setNotificationVisibility(false);
-                  callback();
-               });
+               $('#notification .x-msgbox-buttons .x-button').one(pfEvent, _click_);
             }
             else
             {

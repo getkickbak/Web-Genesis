@@ -106,3 +106,21 @@
      background-color:transparent;
    }
 }
+
+//------------------------------------------------------------------------------
+// Spinner Field CSS
+//------------------------------------------------------------------------------
+.x-spinner {
+   .x-spinner-button {
+      margin-top: .6em;
+      margin-bottom: .6em;
+      width: $form-thumb-size;
+      @include border-radius($form-thumb-size/2);
+      border: 1px solid darken($GreyEnd, 15%);
+      @include background-gradient($form-light, 'recessed');
+   }
+   .x-spinner-button-up {
+      margin-right: 1em;
+   }
+}
+

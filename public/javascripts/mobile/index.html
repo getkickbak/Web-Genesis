@@ -25,10 +25,10 @@
          
          if (debugMode)
          {
-            //serverHost = 'http://192.168.0.52:3000';
+            serverHost = 'http://192.168.0.52:3000';
             //serverHost = 'http://192.168.0.46:3000';
             //serverHost = 'http://76.10.173.153';
-            serverHost = 'http://www.dev1getkickbak.com';
+            //serverHost = 'http://www.dev1getkickbak.com';
             //serverHost = 'http://www.devgetkickbak.com';
          }
          else
@@ -47,7 +47,6 @@
                console.debug("QRCode Scanner Mode[" + QRCodeReader.prototype.scanType + "]");
                Ext.create('Genesis.view.Viewport');
                console.debug("Launched App");
-               initPushwoosh();
             }
          }
       </script>
@@ -80,58 +79,59 @@
 
          function onBodyLoad()
          {
-            document.addEventListener("online", function()
-            {
-               if (Ext.device)
-               {
-                  console.debug("Phone is Online" + ", "+ //
-                  Ext.device.Connection.__proto__.$className + ", " + //
-                  "devicePixelRatio - " + window.devicePixelRatio + ", " + //
-                  'Connection type: [' + Ext.device.Connection.getType() + ']');
-                  //console.debug('Checking for Network Conncetivity for [' + location.origin + ']');
-                  if (!Ext.device.Connection.isOnline())
-                  {
-                     _onGotoMain();
-                  }
-               }
-            }, false);
-            document.addEventListener("offline", function()
-            {
-               if (Ext.device)
-               {
-                  if (!Ext.device.Connection.isOnline())
-                  {
-                     _onGotoMain();
-                  }
-               }
-               console.debug("Phone is Offline");
-            }, false);
-            document.addEventListener("pause", function()
-            {
-               if (_application && (launched == 0x111))
-               {
-                  _application.getController('client.Viewport').persistSyncStores();
-               }
-               console.debug("App is Paused");
-            }, false);
-            document.addEventListener("resume", function()
-            {
-               if (Ext.device)
-               {
-                  if (!Ext.device.Connection.isOnline())
-                  {
-                     _onGotoMain();
-                  }
-                  else
-                  {
-                     //_onGotoMainCallBackFn();
-                  }
-               }
-               console.debug("App is Resumed");
-            }, false);
             document.addEventListener("deviceready", function()
             {
+               document.addEventListener("online", function()
+               {
+                  if (Ext.device)
+                  {
+                     console.debug("Phone is Online" + ", "+ //
+                     Ext.device.Connection.__proto__.$className + ", " + //
+                     "devicePixelRatio - " + window.devicePixelRatio + ", " + //
+                     'Connection type: [' + Ext.device.Connection.getType() + ']');
+                     //console.debug('Checking for Network Conncetivity for [' + location.origin + ']');
+                     if (!Ext.device.Connection.isOnline())
+                     {
+                        _onGotoMain();
+                     }
+                  }
+               }, false);
+               document.addEventListener("offline", function()
+               {
+                  if (Ext.device)
+                  {
+                     if (!Ext.device.Connection.isOnline())
+                     {
+                        _onGotoMain();
+                     }
+                  }
+                  console.debug("Phone is Offline");
+               }, false);
+               document.addEventListener("pause", function()
+               {
+                  if (_application && (launched == 0x111))
+                  {
+                     _application.getController('client.Viewport').persistSyncStores();
+                  }
+                  console.debug("App is Paused");
+               }, false);
+               document.addEventListener("resume", function()
+               {
+                  if (Ext.device)
+                  {
+                     if (!Ext.device.Connection.isOnline())
+                     {
+                        _onGotoMain();
+                     }
+                     else
+                     {
+                        //_onGotoMainCallBackFn();
+                     }
+                  }
+                  console.debug("App is Resumed");
+               }, false);
                navigator.splashscreen.show();
+               
                console.debug = (!debugMode) ? Ext.emptyFn : console.debug || console.log;
                console.warn = console.warn || console.debug;
 
@@ -155,8 +155,8 @@
             });
             Ext.application(
             {
-               requires : ['Ext.MessageBox', 'Ext.device.Notification', 'Ext.device.Camera', 'Ext.device.Orientation'],
                profiles : ['Iphone'],
+               requires : ['Ext.MessageBox', 'Ext.device.Notification', 'Ext.device.Camera', 'Ext.device.Orientation'],
                views : ['Document', 'client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions', //
                'client.AccountsTransfer', 'client.SettingsPage', //
                'LoginPage', 'SignInPage', 'client.MainPage', 'widgets.client.RedeemItemDetail', 'client.Badges', 'client.JackpotWinners', 'client.MerchantAccount',
@@ -184,11 +184,7 @@
 
          }
       </script>
-      <!--
-      <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
-      -->
       <script type="text/javascript" src="core.js"></script>
-      <!-- View Widgets -->
       <script type="text/javascript" src="app/profile/Iphone.js"></script>
       <script type="text/javascript" src="client-all.js"></script>
    </head>

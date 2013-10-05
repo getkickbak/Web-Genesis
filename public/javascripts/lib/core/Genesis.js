@@ -688,7 +688,7 @@ Genesis.constants =
    s_vol : -1,
    r_vol : -1,
    //
-   device : null,
+   //device : null,
    minDistance : 0.3 * 1000,
    //minDistance : 100000 * 1000,
    createAccountMsg : 'Create user account using Facebook Profile information',
@@ -726,13 +726,15 @@ Genesis.constants =
          if ((window.devicePixelRatio == 1) || (window.devicePixelRatio >= 2))
          {
             me._iconSize = 48 * ((merchantMode && (Ext.os.is('Tablet'))) ? 3.0 : 1.2);
-            me._iconPath = '/android/mxhdpi';
+            me._iconPath = '/ios';
+            //            me._iconPath = '/android/mxhdpi';
             me._thumbnailAttribPrefix = 'thumbnail_android_mxhdpi_';
          }
          else
          {
             me._iconSize = 36 * ((merchantMode && (Ext.os.is('Tablet'))) ? 3.0 : 1.5);
-            me._iconPath = '/android/lhdpi';
+            me._iconPath = '/ios';
+            //            me._iconPath = '/android/lhdpi';
             me._thumbnailAttribPrefix = 'thumbnail_android_lhdpi_';
          }
 
@@ -1777,23 +1779,25 @@ Genesis.db =
       //
       // Legacy Code Cleanup
       //
-      var db = Genesis.db.openDatabase();
-      if (db)
-      {
-         db.transaction(function(tx)
-         {
-            var dropStatement = "DROP TABLE Customer";
-            //
-            // Drop Table
-            //
-            tx.executeSql(dropStatement, [], function(tx, result)
-            {
-               console.debug("ResetStorage --- Successfully drop KickBak-Customers Table");
-            }, function(tx, error)
-            {
-               console.debug("Failed to drop KickBak-Customers Table : " + error.message);
-            });
-         });
-      }
+      /*
+       var db = Genesis.db.openDatabase();
+       if (db)
+       {
+       db.transaction(function(tx)
+       {
+       var dropStatement = "DROP TABLE Customer";
+       //
+       // Drop Table
+       //
+       tx.executeSql(dropStatement, [], function(tx, result)
+       {
+       console.debug("ResetStorage --- Successfully drop KickBak-Customers Table");
+       }, function(tx, error)
+       {
+       console.debug("Failed to drop KickBak-Customers Table : " + error.message);
+       });
+       });
+       }
+       */
    }
 };

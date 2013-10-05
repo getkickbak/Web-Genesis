@@ -298,7 +298,23 @@ Ext.define('Genesis.controller.server.Viewport',
                   {
                      lstore.getProxy()._errorCallback = Ext.bind(me.initNotification, me, [me.licenseKeyInvalidMsg]);
                   }
-                  Genesis.db.setLocalDBAttrib('uuid', uuid);
+                  var db = Genesis.db.getLocalDB();
+
+                  db['uuid'] = uuid;
+                  if (!Genesis.fn.isNative())
+                  {
+                     if (!db['sensitivity'])
+                     {
+                        db['sensitivity'] = 105;
+                     }
+
+                     //
+                     // Set Display mode to "Fixed" in Non-Native Mode
+                     //
+                     db['displayMode'] = 'Fixed';
+                     //console.debug("Updated Default Settings");
+                  }
+                  Genesis.db.setLocalDB(db);
                }
             });
          }
@@ -674,35 +690,28 @@ Ext.define('Genesis.controller.server.Viewport',
          window.plugins.WifiConnMgr.establishPosConn();
       }
 
-      if (!Genesis.fn.isNative())
+      if (Genesis.fn.isNative())
       {
-         //
-         // Set Display mode to "Fixed" in Non-Native Mode
-         //
-         if (Genesis.db.getLocalDB()['displayMode'] != 'Fixed')
-         {
-            Genesis.db.setLocalDBAttrib('displayMode', 'Fixed');
-         }
+         document.addEventListener("backbutton", onBackKeyDown, false);
       }
    },
    loadSoundFile : function(tag, sound_file, type)
    {
-      var me = this, ext = '.' + (sound_file.split('.')[1] || 'mp3');
-      sound_file = sound_file.split('.')[0];
+      var me = this;
 
-      var elem = Ext.get(sound_file);
-      if (elem)
+      me.callParent(arguments);
+
+      if (!Genesis.fn.isNative())
       {
-         elem.dom.addEventListener('ended', function()
+         var ext = '.' + (sound_file.split('.')[1] || 'mp3'), sound_file = sound_file.split('.')[0], elem = Ext.get(sound_file);
+
+         if (elem)
          {
-            me.sound_files[tag].successCallback();
-         }, false);
+            elem.dom.addEventListener('ended', function()
+            {
+               me.sound_files[tag].successCallback();
+            }, false);
+         }
       }
-
-      me.sound_files[tag] =
-      {
-         name : sound_file,
-         type : type
-      };
    }
 });

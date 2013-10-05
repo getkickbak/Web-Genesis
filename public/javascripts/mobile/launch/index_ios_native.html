@@ -149,15 +149,16 @@
       </script>
       <script type="text/javascript">
          var launched = 0x000,  pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false, phoneGapAvailable = true;
-         var appName = 'GetKickBak', _appPath = "../app", _extPath = '../lib/touch-2.1.1/src', serverHost, merchantMode = false, _application, _filesAssetCount = 0;
+         var appName = 'GetKickBak', _appPath = "../app", _extPath = '../lib/touch-2.1.1/src', serverHost, merchantMode = false, _application;
          var debugMode = false;
+         var _filesAssetCount = 0, _winHeight = 0, _winWidth = 0;
          
          if (debugMode)
          {
-            //serverHost = 'http://192.168.0.52:3000';
+            serverHost = 'http://192.168.0.52:3000';
             //serverHost = 'http://192.168.0.46:3000';
             //serverHost = 'http://76.10.173.153';
-            serverHost = 'http://www.dev1getkickbak.com';
+            //serverHost = 'http://www.dev1getkickbak.com';
             //serverHost = 'http://www.devgetkickbak.com';
          }
          else
@@ -174,6 +175,7 @@
             console.debug = (!debugMode) ? Ext.emptyFn : console.debug || console.log;
             console.warn = console.warn || console.debug;
 
+            launched = 0x111;
             navigator.splashscreen.hide();
          }, false);
          setInterval(function()

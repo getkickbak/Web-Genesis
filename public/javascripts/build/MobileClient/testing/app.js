@@ -72378,7 +72378,7 @@ Ext.define('Genesis.data.proxy.WebSql',
        * @cfg {String} dbDescription
        * Description of the database
        */
-      dbDescription : '',
+      dbDescription : 'Kickbak Database',
 
       /**
        * @cfg {String} dbSize
@@ -72565,22 +72565,44 @@ Ext.define('Genesis.data.proxy.WebSql',
     */
    initialize : function()
    {
-      var me = this, pk = 'id', db = openDatabase(me.getDbName(), me.getDbVersion(), me.getDbDescription(), me.getDbSize()), query;
-
-      this.database = db;
-
-      Ext.defer(function()
+      var me = this, pk = 'id';
+      var _init_ = function()
       {
-         db.transaction(function(transaction)
+         Ext.defer(function()
          {
-            pk = me.getPkField() || (me.getReader() && me.getReader().getIdProperty()) || pk;
-            me.setPkField(pk);
+            if ((launched & 0x010))
+            {
+               var db = window.openDatabase(me.getDbName(), me.getDbVersion(), me.getDbDescription(), me.getDbSize()), query;
 
-            query = 'CREATE TABLE IF NOT EXISTS ' + me.getDbTable() + ' (' + pk + ' ' + me.getPkType() + ', ' + me.getDbFields().join(', ') + ')';
+               db.transaction(function(transaction)
+               {
+                  pk = me.getPkField() || (me.getReader() && me.getReader().getIdProperty()) || pk;
+                  me.setPkField(pk);
 
-            me.doQuery(transaction, query);
-         });
-      }, 0.1 * 1000);
+                  query = 'CREATE TABLE IF NOT EXISTS ' + me.getDbTable() + ' (' + pk + ' ' + me.getPkType() + ', ' + me.getDbFields().join(', ') + ')';
+                  //console.debug("WebSql Init - QUERY - " + query);
+
+                  me.doQuery(transaction, query, null, function()
+                  {
+                     //console.debug("WebSql Init - " + me.getDbName() + "," + me.getDbTable());
+                     me.database = db;
+                  });
+               }, function()
+               {
+                  //console.debug("WebSql Init Fail - " + me.getDbName() + "," + me.getDbTable());
+               }, function()
+               {
+                  //console.debug("WebSql Init Success - " + me.getDbName() + "," + me.getDbTable());
+               });
+            }
+            else
+            {
+               _init_();
+            }
+         }, 0.1 * 1000, me);
+      };
+
+      _init_();
    },
 
    /**
@@ -72590,17 +72612,31 @@ Ext.define('Genesis.data.proxy.WebSql',
     */
    dropTable : function(callback, scope)
    {
-      var me = this, dropCallback = function()
+      var me = this;
+      var _drop_ = function()
       {
-         if (callback)
+         var dropCallback = function()
          {
-            callback.call(scope || me);
+            if (callback)
+            {
+               callback.call(scope || me);
+            }
+         };
+
+         if (me.datababase)
+         {
+            me.database.transaction(function(transaction)
+            {
+               me.doQuery(transaction, 'DROP TABLE IF EXISTS ' + me.getDbTable());
+            }, dropCallback, dropCallback);
+         }
+         else
+         {
+            Ext.defer(me.dropTable, 0.1 * 1000, me, arguments);
          }
       };
-      me.database.transaction(function(transaction)
-      {
-         me.doQuery(transaction, 'DROP TABLE IF EXISTS ' + me.getDbTable());
-      }, dropCallback, dropCallback);
+
+      _drop_();
    },
 
    /**
@@ -73077,96 +73113,104 @@ Ext.define('Genesis.data.proxy.WebSql',
       {
       }, wheres = [], sorters = operation.getSorters(), sortProperty, orderBy = [], args = [], limit = operation.getLimit(), start = operation.getStart(), customClauses = me.getCustomWhereClauses(), customParams = me.getCustomWhereParameters(), query = 'SELECT t.* FROM ' + me.getDbTable() + ' t';
 
-      if (params)
+      if (me.database)
       {
-         for (var key in params)
+         //console.debug("WebSql read - " + me.getDbName() + "," + me.getDbTable());
+         if (params)
          {
-            if (params.hasOwnProperty(key))
+            for (var key in params)
             {
-               wheres.push('t.' + key + ' = ? ');
-               args.push(params[key]);
+               if (params.hasOwnProperty(key))
+               {
+                  wheres.push('t.' + key + ' = ? ');
+                  args.push(params[key]);
+               }
             }
          }
-      }
 
-      if (customClauses.length)
-      {
-         wheres = Ext.Array.merge(wheres, customClauses);
-      }
-      if (customParams.length)
-      {
-         args = Ext.Array.merge(args, customParams);
-      }
-
-      if (wheres.length)
-      {
-         query += ' WHERE ' + wheres.join(' AND ');
-      }
-
-      if (sorters)
-      {
-         for (var i = 0; i < sorters.length; i++)
+         if (customClauses.length)
          {
-            sortProperty = sorters[i].getProperty();
-            if (!sortProperty)
-            {
-               sortProperty = sorters[i].getSortProperty();
-            }
-            orderBy.push('t.' + sortProperty + ' ' + sorters[i].getDirection());
+            wheres = Ext.Array.merge(wheres, customClauses);
          }
-      }
-
-      if (orderBy.length)
-      {
-         query += ' ORDER BY ' + orderBy.join(', ');
-      }
-
-      if (limit || start)
-      {
-         start = start || 0;
-         query += ' LIMIT ' + limit + ' OFFSET ' + start;
-      }
-
-      me.database.transaction(function(transaction)
-      {
-         me.doQuery(transaction, query, args, function(transaction, resultset)
+         if (customParams.length)
          {
-            var length = resultset.rows.length, row;
+            args = Ext.Array.merge(args, customParams);
+         }
 
-            for (var i = 0; i < length; i++)
+         if (wheres.length)
+         {
+            query += ' WHERE ' + wheres.join(' AND ');
+         }
+
+         if (sorters)
+         {
+            for (var i = 0; i < sorters.length; i++)
             {
-               row = resultset.rows.item(i);
-               records.push(me.readRecordFromRow(row));
+               sortProperty = sorters[i].getProperty();
+               if (!sortProperty)
+               {
+                  sortProperty = sorters[i].getSortProperty();
+               }
+               orderBy.push('t.' + sortProperty + ' ' + sorters[i].getDirection());
             }
+         }
 
-            operation.setCompleted();
+         if (orderBy.length)
+         {
+            query += ' ORDER BY ' + orderBy.join(', ');
+         }
 
-            operation.setResultSet(Ext.create('Ext.data.ResultSet',
+         if (limit || start)
+         {
+            start = start || 0;
+            query += ' LIMIT ' + limit + ' OFFSET ' + start;
+         }
+
+         me.database.transaction(function(transaction)
+         {
+            me.doQuery(transaction, query, args, function(transaction, resultset)
             {
-               records : records,
-               count : records.length,
-               total : records.length,
-               loaded : true
-            }));
-            operation.setRecords(records);
-            operation.setSuccessful();
+               var length = resultset.rows.length, row;
 
-            if ( typeof callback == 'function')
+               for (var i = 0; i < length; i++)
+               {
+                  row = resultset.rows.item(i);
+                  records.push(me.readRecordFromRow(row));
+               }
+
+               operation.setCompleted();
+
+               operation.setResultSet(Ext.create('Ext.data.ResultSet',
+               {
+                  records : records,
+                  count : records.length,
+                  total : records.length,
+                  loaded : true
+               }));
+               operation.setRecords(records);
+               operation.setSuccessful();
+
+               if ( typeof callback == 'function')
+               {
+                  callback.call(scope || this, operation);
+               }
+            });
+
+         }, function(error)
+         {
+            // Error
+            operation.setException(error);
+
+            if (Ext.isFunction(callback))
             {
                callback.call(scope || this, operation);
             }
          });
-
-      }, function(error)
+      }
+      else
       {
-         // Error
-         operation.setException(error);
-
-         if (Ext.isFunction(callback))
-         {
-            callback.call(scope || this, operation);
-         }
-      });
+         Ext.defer(me.read, 0.1 * 1000, me, arguments);
+      }
    },
 
    /**
@@ -74178,7 +74222,7 @@ Ext.define('Genesis.controller.ControllerBase',
    noPeerDiscoveredMsg : 'No Peers were discovered',
    noPeerIdFoundMsg : function(msg)
    {
-      return ("No ID Found! ErrorCode(" + msg + ")");
+      return ("No ID Found! (" + msg + ")");
    },
    notAtVenuePremise : 'You must be inside the Merchant\'s premises to continue.',
    errorLoadingAccountProfileMsg : 'Error Loading Account Profile',
@@ -78403,7 +78447,68 @@ Ext.define('Genesis.controller.ViewportBase',
       });
       console.log("ViewportBase Init");
    },
-   openMainPage : Ext.emptyFn
+   openMainPage : Ext.emptyFn,
+   loadSoundFile : function(tag, sound_file, type)
+   {
+      var me = this, ext = '.' + (sound_file.split('.')[1] || 'mp3');
+      sound_file = sound_file.split('.')[0];
+
+      if (Genesis.fn.isNative())
+      {
+         var callback = function()
+         {
+            switch(type)
+            {
+               case 'FX' :
+               {
+                  LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + ext, function()
+                  {
+                     console.debug("loaded " + sound_file);
+                  }, function(err)
+                  {
+                     console.debug("Audio Error: " + err);
+                  });
+                  break;
+               }
+               case 'Audio' :
+               {
+                  LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + ext, 3, function()
+                  {
+                     console.debug("loaded " + sound_file);
+                  }, function(err)
+                  {
+                     console.debug("Audio Error: " + err);
+                  });
+                  break;
+               }
+            }
+         };
+         switch(type)
+         {
+            case 'Media' :
+            {
+               sound_file = new Media((Ext.os.is('Android') ? '/android_asset/www/' : '') + Genesis.constants.relPath() + 'resources/audio/' + sound_file + ext, function()
+               {
+                  me.sound_files[tag].successCallback();
+               }, function(err)
+               {
+                  me.sound_files[tag].successCallback();
+                  console.debug("Audio Error: " + err);
+               });
+               break;
+            }
+            default :
+               LowLatencyAudio['unload'](sound_file, callback, callback);
+               break;
+         }
+      }
+
+      me.sound_files[tag] =
+      {
+         name : sound_file,
+         type : type
+      };
+   }
 });
 
 Ext.define('Genesis.view.client.Accounts',
@@ -83683,7 +83788,7 @@ Ext.define('Genesis.controller.client.Login',
             {
                version : Genesis.constants.clientVersion,
                device_pixel_ratio : window.devicePixelRatio,
-               device : Ext.encode(Genesis.constants.device)
+               device : Ext.encode(Genesis.constants.device || null)
             }, params),
             callback : function(records, operation)
             {
@@ -83795,7 +83900,7 @@ Ext.define('Genesis.controller.client.Login',
                version : Genesis.constants.clientVersion,
                device_pixel_ratio : window.devicePixelRatio,
                user : Ext.encode(params),
-               device : Ext.encode(Genesis.constants.device)
+               device : Ext.encode(Genesis.constants.device || null)
             },
             callback : function(records, operation)
             {
@@ -83836,7 +83941,7 @@ Ext.define('Genesis.controller.client.Login',
       {
          version : Genesis.constants.clientVersion,
          device_pixel_ratio : window.devicePixelRatio,
-         device : Ext.encode(Genesis.constants.device)
+         device : Ext.encode(Genesis.constants.device || null)
       };
 
       if (username)
@@ -83911,7 +84016,7 @@ Ext.define('Genesis.controller.client.Login',
       var me = this;
       var params =
       {
-         device : Ext.encode(Genesis.constants.device)
+         device : Ext.encode(Genesis.constants.device || null)
       };
 
       if (username)
@@ -84001,7 +84106,7 @@ Ext.define('Genesis.controller.client.Login',
       var me = this;
       var params =
       {
-         device : Ext.encode(Genesis.constants.device)
+         device : Ext.encode(Genesis.constants.device || null)
       };
 
       if (oldpassword && newpassword)
@@ -90145,67 +90250,6 @@ Ext.define('Genesis.controller.client.Viewport',
          Genesis.db.resetStorage();
          me.redirectTo('login');
       }
-   },
-   loadSoundFile : function(tag, sound_file, type)
-   {
-      var me = this, ext = '.' + (sound_file.split('.')[1] || 'mp3');
-      sound_file = sound_file.split('.')[0];
-
-      if (Genesis.fn.isNative())
-      {
-         var callback = function()
-         {
-            switch(type)
-            {
-               case 'FX' :
-               {
-                  LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + ext, function()
-                  {
-                     console.debug("loaded " + sound_file);
-                  }, function(err)
-                  {
-                     console.debug("Audio Error: " + err);
-                  });
-                  break;
-               }
-               case 'Audio' :
-               {
-                  LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + ext, 3, function()
-                  {
-                     console.debug("loaded " + sound_file);
-                  }, function(err)
-                  {
-                     console.debug("Audio Error: " + err);
-                  });
-                  break;
-               }
-            }
-         };
-         switch(type)
-         {
-            case 'Media' :
-            {
-               sound_file = new Media((Ext.os.is('Android') ? '/android_asset/www/' : '') + Genesis.constants.relPath() + 'resources/audio/' + sound_file + ext, function()
-               {
-                  me.sound_files[tag].successCallback();
-               }, function(err)
-               {
-                  me.sound_files[tag].successCallback();
-                  console.debug("Audio Error: " + err);
-               });
-               break;
-            }
-            default :
-               LowLatencyAudio['unload'](sound_file, callback, callback);
-               break;
-         }
-      }
-
-      me.sound_files[tag] =
-      {
-         name : sound_file,
-         type : type
-      };
    }
 });
 

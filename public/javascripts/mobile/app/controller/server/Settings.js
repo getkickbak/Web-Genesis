@@ -312,7 +312,8 @@ Ext.define('Genesis.controller.server.Settings',
       form.setValues(
       {
          posMode : ((db['isPosEnabled'] === undefined) || (db['isPosEnabled'])) ? 1 : 0,
-         displayMode : db["displayMode"] || 'Mobile'
+         displayMode : db["displayMode"] || (!isNative ? 'Fixed' : 'Mobile'),
+         sensitivity : db["sensitivity"]
       });
       var field = form.query('togglefield[tag=posMode]')[0];
       field.setReadOnly(db['enablePosIntegration'] ? false : true);
@@ -321,12 +322,14 @@ Ext.define('Genesis.controller.server.Settings',
       //
       // Disable DisplayMode in Non-Native mode
       //
-      if (!isNative)
-      {
-         field = form.query('selectfield[tag=displayMode]')[0];
-         field.setReadOnly(true);
-         field.disable();
-      }
+      field = form.query('selectfield[tag=displayMode]')[0];
+      field[!isNative ? 'hide' : 'show']();
+      field = form.query('spinnerfield[tag=sensitivity]')[0];
+      field[!isNative ? 'show' : 'hide']();
+      field.setLabel('Sensitivity (' + db["sensitivity"] + ')');
+      field.getComponent().element.setMinWidth(0);
+      //field.setReadOnly(true);
+      //field.disable();
    },
    onDeactivate : function(activeItem, c, oldActiveItem, eOpts)
    {

@@ -699,5 +699,66 @@ Ext.define('Genesis.controller.ViewportBase',
       });
       console.log("ViewportBase Init");
    },
-   openMainPage : Ext.emptyFn
+   openMainPage : Ext.emptyFn,
+   loadSoundFile : function(tag, sound_file, type)
+   {
+      var me = this, ext = '.' + (sound_file.split('.')[1] || 'mp3');
+      sound_file = sound_file.split('.')[0];
+
+      if (Genesis.fn.isNative())
+      {
+         var callback = function()
+         {
+            switch(type)
+            {
+               case 'FX' :
+               {
+                  LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + ext, function()
+                  {
+                     console.debug("loaded " + sound_file);
+                  }, function(err)
+                  {
+                     console.debug("Audio Error: " + err);
+                  });
+                  break;
+               }
+               case 'Audio' :
+               {
+                  LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + ext, 3, function()
+                  {
+                     console.debug("loaded " + sound_file);
+                  }, function(err)
+                  {
+                     console.debug("Audio Error: " + err);
+                  });
+                  break;
+               }
+            }
+         };
+         switch(type)
+         {
+            case 'Media' :
+            {
+               sound_file = new Media((Ext.os.is('Android') ? '/android_asset/www/' : '') + Genesis.constants.relPath() + 'resources/audio/' + sound_file + ext, function()
+               {
+                  me.sound_files[tag].successCallback();
+               }, function(err)
+               {
+                  me.sound_files[tag].successCallback();
+                  console.debug("Audio Error: " + err);
+               });
+               break;
+            }
+            default :
+               LowLatencyAudio['unload'](sound_file, callback, callback);
+               break;
+         }
+      }
+
+      me.sound_files[tag] =
+      {
+         name : sound_file,
+         type : type
+      };
+   }
 });

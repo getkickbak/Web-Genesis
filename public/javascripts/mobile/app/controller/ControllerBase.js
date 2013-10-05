@@ -23,7 +23,7 @@ Ext.define('Genesis.controller.ControllerBase',
    noPeerDiscoveredMsg : 'No Peers were discovered',
    noPeerIdFoundMsg : function(msg)
    {
-      return ("No ID Found! ErrorCode(" + msg + ")");
+      return ("No ID Found! (" + msg + ")");
    },
    notAtVenuePremise : 'You must be inside the Merchant\'s premises to continue.',
    errorLoadingAccountProfileMsg : 'Error Loading Account Profile',

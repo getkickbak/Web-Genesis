@@ -9,13 +9,13 @@ var proximityInit = function()
    //
    // Client Device always transmits
    //
-   var s_vol_ratio, r_vol_ratio, c = Genesis.constants;
+   var s_vol_ratio, r_vol_ratio, c = Genesis.constants, desktop = !($.os && ($.os.phone || $.os.tablet));
 
-   if (!$.os || $.os.ios)
+   if (desktop || $.os.ios)
    //if (Ext.os.is('iOS') || Ext.os.is('Desktop'))
    {
       //(tx)
-      s_vol_ratio = 1.0;
+      s_vol_ratio = 100;
       //Default Volume laying flat on a surface (tx)
       c.s_vol = 50;
 
@@ -90,7 +90,7 @@ var setChildBrowserVisibility = function(visible, hash)
          if (Genesis.fn.isNative())
          {
             var profile;
-            if (!$.os)
+            if (!($.os && ($.os.phone || $.os.tablet)))
             {
                profile = 'Desktop';
             }
@@ -258,7 +258,7 @@ window.location.reload();
       var image = $('#earnPtsImage img')[0];
 
       // specific OS
-      if (!$.os || $.os.ios)
+      if (!($.os && ($.os.phone || $.os.tablet)) || $.os.ios)
       {
          width = height = 2 * 57 * 1.5;
       }
@@ -307,6 +307,7 @@ window.location.reload();
    };
    var refreshCheckExploreVenues = function()
    {
+      var desktop = !($.os && ($.os.phone || $.os.tablet)), pfEvent = (desktop) ? 'click' : 'tap';
       var exploreVenue = function(e)
       {
          var me = gblController, target = e.currentTarget, ma_struct = parseInt(target.attributes.getNamedItem('data')['value']);
@@ -314,8 +315,9 @@ window.location.reload();
          me.playSoundFile(me.sound_files['clickSound']);
          console.debug("Target ID : ", ma_struct);
          Genesis.db.setLocalDBAttrib('ma_struct', ma_struct);
+         return false;
       };
-      $('.media').off().tap(exploreVenue).swipeLeft(exploreVenue).swipeRight(exploreVenue);
+      $('.media').off().on(pfEvent, exploreVenue).swipeLeft(exploreVenue).swipeRight(exploreVenue);
    };
    var appLaunchCallbackFn = function()
    {
@@ -515,7 +517,7 @@ window.location.reload();
    }
    $(document).ready(function()
    {
-      var me = gblController, viewport = gblController.getViewPortCntlr();
+      var me = gblController, viewport = gblController.getViewPortCntlr(), desktop = !($.os && ($.os.phone || $.os.tablet)), pfEvent = (desktop) ? 'click' : 'tap';
 
       // =============================================================
       // Custom Events
@@ -650,7 +652,7 @@ window.location.reload();
       // =============================================================
       orientationChange();
 
-      if (!$.os || $.os.ios)
+      if (!($.os && ($.os.phone || $.os.tablet)) || $.os.ios)
       {
          $('body').addClass('x-ios');
          $('body').addClass('x-ios-' + parseInt((($.os) ? $.os.version : '6')));
@@ -666,7 +668,7 @@ window.location.reload();
          $('body').addClass('x-android');
          $('body').addClass('x-android-' + parseInt(($.os.version)));
       }
-      if (!$.os)
+      if (!($.os && ($.os.phone || $.os.tablet)))
       {
          $('body').addClass('x-desktop');
       }
@@ -679,9 +681,10 @@ window.location.reload();
       {
          me.playSoundFile(me.sound_files['clickSound']);
          hideEarnPtsPage(e);
+         return false;
       };
-      $('#earnPtsCancel').tap(_hide_);
-      $('#earnPtsDismiss').tap(_hide_);
+      $('#earnPtsCancel').on(pfEvent, _hide_);
+      $('#earnPtsDismiss').on(pfEvent, _hide_);
       $('#earnptspageview')[0].style.top = (-1 * Math.max(window.screen.height, window.screen.width)) + 'px';
 
       // =============================================================
@@ -734,7 +737,7 @@ window.location.reload();
       {
          $('#checkexplorepageview').addClass('noIScroll');
       }
-      iscrollInfinite.tap(function(e)
+      var _getVenues_ = function(e)
       {
          //
          // Trigger when the list is empty
@@ -744,29 +747,33 @@ window.location.reload();
             me.playSoundFile(me.sound_files['clickSound']);
             getNearestVenues(0);
          }
-      });
+         return false;
+      };
+      iscrollInfinite.on(pfEvent, _getVenues_);
       // =============================================================
       // WelcomePage Actions
       // =============================================================
       setChildBrowserVisibility(false);
-      $("#earnPtsLoad").tap(function()
+      var _ptsLoad_ = function()
       {
          me.playSoundFile(me.sound_files['clickSound']);
          db = Genesis.db.getLocalDB();
          if (db['auth_code'])
          {
-            $('#earnPtsProceed').trigger('tap');
+            $('#earnPtsProceed').trigger(pfEvent);
          }
          else
          {
             setChildBrowserVisibility(true);
          }
-      });
+         return false;
+      };
+      $("#earnPtsLoad").on(pfEvent, _ptsLoad_);
 
       // =============================================================
       // ExplorePage Actions
       // =============================================================
-      $('#checkexplorepageview .header .x-layout-box-item').tap(function(e)
+      var _home_ = function(e)
       {
          me.playSoundFile(me.sound_files['clickSound']);
          //refresh
@@ -780,8 +787,10 @@ window.location.reload();
          {
             setChildBrowserVisibility(true);
          }
-      });
-      $('#earnPtsProceed').tap(function(e)
+         return false;
+      };
+      $('#checkexplorepageview .header .x-layout-box-item').on(pfEvent, _home_);
+      var _preLoad_ = function(e)
       {
          var task, privKey;
 
@@ -879,8 +888,9 @@ window.location.reload();
                   //
                   console.debug("Transmitting Reward Points Request ...");
 
-                  $('#earnPtsDismiss').one('tap', dismiss = function(msg)
+                  var _dismiss_ = function(msg)
                   {
+                     //$('#earnPtsDismiss').off(pfEvent, _dismiss_);
 
                      me.playSoundFile(me.sound_files['clickSound']);
                      if (ajax)
@@ -896,7 +906,9 @@ window.location.reload();
                      setNotificationVisibility(true, 'Rewards', ( typeof (msg) != 'string') ? me.transactionCancelledMsg : msg, "Dismiss", function()
                      {
                      });
-                  });
+                     return false;
+                  };
+                  $('#earnPtsDismiss').one(pfEvent, _dismiss_);
 
                   ajax = $.ajax(
                   {
@@ -916,7 +928,7 @@ window.location.reload();
                            {
                               console.debug("AJAX Error Response", me.identifiers);
                            }
-                           $('#earnPtsDismiss').trigger('tap', [me.networkErrorMsg]);
+                           $('#earnPtsDismiss').trigger(pfEvent, [me.networkErrorMsg]);
                            return;
                         }
 
@@ -940,7 +952,7 @@ window.location.reload();
                         {
                            console.debug("AJAX Error Response", me.identifiers);
                         }
-                        $('#earnPtsDismiss').trigger('tap', [me.networkErrorMsg]);
+                        $('#earnPtsDismiss').trigger(pfEvent, [me.networkErrorMsg]);
                      }
                   });
                }
@@ -950,6 +962,8 @@ window.location.reload();
                //setLoadMask(false);
             });
          }, me, [false]));
-      });
+         return false;
+      };
+      $('#earnPtsProceed').on(pfEvent, _preLoad_);
    });
 })();

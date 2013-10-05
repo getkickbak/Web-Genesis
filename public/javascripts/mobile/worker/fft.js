@@ -6,7 +6,7 @@ if ( typeof (importScripts) != 'undefined')
    //
    if (location.href.match('testing'))
    {
-      prefix = '..';
+      prefix = '.';
    }
    //
    // Native code or emualtor
@@ -95,8 +95,7 @@ var fft_forward = function(buf, scope)
          //
          // Found an existing power even larger than adjacent power values
          //
-         //console.debug("foundIndex=" + foundIndex + ", freqs.length=" + freqs.length + ", mag=" + mag + ", String=" +
-         // JSON.stringify(_mag));
+         //console.debug("foundIndex=" + foundIndex + ", freqs.length=" + freqs.length + ", mag=" + mag + ", String=" + JSON.stringify(_mag));
          if (_mag['val'] < mag)
          {
             _mag['val'] = mag;
