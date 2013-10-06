@@ -305,7 +305,7 @@ Ext.define('Genesis.controller.server.Viewport',
                   {
                      if (!db['sensitivity'])
                      {
-                        db['sensitivity'] = 105;
+                        db['sensitivity'] = 115;
                      }
 
                      //
