@@ -1,206 +1,114 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE HTML>
+<html manifest="cache.appcache" lang="en-US">
    <head>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+      <meta name="apple-itunes-app" content="app-id=537476722">
       <meta name="format-detection" content="telephone=no" />
       <meta name="format-detection" content="address=no" />
       <meta name="format-detection" content="email=no" />
-      <!-- Default Fontsize = 11px
-      iPad @132dpi = 100% - iPhone @163dpi = 114% - iPhone Retina @326dpi = 228%
-      -->
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+      <meta charset="UTF-8">
       <title>KickBak</title>
-      <link rel="stylesheet" type="text/css" media="screen and (max-device-height: 568px)" href="resources/css/iphone.css">
-      <link rel="stylesheet" type="text/css" media="screen and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" href="resources/css/iphone5.css">
-      <link rel="stylesheet" type="text/css" media="screen and (device-height: 1024px)" href="resources/css/ipad.css">
-      <!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www
-      directory and include it here -->
-      <script type="text/javascript">
-         _build = "MobileClientNative";
-      </script>
-      <script type="text/javascript">
-         var launched = 0x000,  pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false, phoneGapAvailable = true;
-         var appName = 'GetKickBak', _appPath = "app", _extPath = 'lib/touch-2.1.1/src', serverHost, merchantMode = false, _application, _filesAssetCount = 0;
-         var debugMode = false;
-         
-         if (debugMode)
-         {
-            //serverHost = 'http://192.168.0.52:3000';
-            //serverHost = 'http://192.168.0.46:3000';
-            //serverHost = 'http://76.10.173.153';
-            serverHost = 'http://www.dev1getkickbak.com';
-            //serverHost = 'http://www.devgetkickbak.com';
-         }
-         else
-         {
-            serverHost = 'http://www.getkickbak.com';            
-         }
-         
-        function _appLaunch()
-         {
-            if (launched == 0x111)
-            {
-               var viewport = _application.getController('client' + '.Viewport');
-               viewport.appName = appName;
-
-               QRCodeReader.prototype.scanType = "Default";
-               console.debug("QRCode Scanner Mode[" + QRCodeReader.prototype.scanType + "]");
-               Ext.create('Genesis.view.Viewport');
-               console.debug("Launched App");
-               initPushwoosh();
-            }
-         }
-      </script>
-      <script type="text/javascript" src="lib/cordova-2.8.1.ios.js"></script>
-      <script type="text/javascript" src="lib/core/PushNotification.js"></script>
-      <script type="text/javascript" src="lib/sencha-touch-all.js"></script>
-      <script type="text/javascript">
-         // If you want to prevent dragging, uncomment this section
-         /*
-          function preventBehavior(e)
-          {
-          e.preventDefault();
-          };
-          document.addEventListener("touchmove", preventBehavior, false);
+      <style type="text/css">
+         /**
+          * Example of an initial loading indicator.
+          * It is recommended to keep this as minimal as possible to provide instant feedback
+          * while other resources are still being loaded for the first time
           */
-
-         /* If you are supporting your own protocol, the var invokeString will contain any arguments to the app launch.
-          see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
-          for more details -jm */
-         /*
-          function handleOpenURL(url)
-          {
-          // TODO: do something with the url passed in.
-          }
-          */
-         /* When this function is called, PhoneGap has been initialized and is ready to roll */
-         /* If you are supporting your own protocol, the var invokeString will contain any arguments to the app launch.
-          see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
-          for more details -jm */
-
-         function onBodyLoad()
-         {
-            document.addEventListener("online", function()
-            {
-               if (Ext.device)
-               {
-                  console.debug("Phone is Online" + ", "+ //
-                  Ext.device.Connection.__proto__.$className + ", " + //
-                  "devicePixelRatio - " + window.devicePixelRatio + ", " + //
-                  'Connection type: [' + Ext.device.Connection.getType() + ']');
-                  //console.debug('Checking for Network Conncetivity for [' + location.origin + ']');
-                  if (!Ext.device.Connection.isOnline())
-                  {
-                     _onGotoMain();
-                  }
-               }
-            }, false);
-            document.addEventListener("offline", function()
-            {
-               if (Ext.device)
-               {
-                  if (!Ext.device.Connection.isOnline())
-                  {
-                     _onGotoMain();
-                  }
-               }
-               console.debug("Phone is Offline");
-            }, false);
-            document.addEventListener("pause", function()
-            {
-               if (_application && (launched == 0x111))
-               {
-                  _application.getController('client.Viewport').persistSyncStores();
-               }
-               console.debug("App is Paused");
-            }, false);
-            document.addEventListener("resume", function()
-            {
-               if (Ext.device)
-               {
-                  if (!Ext.device.Connection.isOnline())
-                  {
-                     _onGotoMain();
-                  }
-                  else
-                  {
-                     //_onGotoMainCallBackFn();
-                  }
-               }
-               console.debug("App is Resumed");
-            }, false);
-            document.addEventListener("deviceready", function()
-            {
-               navigator.splashscreen.show();
-               console.debug = (!debugMode) ? Ext.emptyFn : console.debug || console.log;
-               console.warn = console.warn || console.debug;
-
-               console.debug("PhoneGap App Launch");
-               launched = 0x110;
-               _appLaunch();
-            }, false);
-
-            //
-            // Startup Application
-            //
-            Ext.Loader.setConfig(
-            {
-               enabled : false,
-               paths :
-               {
-                  Ext : _extPath,
-                  Genesis : _appPath,
-                  "Ext.ux" : _appPath
-               }
-            });
-            Ext.application(
-            {
-               requires : ['Ext.MessageBox', 'Ext.device.Notification', 'Ext.device.Camera', 'Ext.device.Orientation'],
-               profiles : ['Iphone'],
-               views : ['Document', 'client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions', //
-               'client.AccountsTransfer', 'client.SettingsPage', //
-               'LoginPage', 'SignInPage', 'client.MainPage', 'widgets.client.RedeemItemDetail', 'client.Badges', 'client.JackpotWinners', 'client.MerchantAccount',
-               // //
-               'client.MerchantDetails', 'client.Accounts', 'client.Prizes', 'Viewport'],
-               controllers : ['client.Challenges', 'client.Rewards', 'client.Redemptions', //
-               'client.Viewport', 'client.Login', 'client.MainPage', 'client.Badges', 'client.Merchants', 'client.Accounts', 'client.Settings', 'client.Checkins', 'client.JackpotWinners', 'client.Prizes'],
-               launch : function()
-               {
-                  _application = this;
-                  if (launched > 0x000)
-                  {
-                     launched |= 0x001;
-                  }
-                  else
-                  {
-                     launched = 0x001;
-                  }
-                  console.debug("Ext App Launch");
-                  _appLaunch();
-               },
-               appFolder : _appPath,
-               name : 'Genesis'
-            });
-
+         html, body {
+            height:100%;
+            /*background-color:#1985D0;*/
+            background-color:#0A78BE;
          }
+         #appLoadingIndicator {
+            position:absolute;
+            top:50%;
+            margin-top:4em;
+            text-align:center;
+            width:100%;
+            height:30px;
+            -webkit-animation-name:appLoadingIndicator;
+            -webkit-animation-duration:0.5s;
+            -webkit-animation-iteration-count:infinite;
+            -webkit-animation-direction:linear;
+         }
+         #appLoadingIndicator> * {
+            background-color:#FFFFFF;
+            display:inline-block;
+            height:30px;
+            -webkit-border-radius:15px;
+            margin:0 5px;
+            width:30px;
+            opacity:0.8;
+         }
+         @-webkit-keyframes appLoadingIndicator{
+         0% {
+         opacity: 0.8
+         }
+         50% {
+         opacity: 0
+         }
+         100% {
+         opacity: 0.8
+         }
+         }
+      </style>
+      <script type="text/javascript">
+         _build = "MobileWebClient";
       </script>
-      <!--
-      <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
-      -->
-      <script type="text/javascript" src="core.js"></script>
-      <!-- View Widgets -->
-      <script type="text/javascript" src="app/profile/Iphone.js"></script>
-      <script type="text/javascript" src="client-all.js"></script>
+      <script type="text/javascript">
+         var _filesAssetCount = 0, _totalAssetCount = 4, _loadingPct;
+         (function()
+         {
+            // Update Page Loading progress every sec
+            var lastCount = 0, task = setInterval(function()
+            {               
+               if (_filesAssetCount >= _totalAssetCount)
+               {
+                  clearInterval(task);
+                  _loadingPct = null;
+               }
+               else if (lastCount != _filesAssetCount)
+               {
+                  var percentage = Math.round(_filesAssetCount / _totalAssetCount * 100);
+
+                  lastCount = _filesAssetCount;
+                  if (_loadingPct)
+                  {
+                     _loadingPct.innerText = percentage + '%';
+                  }
+               }
+            }, 0.1 * 1000);
+         })();
+      </script>
+      <!-- The line below must be kept intact for Sencha Command to build your application -->
+      <script type="text/javascript">(function(l){function s(b){function c(a,b){var d=a.length,i,e;for(i=0;i<d;i++){e=a[i];var c=a,j=i,f=void 0;"string"==typeof e&&(e={path:e});e.shared?(e.version=e.shared,f=e.shared+e.path):(B.href=e.path,f=B.href);e.uri=f;e.key=g+"-"+f;h[f]=e;c[j]=e;e.type=b;e.index=i;e.collection=a;e.ready=!1;e.evaluated=!1}return a}var d;"string"==typeof b?(d=b,b=C(d)):d=JSON.stringify(b);var g=b.id,j=g+"-"+D+p,h={};this.key=j;this.css=c(b.css,"css");this.js=c(b.js,"js");window.Ext||(window.Ext={});n.microloaded=
+!0;var f=window.Ext.filterPlatform=function(a){function b(a){var c=/Mobile(\/|\s)/.test(a);return/(iPhone|iPod)/.test(a)||!/(Silk)/.test(a)&&/(Android)/.test(a)&&(/(Android 2)/.test(a)||c)||/(BlackBerry|BB)/.test(a)&&c||/(Windows Phone)/.test(a)}function d(a){return!b(a)&&(/iPad/.test(a)||/Android/.test(a)||/(RIM Tablet OS)/.test(a)||/MSIE 10/.test(a)&&/; Touch/.test(a))}var i=false,e=navigator.userAgent,c,h,a=[].concat(a);c=window.location.search.substr(1).split("&");h={};var f;for(f=0;f<c.length;f++){var g=
+c[f].split("=");h[g[0]]=g[1]}if(c=h.platform)return a.indexOf(c)!=-1;c=0;for(h=a.length;c<h;c++){switch(a[c]){case "android-lhdpi":i=/(Android|Silk)/.test(e)&&!(window.devicePixelRatio==1||window.devicePixelRatio>=2);break;case "android-mxhdpi":i=/(Android|Silk)/.test(e)&&(window.devicePixelRatio==1||window.devicePixelRatio>=2);break;case "blackberry-lhdpi":i=/(BlackBerry|BB)/.test(e)&&!(window.devicePixelRatio==1||window.devicePixelRatio>=2);break;case "blackberry-mxhdpi":i=/(BlackBerry|BB)/.test(e)&&
+(window.devicePixelRatio==1||window.devicePixelRatio>=2);break;case "ie10-lhdpi":i=/MSIE 10/.test(e)&&!(window.devicePixelRatio==1||window.devicePixelRatio>=2);break;case "ie10-mxhdpi":i=/MSIE 10/.test(e)&&(window.devicePixelRatio==1||window.devicePixelRatio>=2);break;case "phone":i=b(e);break;case "tablet":i=d(e);break;case "desktop":i=!b(e)&&!d(e);break;case "ios":i=/(iPad|iPhone|iPod)/.test(e);break;case "android":i=/(Android|Silk)/.test(e);break;case "blackberry":i=/(BlackBerry|BB)/.test(e);break;
+case "safari":i=/Safari/.test(e)&&!/(BlackBerry|BB)/.test(e);break;case "chrome":i=/Chrome/.test(e);break;case "ie10":i=/MSIE 10/.test(e)}if(i)return true}return false};this.css=this.css.filter(function(a){var b=a.platform;if(b){if(f(b)){n.theme={name:a.theme||"Default"};return true}a.filtered=true;return false}return true});this.js=this.js.filter(function(a){var b=a.platform;if(b&&!f(b)){a.filtered=true;return false}return true});this.assets=this.css.concat(this.js);this.getAsset=function(a){return h[a]};
+this.store=function(){t(j,d)}}function x(b,c){var d=document.createElement("meta");d.setAttribute("name",b);d.setAttribute("content",c);u.appendChild(d)}function q(b,c,d){var g=new XMLHttpRequest,d=d||E,b=b+(-1==b.indexOf("?")?"?":"&")+Date.now();try{g.open("GET",b,!0),g.onreadystatechange=function(){if(4==g.readyState){var b=g.status,f=g.responseText;200<=b&&300>b||304==b||0==b&&0<f.length?c(f):d()}},g.send(null)}catch(j){d()}}function L(b,c){var d=m.createElement("iframe");v.push({iframe:d,callback:c});
+d.src=b+".html";d.style.cssText="width:0;height:0;border:0;position:absolute;z-index:-999;visibility:hidden";m.body.appendChild(d)}function F(b,c,d){var g=!!b.shared;if(b.remote)c("");else{if(!g)var j=c,h=b.version,f,c=function(a){f=a.substring(0,h.length+4);f!=="/*"+h+"*/"?confirm("Requested: '"+b.uri+"' with checksum: "+h+" but received: "+f.substring(2,h.length)+"instead. Attempt to refresh the application?")&&M():j(a)};(g?L:q)(b.uri,c,d)}}function G(b){var c=b.data,b=b.source.window,d,g,j,h;d=
+0;for(g=v.length;d<g;d++)if(j=v[d],h=j.iframe,h.contentWindow===b){j.callback(c);m.body.removeChild(h);v.splice(d,1);break}}function H(b){"undefined"!=typeof console&&(console.error||console.log).call(console,b)}function t(b,c){try{o.setItem(b,c)}catch(d){if(o&&d.code==d.QUOTA_EXCEEDED_ERR&&r){var g=r.assets.map(function(a){return a.key}),j=0,h=o.length,f=!1,a;for(g.push(r.key);j<=h-1;)a=o.key(j),-1==g.indexOf(a)?(o.removeItem(a),f=!0,h--):j++;f&&t(b,c)}}}function w(b){try{return o.getItem(b)}catch(c){return null}}
+function M(){I||(I=!0,q(p,function(b){(new s(b)).store();l.location.reload()}))}function y(b){function c(a,b){var c=a.collection,i=a.index,e=c.length,f;a.ready=!0;a.content=b;for(f=i-1;0<=f;f--)if(a=c[f],!a.filtered&&(!a.ready||!a.evaluated))return;for(f=i;f<e;f++)if(a=c[f],a.ready)a.evaluated||d(a);else break}function d(a){a.evaluated=!0;if("js"==a.type)try{eval(a.content)}catch(b){H("Error evaluating "+a.uri+" with message: "+b)}else{var c=m.createElement("style"),d;c.type="text/css";c.textContent=
+a.content;"id"in a&&(c.id=a.id);"disabled"in a&&(c.disabled=a.disabled);d=document.createElement("base");d.href=a.path.replace(/\/[^\/]*$/,"/");u.appendChild(d);u.appendChild(c);u.removeChild(d)}delete a.content;0==--h&&g()}function g(){function a(){h&&c()}function c(){var a=n.onUpdated||E;if("onSetup"in n)n.onSetup(a);else a()}function d(){f.store();g.forEach(function(a){t(a.key,a.content)});c()}function i(a,b){a.content=b;0==--l&&(k.status==k.IDLE?d():j=d)}function e(){J("online",e,!1);q(p,function(c){r=
+f=new s(c);var d;f.assets.forEach(function(a){d=b.getAsset(a.uri);(!d||a.version!==d.version)&&g.push(a)});l=g.length;0==l?k.status==k.IDLE?a():j=a:g.forEach(function(a){function c(){F(a,function(b){i(a,b)})}var d=b.getAsset(a.uri),e=a.path,f=a.update;!d||!f||null===w(a.key)||"delta"!=f?c():q("deltas/"+e+"/"+d.version+".json",function(b){try{var c=a,d;var e=w(a.key),f=C(b),b=[],g,h,j;if(0===f.length)d=e;else{h=0;for(j=f.length;h<j;h++)g=f[h],"number"===typeof g?b.push(e.substring(g,g+f[++h])):b.push(g);
+d=b.join("")}i(c,d)}catch(k){H("Malformed delta content received for "+a.uri)}},c)})})}var g=[],h=!1,j=function(){},m=function(){k.swapCache();h=!0;j()},l;J("message",G,!1);if(k.status==k.UPDATEREADY)m();else if(k.status==k.CHECKING||k.status==k.DOWNLOADING)k.onupdateready=m,k.onnoupdate=k.onobsolete=function(){j()};!1!==navigator.onLine?e():z("online",e,!1)}var j=b.assets,h=j.length,f;r=b;z("message",G,!1);0==h?g():j.forEach(function(a){var b=w(a.key);null===b?F(a,function(b){a.remote||t(a.key,b);
+c(a,b)},function(){c(a,"")}):c(a,b)})}function K(b){if(navigator.userAgent.match(/IEMobile\/10\.0/)){var c=document.createElement("style");c.appendChild(document.createTextNode("@media screen and (orientation: portrait) {@-ms-viewport {width: 320px !important;}}@media screen and (orientation: landscape) {@-ms-viewport {width: 560px !important;}}"));document.getElementsByTagName("head")[0].appendChild(c)}c=/MSIE 10/.test(navigator.userAgent)?/complete|loaded/:/interactive|complete|loaded/;null!==m.readyState.match(c)?
+y(b):z("DOMContentLoaded",function(){navigator.standalone?setTimeout(function(){setTimeout(function(){y(b)},1)},1):setTimeout(function(){y(b)},1)},!1)}var E=function(){},v=[],m=l.document,u=m.head,z=l.addEventListener,J=l.removeEventListener,C=JSON.parse,B=m.createElement("a"),A=m.location,D=A.origin+A.pathname+A.search,p="app.json",I=!1,r,k,o;try{o=l.localStorage,k=l.applicationCache}catch(N){}if("undefined"===typeof n)var n=l.Ext={};n.blink=function(b){var c=w(b.id+"-"+D+p);x("viewport","width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no");
+x("apple-mobile-web-app-capable","yes");x("apple-touch-fullscreen","yes");c?(b=new s(c),K(b)):q(p,function(c){b=new s(c);b.store();K(b)})}})(this);;Ext.blink({"id":"b0849797-063d-44af-b2cc-99480c66be86"})</script>
    </head>
-   <body onload="onBodyLoad()">
+   <body>
       <div id="fb-root"></div>
-      <script type="text/javascript">
-         window.onerror = function(msg, url, linenum)
-         {
-            console.debug("Error on Line#" + linenum + "\n" + msg);
-         }
-      </script>
-      <!-- Cache images -->
+      <div id="loadingPct" style="font-size:6em;font-weight:bold;position:absolute;top:50%;margin-top: -1.125em;color: black;text-align: center;width: 100%;width: 100;color:#FFFFFF;">0%</div>
+      <div id="appLoadingIndicator">
+         <div></div>
+         <div></div>
+         <div></div>
+      </div>
       <div class="clientPhotoCache"></div>
+      <p style="display:none;"></p>
+      <script type="text/javascript">
+         _loadingPct = document.getElementById("loadingPct");
+      </script>
    </body>
 </html>
