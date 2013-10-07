@@ -40,7 +40,7 @@
                   width :$xlargeFontSize*1.25;
                   height :$xlargeFontSize*1.25;
                   position:absolute;
-                  -webkit-mask-image: theme_image($theme-path-common + "/toolbar", "mail" + ".svg");
+                  -webkit-mask-image: theme_image($theme-path-common + "/toolbar", "mail" + ".png");
                   -webkit-mask-size: $xlargeFontSize*1.25 $xlargeFontSize*1.25;
                   background-color:$BlueEnd;
                   top : $panelTopGap*1.25;

@@ -14,7 +14,7 @@
 @mixin toolbar-iconmask($name) {
   .x-tab .x-button-icon.#{$name},
   .x-button .x-button-icon.x-icon-mask.#{$name} {
-    -webkit-mask-image: theme_image($theme-path-common + "/toolbar",  $name + ".svg");
+    -webkit-mask-image: theme_image($theme-path-common + "/toolbar",  $name + ".png");
   }
 }
 

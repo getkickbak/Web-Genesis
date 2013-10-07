@@ -21,11 +21,11 @@ program_rules.htm
 lib/libmp3lame.min.js
 # aef82b6e57150d5f2254ab5b1fc3ce019d3344a9
 worker/encoder.min.js
-# a1cf5dced1a91bcdcbf493fdee42590d393570be
+# 26ddab42eb17893508f3c21382cf28af7e09e26a
 resources/css/iphone.css
-# 74e5a0e44a74fd688ca81dc43c103b21ef130d4f
+# 04da490fbff093ddd7ee489a1843dea2aaad4d2a
 resources/css/android-phone-lhdpi.css
-# e7c74fc74de280c0a1ad382af7f61b3649501c6f
+# 0519967bf5b8545046166118ed64ba2c30e180fc
 resources/css/android-phone-mxhdpi.css
 
 
