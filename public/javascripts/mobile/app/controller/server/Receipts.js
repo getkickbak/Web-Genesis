@@ -102,7 +102,7 @@ Ext.merge(WebSocket.prototype,
    },
    receiptIncomingHandler : function(receipts, supress)
    {
-      var receiptsList = [], tableList = [], receiptsMetaList = [];
+      var receiptsList = [], tableList = [], receiptMetaList = [];
       for (var i = 0; i < receipts.length; i++)
       {
          var receipt = this.createReceipt(receipts[i]);
@@ -132,7 +132,7 @@ Ext.merge(WebSocket.prototype,
             }
 
             receiptsList.push(receipt);
-            receiptsMetaList.push(receipt.getData(true));
+            receiptMetaList.push(receipt.getData(true));
          }
          else
          {
@@ -145,7 +145,7 @@ Ext.merge(WebSocket.prototype,
          //
          // MobileWebServer, we create a popup for cashier to remind customers to use Loyalty Program
          //
-         if (!Genesis.fn.isNative() && receiptMetasList.length > 0)
+         if (!Genesis.fn.isNative() && receiptMetaList.length > 0)
          {
             viewport = _application.getController('server' + '.Viewport');
             if (appWindow)
@@ -153,7 +153,7 @@ Ext.merge(WebSocket.prototype,
                appWindow.postMessage(
                {
                   cmd : 'notification_post',
-                  receipts : receiptMetasList
+                  receipts : receiptMetaList
                }, appOrigin);
             }
          }
@@ -217,7 +217,8 @@ Ext.define('Genesis.controller.server.Receipts',
       listeners :
       {
          'resetEarnedReceipts' : 'onResetEarnedReceipts',
-         'addEarnedReceipt' : 'onAddEarnedReceipt'
+         'addEarnedReceipt' : 'onAddEarnedReceipt',
+         'retrieveReceipts' : 'onRetrieveReceipts'
       }
    },
    retrieveReceiptsMsg : 'Retrieving Receipts from POS ...',
@@ -314,7 +315,7 @@ Ext.define('Genesis.controller.server.Receipts',
       {
          if (pos.isEnabled())
          {
-            me.onRetrieveReceipts();
+            me.fireEvent('retrieveReceipts');
          }
          else
          {
@@ -334,7 +335,7 @@ Ext.define('Genesis.controller.server.Receipts',
             {
                console.debug("restoreReceipt  --- Restored " + records.length + " Receipts from the KickBak-Receipt DB");
                pos.initReceipt |= 0x01;
-               me.onRetrieveReceipts();
+               me.fireEvent('retrieveReceipts');
             }
          }
       });

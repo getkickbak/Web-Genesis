@@ -42,7 +42,7 @@ Ext.define('Genesis.view.server.Rewards',
             tag : 'refresh',
             handler : function()
             {
-               retrieveReceipts();
+               _application.getController('server' + '.Receipts').fireEvent('retrieveReceipts');
             }
          }]
       })]
@@ -217,7 +217,7 @@ Ext.define('Genesis.view.server.Rewards',
                   //pullRefreshText: 'Pull down for more new Tweets!',
                   refreshFn : function(plugin)
                   {
-                     retrieveReceipts();
+                     _application.getController('server' + '.Receipts').fireEvent('retrieveReceipts');
                   }
                },
                {

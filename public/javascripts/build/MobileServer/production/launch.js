@@ -16,9 +16,10 @@ chrome.app.runtime.onLaunched.addListener(function()
    var left = (screen.width) - (w);
    var top = (screen.height) - (h);
 
-   var win = chrome.app.window.create('launch.html',
+   chrome.app.window.create('launch.html',
    {
-      //id : "MerKickBak",
+      id : "MerKickBak",
+      hidden : true,
       singleton : true,
       frame : 'none',
       minHeight : h,
@@ -26,11 +27,13 @@ chrome.app.runtime.onLaunched.addListener(function()
       minWidth : w,
       bounds :
       {
-         left : Math.round(left / 2),
-         top : Math.round(top / 2),
          width : w,
          height : h
       },
       resizable : false
+   }, function(appWindow)
+   {
+      appWindow.moveTo(Math.round(left / 2), Math.round(top / 2));
+      appWindow.show();
    });
 });
