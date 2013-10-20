@@ -80885,7 +80885,7 @@ Ext.define('Genesis.controller.server.Pos',
    hostLocal : '127.0.0.1',
    hostRemote : '192.168.159.1',
    portRemote : '443',
-   portLocal : '80',
+   portLocal : '69', // TFTP UDP Port
    wssocket : null,
    tagReaderTitle : 'Tag Reader',
    lostPosConnectionMsg : 'Reestablishing connection to POS ...',
@@ -82051,7 +82051,8 @@ Ext.define('Genesis.controller.server.Receipts',
       {
          posMode : 'serversettingspageview togglefield[tag=posMode]',
          displayMode : 'serversettingspageview selectfield[tag=displayMode]',
-         sensitivity : 'serversettingspageview spinnerfield[tag=sensitivity]'
+         sensitivity : 'serversettingspageview spinnerfield[tag=sensitivity]',
+         receiptList : 'serverrewardsview list[tag=receiptList]'
       },
       control :
       {
@@ -82169,6 +82170,7 @@ Ext.define('Genesis.controller.server.Receipts',
       {
          if (pos.isEnabled())
          {
+            pos.wssocket.send('enable_pos:'+ Genesis.db.getLocalDB()['posExec']);
             me.fireEvent('retrieveReceipts');
          }
          else
@@ -82320,6 +82322,7 @@ Ext.define('Genesis.controller.server.Receipts',
    {
       var me = this, db = Genesis.db.getLocalDB(), features_config = metaData['features_config'];
 
+      db['posExec'] = features_config['pos_exec'] || 'workstation';
       db['enablePosIntegration'] = features_config['enable_pos'];
       db['isPosEnabled'] = ((posEnabled === undefined) || (posEnabled));
       if (pos.isEnabled())
@@ -82726,6 +82729,13 @@ Ext.define('Genesis.controller.server.Receipts',
                message : me.retrieveReceiptsMsg
             });
             pos.wssocket.send('get_receipts');
+         }
+         //
+         // Refresh List view if nothing is needed for update
+         //
+         else if (store.getAllCount() > 0)
+         {
+            me.getReceiptList().refresh();
          }
       }
    }
@@ -85033,7 +85043,7 @@ Ext.define('Genesis.controller.server.Viewport',
       },
       activeController : null
    },
-   setupInfoMissingMsg : 'Trouble initializing KICKBAK Service',
+   setupInfoMissingMsg : 'Setup Information missing for this Terminal',
    licenseKeyInvalidMsg : 'Missing License Key',
    licenseTitle : 'LicenseKey Refresh',
    licenseRefreshMsg : function()

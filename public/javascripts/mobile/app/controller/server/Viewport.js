@@ -203,7 +203,7 @@ Ext.define('Genesis.controller.server.Viewport',
       },
       activeController : null
    },
-   setupInfoMissingMsg : 'Trouble initializing KICKBAK Service',
+   setupInfoMissingMsg : 'Setup Information missing for this Terminal',
    licenseKeyInvalidMsg : 'Missing License Key',
    licenseTitle : 'LicenseKey Refresh',
    licenseRefreshMsg : function()

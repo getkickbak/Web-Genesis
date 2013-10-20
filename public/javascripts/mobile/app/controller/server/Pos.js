@@ -9,7 +9,7 @@ Ext.define('Genesis.controller.server.Pos',
    hostLocal : '127.0.0.1',
    hostRemote : '192.168.159.1',
    portRemote : '443',
-   portLocal : '80',
+   portLocal : '69', // TFTP UDP Port
    wssocket : null,
    tagReaderTitle : 'Tag Reader',
    lostPosConnectionMsg : 'Reestablishing connection to POS ...',

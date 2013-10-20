@@ -7161,7 +7161,7 @@ Ext.define('Genesis.view.server.Rewards',
             tag : 'refresh',
             handler : function()
             {
-               retrieveReceipts();
+               _application.getController('server' + '.Receipts').fireEvent('retrieveReceipts');
             }
          }]
       })]
@@ -7336,7 +7336,7 @@ Ext.define('Genesis.view.server.Rewards',
                   //pullRefreshText: 'Pull down for more new Tweets!',
                   refreshFn : function(plugin)
                   {
-                     retrieveReceipts();
+                     _application.getController('server' + '.Receipts').fireEvent('retrieveReceipts');
                   }
                },
                {
@@ -12072,7 +12072,7 @@ Ext.define('Genesis.controller.server.Viewport',
       },
       activeController : null
    },
-   setupInfoMissingMsg : 'Trouble initializing KICKBAK Service',
+   setupInfoMissingMsg : 'Setup Information missing for this Terminal',
    licenseKeyInvalidMsg : 'Missing License Key',
    licenseTitle : 'LicenseKey Refresh',
    licenseRefreshMsg : function()
@@ -14503,7 +14503,7 @@ Ext.merge(WebSocket.prototype,
    },
    receiptIncomingHandler : function(receipts, supress)
    {
-      var receiptsList = [], tableList = [], receiptsMetaList = [];
+      var receiptsList = [], tableList = [], receiptMetaList = [];
       for (var i = 0; i < receipts.length; i++)
       {
          var receipt = this.createReceipt(receipts[i]);
@@ -14533,7 +14533,7 @@ Ext.merge(WebSocket.prototype,
             }
 
             receiptsList.push(receipt);
-            receiptsMetaList.push(receipt.getData(true));
+            receiptMetaList.push(receipt.getData(true));
          }
          else
          {
@@ -14546,7 +14546,7 @@ Ext.merge(WebSocket.prototype,
          //
          // MobileWebServer, we create a popup for cashier to remind customers to use Loyalty Program
          //
-         if (!Genesis.fn.isNative() && receiptMetasList.length > 0)
+         if (!Genesis.fn.isNative() && receiptMetaList.length > 0)
          {
             viewport = _application.getController('server' + '.Viewport');
             if (appWindow)
@@ -14554,7 +14554,7 @@ Ext.merge(WebSocket.prototype,
                appWindow.postMessage(
                {
                   cmd : 'notification_post',
-                  receipts : receiptMetasList
+                  receipts : receiptMetaList
                }, appOrigin);
             }
          }
@@ -14598,7 +14598,8 @@ Ext.define('Genesis.controller.server.Receipts',
       {
          posMode : 'serversettingspageview togglefield[tag=posMode]',
          displayMode : 'serversettingspageview selectfield[tag=displayMode]',
-         sensitivity : 'serversettingspageview spinnerfield[tag=sensitivity]'
+         sensitivity : 'serversettingspageview spinnerfield[tag=sensitivity]',
+         receiptList : 'serverrewardsview list[tag=receiptList]'
       },
       control :
       {
@@ -14618,7 +14619,8 @@ Ext.define('Genesis.controller.server.Receipts',
       listeners :
       {
          'resetEarnedReceipts' : 'onResetEarnedReceipts',
-         'addEarnedReceipt' : 'onAddEarnedReceipt'
+         'addEarnedReceipt' : 'onAddEarnedReceipt',
+         'retrieveReceipts' : 'onRetrieveReceipts'
       }
    },
    retrieveReceiptsMsg : 'Retrieving Receipts from POS ...',
@@ -14715,7 +14717,8 @@ Ext.define('Genesis.controller.server.Receipts',
       {
          if (pos.isEnabled())
          {
-            me.onRetrieveReceipts();
+            pos.wssocket.send('enable_pos:'+ Genesis.db.getLocalDB()['posExec']);
+            me.fireEvent('retrieveReceipts');
          }
          else
          {
@@ -14735,7 +14738,7 @@ Ext.define('Genesis.controller.server.Receipts',
             {
                console.debug("restoreReceipt  --- Restored " + records.length + " Receipts from the KickBak-Receipt DB");
                pos.initReceipt |= 0x01;
-               me.onRetrieveReceipts();
+               me.fireEvent('retrieveReceipts');
             }
          }
       });
@@ -14866,6 +14869,7 @@ Ext.define('Genesis.controller.server.Receipts',
    {
       var me = this, db = Genesis.db.getLocalDB(), features_config = metaData['features_config'];
 
+      db['posExec'] = features_config['pos_exec'] || 'workstation';
       db['enablePosIntegration'] = features_config['enable_pos'];
       db['isPosEnabled'] = ((posEnabled === undefined) || (posEnabled));
       if (pos.isEnabled())
@@ -15273,6 +15277,13 @@ Ext.define('Genesis.controller.server.Receipts',
             });
             pos.wssocket.send('get_receipts');
          }
+         //
+         // Refresh List view if nothing is needed for update
+         //
+         else if (store.getAllCount() > 0)
+         {
+            me.getReceiptList().refresh();
+         }
       }
    }
 });
@@ -15287,7 +15298,7 @@ Ext.define('Genesis.controller.server.Pos',
    hostLocal : '127.0.0.1',
    hostRemote : '192.168.159.1',
    portRemote : '443',
-   portLocal : '80',
+   portLocal : '69', // TFTP UDP Port
    wssocket : null,
    tagReaderTitle : 'Tag Reader',
    lostPosConnectionMsg : 'Reestablishing connection to POS ...',
