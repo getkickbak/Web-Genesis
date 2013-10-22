@@ -1,12 +1,27 @@
 (function()
 {
    var _notifications = [], _frame, timeout = 30 * 1000;
-   var debug = true;
+   var debugMode = true;
 
    document.addEventListener("DOMContentLoaded", function(event)
    {
+      var url, path;
+      if (!debugMode)
+      {
+         serverHost = "http://www.getkickbak.com";
+         path = "/merchantApp/";
+      }
+      else
+      {
+         serverHost = "http://192.168.0.52:3000";
+         //serverHost = 'http://192.168.0.46:3000';
+         //serverHost = 'http://76.10.173.153';
+         //serverHost = 'http://www.dev1getkickbak.com';
+         //serverHost = 'http://www.devgetkickbak.com';
+         path = "/javascripts/build/MobileServer/testing/";
+      }
       _frame = document.getElementById('merkickbak');
-      _frame.src = ((!debug) ? "http://www.getkickbak.com/merchantApp" : "http://192.168.0.52:3000" + "/javascripts/build/MobileServer/testing") + "/index.html";
+      _frame.src = serverHost + path + "index.html";
 
       _frame.addEventListener('permissionrequest', function(e)
       {
