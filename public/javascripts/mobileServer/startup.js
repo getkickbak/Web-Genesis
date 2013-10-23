@@ -1,7 +1,7 @@
 (function()
 {
    var _notifications = [], _frame, timeout = 30 * 1000;
-   var debugMode = true;
+   var debugMode = false;
 
    document.addEventListener("DOMContentLoaded", function(event)
    {
