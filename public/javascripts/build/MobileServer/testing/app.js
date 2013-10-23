@@ -86883,7 +86883,7 @@ window.merchantMode = true;
 window.serverHost = location.origin;
 window._application = null;
 window.appName = 'MerKickBak';
-window._hostPathPrefix = (debugMode) ? "/javascripts/build/MobileServer/" : "/merchant/";
+window._hostPathPrefix = (debugMode) ? "/javascripts/build/MobileServer/" : "/merchantApp/";
 window._hostPath = _hostPathPrefix + ((debugMode) ? "testing/" : "") + "";
 window.phoneGapAvailable = false;
 

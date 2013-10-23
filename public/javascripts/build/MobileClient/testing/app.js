@@ -91597,7 +91597,7 @@ Ext.define('Genesis.plugin.PullRefresh',
 
 var pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false, launched = 0x000;
 
-window.debugMode = true;
+window.debugMode = false;
 window.merchantMode = false;
 window.serverHost = location.origin;
 window._application = null;
