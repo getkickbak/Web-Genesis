@@ -24,11 +24,28 @@
             margin-top: 0px;
          }         
          .media-object {
-            padding: 32px;
-            width: 0px;
-            height: 0px;
+            width: 57px;
+            height: 57px;
             background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAACsklEQVR4Xu2Y24upYRTGl0PI0JSimHDjMIVETVMzpvzrziLSTIkiLpTcjJLzcfaziuz2Njufsb8La93o+3jX+65nHX55NZ+fnzu6YdOIAFIB0gIyA254BpIMQaGAUEAoIBQQCtywAoJBwaBgUDAoGLxhCMifIcGgYFAwKBgUDAoGb1iBizHYbDap3+/Tbrcjp9NJwWCQNBrNQdJflKF6vU5ms5lisdhv353S/Ro+T+11kQCNRoN6vR7p9Xr2v16vyev1kt/v52eIkkql+L3BYKBEIkFarfbberuGz+82VCzAZrOhdDrNGX17e6PVakXdbpesVis9PDzwnq1Wi9/BTCYTvb6+0mQyoff3d9LpdBSPx2k8HhOCNhqNFIlEKJvNnu3zuOLO7WbFAiyXSz7sdrvloOfzObdAIBDgM8xmM8rlcuTxeGg0GtF0OmWhcNhKpULD4ZBsNhuvw3eoGqxX6vPcwPe/VywAertarbIftADKHIYgQqEQlctlzm4ymaRSqUSLxeIgwLF4WHN/f09PT090ic//LgAynM/nuXRfXl44i8VikXs9HA6zOHd3d+R2u6ndbnOl+Hw+foZ1Oh1+D3t+fuYqutSnEhEUVwAyjhmA3oYA+2cI8Pj4SLVa7Y/zYACiIjAcM5nMoWrsdjtFo9GDDyU+/zVcT4mjWAAEgQpA1lwuF3+irx0OB1cAyhyGg6EdIBAyjeA+Pj5oMBiQxWLhykF1YABirVKfSrKPNYoFwGIMsEKhQCACDO2AXkaQx4bWgACgAAYiBNnTA0KA+5gje5qc61MVChwHiGEHQ0Z/yq7h829nu6gCfipYNf2IAHIjJDdCciMkN0JqTmG19xYKCAWEAkIBoYDak1jN/YUCQgGhgFBAKKDmFFZ7b6GAUEAoIBQQCqg9idXcXyhw6xT4AgyAjZ+ww1kxAAAAAElFTkSuQmCC');
-            background-size: auto;
+            background-size: contain;
+         }
+         .media-body {
+            position : relative;
+         }
+         .media-heading {
+            font-size: 0.8em;
+         }
+         .itemDistance {
+            position:absolute;
+            top : 0;
+            right: 1em;
+            font-weight:bold;
+            font-size: 0.8em;
+         }
+         .itemDesc {
+            font-size: 0.8em;
+            line-height: 1.1em;
+            word-break: break-word;
          }
          .panTopPage {
             left: 0px !important;
@@ -72,10 +89,11 @@
          .x-portrait #checkexplorepageview .body::before {
             position: absolute;
             background: url('../resources/themes/images/v1/ios/mainicons/checkin.svg') no-repeat;
-            background-size: auto 75%;
+            background-size: auto 65%;
             height: 100%;
             width: 100%;
             content: "";
+            z-index: -1;
             background-position: center center;
          }
          .x-landscape #checkexplorepageview .body::before {
@@ -85,6 +103,7 @@
             height: 100%;
             width: 100%;
             content: "";
+            z-index: -1;
             background-position: center center;
          }
          #checkexplorepageview .footer {

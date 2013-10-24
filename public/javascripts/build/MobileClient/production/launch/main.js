@@ -219,6 +219,18 @@ var setChildBrowserVisibility = function(visible, hash)
    }
    else
    {
+      //
+      // Refresh is not logged in
+      //
+      if (!db['auth_code'])
+      {
+         $('.body ul').html('');
+         if (!($.os && $.os.ios && (parseFloat($.os.version) >= 7.0)))
+         {
+            $('#checkexplorepageview .body').infiniteScroll('reset');
+         }
+      }
+
       $("#earnPtsLoad span.x-button-label").text((db['auth_code']) ? 'Earn Points' : 'Sign In / Register');
       window.location.hash = '#' + hash;
       if (Genesis.fn.isNative())
@@ -325,6 +337,14 @@ window.location.reload();
    var getNearestVenues = function(start, refresh)
    {
       var me = gblController, viewport = me.getViewPortCntlr();
+      var getAddress = function(values)
+      {
+         return (values['address'] + ",<br/>" + values['city'] + ", " + values['state'] + ", " + values['country'] + ",<br/>" + values['zipcode']);
+      };
+      var getDistance = function(values)
+      {
+         return ((values['distance'] > 0) ? values['distance'].toFixed(1) + 'km' : '');
+      };
 
       setLoadMask(true);
       $(document).one('locationupdate', function(e, position)
@@ -377,12 +397,13 @@ window.location.reload();
                   var venue = data.data[i];
                   // @formatter:off
                   venues +=  //
-                  '<li class="media" data="'+ Ext.encode(venue) +'">'+
-                     '<a class="pull-left" href="#"> <img src="' + venue['merchant']['photo']['thumbnail_medium_url'] + '"class="media-object" data-src="holder.js/64x64" alt="64x64"> </a>'+
-                     '<div class="media-body">'+
-                        '<h4 class="media-heading">' + venue['name'] + '</h4>'+
-                        'Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis.'+
-                     '</div>'+
+                  '<li class="media" data="'+ encodeURIComponent(Ext.encode(venue)) +'">'+
+                     '<a class="pull-left" href="#"> <img src="' + venue['merchant']['photo']['url'] + '" class="media-object" data-src="holder.js/64x64" alt=""> </a>'+
+                     '<div class="media-body">' +
+                        '<div class="media-heading">' + venue['name'] + '</div>' +
+                           '<div class="itemDistance">' + getDistance(venue) + '</div>' +
+                           '<div class="itemDesc">' + getAddress(venue) + '</div>' +
+                     '</div>' +
                   '</li>';
                   // @formatter:on
                }
@@ -739,13 +760,21 @@ window.location.reload();
       }
       var _getVenues_ = function(e)
       {
-         //
-         // Trigger when the list is empty
-         //
-         if ($('.media').length == 0)
+         var db = Genesis.db.getLocalDB();
+         if (db['auth_code'])
          {
-            me.playSoundFile(me.sound_files['clickSound']);
-            getNearestVenues(0);
+            //
+            // Trigger when the list is empty
+            //
+            if ($('.media').length == 0)
+            {
+               me.playSoundFile(me.sound_files['clickSound']);
+               getNearestVenues(0);
+            }
+         }
+         else
+         {
+            setChildBrowserVisibility(true);
          }
          return false;
       };
@@ -757,7 +786,7 @@ window.location.reload();
       var _ptsLoad_ = function()
       {
          me.playSoundFile(me.sound_files['clickSound']);
-         db = Genesis.db.getLocalDB();
+         var db = Genesis.db.getLocalDB();
          if (db['auth_code'])
          {
             $('#earnPtsProceed').trigger(pfEvent);
@@ -775,9 +804,10 @@ window.location.reload();
       // =============================================================
       var _home_ = function(e)
       {
+         var db = Genesis.db.getLocalDB();
          me.playSoundFile(me.sound_files['clickSound']);
          //refresh
-         if ($(e.currentTarget).has('.x-button .x-button-icon.refresh').length > 0)
+         if (db['auth_code'] && ($(e.currentTarget).has('.x-button .x-button-icon.refresh').length > 0))
          {
             getNearestVenues(0, true);
          }
