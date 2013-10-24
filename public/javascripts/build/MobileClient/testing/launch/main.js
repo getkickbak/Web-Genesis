@@ -372,9 +372,9 @@ window.location.reload();
                   }
                }
 
-               for (var i = 0; i < data.length; i++)
+               for (var i = 0; i < data.data.length; i++)
                {
-                  var venue = data[i];
+                  var venue = data.data[i];
                   // @formatter:off
                   venues +=  //
                   '<li class="media" data="'+ Ext.encode(venue) +'">'+
