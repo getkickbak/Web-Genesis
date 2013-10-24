@@ -334,7 +334,7 @@ window.location.reload();
             latitude : position.coords.latitude,
             longitude : position.coords.longitude,
             start : start,
-            end : start + 20
+            limit : start + 20
          };
          ajax = $.ajax(
          {

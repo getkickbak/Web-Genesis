@@ -183,11 +183,13 @@
             if ((typeof($) != 'undefined') && (typeof(Genesis) != 'undefined') && //
             (_winHeight != window.innerHeight))
             {
+               /*
                if ($.os.ios && (parseFloat($.os.version) < 7.0))
                {
                   _winHeight = ((window.orientation === 0) ? window.screen.height - 64 : window.screen.width - 52);
                }
                else
+               */
                {                  
                   _winHeight = window.innerHeight;
                }
