@@ -91877,7 +91877,7 @@ will need to resolve manually.
          appLaunchCallbackFn(true, 0x100);
          console.debug("Enable WAV/WebAudio Encoder");
       }
-      images[0].src = prefix + "/prizewon/transmit.png";
+      images[0].src = prefix + "/prizewon/transmit.svg";
    }, 0.1 * 1000);
 })();
 
