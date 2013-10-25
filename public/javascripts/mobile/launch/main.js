@@ -178,7 +178,7 @@ var setChildBrowserVisibility = function(visible, hash)
          else
          {
             mainAppInit = true;
-            $(".iframe")[0].src = '../index.html';
+            $(".iframe")[0].src = '../index.html' + '#' + hash;
             $(".iframe").removeClass('x-item-hidden');
          }
       }
@@ -247,6 +247,18 @@ var setChildBrowserVisibility = function(visible, hash)
 var setLoadMask = function(visible)
 {
    $('#loadingMask')[visible ? 'removeClass' : 'addClass']('x-item-hidden');
+};
+var detectAccessToken = function(url)
+{
+   var db = Genesis.db.getLocalDB();
+   if (db['fbLoginInProgress'] && (url.indexOf("access_token=") >= 1))
+   {
+      setChildBrowserVisibility(true, url.split("#")[1]);
+   }
+   else
+   {
+      setChildBrowserVisibility(false);
+   }
 };
 
 /*
@@ -782,7 +794,6 @@ window.location.reload();
       // =============================================================
       // WelcomePage Actions
       // =============================================================
-      setChildBrowserVisibility(false);
       var _ptsLoad_ = function()
       {
          me.playSoundFile(me.sound_files['clickSound']);
@@ -995,5 +1006,10 @@ window.location.reload();
          return false;
       };
       $('#earnPtsProceed').on(pfEvent, _preLoad_);
+
+      // =============================================================
+      // Facebook Access Token Detect
+      // =============================================================
+      detectAccessToken(location.href);
    });
 })();

@@ -3774,21 +3774,6 @@ __initFb__ = function(_app, _appName)
          if (app.fn.isNative())
          {
             var ref = window.open(me.redirectUrl(), '_blank', 'location=no,toolbar=no,closebuttoncaption=Cancel');
-
-            me.fbLoginTimeout = setTimeout(function()
-            {
-               me.fireEvent('loginStatus');
-               me.fireEvent('exception',
-               {
-                  type : 'timeout',
-                  msg : 'The request to Facebook timed out.'
-               }, null);
-
-               app.db.removeLocalDBAttrib('fbLoginInProgress');
-               ref.close();
-               me.facebook_loginCallback(null);
-            }, me.fbTimeout);
-
             ref.addEventListener('loadstart', function(event)
             {
                //console.debug("FacebookConnect::loadstart - url(" + event.url + ")");
@@ -3820,6 +3805,20 @@ __initFb__ = function(_app, _appName)
                   me.facebook_loginCallback(null);
                }
             });
+
+            me.fbLoginTimeout = setTimeout(function()
+            {
+               me.fireEvent('loginStatus');
+               me.fireEvent('exception',
+               {
+                  type : 'timeout',
+                  msg : 'The request to Facebook timed out.'
+               }, null);
+
+               app.db.removeLocalDBAttrib('fbLoginInProgress');
+               ref.close();
+               me.facebook_loginCallback(null);
+            }, me.fbTimeout);
          }
          else
          {
@@ -3828,8 +3827,8 @@ __initFb__ = function(_app, _appName)
             //
             Ext.defer(function()
             {
-               location.href = me.redirectUrl();
-            }, 1 * 1000);
+               top.location.href = me.redirectUrl(); // Reload parent window
+            }, 0.5 * 1000);
          }
       },
       facebook_loginCallback : function(res)
