@@ -1,21 +1,32 @@
 CACHE MANIFEST
-#version 1
-#js
-mccore.js
-mclient-all.js
-../lib/libmp3lame.min.js
-#workers
-../worker/encoder.min.js
-#css
-../lib/bootstrap/css/bootstrap.min.css
-resources/css/mini_client.css
-resources/css/add2home.css
-../resources/themes/images/v1/ios/mainicons/checkin.svg
-../resources/themes/images/v1/ios/prizewon/loyaltycard.svg
-../resources/themes/images/v1/ios/prizewon/transmit.svg
-../resources/themes/images/v1/ios/prizewon/phoneInHand.svg
-#html
+# 84e9eec7e44fdff6c489735eb05cd24209fdd014
+WebWorkerConsole.js
+# b70da2dcf04cf1754aa32d155e31f0365522d89a
+mcore.js
+# 6cd3602cad4312bcb816f9f4f19ed52fadeb957f
+app.js
+# 0ca58b32647f121a0bcd2a37e06f94036255bd11
 index.html
+# 5b4c485822c6355d3b2dac82ec82237f26bf4cf6
+app/store/mainClientPage.json
+# 0deed5fb766d2342179de0262e2b5ba02b1a8ee0
+resources/css/iphone5.css
+# 6770d7a1d8e70a3e03fb664023ddbf7ab76ecb6f
+term_of_service.htm
+# 83b55fbfe9cce4fa78476560a9f14f9abc47e9bd
+privacy.htm
+# 85a09696bd078f9478bcf7897abdabe8a414ca5d
+program_rules.htm
+# 2735964e18944afd0d2cef325c93541760569025
+lib/libmp3lame.min.js
+# aef82b6e57150d5f2254ab5b1fc3ce019d3344a9
+worker/encoder.min.js
+# 26ddab42eb17893508f3c21382cf28af7e09e26a
+resources/css/iphone.css
+# 04da490fbff093ddd7ee489a1843dea2aaad4d2a
+resources/css/android-phone-lhdpi.css
+# 0519967bf5b8545046166118ed64ba2c30e180fc
+resources/css/android-phone-mxhdpi.css
 
 
 FALLBACK:

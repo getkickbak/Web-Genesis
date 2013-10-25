@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html manifest="cache.appcache" lang="en-US">
+<html manifest="launch_cache.appcache" lang="en-US">
    <head>
       <meta name="format-detection" content="telephone=no">
       <meta name="format-detection" content="address=no">
@@ -9,8 +9,8 @@
       <meta name="apple-mobile-web-app-capable" content="yes">
       <meta name="apple-touch-fullscreen" content="yes">
       <link rel="apple-touch-icon-precomposed" href="resources/icons/icon.png">
-      <link href="../lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-      <link href="resources/css/add2home.css" rel="stylesheet">
+      <link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+      <link href="launch/resources/css/add2home.css" rel="stylesheet">
       <style type="text/css">
          body {
             font-size: 18px !important;
@@ -92,7 +92,7 @@
          }
          .x-portrait #checkexplorepageview .body::before {
             position: absolute;
-            background: url('../resources/themes/images/v1/ios/mainicons/checkin.svg') no-repeat;
+            background: url('resources/themes/images/v1/ios/mainicons/checkin.svg') no-repeat;
             background-size: auto 65%;
             height: 100%;
             width: 100%;
@@ -102,7 +102,7 @@
          }
          .x-landscape #checkexplorepageview .body::before {
             position: absolute;
-            background: url('../resources/themes/images/v1/ios/mainicons/checkin.svg') no-repeat;
+            background: url('resources/themes/images/v1/ios/mainicons/checkin.svg') no-repeat;
             background-size: 30% auto;
             height: 100%;
             width: 100%;
@@ -168,8 +168,8 @@
             z-index: 100;
          }
       </style>
-      <link href="resources/css/mini_client.css" rel="stylesheet">
-      <script type="text/javascript" src="../lib/add2home.js"></script>
+      <link href="launch/resources/css/client.css" rel="stylesheet">
+      <script type="text/javascript" src="lib/add2home.js"></script>
       <meta charset="UTF-8">
       <title>KickBak</title>
    </head>
@@ -308,7 +308,7 @@
       </div>
       <div id="mask" class="x-mask x-sized x-floating x-item-hidden" style="top: 0px !important; left: 0px !important; right: 0px !important; bottom: 0px !important; z-index: 998 !important;"></div>
       <iframe class="iframe x-container x-sheet x-sized x-floating x-item-hidden" style=""></iframe>
-      <script type="text/javascript" src="../lib/zepto.min.js"></script>
+      <script type="text/javascript" src="lib/zepto.min.js"></script>
       <script type="text/javascript">
          window.jQuery = Zepto, serverHost = "";
          var _filesAssetCount = 0, _winHeight = 0, _winWidth = 0;
@@ -453,7 +453,7 @@
          }, 0.1 * 1000);
          window.addEventListener("load", checkAppCache);
       </script>
-      <script type="text/javascript" src="mccore.js"></script>
-      <script type="text/javascript" src="mclient-all.js"></script>
+      <script type="text/javascript" src="launch/mccore.js"></script>
+      <script type="text/javascript" src="launch/mclient-all.js"></script>
    </body>
 </html>

@@ -874,7 +874,8 @@ Genesis = ( typeof (Genesis) != 'undefined') ? Genesis :
             {
                profile = 'android_';
             }
-            src = ".." + src.replace(location.pathname.replace('/launch/index_' + profile + 'native.html', ''), '');
+            src = Genesis.constants.relPath() + src.replace(location.pathname.replace('launch/index_' + profile + 'native.html', ''), '');
+            console.debug("Script: " + src);
          }
          if (!error)
          {

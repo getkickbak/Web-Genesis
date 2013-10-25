@@ -119,7 +119,7 @@
 	/**
 	* Extra resources to be copied along when build
 	*/
-	"resources": ["../mobile/launch", "../lib/zepto.min.js", "../lib/zepto_touch.js", "../lib/zepto_data.js", "../lib/iscroll-min.js", "../lib/infinitescroll.js", "../lib/gibberish-aes.min.js", "../mobile/lib/core/proximityID.js", "../lib/add2home.js", "../lib/bootstrap", //
+	"resources": ["../mobile/launch", "../mobile/launch_cache.appcache", "../mobile/launch.html", "../lib/zepto.min.js", "../lib/zepto_touch.js", "../lib/zepto_data.js", "../lib/iscroll-min.js", "../lib/infinitescroll.js", "../lib/gibberish-aes.min.js", "../mobile/lib/core/proximityID.js", "../lib/add2home.js", "../lib/bootstrap", //
 	"../lib/libmp3lame.min.js", "../lib/libmp3lame.min.js.gz", "../mobile/worker/encoder.min.js", //
    "../mobile/resources/themes/images/v1", "../mobile/resources/css/iphone5.css", "../mobile/resources/icons", //
 	"../mobile/resources/audio", "../mobile/app/store/mainClientPage.json", //
