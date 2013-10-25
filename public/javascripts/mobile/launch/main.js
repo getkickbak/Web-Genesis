@@ -1,4 +1,4 @@
-var mainAppInit = false;
+var mainAppInit = false, href = location.href;
 
 var proximityInit = function()
 {
@@ -276,7 +276,7 @@ window.location.reload();
 // =============================================================
 (function()
 {
-   var width, height, iscroll, disableHash = false, href = location.href;
+   var width, height, iscroll, disableHash = false;
    var setImageSize = function()
    {
       var image = $('#earnPtsImage img')[0];
