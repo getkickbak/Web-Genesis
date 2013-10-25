@@ -276,7 +276,7 @@ window.location.reload();
 // =============================================================
 (function()
 {
-   var width, height, iscroll, disableHash = false;
+   var width, height, iscroll, disableHash = false, href = location.href;
    var setImageSize = function()
    {
       var image = $('#earnPtsImage img')[0];
@@ -1010,6 +1010,6 @@ window.location.reload();
       // =============================================================
       // Facebook Access Token Detect
       // =============================================================
-      detectAccessToken(location.href);
+      detectAccessToken(href);
    });
 })();

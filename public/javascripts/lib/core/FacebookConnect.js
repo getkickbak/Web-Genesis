@@ -302,7 +302,18 @@ __initFb__ = function(_app, _appName)
       },
       detectAccessToken : function(url)
       {
-         var me = this, db = app.db.getLocalDB(), viewport = _application.getController('client' + '.Viewport');
+         var me = this;
+
+         //
+         // Wait until Application is initialized
+         //
+         if (!_application)
+         {
+            Ext.defer(me.detectAccessToken, 250, me, [url]);
+            return;
+         }
+         
+         var db = app.db.getLocalDB(), viewport = _application.getController('client' + '.Viewport');
 
          if (url.indexOf("access_token=") >= 1)
          {
@@ -466,7 +477,8 @@ __initFb__ = function(_app, _appName)
             //
             Ext.defer(function()
             {
-               top.location.href = me.redirectUrl(); // Reload parent window
+               top.location.href = me.redirectUrl();
+               // Reload parent window
             }, 0.5 * 1000);
          }
       },
