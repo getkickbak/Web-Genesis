@@ -198,6 +198,8 @@ __initFb__ = function(_app, _appName)
             redirect_uri : this.currentLocation(),
             client_id : this.appId,
             state : appName,
+            display : 'touch',
+            type : 'user_agent',
             response_type : 'token',
             scope : this.fbScope.toString()
          });
@@ -312,22 +314,22 @@ __initFb__ = function(_app, _appName)
             Ext.defer(me.detectAccessToken, 250, me, [url]);
             return;
          }
-         
+
          var db = app.db.getLocalDB(), viewport = _application.getController('client' + '.Viewport');
 
-         if (url.indexOf("access_token=") >= 1)
+         if (url.indexOf("access_token=") !== -1)
          {
             var params = Ext.Object.fromQueryString(url.split("#")[1]);
             if (params['state'] == appName)
             {
-               //console.debug("FacebookConnect::authDialog = " + Ext.encode(params));
+               //console.log("FacebookConnect::authDialog = " + Ext.encode(params));
                me.code = db['access_token'] = params['access_token'] || params['token'];
                db['fbExpiresIn'] = (new Date(Date.now() + Number(params['expires_in']))).getTime();
                //console.debug("FacebookConnect::access_token=" + db['access_token']);
                //console.debug("FacebookConnect::fbExpiresIn=" + db['fbExpiresIn']);
                app.db.setLocalDB(db);
 
-               if (!app.fn.isNative())
+               //if (!app.fn.isNative())
                {
                   var callback = function(p, op)
                   {
@@ -388,6 +390,7 @@ __initFb__ = function(_app, _appName)
       {
          var me = this;
 
+         console.log("accessTokenCallback - access_token(" + app.db.getLocalDB()['access_token'] + ")\n");
          Ext.Ajax.request(
          {
             async : true,
@@ -409,7 +412,7 @@ __initFb__ = function(_app, _appName)
                }
                else
                {
-                  console.debug("Error Logging into Facebook\n" + //
+                  console.log("Error Logging into Facebook\n" + //
                   'Return ' + Ext.encode(response));
                   me.facebook_loginCallback(null);
                }
@@ -423,36 +426,48 @@ __initFb__ = function(_app, _appName)
 
          if (app.fn.isNative())
          {
-            var ref = window.open(me.redirectUrl(), '_blank', 'location=no,toolbar=no,closebuttoncaption=Cancel');
-            ref.addEventListener('loadstart', function(event)
+            var start, stop, exit, ref;
+            if (Ext.os.is('Android'))
             {
-               //console.debug("FacebookConnect::loadstart - url(" + event.url + ")");
+               ref = window.plugins.inAppBrowser.open(me.redirectUrl(), '_blank', 'location=no,toolbar=no,closebuttoncaption=Cancel');
+            }
+            else
+            {
+               ref = window.open(me.redirectUrl(), '_blank', 'location=no,toolbar=no,closebuttoncaption=Cancel');
+            }
+
+            ref.addEventListener('loadstart', start = function(event)
+            {
+               console.log("FacebookConnect::loadstart - url(" + event.url + ")");
                if (event.url.match(me.currentLocation()))
                {
                   me.detectAccessToken(event.url);
-                  Ext.defer(ref.close, 200);
+
+                  //console.log("FacebookConnect::loadstart - match!");
+                  ref.removeEventListener(start);
+                  ref.removeEventListener(stop);
+                  ref.removeEventListener(exit);
+                  Ext.defer(ref.close, 0.2 * 1000, ref);
                }
             });
-            ref.addEventListener('loadstop', function(event)
+            ref.addEventListener('loadstop', stop = function(event)
             {
-               //console.debug("FacebookConnect::loadstop - url(" + event.url + ")");
+               console.log("FacebookConnect::loadstop - url(" + event.url + ")");
             });
-            ref.addEventListener('exit', function(event)
+            ref.addEventListener('exit', exit = function(event)
             {
+               console.log("FacebookConnect::exit");
                clearTimeout(me.fbLoginTimeout);
                delete me.fbLoginTimeout;
                app.db.removeLocalDBAttrib('fbLoginInProgress');
 
                if (me.code)
                {
-                  Ext.defer(function()
-                  {
-                     me.accessTokenCallback();
-                  }, 100);
+                  Ext.defer(me.accessTokenCallback, 0.1 * 1000, me);
                }
                else
                {
-                  me.facebook_loginCallback(null);
+                  //me.facebook_loginCallback(null);
                }
             });
 
@@ -489,7 +504,7 @@ __initFb__ = function(_app, _appName)
          // Check for cancellation/error
          if (!res || res.cancelled || res.error || (res.status != 'connected'))
          {
-            console.debug("FacebookConnect.login:failedWithError:" + ((res) ? res.message : 'None'));
+            console.log("FacebookConnect.login:failedWithError:" + ((res) ? res.message : 'None'));
             if (!me.cb || !me.cb['supress'])
             {
                Ext.device.Notification.show(
@@ -792,5 +807,5 @@ __initFb__ = function(_app, _appName)
       }
    });
    app.fb.initialize();
-}
+};
 

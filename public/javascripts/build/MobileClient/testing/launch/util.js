@@ -853,7 +853,7 @@ Genesis = ( typeof (Genesis) != 'undefined') ? Genesis :
       },
       scriptOnError : function(loadState)
       {
-         Geensis.fn.scriptOnReadyStateChange.call(this, loadState, true);
+         Genesis.fn.scriptOnReadyStateChange.call(this, loadState, true);
       },
       scriptOnReadyStateChange : function(loadState, error)
       {
@@ -863,6 +863,7 @@ Genesis = ( typeof (Genesis) != 'undefined') ? Genesis :
          //
          // PhoneGap App
          //
+         //console.log("scriptOnReadyStateChange: " + location.host);
          if (location.host == "")
          {
             if ($.os.ios)
@@ -875,8 +876,9 @@ Genesis = ( typeof (Genesis) != 'undefined') ? Genesis :
                profile = 'android_';
             }
             src = Genesis.constants.relPath() + src.replace(location.pathname.replace('launch/index_' + profile + 'native.html', ''), '');
-            console.debug("Script: " + src);
          }
+         console.log("Script: " + src);
+
          if (!error)
          {
             var rs = this.readyState;

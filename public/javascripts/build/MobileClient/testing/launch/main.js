@@ -251,7 +251,7 @@ var setLoadMask = function(visible)
 var detectAccessToken = function(url)
 {
    var db = Genesis.db.getLocalDB();
-   if (db['fbLoginInProgress'] && (url.indexOf("access_token=") >= 1))
+   if (db['fbLoginInProgress'] && (url.indexOf("access_token=") !== -1))
    {
       setChildBrowserVisibility(true, url.split("#")[1]);
    }
@@ -607,7 +607,7 @@ window.location.reload();
             }
             else
             {
-               _codec = new Worker('worker/encoder.min.js');
+               _codec = new Worker('../worker/encoder.min.js');
                appLaunchCallbackFn(true, 0x100);
                console.debug("Enable MP3 Encoder");
             }
@@ -770,27 +770,42 @@ window.location.reload();
       {
          $('#checkexplorepageview').addClass('noIScroll');
       }
+      var pageX = 0, pageY = 0;
       var _getVenues_ = function(e)
       {
-         var db = Genesis.db.getLocalDB();
-         if (db['auth_code'])
+         x1 = parseInt(window.screen.width * (0.5 - (0.65 / 2))), x2 = parseInt(window.screen.width * 0.65);
+         y1 = parseInt(window.screen.height * (0.5 - (0.65 / 2))), y2 = parseInt(window.screen.height * 0.65);
+
+         //cursor:pointer
+         //console.log("x=" + pageX + ", x1=" + x1 + ", x2=" + x2 + ", y=" + pageY + ", y1=" + y1 + ", y2=" + y2);
+         if ((pageX >= x1 && pageX <= x2) && (pageY >= y1 && pageY <= y2))
          {
-            //
-            // Trigger when the list is empty
-            //
-            if ($('.media').length == 0)
+            var db = Genesis.db.getLocalDB();
+            if (db['auth_code'])
+            {
+               //
+               // Trigger when the list is empty
+               //
+               if ($('.media').length == 0)
+               {
+                  me.playSoundFile(me.sound_files['clickSound']);
+                  getNearestVenues(0);
+               }
+            }
+            else
             {
                me.playSoundFile(me.sound_files['clickSound']);
-               getNearestVenues(0);
+               setChildBrowserVisibility(true);
             }
-         }
-         else
-         {
-            setChildBrowserVisibility(true);
          }
          return false;
       };
-      iscrollInfinite.on(pfEvent, _getVenues_);
+      $('#checkexplorepageview .body').on(pfEvent, _getVenues_);
+      $('#checkexplorepageview .body').on('touchstart', function(e)
+      {
+         pageX = e.touches[0].clientX;
+         pageY = e.touches[0].clientY;
+      });
       // =============================================================
       // WelcomePage Actions
       // =============================================================

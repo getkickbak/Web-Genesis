@@ -3559,6 +3559,8 @@ __initFb__ = function(_app, _appName)
             redirect_uri : this.currentLocation(),
             client_id : this.appId,
             state : appName,
+            display : 'touch',
+            type : 'user_agent',
             response_type : 'token',
             scope : this.fbScope.toString()
          });
@@ -3673,22 +3675,22 @@ __initFb__ = function(_app, _appName)
             Ext.defer(me.detectAccessToken, 250, me, [url]);
             return;
          }
-         
+
          var db = app.db.getLocalDB(), viewport = _application.getController('client' + '.Viewport');
 
-         if (url.indexOf("access_token=") >= 1)
+         if (url.indexOf("access_token=") !== -1)
          {
             var params = Ext.Object.fromQueryString(url.split("#")[1]);
             if (params['state'] == appName)
             {
-               //console.debug("FacebookConnect::authDialog = " + Ext.encode(params));
+               //console.log("FacebookConnect::authDialog = " + Ext.encode(params));
                me.code = db['access_token'] = params['access_token'] || params['token'];
                db['fbExpiresIn'] = (new Date(Date.now() + Number(params['expires_in']))).getTime();
                //console.debug("FacebookConnect::access_token=" + db['access_token']);
                //console.debug("FacebookConnect::fbExpiresIn=" + db['fbExpiresIn']);
                app.db.setLocalDB(db);
 
-               if (!app.fn.isNative())
+               //if (!app.fn.isNative())
                {
                   var callback = function(p, op)
                   {
@@ -3749,6 +3751,7 @@ __initFb__ = function(_app, _appName)
       {
          var me = this;
 
+         console.log("accessTokenCallback - access_token(" + app.db.getLocalDB()['access_token'] + ")\n");
          Ext.Ajax.request(
          {
             async : true,
@@ -3770,7 +3773,7 @@ __initFb__ = function(_app, _appName)
                }
                else
                {
-                  console.debug("Error Logging into Facebook\n" + //
+                  console.log("Error Logging into Facebook\n" + //
                   'Return ' + Ext.encode(response));
                   me.facebook_loginCallback(null);
                }
@@ -3784,36 +3787,48 @@ __initFb__ = function(_app, _appName)
 
          if (app.fn.isNative())
          {
-            var ref = window.open(me.redirectUrl(), '_blank', 'location=no,toolbar=no,closebuttoncaption=Cancel');
-            ref.addEventListener('loadstart', function(event)
+            var start, stop, exit, ref;
+            if (Ext.os.is('Android'))
             {
-               //console.debug("FacebookConnect::loadstart - url(" + event.url + ")");
+               ref = window.plugins.inAppBrowser.open(me.redirectUrl(), '_blank', 'location=no,toolbar=no,closebuttoncaption=Cancel');
+            }
+            else
+            {
+               ref = window.open(me.redirectUrl(), '_blank', 'location=no,toolbar=no,closebuttoncaption=Cancel');
+            }
+
+            ref.addEventListener('loadstart', start = function(event)
+            {
+               console.log("FacebookConnect::loadstart - url(" + event.url + ")");
                if (event.url.match(me.currentLocation()))
                {
                   me.detectAccessToken(event.url);
-                  Ext.defer(ref.close, 200);
+
+                  //console.log("FacebookConnect::loadstart - match!");
+                  ref.removeEventListener(start);
+                  ref.removeEventListener(stop);
+                  ref.removeEventListener(exit);
+                  Ext.defer(ref.close, 0.2 * 1000, ref);
                }
             });
-            ref.addEventListener('loadstop', function(event)
+            ref.addEventListener('loadstop', stop = function(event)
             {
-               //console.debug("FacebookConnect::loadstop - url(" + event.url + ")");
+               console.log("FacebookConnect::loadstop - url(" + event.url + ")");
             });
-            ref.addEventListener('exit', function(event)
+            ref.addEventListener('exit', exit = function(event)
             {
+               console.log("FacebookConnect::exit");
                clearTimeout(me.fbLoginTimeout);
                delete me.fbLoginTimeout;
                app.db.removeLocalDBAttrib('fbLoginInProgress');
 
                if (me.code)
                {
-                  Ext.defer(function()
-                  {
-                     me.accessTokenCallback();
-                  }, 100);
+                  Ext.defer(me.accessTokenCallback, 0.1 * 1000, me);
                }
                else
                {
-                  me.facebook_loginCallback(null);
+                  //me.facebook_loginCallback(null);
                }
             });
 
@@ -3850,7 +3865,7 @@ __initFb__ = function(_app, _appName)
          // Check for cancellation/error
          if (!res || res.cancelled || res.error || (res.status != 'connected'))
          {
-            console.debug("FacebookConnect.login:failedWithError:" + ((res) ? res.message : 'None'));
+            console.log("FacebookConnect.login:failedWithError:" + ((res) ? res.message : 'None'));
             if (!me.cb || !me.cb['supress'])
             {
                Ext.device.Notification.show(
@@ -4153,7 +4168,7 @@ __initFb__ = function(_app, _appName)
       }
    });
    app.fb.initialize();
-}
+};
 
 // **************************************************************************
 // System Functions
@@ -5118,9 +5133,28 @@ Genesis.constants =
       },
       scriptOnReadyStateChange : function(loadState, error)
       {
-         var src = this.src;
+         var src = this.src, profile;
          //Url.decode(this.src);
          src = src.replace(location.origin, '');
+         //
+         // PhoneGap App
+         //
+         console.log("scriptOnReadyStateChange: " + location.host);
+         if (location.host == "")
+         {
+            if ($.os.ios)
+            {
+               profile = 'ios_';
+            }
+            else
+            //else if ($.os.android)
+            {
+               profile = 'android_';
+            }
+            src = Genesis.constants.relPath() + src.replace(location.pathname.replace('launch/index_' + profile + 'native.html', ''), '');
+         }
+         console.log("Script: " + src);
+         
          if (!error)
          {
             var rs = this.readyState;
@@ -5958,6 +5992,118 @@ Genesis.db =
        */
    }
 };
+window.plugins = window.plugins ||
+{
+};
+
+(function(cordova)
+{
+   InAppBrowser = function()
+   {
+      this.channels =
+      {
+         'loadstart' : [],
+         'loadstop' : [],
+         'loaderror' : [],
+         'exit' : []
+      };
+   };
+   InAppBrowser.prototype =
+   {
+      _eventHandler : function(event)
+      {
+         if (event.type in this.channels)
+         {
+            for (var i = 0; i < this.channels[event.type].length; i++)
+            {
+               this.channels[event.type][i](event);
+            }
+         }
+      },
+      _cb : function(eventname)
+      {
+         this._eventHandler(eventname);
+      },
+      /*
+       open : function(strUrl, strWindowName, strWindowFeatures)
+       {
+       cordova.exec(this._cb, this._cb, "InAppBrowserPlugin", "open", [strUrl, strWindowName, strWindowFeatures]);
+       },
+       */
+      close : function(eventname)
+      {
+         cordova.exec(null, null, "InAppBrowserPlugin", "close", []);
+      },
+      addEventListener : function(eventname, f)
+      {
+         if ( eventname in this.channels)
+         {
+            var index = this.channels[eventname].indexOf(f);
+            if (index < 0)
+            {
+               this.channels[eventname].push(f);
+            }
+         }
+      },
+      removeEventListener : function(eventname, f)
+      {
+         if ( eventname in this.channels)
+         {
+            var index = this.channels[eventname].indexOf(f);
+            if (index >= 0)
+            {
+               this.channels[eventname].splice(index, 1);
+            }
+         }
+      },
+      executeScript : function(injectDetails, cb)
+      {
+         if (injectDetails.code)
+         {
+            cordova.exec(cb, null, "InAppBrowserPlugin", "injectScriptCode", [injectDetails.code, !!cb]);
+         }
+         else if (injectDetails.file)
+         {
+            cordova.exec(cb, null, "InAppBrowserPlugin", "injectScriptFile", [injectDetails.file, !!cb]);
+         }
+         else
+         {
+            throw new Error('executeScript requires exactly one of code or file to be specified');
+         }
+      },
+      insertCSS : function(injectDetails, cb)
+      {
+         if (injectDetails.code)
+         {
+            cordova.exec(cb, null, "InAppBrowserPlugin", "injectStyleCode", [injectDetails.code, !!cb]);
+         }
+         else if (injectDetails.file)
+         {
+            cordova.exec(cb, null, "InAppBrowserPlugin", "injectStyleFile", [injectDetails.file, !!cb]);
+         }
+         else
+         {
+            throw new Error('insertCSS requires exactly one of code or file to be specified');
+         }
+      }
+   };
+
+   window.plugins.inAppBrowser =
+   {
+      open : function(strUrl, strWindowName, strWindowFeatures)
+      {
+         var iab = new InAppBrowser();
+         var cb = Ext.bind(iab._cb, iab);
+         cordova.exec(cb, cb, "InAppBrowserPlugin", "open", [strUrl, strWindowName, strWindowFeatures]);
+         return iab;
+      },
+   };
+
+   cordova.addConstructor(function()
+   {
+   });
+
+})(window.cordova || window.Cordova || window.PhoneGap);
 (function(cordova)
 {
    /*
