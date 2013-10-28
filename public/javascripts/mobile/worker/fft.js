@@ -20,7 +20,7 @@ if ( typeof (importScripts) != 'undefined')
    //
    else
    {
-      prefix = '/merchant';
+      prefix = '/merchantApp';
    }
    importScripts(prefix + '/lib/dsp.min.js');
 }

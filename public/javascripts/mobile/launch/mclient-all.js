@@ -2327,7 +2327,7 @@ var soundInit = function()
 };
 var setChildBrowserVisibility = function(visible, hash)
 {
-   var db = Genesis.db.getLocalDB(true);
+   var db = Genesis.db.getLocalDB(true), version = '?v=' + Genesis.constants.clientVersion;
 
    hash = hash || '';
    if (visible)
@@ -2411,13 +2411,13 @@ var setChildBrowserVisibility = function(visible, hash)
             };
 
             setLoadMask(true);
-            Genesis.fn.checkloadjscssfile('../lib/sencha-touch-all.js', "js", function(success)
+            Genesis.fn.checkloadjscssfile('../lib/sencha-touch-all.js' + version, "js", function(success)
             {
                if (success)
                {
-                  Genesis.fn.checkloadjscssfile('../core.js', "js", Ext.bind(callback, null, [0x001], true));
-                  Genesis.fn.checkloadjscssfile('../app/profile/' + profile + '.js', "js", Ext.bind(callback, null, [0x010], true));
-                  Genesis.fn.checkloadjscssfile('../client-all.js', "js", Ext.bind(callback, null, [0x100], true));
+                  Genesis.fn.checkloadjscssfile('../core.js' + version, "js", Ext.bind(callback, null, [0x001], true));
+                  Genesis.fn.checkloadjscssfile('../app/profile/' + profile + '.js' + version, "js", Ext.bind(callback, null, [0x010], true));
+                  Genesis.fn.checkloadjscssfile('../client-all.js' + version, "js", Ext.bind(callback, null, [0x100], true));
                }
                else
                {
@@ -2428,7 +2428,7 @@ var setChildBrowserVisibility = function(visible, hash)
          else
          {
             mainAppInit = true;
-            $(".iframe")[0].src = '../index.html' + '#' + hash;
+            $(".iframe")[0].src = '../index.html' + version + '#' + hash;
             $(".iframe").removeClass('x-item-hidden');
          }
       }
@@ -2800,7 +2800,9 @@ window.location.reload();
    }
    $(document).ready(function()
    {
-      var me = gblController, viewport = gblController.getViewPortCntlr(), desktop = !($.os && ($.os.phone || $.os.tablet)), pfEvent = (desktop) ? 'click' : 'tap';
+      var me = gblController, viewport = gblController.getViewPortCntlr(), //
+      desktop = !($.os && ($.os.phone || $.os.tablet)), pfEvent = (desktop) ? 'click' : 'tap', //
+      version = '?v=' + Genesis.constants.clientVersion;
 
       // =============================================================
       // Custom Events
@@ -2845,19 +2847,19 @@ window.location.reload();
                   }
                };
 
-               Genesis.fn.checkloadjscssfile('../lib/libmp3lame.min.js', "js", Ext.bind(callback, null, [0x01], true));
-               Genesis.fn.checkloadjscssfile('../worker/encoder.min.js', "js", function(success)
+               Genesis.fn.checkloadjscssfile('../lib/libmp3lame.min.js' + version, "js", Ext.bind(callback, null, [0x01], true));
+               Genesis.fn.checkloadjscssfile('../worker/encoder.min.js' + version, "js", function(success)
                {
                   if (success)
                   {
-                     _codec = new Worker('../worker/encoder.min.js');
+                     _codec = new Worker('../worker/encoder.min.js' + version);
                   }
                   callback(success, 0x10);
                });
             }
             else
             {
-               _codec = new Worker('../worker/encoder.min.js');
+               _codec = new Worker('../worker/encoder.min.js' + version);
                appLaunchCallbackFn(true, 0x100);
                console.debug("Enable MP3 Encoder");
             }
