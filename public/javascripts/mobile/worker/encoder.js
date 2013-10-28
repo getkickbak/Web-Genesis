@@ -19,7 +19,7 @@ if ( typeof (importScripts) != 'undefined')
    //
    else
    {
-      prefix = '/merchantApp';
+      prefix = '';
    }
    importScripts(prefix + '/lib/libmp3lame.min.js');
 }
