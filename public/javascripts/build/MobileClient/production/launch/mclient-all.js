@@ -2407,8 +2407,6 @@ var setChildBrowserVisibility = function(visible, hash, pushNotif)
                         }
                         viewport.redirectTo('');
 
-                        redirectToMerchantPage(db, viewport);
-
                         console.debug("Launched App");
                      },
                      appFolder : _appPath,
@@ -2527,11 +2525,11 @@ var setChildBrowserVisibility = function(visible, hash, pushNotif)
 var redirectToMerchantPage = function(db, viewport)
 {
    var rc = false, ma_struct = db['ma_struct'];
-   if (Ext.isDefined(ma_struct) && (ma_struct['venueId'] > 0))
+   if (Ext.isDefined(ma_struct) && (ma_struct['id'] > 0))
    {
       // Mini App forwarding
       Genesis.db.removeLocalDBAttrib('ma_struct');
-      viewport.redirectTo('venue/' + ma_struct['venueId'] + '/' + ma_struct['merchant']['customerId']);
+      _application.getController('client' + '.Checkins').onExploreDisclose(null, ma_struct);
       rc = true;
    }
 
@@ -2627,10 +2625,10 @@ window.location.reload();
       var desktop = !($.os && ($.os.phone || $.os.tablet)), pfEvent = (desktop) ? 'click' : 'tap';
       var exploreVenue = function(e)
       {
-         var me = gblController, target = e.currentTarget, ma_struct = parseInt(target.attributes.getNamedItem('data')['value']);
+         var me = gblController, target = e.currentTarget, ma_struct = Ext.decode(decodeURIComponent(target.attributes.getNamedItem('data')['value']));
 
          me.playSoundFile(me.sound_files['clickSound']);
-         console.debug("Target ID : ", ma_struct);
+         console.debug("Target ID : ", ma_struct['name'] + "(" + ma_struct['id'] + ")");
          Genesis.db.setLocalDBAttrib('ma_struct', ma_struct);
          setChildBrowserVisibility(true);
          return false;

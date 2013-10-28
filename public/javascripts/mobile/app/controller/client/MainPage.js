@@ -55,10 +55,14 @@ Ext.define('Genesis.controller.client.MainPage',
          me.persistLoadStores(function()
          {
             var viewport = me.getViewPortCntlr();
-            
+
             if (viewport.getApsPayload())
             {
                viewport.getGeoLocation();
+            }
+            else if (db['ma_struct'])
+            {
+               me.getApplication().getController('client' + '.Checkins').onExploreDisclose(null, db['ma_struct']);
             }
             else
             {

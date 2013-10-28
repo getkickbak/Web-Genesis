@@ -82631,7 +82631,7 @@ Ext.define('Genesis.controller.client.Checkins',
    {
       var me = this, viewport = me.getViewPortCntlr(), record = new Ext.create('Genesis.model.Venue', record);
 
-      me.self.playSoundFile(viewport.sound_files['clickSound']);
+      //me.self.playSoundFile(viewport.sound_files['clickSound']);
       viewport.setVenue(record);
       me.onCheckinTap(null, e, eOpts, eInfo);
    },
@@ -84696,10 +84696,14 @@ Ext.define('Genesis.controller.client.MainPage',
          me.persistLoadStores(function()
          {
             var viewport = me.getViewPortCntlr();
-            
+
             if (viewport.getApsPayload())
             {
                viewport.getGeoLocation();
+            }
+            else if (db['ma_struct'])
+            {
+               me.getApplication().getController('client' + '.Checkins').onExploreDisclose(null, db['ma_struct']);
             }
             else
             {
