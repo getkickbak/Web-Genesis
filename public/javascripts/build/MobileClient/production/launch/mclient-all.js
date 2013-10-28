@@ -2529,7 +2529,7 @@ var redirectToMerchantPage = function(db, viewport)
    {
       // Mini App forwarding
       Genesis.db.removeLocalDBAttrib('ma_struct');
-      _application.getController('client' + '.Checkins').onExploreDisclose(null, ma_struct);
+      viewport.getController('client' + '.Checkins').onExploreDisclose(null, ma_struct);
       rc = true;
    }
 
