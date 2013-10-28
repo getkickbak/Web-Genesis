@@ -220,7 +220,7 @@ var setChildBrowserVisibility = function(visible, hash, pushNotif)
             if (pushNotif)
             {
             }
-            else
+            else if (!redirectToMerchantPage(db, viewport))
             {
                viewport.redirectTo('main');
             }
