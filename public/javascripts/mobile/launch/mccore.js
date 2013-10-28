@@ -1195,18 +1195,15 @@ Genesis = ( typeof (Genesis) != 'undefined') ? Genesis :
                if (event.notification)
                {
                   var notification = event.notification, userData = notification.u;
-                  //if ( typeof (userData) != "undefined")
                   console.debug('push notifcation - [' + JSON.stringify(notification) + ']');
+
+                  //if ( typeof (userData) != "undefined")
+                  if (Genesis.db.getLocalDB()['auth_code'])
                   {
                      setNotificationVisibility(true, 'KICKBAK Notification', notification.aps.alert, 'Dismiss', function()
                      {
-                        setLoadMask(true);
+                        setChildBrowserVisibility(true, '', userData);
                      });
-                     var viewport = _application.getController('client' + '.Viewport');
-                     viewport.setApsPayload(userData)
-                     viewport.getGeoLocation();
-                     //navigator.notification.alert(notification.aps.alert);
-                     //pushNotification.setApplicationIconBadgeNumber(0)
                   }
                }
             });
@@ -1268,16 +1265,12 @@ Genesis = ( typeof (Genesis) != 'undefined') ? Genesis :
 
                   console.debug('push notifcation - [' + JSON.stringify(notification) + ']');
                   //if ( typeof (userData) != "undefined")
+                  if (Genesis.db.getLocalDB()['auth_code'])
                   {
                      setNotificationVisibility(true, 'KICKBAK Notification', title, 'Dismiss', function()
                      {
-                        setLoadMask(true);
+                        setChildBrowserVisibility(true, '', userData);
                      });
-                     //
-                     // Launch MainApp
-                     //
-                     viewport.setApsPayload(userData)
-                     viewport.getGeoLocation();
                   }
                }
                else
@@ -1316,7 +1309,7 @@ Genesis = ( typeof (Genesis) != 'undefined') ? Genesis :
             };
 
             //pushNotification.unregisterDevice(callback, callback);
-         }
+         };
       }
       else
       {

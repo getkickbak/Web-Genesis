@@ -78062,17 +78062,7 @@ Ext.define('Genesis.controller.ViewportBase',
                {
                   if (!Genesis.fb.cb || !Genesis.fb.cb['viewName'])
                   {
-                     var ma_struct = db['ma_struct'];
-                     // Mini App forwarding
-                     if (Ext.isDefined(ma_struct) && (ma_struct['venueId'] > 0))
-                     {
-                        Genesis.db.removeLocalDBAttrib('ma_struct');
-                        me.redirectTo('venue/' + ma_struct['venueId'] + '/' + ma_struct['merchant']['customerId']);
-                     }
-                     else
-                     {
-                        me.redirectTo('main');
-                     }
+                     me.redirectTo('main');
                   }
                }
                else

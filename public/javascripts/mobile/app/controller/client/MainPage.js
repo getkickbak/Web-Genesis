@@ -54,7 +54,16 @@ Ext.define('Genesis.controller.client.MainPage',
       {
          me.persistLoadStores(function()
          {
-            me.redirectTo('main');
+            var viewport = me.getViewPortCntlr();
+            
+            if (viewport.getApsPayload())
+            {
+               viewport.getGeoLocation();
+            }
+            else
+            {
+               me.redirectTo('main');
+            }
          });
       }
    },
