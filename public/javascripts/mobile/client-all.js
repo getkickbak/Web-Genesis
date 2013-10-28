@@ -12530,20 +12530,23 @@ Ext.define('Genesis.controller.client.Login',
                if (operation.wasSuccessful())
                {
                   Genesis.db.removeLocalDBAttrib('auth_code');
-                  if (!Genesis.fn.isNative())
-                  {
-                     window.parent.setChildBrowserVisibility(false, 'explore');
-                  }
-                  else
-                  {
-                     setChildBrowserVisibility(false, 'explore');
-                  }
+                  /*
+                   if (!Genesis.fn.isNative())
+                   {
+                   window.parent.setChildBrowserVisibility(false, 'explore');
+                   }
+                   else
+                   {
+                   setChildBrowserVisibility(false, 'explore');
+                   }
+                   */
                   console.log("Logout Successful!")
                }
                else
                {
                   console.log("Logout Failed!")
                }
+               me.redirectTo('login');
             }
          });
       }

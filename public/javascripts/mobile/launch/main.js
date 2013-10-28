@@ -77,11 +77,27 @@ var soundInit = function()
 };
 var setChildBrowserVisibility = function(visible, hash, pushNotif)
 {
-   var db = Genesis.db.getLocalDB(true), version = '?v=' + Genesis.constants.clientVersion;
+   var db = Genesis.db.getLocalDB(true), version = '?v=' + Genesis.constants.clientVersion, viewport, port = null;
 
    hash = hash || '';
+
+   if (mainAppInit)
+   {
+      if (Genesis.fn.isNative())
+      {
+         viewport = _application.getController('client' + '.Viewport');
+         port = $("#ext-viewport");
+      }
+      else if ($(".iframe")[0].contentWindow._application)
+      {
+         viewport = $(".iframe")[0].contentWindow._application.getController('client' + '.Viewport');
+         port = $(".iframe");
+      }
+   }
+   
    if (visible)
    {
+
       //
       // Initiliazation
       //
@@ -111,7 +127,6 @@ var setChildBrowserVisibility = function(visible, hash, pushNotif)
                   i = 0;
 
                   $('#loadingMask')['addClass']('x-item-hidden');
-
                   mainAppInit = true;
                   $("#checkexplorepageview").addClass('x-item-hidden');
                   //
@@ -144,7 +159,7 @@ var setChildBrowserVisibility = function(visible, hash, pushNotif)
                      launch : function()
                      {
                         _application = this;
-                        var viewport = _application.getController('client' + '.Viewport');
+                        viewport = _application.getController('client' + '.Viewport');
 
                         console.debug("Ext App Launch");
 
@@ -196,13 +211,11 @@ var setChildBrowserVisibility = function(visible, hash, pushNotif)
       //
       // Back to Main Page
       //
-      else if (db['auth_code'])
+      else if (port)
       {
-         var viewport;
-         if (Genesis.fn.isNative())
+         $("#checkexplorepageview").addClass('x-item-hidden');
+         if (db['auth_code'])
          {
-            viewport = _application.getController('client' + '.Viewport');
-            $("#checkexplorepageview").addClass('x-item-hidden');
             if (pushNotif)
             {
                viewport.setApsPayload(pushNotif);
@@ -212,37 +225,15 @@ var setChildBrowserVisibility = function(visible, hash, pushNotif)
             {
                viewport.redirectTo('main');
             }
-            $("#ext-viewport").removeClass('x-item-hidden');
          }
-         else if ($(".iframe")[0].contentWindow._application)
+         //
+         // Goto Login Page
+         //
+         else
          {
-            viewport = $(".iframe")[0].contentWindow._application.getController('client' + '.Viewport');
-            if (pushNotif)
-            {
-            }
-            else if (!redirectToMerchantPage(db, viewport))
-            {
-               viewport.redirectTo('main');
-            }
-            $(".iframe").removeClass('x-item-hidden');
+            viewport.redirectTo('login');
          }
-      }
-      //
-      // Goto Login Page
-      //
-      else
-      {
-         if (Genesis.fn.isNative())
-         {
-            $("#checkexplorepageview").addClass('x-item-hidden');
-            _application.getController('client' + '.Viewport').redirectTo('login');
-            $("#ext-viewport").removeClass('x-item-hidden');
-         }
-         else if ($(".iframe")[0].contentWindow._application)
-         {
-            $(".iframe")[0].contentWindow._application.getController('client' + '.Viewport').redirectTo('login');
-            $(".iframe").removeClass('x-item-hidden');
-         }
+         port.removeClass('x-item-hidden');
       }
    }
    else
@@ -261,14 +252,11 @@ var setChildBrowserVisibility = function(visible, hash, pushNotif)
 
       $("#earnPtsLoad span.x-button-label").text((db['auth_code']) ? 'Earn Points' : 'Sign In / Register');
       window.location.hash = '#' + hash;
-      if (Genesis.fn.isNative())
+
+      if (port)
       {
          $("#checkexplorepageview").removeClass('x-item-hidden');
-         $("#ext-viewport").addClass('x-item-hidden');
-      }
-      else
-      {
-         $(".iframe").addClass('x-item-hidden');
+         port.addClass('x-item-hidden');
       }
    }
 };
@@ -599,473 +587,481 @@ window.location.reload();
       // =============================================================
       // Custom Events
       // =============================================================
-      $.Event('ajaxBeforeSend');
-      $.Event('locationupdate');
-
-      if (!Genesis.fn.isNative())
       {
-         // =============================================================
-         // WebAudio Support
-         // =============================================================
+         $.Event('ajaxBeforeSend');
+         $.Event('locationupdate');
 
-         //var canPlayAudio = (new Audio()).canPlayType('audio/wav; codecs=1');
-         //if (!canPlayAudio)
-         if ( typeof (webkitAudioContext) == 'undefined')
+         if (!Genesis.fn.isNative())
          {
-            //
-            // If Worker is not supported, preload it
-            //
-            if ( typeof (Worker) == 'undefined')
+            // =============================================================
+            // WebAudio Support
+            // =============================================================
+
+            //var canPlayAudio = (new Audio()).canPlayType('audio/wav; codecs=1');
+            //if (!canPlayAudio)
+            if ( typeof (webkitAudioContext) == 'undefined')
             {
-               console.debug("HTML5 Workers not supported");
-
-               var mp3Flags = 0x00;
-               var callback = function(success, flag)
+               //
+               // If Worker is not supported, preload it
+               //
+               if ( typeof (Worker) == 'undefined')
                {
-                  if (!success)
+                  console.debug("HTML5 Workers not supported");
+
+                  var mp3Flags = 0x00;
+                  var callback = function(success, flag)
                   {
-                     setNotificationVisibility(true, 'KICKBAK', "Error Loading Application Resource Files.", "Reload", function()
+                     if (!success)
                      {
-                        window.location.reload();
-                     });
-                  }
-                  else
-                  {
-                     if ((mp3Flags |= flag) == 0x11)
-                     {
-                        appLaunchCallbackFn(true, 0x100);
-                        console.debug("Enable MP3 Encoder");
+                        setNotificationVisibility(true, 'KICKBAK', "Error Loading Application Resource Files.", "Reload", function()
+                        {
+                           window.location.reload();
+                        });
                      }
-                  }
-               };
+                     else
+                     {
+                        if ((mp3Flags |= flag) == 0x11)
+                        {
+                           appLaunchCallbackFn(true, 0x100);
+                           console.debug("Enable MP3 Encoder");
+                        }
+                     }
+                  };
 
-               Genesis.fn.checkloadjscssfile('../lib/libmp3lame.min.js' + version, "js", Ext.bind(callback, null, [0x01], true));
-               Genesis.fn.checkloadjscssfile('../worker/encoder.min.js' + version, "js", function(success)
-               {
-                  if (success)
+                  Genesis.fn.checkloadjscssfile('../lib/libmp3lame.min.js' + version, "js", Ext.bind(callback, null, [0x01], true));
+                  Genesis.fn.checkloadjscssfile('../worker/encoder.min.js' + version, "js", function(success)
                   {
-                     _codec = new Worker('../worker/encoder.min.js' + version);
-                  }
-                  callback(success, 0x10);
-               });
+                     if (success)
+                     {
+                        _codec = new Worker('../worker/encoder.min.js' + version);
+                     }
+                     callback(success, 0x10);
+                  });
+               }
+               else
+               {
+                  _codec = new Worker('../worker/encoder.min.js' + version);
+                  appLaunchCallbackFn(true, 0x100);
+                  console.debug("Enable MP3 Encoder");
+               }
             }
             else
             {
-               _codec = new Worker('../worker/encoder.min.js' + version);
                appLaunchCallbackFn(true, 0x100);
-               console.debug("Enable MP3 Encoder");
+               console.debug("Enable WAV/WebAudio Encoder");
             }
-         }
-         else
-         {
-            appLaunchCallbackFn(true, 0x100);
-            console.debug("Enable WAV/WebAudio Encoder");
-         }
 
-         // =============================================================
-         // SystemInit
-         // =============================================================
-         proximityInit();
-         soundInit();
+            // =============================================================
+            // SystemInit
+            // =============================================================
+            proximityInit();
+            soundInit();
+         }
       }
-
       // =============================================================
       // Ajax Calls Customizations
       // =============================================================
-      $.ajaxSettings.accepts.json = "*/*";
-      var _param = $.param;
-      $.param = function(obj, traditional)
       {
-         var db = Genesis.db.getLocalDB();
+         $.ajaxSettings.accepts.json = "*/*";
+         var _param = $.param;
+         $.param = function(obj, traditional)
+         {
+            var db = Genesis.db.getLocalDB();
 
-         if (db['auth_code'])
-         {
-            obj['auth_token'] = db['auth_code'];
-         }
-         return _param(obj, traditional);
-      }
-      $(document).on('ajaxBeforeSend', function(e, xhr, options)
-      {
-         var db = Genesis.db.getLocalDB();
-
-         // This gets fired for every Ajax request performed on the page.
-         // The xhr object and $.ajax() options are available for editing.
-         // Return false to cancel this request.
-         options.headers = options.headers ||
-         {
-         };
-         if (options.type == 'POST')
-         {
             if (db['auth_code'])
             {
+               obj['auth_token'] = db['auth_code'];
+            }
+            return _param(obj, traditional);
+         }
+         $(document).on('ajaxBeforeSend', function(e, xhr, options)
+         {
+            var db = Genesis.db.getLocalDB();
+
+            // This gets fired for every Ajax request performed on the page.
+            // The xhr object and $.ajax() options are available for editing.
+            // Return false to cancel this request.
+            options.headers = options.headers ||
+            {
+            };
+            if (options.type == 'POST')
+            {
+               if (db['auth_code'])
+               {
+                  options.headers = Ext.apply(options.headers,
+                  {
+                     'X-CSRF-Token' : db['csrf_code'],
+                  });
+                  xhr.setRequestHeader('X-CSRF-Token', db['csrf_code']);
+               }
                options.headers = Ext.apply(options.headers,
                {
-                  'X-CSRF-Token' : db['csrf_code'],
+                  'Content-Type' : 'application/json'
                });
-               xhr.setRequestHeader('X-CSRF-Token', db['csrf_code']);
+               xhr.setRequestHeader('Content-Type', 'application/json');
             }
-            options.headers = Ext.apply(options.headers,
-            {
-               'Content-Type' : 'application/json'
-            });
-            xhr.setRequestHeader('Content-Type', 'application/json');
-         }
-      });
-
+         });
+      }
       // =============================================================
       // Refresh CSRF Token
       // =============================================================
-      if (Genesis.constants.device || !Genesis.fn.isNative())
       {
-         refreshCSRFToken();
+         if (Genesis.constants.device || !Genesis.fn.isNative())
+         {
+            refreshCSRFToken();
+         }
+         else
+         {
+            $(document).on('kickbak:updateDeviceToken', refreshCSRFToken);
+         }
       }
-      else
-      {
-         $(document).on('kickbak:updateDeviceToken', refreshCSRFToken);
-      }
-
       // =============================================================
       // System Initializations
       // =============================================================
-      orientationChange();
+      {
+         orientationChange();
 
-      if (!($.os && ($.os.phone || $.os.tablet)) || $.os.ios)
-      {
-         $('body').addClass('x-ios');
-         $('body').addClass('x-ios-' + parseInt((($.os) ? $.os.version : '6')));
-      }
-      else if ($.os.blackberry || $.os.bb10 || $.os.rimtabletos)
-      {
-         $('body').addClass('x-blackberry');
-         $('body').addClass('x-blackberry-' + parseInt(($.os.version)));
-      }
-      else
-      //else if ($.os.android)
-      {
-         $('body').addClass('x-android');
-         $('body').addClass('x-android-' + parseInt(($.os.version)));
-      }
-      if (!($.os && ($.os.phone || $.os.tablet)))
-      {
-         $('body').addClass('x-desktop');
-      }
-      else
-      {
-         $('body').addClass(($.os.phone) ? 'x-phone' : 'x-tablet');
-      }
+         if (!($.os && ($.os.phone || $.os.tablet)) || $.os.ios)
+         {
+            $('body').addClass('x-ios');
+            $('body').addClass('x-ios-' + parseInt((($.os) ? $.os.version : '6')));
+         }
+         else if ($.os.blackberry || $.os.bb10 || $.os.rimtabletos)
+         {
+            $('body').addClass('x-blackberry');
+            $('body').addClass('x-blackberry-' + parseInt(($.os.version)));
+         }
+         else
+         //else if ($.os.android)
+         {
+            $('body').addClass('x-android');
+            $('body').addClass('x-android-' + parseInt(($.os.version)));
+         }
+         if (!($.os && ($.os.phone || $.os.tablet)))
+         {
+            $('body').addClass('x-desktop');
+         }
+         else
+         {
+            $('body').addClass(($.os.phone) ? 'x-phone' : 'x-tablet');
+         }
 
-      var _hide_ = function(e)
-      {
-         me.playSoundFile(me.sound_files['clickSound']);
-         hideEarnPtsPage(e);
-         return false;
-      };
-      $('#earnPtsCancel').on(pfEvent, _hide_);
-      $('#earnPtsDismiss').on(pfEvent, _hide_);
-      $('#earnptspageview')[0].style.top = (-1 * Math.max(window.screen.height, window.screen.width)) + 'px';
-
+         var _hide_ = function(e)
+         {
+            me.playSoundFile(me.sound_files['clickSound']);
+            hideEarnPtsPage(e);
+            return false;
+         };
+         $('#earnPtsCancel').on(pfEvent, _hide_);
+         $('#earnPtsDismiss').on(pfEvent, _hide_);
+         $('#earnptspageview')[0].style.top = (-1 * Math.max(window.screen.height, window.screen.width)) + 'px';
+      }
       // =============================================================
       // Venue Browse/Scroll
       // =============================================================
-      var ajax, i = -1, iscrollInfinite = $('#checkexplorepageview .body');
-      if (!($.os.ios && (parseFloat($.os.version) >= 7.0)))
       {
-         $('#checkexplorepageview .body > div:first-child').addClass('scroller');
-         iscroll = new IScroll('#checkexplorepageview .body',
+         var ajax, i = -1, iscrollInfinite = $('#checkexplorepageview .body');
+         if (!($.os.ios && (parseFloat($.os.version) >= 7.0)))
          {
-            scrollbars : true,
-            mouseWheel : true,
-            interactiveScrollbars : false
-         });
-         var origEventHandler = iscroll.handleEvent;
-         iscrollInfinite.infiniteScroll(
-         {
-            threshold : window.screen.height,
-            iScroll : iscroll,
-            onEnd : function()
+            $('#checkexplorepageview .body > div:first-child').addClass('scroller');
+            iscroll = new IScroll('#checkexplorepageview .body',
             {
-               console.debug('No More Results');
-            },
-            onBottom : function(callback)
+               scrollbars : true,
+               mouseWheel : true,
+               interactiveScrollbars : false
+            });
+            var origEventHandler = iscroll.handleEvent;
+            iscrollInfinite.infiniteScroll(
             {
-               if ($('.media').length > 0)
+               threshold : window.screen.height,
+               iScroll : iscroll,
+               onEnd : function()
                {
-                  console.debug('At the end of the page. Loading more!');
-                  getNearestVenues($('.media').length);
+                  console.debug('No More Results');
+               },
+               onBottom : function(callback)
+               {
+                  if ($('.media').length > 0)
+                  {
+                     console.debug('At the end of the page. Loading more!');
+                     getNearestVenues($('.media').length);
+                  }
+                  callback(true);
                }
-               callback(true);
-            }
-         });
+            });
 
-         iscroll.handleEvent = function(e)
-         {
-            origEventHandler.call(iscroll, e);
-            switch ( e.type )
+            iscroll.handleEvent = function(e)
             {
-               case 'touchmove':
-               case 'MSPointerMove':
-               case 'mousemove':
-                  iscrollInfinite.data().infiniteScroll.iScroll.options.onScrollMove();
-                  break;
-            }
-         };
-      }
-      else
-      {
-         $('#checkexplorepageview').addClass('noIScroll');
-      }
-      var pageX = 0, pageY = 0;
-      var _getVenues_ = function(e)
-      {
-         x1 = parseInt(window.screen.width * (0.5 - (0.65 / 2))), x2 = parseInt(window.screen.width * 0.65);
-         y1 = parseInt(window.screen.height * (0.5 - (0.65 / 2))), y2 = parseInt(window.screen.height * 0.65);
+               origEventHandler.call(iscroll, e);
+               switch ( e.type )
+               {
+                  case 'touchmove':
+                  case 'MSPointerMove':
+                  case 'mousemove':
+                     iscrollInfinite.data().infiniteScroll.iScroll.options.onScrollMove();
+                     break;
+               }
+            };
+         }
+         else
+         {
+            $('#checkexplorepageview').addClass('noIScroll');
+         }
+         var pageX = 0, pageY = 0;
+         var _getVenues_ = function(e)
+         {
+            x1 = parseInt(window.screen.width * (0.5 - (0.65 / 2))), x2 = parseInt(window.screen.width * 0.65);
+            y1 = parseInt(window.screen.height * (0.5 - (0.65 / 2))), y2 = parseInt(window.screen.height * 0.65);
 
-         //cursor:pointer
-         //console.log("x=" + pageX + ", x1=" + x1 + ", x2=" + x2 + ", y=" + pageY + ", y1=" + y1 + ", y2=" + y2);
-         if ((pageX >= x1 && pageX <= x2) && (pageY >= y1 && pageY <= y2))
-         {
-            var db = Genesis.db.getLocalDB();
-            if (db['auth_code'])
+            //cursor:pointer
+            //console.log("x=" + pageX + ", x1=" + x1 + ", x2=" + x2 + ", y=" + pageY + ", y1=" + y1 + ", y2=" + y2);
+            if ((pageX >= x1 && pageX <= x2) && (pageY >= y1 && pageY <= y2))
             {
-               //
-               // Trigger when the list is empty
-               //
-               if ($('.media').length == 0)
+               var db = Genesis.db.getLocalDB();
+               if (db['auth_code'])
+               {
+                  //
+                  // Trigger when the list is empty
+                  //
+                  if ($('.media').length == 0)
+                  {
+                     me.playSoundFile(me.sound_files['clickSound']);
+                     getNearestVenues(0);
+                  }
+               }
+               else
                {
                   me.playSoundFile(me.sound_files['clickSound']);
-                  getNearestVenues(0);
+                  setChildBrowserVisibility(true);
                }
             }
-            else
-            {
-               me.playSoundFile(me.sound_files['clickSound']);
-               setChildBrowserVisibility(true);
-            }
-         }
-         return false;
-      };
-      $('#checkexplorepageview .body').on(pfEvent, _getVenues_);
-      $('#checkexplorepageview .body').on('touchstart', function(e)
-      {
-         pageX = e.touches[0].clientX;
-         pageY = e.touches[0].clientY;
-      });
+            return false;
+         };
+         $('#checkexplorepageview .body').on(pfEvent, _getVenues_);
+         $('#checkexplorepageview .body').on('touchstart', function(e)
+         {
+            pageX = e.touches[0].clientX;
+            pageY = e.touches[0].clientY;
+         });
+      }
       // =============================================================
       // WelcomePage Actions
       // =============================================================
-      var _ptsLoad_ = function()
       {
-         me.playSoundFile(me.sound_files['clickSound']);
-         var db = Genesis.db.getLocalDB();
-         if (db['auth_code'])
+         var _ptsLoad_ = function()
          {
-            $('#earnPtsProceed').trigger(pfEvent);
-         }
-         else
-         {
-            setChildBrowserVisibility(true);
-         }
-         return false;
-      };
-      $("#earnPtsLoad").on(pfEvent, _ptsLoad_);
-
+            me.playSoundFile(me.sound_files['clickSound']);
+            var db = Genesis.db.getLocalDB();
+            if (db['auth_code'])
+            {
+               $('#earnPtsProceed').trigger(pfEvent);
+            }
+            else
+            {
+               setChildBrowserVisibility(true);
+            }
+            return false;
+         };
+         $("#earnPtsLoad").on(pfEvent, _ptsLoad_);
+      }
       // =============================================================
       // ExplorePage Actions
       // =============================================================
-      var _home_ = function(e)
       {
-         var db = Genesis.db.getLocalDB();
-         me.playSoundFile(me.sound_files['clickSound']);
-         //refresh
-         if (db['auth_code'] && ($(e.currentTarget).has('.x-button .x-button-icon.refresh').length > 0))
+         var _home_ = function(e)
          {
-            getNearestVenues(0, true);
-         }
-         else
-         //home
-         //else if ($(e.currentTarget).has('.x-button .x-button-icon.home'))
-         {
-            setChildBrowserVisibility(true);
-         }
-         return false;
-      };
-      $('#checkexplorepageview .header .x-layout-box-item').on(pfEvent, _home_);
-      var _preLoad_ = function(e)
-      {
-         var task, privKey;
-
-         if (me.pendingBroadcast)
-         {
-            return;
-         }
-
-         me.playSoundFile(me.sound_files['clickSound']);
-         //
-         // Check for Mobile Number Validation
-         //
-         var message = $('#earnptspageview .x-docked-top .x-innerhtml'), image = $('#earnPtsImage');
-         var db = Genesis.db.getLocalDB(), venue = viewport.getVenue(), venueId, position = viewport.getLastPosition();
-
-         me.identifiers = null;
-
-         //
-         // Get GeoLocation and frequency markers
-         //
-         //if (!notUseGeolocation)
-         {
-            venueId = -1;
-            privKey = Genesis.fn.privKey =
+            var db = Genesis.db.getLocalDB();
+            me.playSoundFile(me.sound_files['clickSound']);
+            //refresh
+            if (db['auth_code'] && ($(e.currentTarget).has('.x-button .x-button-icon.refresh').length > 0))
             {
-               'venueId' : venueId,
-               'venue' : Genesis.constants.debugVenuePrivKey
-            };
-            privKey['r' + venueId] = privKey['p' + venueId] = db['csrf_code'];
-         }
-
-         window.plugins.proximityID.preLoadSend(gblController, true, Ext.bind(function(notUseGeolocation)
-         {
-            me.broadcastLocalID(function(idx)
+               getNearestVenues(0, true);
+            }
+            else
+            //home
+            //else if ($(e.currentTarget).has('.x-button .x-button-icon.home'))
             {
-               me.identifiers = idx;
-               $("#earnptspageview").trigger('kickbak:broadcast');
+               setChildBrowserVisibility(true);
+            }
+            return false;
+         };
+         $('#checkexplorepageview .header .x-layout-box-item').on(pfEvent, _home_);
+         var _preLoad_ = function(e)
+         {
+            var task, privKey;
 
-               console.debug("Broadcast underway ...");
-               position = viewport.getLastPosition();
-               if (notUseGeolocation || position)
+            if (me.pendingBroadcast)
+            {
+               return;
+            }
+
+            me.playSoundFile(me.sound_files['clickSound']);
+            //
+            // Check for Mobile Number Validation
+            //
+            var message = $('#earnptspageview .x-docked-top .x-innerhtml'), image = $('#earnPtsImage');
+            var db = Genesis.db.getLocalDB(), venue = viewport.getVenue(), venueId, position = viewport.getLastPosition();
+
+            me.identifiers = null;
+
+            //
+            // Get GeoLocation and frequency markers
+            //
+            //if (!notUseGeolocation)
+            {
+               venueId = -1;
+               privKey = Genesis.fn.privKey =
                {
-                  var ajax, localID = me.identifiers['localID'], venue = viewport.getVenue(), venueId = null;
-                  var params =
+                  'venueId' : venueId,
+                  'venue' : Genesis.constants.debugVenuePrivKey
+               };
+               privKey['r' + venueId] = privKey['p' + venueId] = db['csrf_code'];
+            }
+
+            window.plugins.proximityID.preLoadSend(gblController, true, Ext.bind(function(notUseGeolocation)
+            {
+               me.broadcastLocalID(function(idx)
+               {
+                  me.identifiers = idx;
+                  $("#earnptspageview").trigger('kickbak:broadcast');
+
+                  console.debug("Broadcast underway ...");
+                  position = viewport.getLastPosition();
+                  if (notUseGeolocation || position)
                   {
-                  };
-                  //
-                  // With or without Geolocation support
-                  //
-                  if (!venueId)
-                  {
+                     var ajax, localID = me.identifiers['localID'], venue = viewport.getVenue(), venueId = null;
+                     var params =
+                     {
+                     };
                      //
-                     // We cannot use short cut method unless we have either GeoLocation or VenueId
+                     // With or without Geolocation support
                      //
-                     if (!position)
+                     if (!venueId)
                      {
                         //
-                        // Stop broadcasting now ...
+                        // We cannot use short cut method unless we have either GeoLocation or VenueId
                         //
-                        if (me.identifiers)
+                        if (!position)
                         {
-                           me.identifiers['cancelFn']();
-                        }
-                        hideEarnPtsPage();
-
-                        setNotificationVisibility(true, 'KICKBAK', me.cannotDetermineLocationMsg, "Dismiss", Ext.emptyFn);
-                        return;
-                     }
-
-                     params = Ext.apply(params,
-                     {
-                        data : me.self.encryptFromParams(
-                        {
-                           'frequency' : localID
-                        }, 'reward'),
-                        'latitude' : position.coords.latitude,
-                        'longitude' : position.coords.longitude
-                     });
-                  }
-                  else
-                  {
-                     params = Ext.apply(params,
-                     {
-                        data : me.self.encryptFromParams(
-                        {
-                           'frequency' : localID
-                        }, 'reward'),
-                        venue_id : venueId
-                     });
-                  }
-
-                  //
-                  // Triggers PrizeCheck and MetaDataChange
-                  // - subject CustomerReward also needs to be reset to ensure property processing of objects
-                  //
-                  console.debug("Transmitting Reward Points Request ...");
-
-                  var _dismiss_ = function(msg)
-                  {
-                     //$('#earnPtsDismiss').off(pfEvent, _dismiss_);
-
-                     me.playSoundFile(me.sound_files['clickSound']);
-                     if (ajax)
-                     {
-                        ajax.abort();
-                     }
-                     if (me.identifiers)
-                     {
-                        me.identifiers['cancelFn']();
-                     }
-                     setLoadMask(false);
-
-                     setNotificationVisibility(true, 'Rewards', ( typeof (msg) != 'string') ? me.transactionCancelledMsg : msg, "Dismiss", function()
-                     {
-                     });
-                     return false;
-                  };
-                  $('#earnPtsDismiss').one(pfEvent, _dismiss_);
-
-                  ajax = $.ajax(
-                  {
-                     type : 'POST',
-                     url : serverHost + '/api/v1/purchase_rewards/earn',
-                     // data to be added to query string:
-                     data : params,
-                     // type of data we are expecting in return:
-                     dataType : 'json',
-                     timeout : 30 * 1000,
-                     context : document,
-                     success : function(data)
-                     {
-                        if (!data)
-                        {
+                           //
+                           // Stop broadcasting now ...
+                           //
                            if (me.identifiers)
                            {
-                              console.debug("AJAX Error Response", me.identifiers);
+                              me.identifiers['cancelFn']();
                            }
-                           $('#earnPtsDismiss').trigger(pfEvent, [me.networkErrorMsg]);
+                           hideEarnPtsPage();
+
+                           setNotificationVisibility(true, 'KICKBAK', me.cannotDetermineLocationMsg, "Dismiss", Ext.emptyFn);
                            return;
                         }
 
-                        //
-                        // Stop broadcasting now ...
-                        //
+                        params = Ext.apply(params,
+                        {
+                           data : me.self.encryptFromParams(
+                           {
+                              'frequency' : localID
+                           }, 'reward'),
+                           'latitude' : position.coords.latitude,
+                           'longitude' : position.coords.longitude
+                        });
+                     }
+                     else
+                     {
+                        params = Ext.apply(params,
+                        {
+                           data : me.self.encryptFromParams(
+                           {
+                              'frequency' : localID
+                           }, 'reward'),
+                           venue_id : venueId
+                        });
+                     }
+
+                     //
+                     // Triggers PrizeCheck and MetaDataChange
+                     // - subject CustomerReward also needs to be reset to ensure property processing of objects
+                     //
+                     console.debug("Transmitting Reward Points Request ...");
+
+                     var _dismiss_ = function(msg)
+                     {
+                        //$('#earnPtsDismiss').off(pfEvent, _dismiss_);
+
+                        me.playSoundFile(me.sound_files['clickSound']);
+                        if (ajax)
+                        {
+                           ajax.abort();
+                        }
                         if (me.identifiers)
                         {
                            me.identifiers['cancelFn']();
                         }
                         setLoadMask(false);
 
-                        console.debug("AJAX Response", data);
-                        setNotificationVisibility(true, 'Rewards', "", "OK", function()
+                        setNotificationVisibility(true, 'Rewards', ( typeof (msg) != 'string') ? me.transactionCancelledMsg : msg, "Dismiss", function()
                         {
                         });
-                     },
-                     error : function(xhr, type)
-                     {
-                        if (me.identifiers)
-                        {
-                           console.debug("AJAX Error Response", me.identifiers);
-                        }
-                        $('#earnPtsDismiss').trigger(pfEvent, [me.networkErrorMsg]);
-                     }
-                  });
-               }
-            }, function()
-            {
-               hideEarnPtsPage();
-               //setLoadMask(false);
-            });
-         }, me, [false]));
-         return false;
-      };
-      $('#earnPtsProceed').on(pfEvent, _preLoad_);
+                        return false;
+                     };
+                     $('#earnPtsDismiss').one(pfEvent, _dismiss_);
 
+                     ajax = $.ajax(
+                     {
+                        type : 'POST',
+                        url : serverHost + '/api/v1/purchase_rewards/earn',
+                        // data to be added to query string:
+                        data : params,
+                        // type of data we are expecting in return:
+                        dataType : 'json',
+                        timeout : 30 * 1000,
+                        context : document,
+                        success : function(data)
+                        {
+                           if (!data)
+                           {
+                              if (me.identifiers)
+                              {
+                                 console.debug("AJAX Error Response", me.identifiers);
+                              }
+                              $('#earnPtsDismiss').trigger(pfEvent, [me.networkErrorMsg]);
+                              return;
+                           }
+
+                           //
+                           // Stop broadcasting now ...
+                           //
+                           if (me.identifiers)
+                           {
+                              me.identifiers['cancelFn']();
+                           }
+                           setLoadMask(false);
+
+                           console.debug("AJAX Response", data);
+                           setNotificationVisibility(true, 'Rewards', "", "OK", function()
+                           {
+                           });
+                        },
+                        error : function(xhr, type)
+                        {
+                           if (me.identifiers)
+                           {
+                              console.debug("AJAX Error Response", me.identifiers);
+                           }
+                           $('#earnPtsDismiss').trigger(pfEvent, [me.networkErrorMsg]);
+                        }
+                     });
+                  }
+               }, function()
+               {
+                  hideEarnPtsPage();
+                  //setLoadMask(false);
+               });
+            }, me, [false]));
+            return false;
+         };
+         $('#earnPtsProceed').on(pfEvent, _preLoad_);
+      }
       // =============================================================
       // Facebook Access Token Detect
       // =============================================================
