@@ -6,7 +6,8 @@ Ext.define('Genesis.profile.Android',
    },
    isActive : function()
    {
-      return Ext.os.is('Android');
+      return true;
+      //return Ext.os.is('Android');
    }
 });
 
