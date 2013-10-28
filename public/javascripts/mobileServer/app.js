@@ -160,7 +160,7 @@ Ext.Loader.setPath(
 
    Ext.defer(function()
    {
-      var targetelement = "script", targetattr = "src";
+      var targetelement = "script", targetattr = "src", version = '?v=' + Genesis.constants.serverVersion;
       var allsuspects = document.getElementsByTagName(targetelement);
 
       for (var i = allsuspects.length; i >= 0; i--)
@@ -176,6 +176,6 @@ Ext.Loader.setPath(
       }
 
       _totalAssetCount++;
-      Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone5.css?v=" + Genesis.constants.serverVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x011], true));
+      Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone5.css" + version, "css", Ext.bind(appLaunchCallbackFn, null, [0x011], true));
    }, 0.1 * 1000);
 })();

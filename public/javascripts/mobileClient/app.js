@@ -170,10 +170,10 @@ Ext.Loader.setPath(
 
    Ext.defer(function()
    {
-      var targetelement = "script", targetattr = "src";
-      var allsuspects = document.getElementsByTagName(targetelement);
-      var imagePath = _hostPath + "resources/themes/images/v1/", images = [new Image(400, 400)], prefix;
-      var resolution = (function()
+      var targetelement = "script", targetattr = "src", version = '?v=' + Genesis.constants.clientVersion, //
+      allsuspects = document.getElementsByTagName(targetelement), //
+      imagePath = _hostPath + "resources/themes/images/v1/", images = [new Image(400, 400)], prefix, //
+      resolution = (function()
       {
          return (((window.screen.height >= 641) && ((window.devicePixelRatio == 1.0) || (window.devicePixelRatio >= 2.0))) ? 'mxhdpi' : 'lhdpi');
       })();
@@ -196,7 +196,7 @@ Ext.Loader.setPath(
          if (Ext.os.is('iPhone5'))
          {
             _totalAssetCount++;
-            Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone5.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x010], true));
+            Genesis.fn.checkloadjscssfile(_hostPath + 'resources/css/iphone5.css' + version, "css", Ext.bind(appLaunchCallbackFn, null, [0x010], true));
          }
          else
          {
@@ -213,14 +213,14 @@ Ext.Loader.setPath(
           {
           case 'lhdpi' :
           {
-          Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-phone-lhdpi.css?v=" + Genesis.constants.clientVersion,
+          Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-phone-lhdpi.css" + version,
           "css",
           Ext.bind(appLaunchCallbackFn, null, [0x011], true));
           break;
           }
           case 'mxhdpi' :
           {
-          Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-phone-mxhdpi.css?v=" + Genesis.constants.clientVersion,
+          Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-phone-mxhdpi.css" + version,
           "css", Ext.bind(appLaunchCallbackFn, null, [0x011], true));
           break;
           }
@@ -266,19 +266,19 @@ Ext.Loader.setPath(
                }
             };
 
-            Genesis.fn.checkloadjscssfile(_hostPath + 'lib/libmp3lame.min.js', "js", Ext.bind(callback, null, [0x01], true));
-            Genesis.fn.checkloadjscssfile(_hostPath + "worker/encoder.min.js", "js", function(success)
+            Genesis.fn.checkloadjscssfile(_hostPath + 'lib/libmp3lame.min.js' + version, "js", Ext.bind(callback, null, [0x01], true));
+            Genesis.fn.checkloadjscssfile(_hostPath + "worker/encoder.min.js" + version, "js", function(success)
             {
                if (success)
                {
-                  _codec = new Worker('worker/encoder.min.js');
+                  _codec = new Worker('worker/encoder.min.js' + version);
                }
                callback(success, 0x10);
             });
          }
          else
          {
-            _codec = new Worker('worker/encoder.min.js');
+            _codec = new Worker('worker/encoder.min.js' + version);
             appLaunchCallbackFn(true, 0x100);
             console.debug("Enable MP3 Encoder");
          }

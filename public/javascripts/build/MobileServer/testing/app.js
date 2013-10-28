@@ -84781,7 +84781,7 @@ Ext.define('Genesis.controller.server.Settings',
       var me = this, form = me.getSettingsPage(), db = Genesis.db.getLocalDB(), isNative = Genesis.fn.isNative();
 
       me.getMerchantDevice().setLabel(Genesis.fn.getPrivKey('venue'));
-      me.getDeviceID().setLabel('DeviceID' + '<div style="font-size:0.6em;line-height:1;">' + ( isNative ? device.uuid : db['uuid']) + '</div>');
+      me.getDeviceID().setLabel('DeviceID' + '<div style="font-size:0.60em;line-height:1;">' + (isNative ? device.uuid : db['uuid']) + '</div>');
       me.getUtilitiesContainer()[debugMode ? 'show' : 'hide']();
       form.setValues(
       {
@@ -87030,7 +87030,7 @@ will need to resolve manually.
 
    Ext.defer(function()
    {
-      var targetelement = "script", targetattr = "src";
+      var targetelement = "script", targetattr = "src", version = '?v=' + Genesis.constants.serverVersion;
       var allsuspects = document.getElementsByTagName(targetelement);
 
       for (var i = allsuspects.length; i >= 0; i--)
@@ -87046,7 +87046,7 @@ will need to resolve manually.
       }
 
       _totalAssetCount++;
-      Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone5.css?v=" + Genesis.constants.serverVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x011], true));
+      Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone5.css" + version, "css", Ext.bind(appLaunchCallbackFn, null, [0x011], true));
    }, 0.1 * 1000);
 })();
 
