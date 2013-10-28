@@ -298,7 +298,7 @@ var detectAccessToken = function(url)
    }
    else
    {
-      setChildBrowserVisibility(false);
+      setChildBrowserVisibility(db['auth_code'] ? false : true);
    }
 };
 
