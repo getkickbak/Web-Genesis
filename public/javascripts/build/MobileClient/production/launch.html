@@ -100,8 +100,6 @@
          }
          #checkexplorepageview.noIScroll .body {
             position: static;
-            padding-top : 2.6em;
-            padding-bottom : 4.6em;
          }
          .x-portrait #checkexplorepageview .body::before {
             position: absolute;
@@ -122,6 +120,10 @@
             content: "";
             z-index: -1;
             background-position: center center;
+         }
+         #checkexplorepageview.noIScroll .body::before {
+            padding-top : 2.6em;
+            padding-bottom : 4.6em;
          }
          #checkexplorepageview .footer {
             position: absolute;
