@@ -26,6 +26,8 @@
             margin-top: 0px;
          }         
          .media-object {
+            float:left;
+            margin-right: 0.7em;
             width: 57px;
             height: 57px;
             background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAACsklEQVR4Xu2Y24upYRTGl0PI0JSimHDjMIVETVMzpvzrziLSTIkiLpTcjJLzcfaziuz2Njufsb8La93o+3jX+65nHX55NZ+fnzu6YdOIAFIB0gIyA254BpIMQaGAUEAoIBQQCtywAoJBwaBgUDAoGLxhCMifIcGgYFAwKBgUDAoGb1iBizHYbDap3+/Tbrcjp9NJwWCQNBrNQdJflKF6vU5ms5lisdhv353S/Ro+T+11kQCNRoN6vR7p9Xr2v16vyev1kt/v52eIkkql+L3BYKBEIkFarfbberuGz+82VCzAZrOhdDrNGX17e6PVakXdbpesVis9PDzwnq1Wi9/BTCYTvb6+0mQyoff3d9LpdBSPx2k8HhOCNhqNFIlEKJvNnu3zuOLO7WbFAiyXSz7sdrvloOfzObdAIBDgM8xmM8rlcuTxeGg0GtF0OmWhcNhKpULD4ZBsNhuvw3eoGqxX6vPcwPe/VywAertarbIftADKHIYgQqEQlctlzm4ymaRSqUSLxeIgwLF4WHN/f09PT090ic//LgAynM/nuXRfXl44i8VikXs9HA6zOHd3d+R2u6ndbnOl+Hw+foZ1Oh1+D3t+fuYqutSnEhEUVwAyjhmA3oYA+2cI8Pj4SLVa7Y/zYACiIjAcM5nMoWrsdjtFo9GDDyU+/zVcT4mjWAAEgQpA1lwuF3+irx0OB1cAyhyGg6EdIBAyjeA+Pj5oMBiQxWLhykF1YABirVKfSrKPNYoFwGIMsEKhQCACDO2AXkaQx4bWgACgAAYiBNnTA0KA+5gje5qc61MVChwHiGEHQ0Z/yq7h829nu6gCfipYNf2IAHIjJDdCciMkN0JqTmG19xYKCAWEAkIBoYDak1jN/YUCQgGhgFBAKKDmFFZ7b6GAUEAoIBQQCqg9idXcXyhw6xT4AgyAjZ+ww1kxAAAAAElFTkSuQmCC');
@@ -69,9 +71,16 @@
             margin-top: 20px;
          }
          #checkexplorepageview {
-            position : relative;
+            position : absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom:0;
+            padding:0;
+            z-index: 1;
          }
-         #checkexplorepageview .header {
+         #checkexplorepageview.iScroll .header {
+            height: 2.6em !important; 
          }
          
          #checkexplorepageview .body {
@@ -86,10 +95,13 @@
          }
          #checkexplorepageview.noIScroll .body {
             position: static;
-         }
-         #checkexplorepageview.withTb .body {
+            padding-top : 46px;
             padding-bottom : 72px;
          }
+         .x-ios-7 #checkexplorepageview.iScroll .body {
+            top: 66px;
+         }
+
          .x-portrait #checkexplorepageview .body::before {
             position: absolute;
             background: url('resources/themes/images/v1/ios/mainicons/checkin.svg') no-repeat;
@@ -97,7 +109,7 @@
             height: 100%;
             width: 100%;
             content: "";
-            z-index: 0;
+            z-index: -1;
             background-position: center center;
          }
          .x-landscape #checkexplorepageview .body::before {
@@ -107,7 +119,7 @@
             height: 100%;
             width: 100%;
             content: "";
-            z-index: 0;
+            z-index: -1;
             background-position: center center;
          }
          #checkexplorepageview .footer {
@@ -116,8 +128,9 @@
             left: 0;
             right: 0;
          }
-         #checkexplorepageview.withTb .footer {
+         #checkexplorepageview.noIScroll .footer {
             position: fixed;
+            background-color: #0a78be;
          }
          #checkexplorepageview .scroller {
             position: absolute;
@@ -174,8 +187,8 @@
       <title>KickBak</title>
    </head>
    <body class="">
-      <div id="checkexplorepageview" class="x-container x-sheet x-sized" style="padding:0;">
-         <div class="header x-container x-toolbar-dark x-toolbar x-sized navigationBarTop x-dock-item x-docked-top kbTitle" style="height: 2.6em !important; ">
+      <div id="checkexplorepageview" class="iScroll x-container x-sheet x-sized">
+         <div class="header x-container x-toolbar-dark x-toolbar x-sized navigationBarTop x-dock-item x-docked-top kbTitle">
                <div class="x-body">
                   <div class="x-center">
                      <div class="x-unsized x-title x-floating" style="z-index: 8 !important; ">
@@ -423,14 +436,16 @@
                   {
                      setTimeout( function(){ window.scrollTo(0, 0); }, 50 );               
                   }
+                  /*
                   else
                   {
                      var action = ((getHeightOfIOSToolbars() < 60) || ($('.media').length <= 5)) ? 'addTb' : 'removeTb';
                      
                      $('#checkexplorepageview .footer')[(action == 'addTb') ? 'removeClass' : 'addClass']('x-item-hidden');
-                     $('#checkexplorepageview')[(action == 'addTb') ? 'addClass' : 'removeClass']('withTb');
+                     //$('#checkexplorepageview')[(action == 'addTb') ? 'addClass' : 'removeClass']('withTb');
                      //$('#checkexplorepageview .body')[0].style.height = parseInt((_winHeight - (2.6*18))) + 'px';
                   }
+                  */
                }
 
                if (_winWidth != document.body.clientWidth)

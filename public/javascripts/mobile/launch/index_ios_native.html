@@ -24,6 +24,8 @@
             margin-top: 0px;
          }         
          .media-object {
+            float:left;
+            margin-right: 0.7em;
             width: 57px;
             height: 57px;
             background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAACsklEQVR4Xu2Y24upYRTGl0PI0JSimHDjMIVETVMzpvzrziLSTIkiLpTcjJLzcfaziuz2Njufsb8La93o+3jX+65nHX55NZ+fnzu6YdOIAFIB0gIyA254BpIMQaGAUEAoIBQQCtywAoJBwaBgUDAoGLxhCMifIcGgYFAwKBgUDAoGb1iBizHYbDap3+/Tbrcjp9NJwWCQNBrNQdJflKF6vU5ms5lisdhv353S/Ro+T+11kQCNRoN6vR7p9Xr2v16vyev1kt/v52eIkkql+L3BYKBEIkFarfbberuGz+82VCzAZrOhdDrNGX17e6PVakXdbpesVis9PDzwnq1Wi9/BTCYTvb6+0mQyoff3d9LpdBSPx2k8HhOCNhqNFIlEKJvNnu3zuOLO7WbFAiyXSz7sdrvloOfzObdAIBDgM8xmM8rlcuTxeGg0GtF0OmWhcNhKpULD4ZBsNhuvw3eoGqxX6vPcwPe/VywAertarbIftADKHIYgQqEQlctlzm4ymaRSqUSLxeIgwLF4WHN/f09PT090ic//LgAynM/nuXRfXl44i8VikXs9HA6zOHd3d+R2u6ndbnOl+Hw+foZ1Oh1+D3t+fuYqutSnEhEUVwAyjhmA3oYA+2cI8Pj4SLVa7Y/zYACiIjAcM5nMoWrsdjtFo9GDDyU+/zVcT4mjWAAEgQpA1lwuF3+irx0OB1cAyhyGg6EdIBAyjeA+Pj5oMBiQxWLhykF1YABirVKfSrKPNYoFwGIMsEKhQCACDO2AXkaQx4bWgACgAAYiBNnTA0KA+5gje5qc61MVChwHiGEHQ0Z/yq7h829nu6gCfipYNf2IAHIjJDdCciMkN0JqTmG19xYKCAWEAkIBoYDak1jN/YUCQgGhgFBAKKDmFFZ7b6GAUEAoIBQQCqg9idXcXyhw6xT4AgyAjZ+ww1kxAAAAAElFTkSuQmCC');
@@ -72,8 +74,23 @@
             left: 0;
             right: 0;
             bottom:0;
+            padding:0;
+            z-index: 1;
          }
          #checkexplorepageview .header {
+         }
+         #checkexplorepageview.iScroll .header {
+            height: 2.6em !important; 
+         }
+         .x-ios-7 #checkexplorepageview.iScroll .header {
+            height: 3.7em !important;
+            padding-top: 20px;
+            position: fixed;
+            width:100%;
+            z-index:1;            
+         }
+         .x-ios-7 #checkexplorepageview.iScroll .kbTitle::before {
+            top: 10px;
          }
          
          #checkexplorepageview .body {
@@ -86,6 +103,9 @@
             background: transparent;
             overflow: hidden;
          }
+         .x-ios-7 #checkexplorepageview.iScroll .body {
+            top: 66px;
+         }
          .x-portrait #checkexplorepageview .body::before {
             position: absolute;
             background: url('../resources/themes/images/v1/ios/mainicons/checkin.svg') no-repeat;
@@ -93,7 +113,7 @@
             height: 100%;
             width: 100%;
             content: "";
-            z-index: 1;
+            z-index: -1;
             background-position: center center;
          }
          .x-landscape #checkexplorepageview .body::before {
@@ -103,7 +123,7 @@
             height: 100%;
             width: 100%;
             content: "";
-            z-index: 1;
+            z-index: -1;
             background-position: center center;
          }
          #checkexplorepageview .footer {
@@ -283,8 +303,8 @@
    </head>
    <body class="x-portrait">
       <div id="fb-root"></div>
-      <div id="checkexplorepageview" class="x-container x-sheet x-sized x-floating" style="padding:0;">
-         <div class="header x-container x-toolbar-dark x-toolbar x-sized navigationBarTop x-dock-item x-docked-top kbTitle" style="height: 2.6em !important; ">
+      <div id="checkexplorepageview" class="iScroll x-container x-sheet x-sized x-floating">
+         <div class="header x-container x-toolbar-dark x-toolbar x-sized navigationBarTop x-dock-item x-docked-top kbTitle">
                <div class="x-body">
                   <div class="x-center">
                      <div class="x-unsized x-title x-floating" style="z-index: 8 !important; ">
@@ -326,7 +346,7 @@
             </div>
          </div>
       </div>
-      <div id="earnptspageview" class="x-container x-sheet x-sized x-floating panTopPage" style="top:-10000px">
+      <div id="earnptspageview" class="x-container x-sheet x-sized x-floating panTopPage" style="top:-10000px; z-index: 1;">
          <div class="x-dock x-dock-vertical x-sized">
             <div class="x-dock-body">
                <div class="x-inner x-sheet-inner x-vertical x-align-stretch x-pack-center x-layout-box" style="padding: 0em;">

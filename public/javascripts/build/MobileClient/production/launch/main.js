@@ -1,4 +1,4 @@
-var mainAppInit = false, href = location.href;
+var mainAppInit = false, href = location.href, enableScroll;
 
 var proximityInit = function()
 {
@@ -94,7 +94,7 @@ var setChildBrowserVisibility = function(visible, hash, pushNotif)
          port = $(".iframe");
       }
    }
-   
+
    if (visible)
    {
 
@@ -244,7 +244,7 @@ var setChildBrowserVisibility = function(visible, hash, pushNotif)
       if (!db['auth_code'])
       {
          $('.body ul').html('');
-         if (!($.os && $.os.ios && (parseFloat($.os.version) >= 7.0)))
+         if (enableScroll)
          {
             $('#checkexplorepageview .body').infiniteScroll('reset');
          }
@@ -428,7 +428,7 @@ window.location.reload();
                if (refresh)
                {
                   $('.body ul').html(venues);
-                  if (!($.os && $.os.ios && (parseFloat($.os.version) >= 7.0)))
+                  if (enableScroll)
                   {
                      $('#checkexplorepageview .body').infiniteScroll('reset');
                   }
@@ -440,7 +440,7 @@ window.location.reload();
                   // @formatter:off
                   venues +=  //
                   '<li class="media" data="'+ encodeURIComponent(Ext.encode(venue)) +'">'+
-                     '<a class="pull-left" href="#"> <img src="' + venue['merchant']['photo']['url'] + '" class="media-object" data-src="holder.js/64x64" alt=""> </a>'+
+                     '<img src="' + venue['merchant']['photo']['url'] + '" class="media-object" data-src="holder.js/64x64" alt="">'+
                      '<div class="media-body">' +
                         '<div class="media-heading">' + venue['name'] + '</div>' +
                            '<div class="itemDistance">' + getDistance(venue) + '</div>' +
@@ -452,13 +452,20 @@ window.location.reload();
                $('.body ul').append(venues);
                refreshCheckExploreVenues();
 
-               if (!($.os && $.os.ios && (parseFloat($.os.version) >= 7.0)))
+               if (enableScroll)
                {
                   iscroll.refresh();
                   if (refresh)
                   {
                      $('#checkexplorepageview .body').infiniteScroll('reset');
                   }
+               }
+               //
+               // Hide Checkin Icon
+               //
+               else
+               {
+                  
                }
             },
             error : function(xhr, type)
@@ -551,39 +558,40 @@ window.location.reload();
    window.addEventListener("orientationchange", orientationChange);
    $(window).resize(orientationChange);
 
-   if (!($.os && $.os.ios && (parseFloat($.os.version) >= 7.0)))
-   {
-      $(window).on('scroll', function(e)
-      {
-         setTimeout(function()
-         {
-            try
-            {
-               var totalHeight = parseInt(document.body.style.height.split('px')[0]) + getHeightOfIOSToolbars();
-
-               //if (window.outerHeight > window.innerHeight)
-               if (Math.abs(totalHeight - ((window.orientation === 0) ? window.screen.height : window.screen.width)) > 20)
-               {
-                  window.scrollTo(0, 0);
-               }
-            }
-            catch(e)
-            {
-            }
-         }, 0.1 * 1000);
-      });
-
-      $(document.body).on('touchmove', function(e)
-      {
-         e.preventDefault();
-      });
-   }
    $(document).ready(function()
    {
       var me = gblController, viewport = gblController.getViewPortCntlr(), //
       desktop = !($.os && ($.os.phone || $.os.tablet)), pfEvent = (desktop) ? 'click' : 'tap', //
       version = '?v=' + Genesis.constants.clientVersion;
 
+      enableScroll = Genesis.fn.isNative() || !($.os && $.os.ios && (parseFloat($.os.version) >= 7.0));
+      if (enableScroll)
+      {
+         $(window).on('scroll', function(e)
+         {
+            setTimeout(function()
+            {
+               try
+               {
+                  var totalHeight = parseInt(document.body.style.height.split('px')[0]) + getHeightOfIOSToolbars();
+
+                  //if (window.outerHeight > window.innerHeight)
+                  if (Math.abs(totalHeight - ((window.orientation === 0) ? window.screen.height : window.screen.width)) > 20)
+                  {
+                     window.scrollTo(0, 0);
+                  }
+               }
+               catch(e)
+               {
+               }
+            }, 0.1 * 1000);
+         });
+
+         $(document.body).on('touchmove', function(e)
+         {
+            e.preventDefault();
+         });
+      }
       // =============================================================
       // Custom Events
       // =============================================================
@@ -761,7 +769,7 @@ window.location.reload();
       // =============================================================
       {
          var ajax, i = -1, iscrollInfinite = $('#checkexplorepageview .body');
-         if (!($.os.ios && (parseFloat($.os.version) >= 7.0)))
+         if (enableScroll)
          {
             $('#checkexplorepageview .body > div:first-child').addClass('scroller');
             iscroll = new IScroll('#checkexplorepageview .body',
@@ -805,7 +813,7 @@ window.location.reload();
          }
          else
          {
-            $('#checkexplorepageview').addClass('noIScroll');
+            $('#checkexplorepageview').removeClass('iScroll').addClass('noIScroll');
          }
          var pageX = 0, pageY = 0;
          var _getVenues_ = function(e)
