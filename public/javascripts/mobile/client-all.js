@@ -179,7 +179,6 @@ Ext.define('Genesis.view.widgets.Calculator',
       // -------------------------------------------------------------------
       items : [
       {
-         height : '2.6em',
          docked : 'top',
          xtype : 'toolbar',
          centered : false,
@@ -533,12 +532,19 @@ Ext.define('Genesis.view.ViewBase',
    {
       generateTitleBarConfig : function()
       {
+         var height = ((!(Genesis.fn.isNative() && Ext.os.is('iOS') && Ext.os.version.isGreaterThanOrEqual('7.0')) ? '2.6em' : '3.7') + 'em');
+         var style = (!(Genesis.fn.isNative() && Ext.os.is('iOS') && Ext.os.version.isGreaterThanOrEqual('7.0')) ? '' :
+         {
+            'padding-top' : '20px'
+         });
          return (
             {
                xtype : 'titlebar',
                docked : 'top',
                tag : 'navigationBarTop',
                cls : 'navigationBarTop',
+               height : height,
+               style : style,
                masked :
                {
                   xtype : 'mask',
@@ -1088,6 +1094,7 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
       };
 
       var buttons = config['buttons'] || [];
+      config['top'] =  (!(Genesis.fn.isNative() && Ext.os.is('iOS') && Ext.os.version.isGreaterThanOrEqual('7.0')) ? config['top'] : '20px');
       config['origButtons'] = buttons;
       delete config['buttons'];
 

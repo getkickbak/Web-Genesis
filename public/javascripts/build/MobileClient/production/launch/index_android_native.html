@@ -149,15 +149,6 @@
             background-color: #fafafa;
             font-size: 14px;
          }
-         iframe.iframe {
-            position : absolute;
-            top: 0;
-            left: 0;
-            right : 0;
-            bottom : 0;
-            padding: 0;
-            z-index: 100;
-         }
       </style>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
       <title>KickBak</title>
@@ -204,12 +195,6 @@
                document.body.style.height = _winHeight + 'px';
                console.debug("Body Height :" + document.body.style.height);
                
-               if (!Genesis.fn.isNative())
-               {
-                  var style = $('iframe')[0].style;
-                  style.height = document.body.style.height;
-                  style.width = document.body.clientWidth + 'px';
-               }
                $('#checkexplorepageview')[0].style.height = //
                $('#loadingMask')[0].style.height = //
                $('#notification')[0].style.height = //
@@ -266,7 +251,7 @@
       <script type="text/javascript" src="mccore.js"></script>      
       <script type="text/javascript" src="mclient-all.js"></script>
    </head>
-   <body class="x-portrait x-sheet-action" style="padding:0;">
+   <body class="x-portrait x-sheet-action isNative" style="padding:0;">
       <div id="fb-root"></div>
       <div id="checkexplorepageview" class="iScroll x-container x-sheet x-sized x-floating">
          <div class="header x-container x-toolbar-dark x-toolbar x-sized navigationBarTop x-dock-item x-docked-top kbTitle">

@@ -16,7 +16,6 @@ Ext.define('Genesis.view.widgets.Calculator',
       // -------------------------------------------------------------------
       items : [
       {
-         height : '2.6em',
          docked : 'top',
          xtype : 'toolbar',
          centered : false,

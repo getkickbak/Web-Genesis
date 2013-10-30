@@ -73,6 +73,7 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
       };
 
       var buttons = config['buttons'] || [];
+      config['top'] =  (!(Genesis.fn.isNative() && Ext.os.is('iOS') && Ext.os.version.isGreaterThanOrEqual('7.0')) ? config['top'] : '20px');
       config['origButtons'] = buttons;
       delete config['buttons'];
 
