@@ -818,8 +818,8 @@ window.location.reload();
          var pageX = 0, pageY = 0;
          var _getVenues_ = function(e)
          {
-            x1 = parseInt(window.screen.width * (0.5 - (0.65 / 2))), x2 = parseInt(window.screen.width * 0.65);
-            y1 = parseInt(window.screen.height * (0.5 - (0.65 / 2))), y2 = parseInt(window.screen.height * 0.65);
+            x1 = parseInt(window.screen.width * (0.5 - (0.50 / 2))), x2 = parseInt(window.screen.width * 0.50);
+            y1 = parseInt(window.screen.height * (0.5 - (0.50 / 2))), y2 = parseInt(window.screen.height * 0.50);
 
             //cursor:pointer
             //console.log("x=" + pageX + ", x1=" + x1 + ", x2=" + x2 + ", y=" + pageY + ", y1=" + y1 + ", y2=" + y2);
@@ -845,8 +845,8 @@ window.location.reload();
             }
             return false;
          };
-         $('#checkexplorepageview .body').on(pfEvent, _getVenues_);
-         $('#checkexplorepageview .body').on('touchstart', function(e)
+         $('#checkexplorepageview').on(pfEvent, _getVenues_);
+         $('#checkexplorepageview').on('touchstart', function(e)
          {
             pageX = e.touches[0].clientX;
             pageY = e.touches[0].clientY;
