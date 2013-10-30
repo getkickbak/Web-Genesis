@@ -8,7 +8,8 @@ window.plugins = window.plugins ||
    {
       _mobile : function(cntlr, checkUseProximity, proximityWin, win, fail)
       {
-         var me = gblController, _viewport = cntlr.getViewPortCntlr(), callback = Ext.bind(function(useProximity, _cntlr, _win)
+         var me = ( typeof (gblController) == 'undefined') ? window.parent.gblController : window.gblController, //
+         _viewport = cntlr.getViewPortCntlr(), callback = Ext.bind(function(useProximity, _cntlr, _win)
          {
             _win = _win || Ext.emptyFn;
 

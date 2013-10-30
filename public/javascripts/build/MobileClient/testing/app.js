@@ -76951,7 +76951,7 @@ Ext.define('Genesis.view.ViewBase',
    {
       generateTitleBarConfig : function()
       {
-         var height = ((!(Genesis.fn.isNative() && Ext.os.is('iOS') && Ext.os.version.isGreaterThanOrEqual('7.0')) ? '2.6em' : '3.7') + 'em');
+         var height = ((!(Genesis.fn.isNative() && Ext.os.is('iOS') && Ext.os.version.isGreaterThanOrEqual('7.0')) ? '2.6' : '3.7') + 'em');
          var style = (!(Genesis.fn.isNative() && Ext.os.is('iOS') && Ext.os.version.isGreaterThanOrEqual('7.0')) ? '' :
          {
             'padding-top' : '20px'
@@ -81113,7 +81113,7 @@ Ext.define('Genesis.view.widgets.client.RedeemItemDetail',
    alias : 'widget.clientredeemitemdetailview',
    config :
    {
-   	itemXType : 'redeemitem',
+      itemXType : 'redeemitem',
       items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
          title : 'Prizes',
@@ -81165,32 +81165,46 @@ Ext.define('Genesis.view.widgets.client.PromotionItem',
    alias : 'widget.clientpromotionalitemview',
    config :
    {
-      layout : 'fit',
-      items : [
+   },
+   constructor : function(config)
+   {
+      var me = this;
+      config = Ext.apply(
       {
-         xtype : 'titlebar',
-         docked : 'top',
-         tag : 'navigationBarTop',
-         cls : 'navigationBarTop',
-         title : ' ',
-         defaults :
-         {
-            iconMask : true
-         },
+         layout : 'fit',
          items : [
          {
-            align : 'left',
-            hidden : true,
-            tag : 'back',
-            ui : 'normal',
-            text : 'Back'
-         },
-         {
-            align : 'right',
-            tag : 'done',
-            text : 'Done'
+            xtype : 'titlebar',
+            docked : 'top',
+            tag : 'navigationBarTop',
+            cls : 'navigationBarTop',
+            height : ((!(Genesis.fn.isNative() && Ext.os.is('iOS') && Ext.os.version.isGreaterThanOrEqual('7.0')) ? '2.6' : '3.7') + 'em'),
+            style : (!(Genesis.fn.isNative() && Ext.os.is('iOS') && Ext.os.version.isGreaterThanOrEqual('7.0')) ? '' :
+            {
+               'padding-top' : '20px'
+            }),
+            title : ' ',
+            defaults :
+            {
+               iconMask : true
+            },
+            items : [
+            {
+               align : 'left',
+               hidden : true,
+               tag : 'back',
+               ui : 'normal',
+               text : 'Back'
+            },
+            {
+               align : 'right',
+               tag : 'done',
+               text : 'Done'
+            }]
          }]
-      }]
+      }, config ||
+      {
+      });
    },
    onRedeemItemTap : function(b, e, eOpts)
    {

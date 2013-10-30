@@ -8,7 +8,8 @@ window.plugins = window.plugins ||
    {
       _mobile : function(cntlr, checkUseProximity, proximityWin, win, fail)
       {
-         var me = gblController, _viewport = cntlr.getViewPortCntlr(), callback = Ext.bind(function(useProximity, _cntlr, _win)
+         var me = ( typeof (gblController) == 'undefined') ? window.parent.gblController : window.gblController, //
+         _viewport = cntlr.getViewPortCntlr(), callback = Ext.bind(function(useProximity, _cntlr, _win)
          {
             _win = _win || Ext.emptyFn;
 
@@ -2212,7 +2213,7 @@ Ext.define('Genesis.view.ViewBase',
    {
       generateTitleBarConfig : function()
       {
-         var height = ((!(Genesis.fn.isNative() && Ext.os.is('iOS') && Ext.os.version.isGreaterThanOrEqual('7.0')) ? '2.6em' : '3.7') + 'em');
+         var height = ((!(Genesis.fn.isNative() && Ext.os.is('iOS') && Ext.os.version.isGreaterThanOrEqual('7.0')) ? '2.6' : '3.7') + 'em');
          var style = (!(Genesis.fn.isNative() && Ext.os.is('iOS') && Ext.os.version.isGreaterThanOrEqual('7.0')) ? '' :
          {
             'padding-top' : '20px'
