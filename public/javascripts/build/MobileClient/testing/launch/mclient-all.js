@@ -2715,7 +2715,7 @@ window.location.reload();
                //
                else
                {
-                  
+
                }
             },
             error : function(xhr, type)
@@ -3068,8 +3068,8 @@ window.location.reload();
          var pageX = 0, pageY = 0;
          var _getVenues_ = function(e)
          {
-            x1 = parseInt(window.screen.width * (0.5 - (0.50 / 2))), x2 = parseInt(window.screen.width * 0.50);
-            y1 = parseInt(window.screen.height * (0.5 - (0.50 / 2))), y2 = parseInt(window.screen.height * 0.50);
+            x1 = parseInt(window.screen.width * (0.5 - (0.50 / 2))), x2 = parseInt(window.screen.width * (0.5 + (0.50 / 2)));
+            y1 = parseInt(window.screen.height * (0.5 - (0.50 / 2))), y2 = parseInt(window.screen.height * (0.5 + (0.50 / 2)));
 
             //cursor:pointer
             //console.log("x=" + pageX + ", x1=" + x1 + ", x2=" + x2 + ", y=" + pageY + ", y1=" + y1 + ", y2=" + y2);
