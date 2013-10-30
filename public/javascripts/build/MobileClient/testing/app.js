@@ -75030,21 +75030,22 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    broadcastLocalID : function(success, fail)
    {
+      var proximityID = ( typeof (gblController) == 'undefined') ? window.parent.plugins.proximityID : window.plugins.proximityID;
       var me = this, c = Genesis.constants, cancel = function()
       {
          Ext.Ajax.abort();
          if (me.send_vol != -1)
          {
-            window.plugins.proximityID.setVolume(-1);
+            proximityID.setVolume(-1);
          }
-         window.plugins.proximityID.stop();
+         proximityID.stop();
       };
 
       me.send_vol = -1;
       success = success || Ext.emptyFn;
       fail = fail || Ext.emptyFn;
 
-      window.plugins.proximityID.send(function(result)
+      proximityID.send(function(result)
       {
          console.debug("ProximityID : Broacasting Local Identity ...");
          success(Genesis.fn.processSendLocalID(result, cancel));
@@ -76505,11 +76506,13 @@ Ext.define('Genesis.controller.RedeemBase',
    onRedeemItemDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
+      var proximityID = ( typeof (gblController) == 'undefined') ? window.parent.plugins.proximityID : window.plugins.proximityID;
+      
       if (me.getSDoneBtn())
       {
          me.getSDoneBtn()['hide']();
       }
-      window.plugins.proximityID.stop();
+      proximityID.stop();
       console.debug("onRedeemItemDeactivate - Done with RewardItem View!");
    },
 
@@ -82104,7 +82107,8 @@ Ext.define('Genesis.controller.mobileClient.Challenges',
             {
                if (selectedItem.get('require_verif'))
                {
-                  window.plugins.proximityID.preLoadSend(me, false, Ext.bind(function(_selectedItem)
+                  var proximityID = ( typeof (gblController) == 'undefined') ? window.parent.plugins.proximityID : window.plugins.proximityID;
+                  proximityID.preLoadSend(me, false, Ext.bind(function(_selectedItem)
                   {
                      if (_selectedItem.get('type').value == 'photo')
                      {
@@ -87010,7 +87014,8 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
          case 'redeemPrize' :
          case 'redeemReward' :
          {
-            window.plugins.proximityID.preLoadSend(me, false, Ext.bind(function(_btn, _venue, _view)
+            var proximityID = ( typeof (gblController) == 'undefined') ? window.parent.plugins.proximityID : window.plugins.proximityID;
+            proximityID.preLoadSend(me, false, Ext.bind(function(_btn, _venue, _view)
             {
                me.fireEvent('redeemitem', _btn, _venue, _view);
             }, me, [btn, venue, view]));
@@ -88731,7 +88736,8 @@ Ext.define('Genesis.controller.client.Rewards',
       }
       else
       {
-         window.plugins.proximityID.preLoadSend(me, !notUseGeolocation, Ext.bind(function(_notUseGeolocation)
+         var proximityID = ( typeof (gblController) == 'undefined') ? window.parent.plugins.proximityID : window.plugins.proximityID;
+         proximityID.preLoadSend(me, !notUseGeolocation, Ext.bind(function(_notUseGeolocation)
          {
             //var earnPts = Ext.bind(me.onEarnPtsSC, me);
             //me.checkReferralPrompt(earnPts, earnPts);
@@ -89685,8 +89691,10 @@ proximityInit = function()
    c.proximityTxTimeout = 20 * 1000;
    c.proximityRxTimeout = 40 * 1000;
 
-   Genesis.fn.printProximityConfig();
-   window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
+   /*
+    Genesis.fn.printProximityConfig();
+    window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
+    */
 };
 soundInit = function(viewport)
 {

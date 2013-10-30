@@ -831,21 +831,22 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    broadcastLocalID : function(success, fail)
    {
+      var proximityID = ( typeof (gblController) == 'undefined') ? window.parent.plugins.proximityID : window.plugins.proximityID;
       var me = this, c = Genesis.constants, cancel = function()
       {
          Ext.Ajax.abort();
          if (me.send_vol != -1)
          {
-            window.plugins.proximityID.setVolume(-1);
+            proximityID.setVolume(-1);
          }
-         window.plugins.proximityID.stop();
+         proximityID.stop();
       };
 
       me.send_vol = -1;
       success = success || Ext.emptyFn;
       fail = fail || Ext.emptyFn;
 
-      window.plugins.proximityID.send(function(result)
+      proximityID.send(function(result)
       {
          console.debug("ProximityID : Broacasting Local Identity ...");
          success(Genesis.fn.processSendLocalID(result, cancel));

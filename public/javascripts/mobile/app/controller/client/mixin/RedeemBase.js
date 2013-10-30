@@ -293,7 +293,8 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
          case 'redeemPrize' :
          case 'redeemReward' :
          {
-            window.plugins.proximityID.preLoadSend(me, false, Ext.bind(function(_btn, _venue, _view)
+            var proximityID = ( typeof (gblController) == 'undefined') ? window.parent.plugins.proximityID : window.plugins.proximityID;
+            proximityID.preLoadSend(me, false, Ext.bind(function(_btn, _venue, _view)
             {
                me.fireEvent('redeemitem', _btn, _venue, _view);
             }, me, [btn, venue, view]));
