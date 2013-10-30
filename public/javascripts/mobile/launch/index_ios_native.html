@@ -76,7 +76,16 @@
             bottom:0;
             padding:0;
             z-index: 1;
+            background: transparent url('../resources/themes/images/v1/ios/mainicons/checkin.svg') no-repeat;
+            background-position: center center;
          }
+         .x-portrait #checkexplorepageview {
+            background-size: auto 65%;
+         }
+         .x-landscape #checkexplorepageview {
+            background-size: 30% auto;
+         }
+         
          #checkexplorepageview .header {
          }
          #checkexplorepageview.iScroll .header {
@@ -105,26 +114,6 @@
          }
          .x-ios-7 #checkexplorepageview.iScroll .body {
             top: 66px;
-         }
-         .x-portrait #checkexplorepageview .body::before {
-            position: absolute;
-            background: url('../resources/themes/images/v1/ios/mainicons/checkin.svg') no-repeat;
-            background-size: auto 65%;
-            height: 100%;
-            width: 100%;
-            content: "";
-            z-index: -1;
-            background-position: center center;
-         }
-         .x-landscape #checkexplorepageview .body::before {
-            position: absolute;
-            background: url('../resources/themes/images/v1/ios/mainicons/checkin.svg') no-repeat;
-            background-size: 30% auto;
-            height: 100%;
-            width: 100%;
-            content: "";
-            z-index: -1;
-            background-position: center center;
          }
          #checkexplorepageview .footer {
             position: absolute;
@@ -301,7 +290,7 @@
       <script type="text/javascript" src="mccore.js"></script>      
       <script type="text/javascript" src="mclient-all.js"></script>
    </head>
-   <body class="x-portrait">
+   <body class="x-portrait x-sheet-action" style="padding:0;">
       <div id="fb-root"></div>
       <div id="checkexplorepageview" class="iScroll x-container x-sheet x-sized x-floating">
          <div class="header x-container x-toolbar-dark x-toolbar x-sized navigationBarTop x-dock-item x-docked-top kbTitle">
