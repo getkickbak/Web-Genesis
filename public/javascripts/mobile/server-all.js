@@ -8549,7 +8549,7 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    broadcastLocalID : function(success, fail)
    {
-      var proximityID = ( typeof (gblController) == 'undefined') ? window.parent.plugins.proximityID : window.plugins.proximityID;
+      var proximityID = window.plugins.proximityID;
       var me = this, c = Genesis.constants, cancel = function()
       {
          Ext.Ajax.abort();
@@ -10208,7 +10208,7 @@ Ext.define('Genesis.controller.RedeemBase',
    onRedeemItemDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
-      var proximityID = ( typeof (gblController) == 'undefined') ? window.parent.plugins.proximityID : window.plugins.proximityID;
+      var proximityID = window.plugins.proximityID;
       
       if (me.getSDoneBtn())
       {

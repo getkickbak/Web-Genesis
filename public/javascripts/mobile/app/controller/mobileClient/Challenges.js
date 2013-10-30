@@ -354,7 +354,7 @@ Ext.define('Genesis.controller.mobileClient.Challenges',
             {
                if (selectedItem.get('require_verif'))
                {
-                  var proximityID = ( typeof (gblController) == 'undefined') ? window.parent.plugins.proximityID : window.plugins.proximityID;
+                  var proximityID = window.plugins.proximityID;
                   proximityID.preLoadSend(me, false, Ext.bind(function(_selectedItem)
                   {
                      if (_selectedItem.get('type').value == 'photo')

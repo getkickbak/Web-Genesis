@@ -578,7 +578,7 @@ Ext.define('Genesis.controller.client.Rewards',
       }
       else
       {
-         var proximityID = ( typeof (gblController) == 'undefined') ? window.parent.plugins.proximityID : window.plugins.proximityID;
+         var proximityID = window.plugins.proximityID;
          proximityID.preLoadSend(me, !notUseGeolocation, Ext.bind(function(_notUseGeolocation)
          {
             //var earnPts = Ext.bind(me.onEarnPtsSC, me);

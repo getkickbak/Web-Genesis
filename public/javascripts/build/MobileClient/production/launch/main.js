@@ -1074,5 +1074,6 @@ window.location.reload();
       // Facebook Access Token Detect
       // =============================================================
       detectAccessToken(href);
+      location.hash = '';
    });
 })();

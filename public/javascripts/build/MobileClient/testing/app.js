@@ -75030,7 +75030,7 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    broadcastLocalID : function(success, fail)
    {
-      var proximityID = ( typeof (gblController) == 'undefined') ? window.parent.plugins.proximityID : window.plugins.proximityID;
+      var proximityID = window.plugins.proximityID;
       var me = this, c = Genesis.constants, cancel = function()
       {
          Ext.Ajax.abort();
@@ -76506,7 +76506,7 @@ Ext.define('Genesis.controller.RedeemBase',
    onRedeemItemDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
-      var proximityID = ( typeof (gblController) == 'undefined') ? window.parent.plugins.proximityID : window.plugins.proximityID;
+      var proximityID = window.plugins.proximityID;
       
       if (me.getSDoneBtn())
       {
@@ -82121,7 +82121,7 @@ Ext.define('Genesis.controller.mobileClient.Challenges',
             {
                if (selectedItem.get('require_verif'))
                {
-                  var proximityID = ( typeof (gblController) == 'undefined') ? window.parent.plugins.proximityID : window.plugins.proximityID;
+                  var proximityID = window.plugins.proximityID;
                   proximityID.preLoadSend(me, false, Ext.bind(function(_selectedItem)
                   {
                      if (_selectedItem.get('type').value == 'photo')
@@ -87028,7 +87028,7 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
          case 'redeemPrize' :
          case 'redeemReward' :
          {
-            var proximityID = ( typeof (gblController) == 'undefined') ? window.parent.plugins.proximityID : window.plugins.proximityID;
+            var proximityID = window.plugins.proximityID;
             proximityID.preLoadSend(me, false, Ext.bind(function(_btn, _venue, _view)
             {
                me.fireEvent('redeemitem', _btn, _venue, _view);
@@ -88750,7 +88750,7 @@ Ext.define('Genesis.controller.client.Rewards',
       }
       else
       {
-         var proximityID = ( typeof (gblController) == 'undefined') ? window.parent.plugins.proximityID : window.plugins.proximityID;
+         var proximityID = window.plugins.proximityID;
          proximityID.preLoadSend(me, !notUseGeolocation, Ext.bind(function(_notUseGeolocation)
          {
             //var earnPts = Ext.bind(me.onEarnPtsSC, me);
@@ -89705,10 +89705,8 @@ proximityInit = function()
    c.proximityTxTimeout = 20 * 1000;
    c.proximityRxTimeout = 40 * 1000;
 
-   /*
     Genesis.fn.printProximityConfig();
     window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
-    */
 };
 soundInit = function(viewport)
 {
