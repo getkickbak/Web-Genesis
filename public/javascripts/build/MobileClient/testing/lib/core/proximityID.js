@@ -8,86 +8,93 @@ window.plugins = window.plugins ||
    {
       _mobile : function(cntlr, checkUseProximity, proximityWin, win, fail)
       {
-         var me = ( typeof (gblController) == 'undefined') ? window.parent.gblController : window.gblController, //
-         _viewport = cntlr.getViewPortCntlr(), callback = Ext.bind(function(useProximity, _cntlr, _win)
+         if ( typeof (gblController) == 'undefined')
          {
-            _win = _win || Ext.emptyFn;
-
-            setLoadMask(false);
-            Ext.defer(function()
-            {
-               if (useProximity === true)
-               {
-                  var proceed, cancel;
-                  me.pendingBroadcast = true;
-                  $('#earnPtsProceed').one('tap', proceed = function(e)
-                  {
-                     me.pendingBroadcast = false;
-                     $('#earnPtsProceed').off('tap', proceed).off('click', proceed);
-                     $('#earnPtsCancel').off('tap', cancel);
-                     _win(useProximity);
-                     return false;
-                  }).one('click', proceed);
-                  $('#earnPtsCancel').one('tap', cancel = function(e)
-                  {
-                     me.pendingBroadcast = false;
-                     $('#earnPtsCancel').off('tap', cancel).off('click', cancel);
-                     $('#earnPtsProceed').off('tap', proceed);
-                     return false;
-                  }).one('click', cancel);
-                  $('#earnptspageview').trigger('kickbak:preLoad');
-               }
-               else
-               {
-                  $('#earnptspageview').trigger('kickbak:loyalty');
-               }
-            }, 0.25 * 1000, _cntlr);
-         }, null, [cntlr, win], true);
-
-         fail = fail || Ext.emptyFn;
-
-         setLoadMask(true);
-         //
-         // Talk to server to see if we use Proximity Sensor or not
-         //
-         Ext.defer(function()
+            preLoadSendCommon['_native'].apply(this, arguments);
+         }
+         else
          {
-            if (checkUseProximity)
+            var me = gblController, //
+            _viewport = cntlr.getViewPortCntlr(), callback = Ext.bind(function(useProximity, _cntlr, _win)
             {
-               $(document).one('locationupdate', function(position)
+               _win = _win || Ext.emptyFn;
+
+               setLoadMask(false);
+               Ext.defer(function()
                {
-                  proximityWin();
-               });
-               _viewport.getGeoLocation();
-            }
-            //
-            // We must use Loyalty Card or Phone Number
-            //
-            else
-            {
-               try
-               {
-                  var merchant = _viewport.getVenue().getMerchant(), features_config = merchant.get('features_config');
-                  //
-                  // Check if the venue supports Proximity Sensor or not
-                  //
-                  if (features_config['enable_mobile'])
+                  if (useProximity === true)
                   {
-                     proximityWin();
+                     var proceed, cancel;
+                     me.pendingBroadcast = true;
+                     $('#earnPtsProceed').one('tap', proceed = function(e)
+                     {
+                        me.pendingBroadcast = false;
+                        $('#earnPtsProceed').off('tap', proceed).off('click', proceed);
+                        $('#earnPtsCancel').off('tap', cancel);
+                        _win(useProximity);
+                        return false;
+                     }).one('click', proceed);
+                     $('#earnPtsCancel').one('tap', cancel = function(e)
+                     {
+                        me.pendingBroadcast = false;
+                        $('#earnPtsCancel').off('tap', cancel).off('click', cancel);
+                        $('#earnPtsProceed').off('tap', proceed);
+                        return false;
+                     }).one('click', cancel);
+                     $('#earnptspageview').trigger('kickbak:preLoad');
                   }
                   else
                   {
-                     callback(false);
+                     $('#earnptspageview').trigger('kickbak:loyalty');
+                  }
+               }, 0.25 * 1000, _cntlr);
+            }, null, [cntlr, win], true);
+
+            fail = fail || Ext.emptyFn;
+
+            setLoadMask(true);
+            //
+            // Talk to server to see if we use Proximity Sensor or not
+            //
+            Ext.defer(function()
+            {
+               if (checkUseProximity)
+               {
+                  $(document).one('locationupdate', function(position)
+                  {
+                     proximityWin();
+                  });
+                  _viewport.getGeoLocation();
+               }
+               //
+               // We must use Loyalty Card or Phone Number
+               //
+               else
+               {
+                  try
+                  {
+                     var merchant = _viewport.getVenue().getMerchant(), features_config = merchant.get('features_config');
+                     //
+                     // Check if the venue supports Proximity Sensor or not
+                     //
+                     if (features_config['enable_mobile'])
+                     {
+                        proximityWin();
+                     }
+                     else
+                     {
+                        callback(false);
+                     }
+                  }
+                  catch(e)
+                  {
+                     fail();
                   }
                }
-               catch(e)
-               {
-                  fail();
-               }
-            }
-         }, 0.25 * 1000);
+            }, 0.25 * 1000);
 
-         return callback;
+            return callback;
+         }
       },
       _native : function(cntlr, checkUseProximity, proximityWin, win, fail)
       {
