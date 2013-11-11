@@ -46,31 +46,34 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
    alias : 'widget.popupitemdetailview',
    config :
    {
-      models : ['CustomerReward'],
-      bottom : 0,
-      left : 0,
-      top : 0,
-      right : 0,
-      padding : 0,
-      hideOnMaskTap : false,
-      defaultUnit : 'em',
-      layout :
-      {
-         type : 'vbox',
-         pack : 'middle'
-      },
-      defaults :
-      {
-         xtype : 'container',
-         defaultUnit : 'em'
-      }
    },
    constructor : function(config)
    {
       var me = this;
-      config = config ||
+      config = Ext.apply(config,
       {
-      };
+         models : ['CustomerReward'],
+         bottom : 0,
+         left : 0,
+         top : (!(Genesis.fn.isNative() && Ext.os.is('iOS') && Ext.os.version.isGreaterThanOrEqual('7.0')) ? 0 : '20px'),
+         top : 0,
+         right : 0,
+         padding : 0,
+         hideOnMaskTap : false,
+         defaultUnit : 'em',
+         layout :
+         {
+            type : 'vbox',
+            pack : 'middle'
+         },
+         defaults :
+         {
+            xtype : 'container',
+            defaultUnit : 'em'
+         }
+      }, config ||
+      {
+      });
 
       var buttons = config['buttons'] || [];
       config['origButtons'] = buttons;

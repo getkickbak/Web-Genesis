@@ -24,6 +24,7 @@ Ext.define('Genesis.controller.server.Settings',
          },
          utilitiesContainer : 'serversettingspageview fieldset[tag=utilities]',
          merchantDevice : 'serversettingspageview fieldset textfield[tag=merchantDevice]',
+         deviceID : 'serversettingspageview fieldset textfield[tag=uuid]',
          //
          // Create Tag Page
          //
@@ -308,6 +309,7 @@ Ext.define('Genesis.controller.server.Settings',
       var me = this, form = me.getSettingsPage(), db = Genesis.db.getLocalDB(), isNative = Genesis.fn.isNative();
 
       me.getMerchantDevice().setLabel(Genesis.fn.getPrivKey('venue'));
+      me.getDeviceID().setLabel('DeviceID' + '<div style="font-size:0.60em;line-height:1;">' + (isNative ? device.uuid : db['uuid']) + '</div>');
       me.getUtilitiesContainer()[debugMode ? 'show' : 'hide']();
       form.setValues(
       {

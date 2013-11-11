@@ -320,7 +320,7 @@ else
       //
       else
       {
-         prefix = '/merchant';
+         prefix = '/merchantApp';
       }
       importScripts(prefix + '/lib/core/date.js', prefix + '/lib/core/extras.js');
    }

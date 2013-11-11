@@ -54,7 +54,21 @@ Ext.define('Genesis.controller.client.MainPage',
       {
          me.persistLoadStores(function()
          {
-            me.redirectTo('main');
+            var viewport = me.getViewPortCntlr(), ma_struct = db['ma_struct'];
+
+            if (viewport.getApsPayload())
+            {
+               viewport.getGeoLocation();
+            }
+            else if (ma_struct)
+            {
+               Genesis.db.removeLocalDBAttrib('ma_struct');
+               me.getApplication().getController('client' + '.Checkins').onExploreDisclose(null, ma_struct);
+            }
+            else
+            {
+               me.redirectTo('main');
+            }
          });
       }
    },

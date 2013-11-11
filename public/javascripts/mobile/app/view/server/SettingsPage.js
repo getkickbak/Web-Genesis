@@ -37,9 +37,16 @@ Ext.define('Genesis.view.server.SettingsPage',
          items : [
          {
             xtype : 'textfield',
-            clearIcon : false,
             label : 'Version ' + Genesis.constants.serverVersion,
             value : ' ',
+            clearIcon : false,
+            readOnly : true
+         },
+         {
+            xtype : 'textfield',
+            labelWidth : '90%',
+            tag : 'uuid',
+            clearIcon : false,
             readOnly : true
          },
          {

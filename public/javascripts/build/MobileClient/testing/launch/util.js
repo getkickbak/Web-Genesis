@@ -853,7 +853,7 @@ Genesis = ( typeof (Genesis) != 'undefined') ? Genesis :
       },
       scriptOnError : function(loadState)
       {
-         Geensis.fn.scriptOnReadyStateChange.call(this, loadState, true);
+         Genesis.fn.scriptOnReadyStateChange.call(this, loadState, true);
       },
       scriptOnReadyStateChange : function(loadState, error)
       {
@@ -863,6 +863,7 @@ Genesis = ( typeof (Genesis) != 'undefined') ? Genesis :
          //
          // PhoneGap App
          //
+         //console.log("scriptOnReadyStateChange: " + location.host);
          if (location.host == "")
          {
             if ($.os.ios)
@@ -874,8 +875,10 @@ Genesis = ( typeof (Genesis) != 'undefined') ? Genesis :
             {
                profile = 'android_';
             }
-            src = ".." + src.replace(location.pathname.replace('/launch/index_' + profile + 'native.html', ''), '');
+            src = Genesis.constants.relPath() + src.replace(location.pathname.replace('launch/index_' + profile + 'native.html', ''), '');
          }
+         console.log("Script: " + src);
+
          if (!error)
          {
             var rs = this.readyState;
@@ -1192,18 +1195,15 @@ Genesis = ( typeof (Genesis) != 'undefined') ? Genesis :
                if (event.notification)
                {
                   var notification = event.notification, userData = notification.u;
-                  //if ( typeof (userData) != "undefined")
                   console.debug('push notifcation - [' + JSON.stringify(notification) + ']');
+
+                  //if ( typeof (userData) != "undefined")
+                  if (Genesis.db.getLocalDB()['auth_code'])
                   {
                      setNotificationVisibility(true, 'KICKBAK Notification', notification.aps.alert, 'Dismiss', function()
                      {
-                        setLoadMask(true);
+                        setChildBrowserVisibility(true, '', userData);
                      });
-                     var viewport = _application.getController('client' + '.Viewport');
-                     viewport.setApsPayload(userData)
-                     viewport.getGeoLocation();
-                     //navigator.notification.alert(notification.aps.alert);
-                     //pushNotification.setApplicationIconBadgeNumber(0)
                   }
                }
             });
@@ -1265,16 +1265,12 @@ Genesis = ( typeof (Genesis) != 'undefined') ? Genesis :
 
                   console.debug('push notifcation - [' + JSON.stringify(notification) + ']');
                   //if ( typeof (userData) != "undefined")
+                  if (Genesis.db.getLocalDB()['auth_code'])
                   {
                      setNotificationVisibility(true, 'KICKBAK Notification', title, 'Dismiss', function()
                      {
-                        setLoadMask(true);
+                        setChildBrowserVisibility(true, '', userData);
                      });
-                     //
-                     // Launch MainApp
-                     //
-                     viewport.setApsPayload(userData)
-                     viewport.getGeoLocation();
                   }
                }
                else
@@ -1313,7 +1309,7 @@ Genesis = ( typeof (Genesis) != 'undefined') ? Genesis :
             };
 
             //pushNotification.unregisterDevice(callback, callback);
-         }
+         };
       }
       else
       {

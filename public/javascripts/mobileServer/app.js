@@ -1,11 +1,11 @@
-var pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false;
+var pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false, launched = 0x000;
 
-window.debugMode = true;
+window.debugMode = false;
 window.merchantMode = true;
 window.serverHost = location.origin;
 window._application = null;
 window.appName = 'MerKickBak';
-window._hostPathPrefix = (debugMode) ? "/javascripts/build/MobileServer/" : "/merchant/";
+window._hostPathPrefix = (debugMode) ? "/javascripts/build/MobileServer/" : "/merchantApp/";
 window._hostPath = _hostPathPrefix + ((debugMode) ? "testing/" : "") + "";
 window.phoneGapAvailable = false;
 
@@ -41,7 +41,7 @@ Ext.Loader.setPath(
 {
    Genesis.db.getLocalDB();
 
-   var launched = 0x000, flag = 0x100, _error = false;
+   var flag = 0x100, _error = false;
    var appLaunch = function()
    {
       if (launched == 0x111)
@@ -160,7 +160,7 @@ Ext.Loader.setPath(
 
    Ext.defer(function()
    {
-      var targetelement = "script", targetattr = "src";
+      var targetelement = "script", targetattr = "src", version = '?v=' + Genesis.constants.serverVersion;
       var allsuspects = document.getElementsByTagName(targetelement);
 
       for (var i = allsuspects.length; i >= 0; i--)
@@ -176,6 +176,6 @@ Ext.Loader.setPath(
       }
 
       _totalAssetCount++;
-      Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone5.css?v=" + Genesis.constants.serverVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x011], true));
+      Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone5.css" + version, "css", Ext.bind(appLaunchCallbackFn, null, [0x011], true));
    }, 0.1 * 1000);
 })();

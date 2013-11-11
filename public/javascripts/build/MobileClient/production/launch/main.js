@@ -1,4 +1,4 @@
-var mainAppInit = false;
+var mainAppInit = false, href = location.href, enableScroll;
 
 var proximityInit = function()
 {
@@ -75,13 +75,29 @@ var soundInit = function()
       me.loadSoundFile.apply(me, soundList[i]);
    }
 };
-var setChildBrowserVisibility = function(visible, hash)
+var setChildBrowserVisibility = function(visible, hash, pushNotif)
 {
-   var db = Genesis.db.getLocalDB(true);
+   var db = Genesis.db.getLocalDB(true), version = '?v=' + Genesis.constants.clientVersion, viewport, port = null;
 
    hash = hash || '';
+
+   if (mainAppInit)
+   {
+      if (Genesis.fn.isNative())
+      {
+         viewport = _application.getController('client' + '.Viewport');
+         port = $("#ext-viewport");
+      }
+      else if ($(".iframe")[0].contentWindow._application)
+      {
+         viewport = $(".iframe")[0].contentWindow._application.getController('client' + '.Viewport');
+         port = $(".iframe");
+      }
+   }
+
    if (visible)
    {
+
       //
       // Initiliazation
       //
@@ -111,7 +127,6 @@ var setChildBrowserVisibility = function(visible, hash)
                   i = 0;
 
                   $('#loadingMask')['addClass']('x-item-hidden');
-
                   mainAppInit = true;
                   $("#checkexplorepageview").addClass('x-item-hidden');
                   //
@@ -144,14 +159,19 @@ var setChildBrowserVisibility = function(visible, hash)
                      launch : function()
                      {
                         _application = this;
-                        var viewport = _application.getController('client' + '.Viewport');
+                        viewport = _application.getController('client' + '.Viewport');
 
                         console.debug("Ext App Launch");
 
                         viewport.appName = appName;
                         QRCodeReader.prototype.scanType = "Default";
                         console.debug("QRCode Scanner Mode[" + QRCodeReader.prototype.scanType + "]");
+                        if (pushNotif)
+                        {
+                           viewport.setApsPayload(pushNotif);
+                        }
                         viewport.redirectTo('');
+
                         console.debug("Launched App");
                      },
                      appFolder : _appPath,
@@ -161,13 +181,13 @@ var setChildBrowserVisibility = function(visible, hash)
             };
 
             setLoadMask(true);
-            Genesis.fn.checkloadjscssfile('../lib/sencha-touch-all.js', "js", function(success)
+            Genesis.fn.checkloadjscssfile('../lib/sencha-touch-all.js' + version, "js", function(success)
             {
                if (success)
                {
-                  Genesis.fn.checkloadjscssfile('../core.js', "js", Ext.bind(callback, null, [0x001], true));
-                  Genesis.fn.checkloadjscssfile('../app/profile/' + profile + '.js', "js", Ext.bind(callback, null, [0x010], true));
-                  Genesis.fn.checkloadjscssfile('../client-all.js', "js", Ext.bind(callback, null, [0x100], true));
+                  Genesis.fn.checkloadjscssfile('../core.js' + version, "js", Ext.bind(callback, null, [0x001], true));
+                  Genesis.fn.checkloadjscssfile('../app/profile/' + profile + '.js' + version, "js", Ext.bind(callback, null, [0x010], true));
+                  Genesis.fn.checkloadjscssfile('../client-all.js' + version, "js", Ext.bind(callback, null, [0x100], true));
                }
                else
                {
@@ -178,63 +198,96 @@ var setChildBrowserVisibility = function(visible, hash)
          else
          {
             mainAppInit = true;
-            $(".iframe")[0].src = '../index.html';
+            if (pushNotif)
+            {
+            }
+            else
+            {
+            }
+            $(".iframe")[0].src = '../index.html' + version + '#' + hash;
             $(".iframe").removeClass('x-item-hidden');
          }
       }
       //
       // Back to Main Page
       //
-      else if (db['auth_code'])
+      else if (port)
       {
-         if (Genesis.fn.isNative())
+         $("#checkexplorepageview").addClass('x-item-hidden');
+         if (db['auth_code'])
          {
-            $("#checkexplorepageview").addClass('x-item-hidden');
-            _application.getController('client' + '.Viewport').redirectTo('main');
-            $("#ext-viewport").removeClass('x-item-hidden');
+            if (pushNotif)
+            {
+               viewport.setApsPayload(pushNotif);
+               viewport.redirectTo('');
+            }
+            else if (!redirectToMerchantPage(db, viewport))
+            {
+               viewport.redirectTo('main');
+            }
          }
-         else if ($(".iframe")[0].contentWindow._application)
+         //
+         // Goto Login Page
+         //
+         else
          {
-            $(".iframe")[0].contentWindow._application.getController('client' + '.Viewport').redirectTo('main');
-            $(".iframe").removeClass('x-item-hidden');
+            viewport.redirectTo('login');
          }
-      }
-      //
-      // Goto Login Page
-      //
-      else
-      {
-         if (Genesis.fn.isNative())
-         {
-            $("#checkexplorepageview").addClass('x-item-hidden');
-            _application.getController('client' + '.Viewport').redirectTo('login');
-            $("#ext-viewport").removeClass('x-item-hidden');
-         }
-         else if ($(".iframe")[0].contentWindow._application)
-         {
-            $(".iframe")[0].contentWindow._application.getController('client' + '.Viewport').redirectTo('login');
-            $(".iframe").removeClass('x-item-hidden');
-         }
+         port.removeClass('x-item-hidden');
       }
    }
    else
    {
+      //
+      // Refresh is not logged in
+      //
+      if (!db['auth_code'])
+      {
+         $('.body ul').html('');
+         if (enableScroll)
+         {
+            $('#checkexplorepageview .body').infiniteScroll('reset');
+         }
+      }
+
       $("#earnPtsLoad span.x-button-label").text((db['auth_code']) ? 'Earn Points' : 'Sign In / Register');
       window.location.hash = '#' + hash;
-      if (Genesis.fn.isNative())
+
+      if (port)
       {
          $("#checkexplorepageview").removeClass('x-item-hidden');
-         $("#ext-viewport").addClass('x-item-hidden');
-      }
-      else
-      {
-         $(".iframe").addClass('x-item-hidden');
+         port.addClass('x-item-hidden');
       }
    }
+};
+var redirectToMerchantPage = function(db, viewport)
+{
+   var rc = false, ma_struct = db['ma_struct'];
+   if (Ext.isDefined(ma_struct) && (ma_struct['id'] > 0))
+   {
+      // Mini App forwarding
+      Genesis.db.removeLocalDBAttrib('ma_struct');
+      viewport.getApplication().getController('client' + '.Checkins').onExploreDisclose(null, ma_struct);
+      rc = true;
+   }
+
+   return rc;
 };
 var setLoadMask = function(visible)
 {
    $('#loadingMask')[visible ? 'removeClass' : 'addClass']('x-item-hidden');
+};
+var detectAccessToken = function(url)
+{
+   var db = Genesis.db.getLocalDB();
+   if (db['fbLoginInProgress'] && (url.indexOf("access_token=") !== -1))
+   {
+      setChildBrowserVisibility(true, url.split("#")[1]);
+   }
+   else
+   {
+      setChildBrowserVisibility(db['auth_code'] ? false : true);
+   }
 };
 
 /*
@@ -310,11 +363,12 @@ window.location.reload();
       var desktop = !($.os && ($.os.phone || $.os.tablet)), pfEvent = (desktop) ? 'click' : 'tap';
       var exploreVenue = function(e)
       {
-         var me = gblController, target = e.currentTarget, ma_struct = parseInt(target.attributes.getNamedItem('data')['value']);
+         var me = gblController, target = e.currentTarget, ma_struct = Ext.decode(decodeURIComponent(target.attributes.getNamedItem('data')['value']));
 
          me.playSoundFile(me.sound_files['clickSound']);
-         console.debug("Target ID : ", ma_struct);
+         console.debug("Target ID : ", ma_struct['name'] + "(" + ma_struct['id'] + ")");
          Genesis.db.setLocalDBAttrib('ma_struct', ma_struct);
+         setChildBrowserVisibility(true);
          return false;
       };
       $('.media').off().on(pfEvent, exploreVenue).swipeLeft(exploreVenue).swipeRight(exploreVenue);
@@ -325,6 +379,14 @@ window.location.reload();
    var getNearestVenues = function(start, refresh)
    {
       var me = gblController, viewport = me.getViewPortCntlr();
+      var getAddress = function(values)
+      {
+         return (values['address'] + ",<br/>" + values['city'] + ", " + values['state'] + ", " + values['country'] + ",<br/>" + values['zipcode']);
+      };
+      var getDistance = function(values)
+      {
+         return ((values['distance'] > 0) ? values['distance'].toFixed(1) + 'km' : '');
+      };
 
       setLoadMask(true);
       $(document).one('locationupdate', function(e, position)
@@ -334,7 +396,7 @@ window.location.reload();
             latitude : position.coords.latitude,
             longitude : position.coords.longitude,
             start : start,
-            end : start + 20
+            limit : start + 20
          };
          ajax = $.ajax(
          {
@@ -366,36 +428,44 @@ window.location.reload();
                if (refresh)
                {
                   $('.body ul').html(venues);
-                  if (!($.os && $.os.ios && (parseFloat($.os.version) >= 7.0)))
+                  if (enableScroll)
                   {
                      $('#checkexplorepageview .body').infiniteScroll('reset');
                   }
                }
 
-               for (var i = 0; i < data.length; i++)
+               for (var i = 0; i < data.data.length; i++)
                {
-                  var venue = data[i];
+                  var venue = data.data[i];
                   // @formatter:off
                   venues +=  //
-                  '<li class="media" data="'+ Ext.encode(venue) +'">'+
-                     '<a class="pull-left" href="#"> <img src="' + venue['merchant']['photo']['thumbnail_medium_url'] + '"class="media-object" data-src="holder.js/64x64" alt="64x64"> </a>'+
-                     '<div class="media-body">'+
-                        '<h4 class="media-heading">' + venue['name'] + '</h4>'+
-                        'Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis.'+
-                     '</div>'+
+                  '<li class="media" data="'+ encodeURIComponent(Ext.encode(venue)) +'">'+
+                     '<img src="' + venue['merchant']['photo']['url'] + '" class="media-object" data-src="holder.js/64x64" alt="">'+
+                     '<div class="media-body">' +
+                        '<div class="media-heading">' + venue['name'] + '</div>' +
+                           '<div class="itemDistance">' + getDistance(venue) + '</div>' +
+                           '<div class="itemDesc">' + getAddress(venue) + '</div>' +
+                     '</div>' +
                   '</li>';
                   // @formatter:on
                }
                $('.body ul').append(venues);
                refreshCheckExploreVenues();
 
-               if (!($.os && $.os.ios && (parseFloat($.os.version) >= 7.0)))
+               if (enableScroll)
                {
                   iscroll.refresh();
                   if (refresh)
                   {
                      $('#checkexplorepageview .body').infiniteScroll('reset');
                   }
+               }
+               //
+               // Hide Checkin Icon
+               //
+               else
+               {
+
                }
             },
             error : function(xhr, type)
@@ -488,482 +558,522 @@ window.location.reload();
    window.addEventListener("orientationchange", orientationChange);
    $(window).resize(orientationChange);
 
-   if (!($.os && $.os.ios && (parseFloat($.os.version) >= 7.0)))
-   {
-      $(window).on('scroll', function(e)
-      {
-         setTimeout(function()
-         {
-            try
-            {
-               var totalHeight = parseInt(document.body.style.height.split('px')[0]) + getHeightOfIOSToolbars();
-
-               //if (window.outerHeight > window.innerHeight)
-               if (Math.abs(totalHeight - ((window.orientation === 0) ? window.screen.height : window.screen.width)) > 20)
-               {
-                  window.scrollTo(0, 0);
-               }
-            }
-            catch(e)
-            {
-            }
-         }, 0.1 * 1000);
-      });
-
-      $(document.body).on('touchmove', function(e)
-      {
-         e.preventDefault();
-      });
-   }
    $(document).ready(function()
    {
-      var me = gblController, viewport = gblController.getViewPortCntlr(), desktop = !($.os && ($.os.phone || $.os.tablet)), pfEvent = (desktop) ? 'click' : 'tap';
+      var me = gblController, viewport = gblController.getViewPortCntlr(), //
+      desktop = !($.os && ($.os.phone || $.os.tablet)), pfEvent = (desktop) ? 'click' : 'tap', //
+      version = '?v=' + Genesis.constants.clientVersion;
 
+      enableScroll = Genesis.fn.isNative() || !($.os && $.os.ios && (parseFloat($.os.version) >= 7.0));
+      if (enableScroll)
+      {
+         $(window).on('scroll', function(e)
+         {
+            setTimeout(function()
+            {
+               try
+               {
+                  var totalHeight = parseInt(document.body.style.height.split('px')[0]) + getHeightOfIOSToolbars();
+
+                  //if (window.outerHeight > window.innerHeight)
+                  if (Math.abs(totalHeight - ((window.orientation === 0) ? window.screen.height : window.screen.width)) > 20)
+                  {
+                     window.scrollTo(0, 0);
+                  }
+               }
+               catch(e)
+               {
+               }
+            }, 0.1 * 1000);
+         });
+
+         $(document.body).on('touchmove', function(e)
+         {
+            e.preventDefault();
+         });
+      }
       // =============================================================
       // Custom Events
       // =============================================================
-      $.Event('ajaxBeforeSend');
-      $.Event('locationupdate');
-
-      if (!Genesis.fn.isNative())
       {
-         // =============================================================
-         // WebAudio Support
-         // =============================================================
+         $.Event('ajaxBeforeSend');
+         $.Event('locationupdate');
 
-         //var canPlayAudio = (new Audio()).canPlayType('audio/wav; codecs=1');
-         //if (!canPlayAudio)
-         if ( typeof (webkitAudioContext) == 'undefined')
+         if (!Genesis.fn.isNative())
          {
-            //
-            // If Worker is not supported, preload it
-            //
-            if ( typeof (Worker) == 'undefined')
+            // =============================================================
+            // WebAudio Support
+            // =============================================================
+
+            //var canPlayAudio = (new Audio()).canPlayType('audio/wav; codecs=1');
+            //if (!canPlayAudio)
+            if ( typeof (webkitAudioContext) == 'undefined')
             {
-               console.debug("HTML5 Workers not supported");
-
-               var mp3Flags = 0x00;
-               var callback = function(success, flag)
+               //
+               // If Worker is not supported, preload it
+               //
+               if ( typeof (Worker) == 'undefined')
                {
-                  if (!success)
+                  console.debug("HTML5 Workers not supported");
+
+                  var mp3Flags = 0x00;
+                  var callback = function(success, flag)
                   {
-                     setNotificationVisibility(true, 'KICKBAK', "Error Loading Application Resource Files.", "Reload", function()
+                     if (!success)
                      {
-                        window.location.reload();
-                     });
-                  }
-                  else
-                  {
-                     if ((mp3Flags |= flag) == 0x11)
-                     {
-                        appLaunchCallbackFn(true, 0x100);
-                        console.debug("Enable MP3 Encoder");
+                        setNotificationVisibility(true, 'KICKBAK', "Error Loading Application Resource Files.", "Reload", function()
+                        {
+                           window.location.reload();
+                        });
                      }
-                  }
-               };
+                     else
+                     {
+                        if ((mp3Flags |= flag) == 0x11)
+                        {
+                           appLaunchCallbackFn(true, 0x100);
+                           console.debug("Enable MP3 Encoder");
+                        }
+                     }
+                  };
 
-               Genesis.fn.checkloadjscssfile('../lib/libmp3lame.min.js', "js", Ext.bind(callback, null, [0x01], true));
-               Genesis.fn.checkloadjscssfile('../worker/encoder.min.js', "js", function(success)
-               {
-                  if (success)
+                  Genesis.fn.checkloadjscssfile('../lib/libmp3lame.min.js' + version, "js", Ext.bind(callback, null, [0x01], true));
+                  Genesis.fn.checkloadjscssfile('../worker/encoder.min.js' + version, "js", function(success)
                   {
-                     _codec = new Worker('../worker/encoder.min.js');
-                  }
-                  callback(success, 0x10);
-               });
+                     if (success)
+                     {
+                        _codec = new Worker('../worker/encoder.min.js' + version);
+                     }
+                     callback(success, 0x10);
+                  });
+               }
+               else
+               {
+                  _codec = new Worker('../worker/encoder.min.js' + version);
+                  appLaunchCallbackFn(true, 0x100);
+                  console.debug("Enable MP3 Encoder");
+               }
             }
             else
             {
-               _codec = new Worker('worker/encoder.min.js');
                appLaunchCallbackFn(true, 0x100);
-               console.debug("Enable MP3 Encoder");
+               console.debug("Enable WAV/WebAudio Encoder");
             }
-         }
-         else
-         {
-            appLaunchCallbackFn(true, 0x100);
-            console.debug("Enable WAV/WebAudio Encoder");
-         }
 
-         // =============================================================
-         // SystemInit
-         // =============================================================
-         proximityInit();
-         soundInit();
+            // =============================================================
+            // SystemInit
+            // =============================================================
+            proximityInit();
+            soundInit();
+         }
       }
-
       // =============================================================
       // Ajax Calls Customizations
       // =============================================================
-      $.ajaxSettings.accepts.json = "*/*";
-      var _param = $.param;
-      $.param = function(obj, traditional)
       {
-         var db = Genesis.db.getLocalDB();
+         $.ajaxSettings.accepts.json = "*/*";
+         var _param = $.param;
+         $.param = function(obj, traditional)
+         {
+            var db = Genesis.db.getLocalDB();
 
-         if (db['auth_code'])
-         {
-            obj['auth_token'] = db['auth_code'];
-         }
-         return _param(obj, traditional);
-      }
-      $(document).on('ajaxBeforeSend', function(e, xhr, options)
-      {
-         var db = Genesis.db.getLocalDB();
-
-         // This gets fired for every Ajax request performed on the page.
-         // The xhr object and $.ajax() options are available for editing.
-         // Return false to cancel this request.
-         options.headers = options.headers ||
-         {
-         };
-         if (options.type == 'POST')
-         {
             if (db['auth_code'])
             {
+               obj['auth_token'] = db['auth_code'];
+            }
+            return _param(obj, traditional);
+         }
+         $(document).on('ajaxBeforeSend', function(e, xhr, options)
+         {
+            var db = Genesis.db.getLocalDB();
+
+            // This gets fired for every Ajax request performed on the page.
+            // The xhr object and $.ajax() options are available for editing.
+            // Return false to cancel this request.
+            options.headers = options.headers ||
+            {
+            };
+            if (options.type == 'POST')
+            {
+               if (db['auth_code'])
+               {
+                  options.headers = Ext.apply(options.headers,
+                  {
+                     'X-CSRF-Token' : db['csrf_code'],
+                  });
+                  xhr.setRequestHeader('X-CSRF-Token', db['csrf_code']);
+               }
                options.headers = Ext.apply(options.headers,
                {
-                  'X-CSRF-Token' : db['csrf_code'],
+                  'Content-Type' : 'application/json'
                });
-               xhr.setRequestHeader('X-CSRF-Token', db['csrf_code']);
+               xhr.setRequestHeader('Content-Type', 'application/json');
             }
-            options.headers = Ext.apply(options.headers,
-            {
-               'Content-Type' : 'application/json'
-            });
-            xhr.setRequestHeader('Content-Type', 'application/json');
-         }
-      });
-
+         });
+      }
       // =============================================================
       // Refresh CSRF Token
       // =============================================================
-      if (Genesis.constants.device || !Genesis.fn.isNative())
       {
-         refreshCSRFToken();
+         if (Genesis.constants.device || !Genesis.fn.isNative())
+         {
+            refreshCSRFToken();
+         }
+         else
+         {
+            $(document).on('kickbak:updateDeviceToken', refreshCSRFToken);
+         }
       }
-      else
-      {
-         $(document).on('kickbak:updateDeviceToken', refreshCSRFToken);
-      }
-
       // =============================================================
       // System Initializations
       // =============================================================
-      orientationChange();
+      {
+         orientationChange();
 
-      if (!($.os && ($.os.phone || $.os.tablet)) || $.os.ios)
-      {
-         $('body').addClass('x-ios');
-         $('body').addClass('x-ios-' + parseInt((($.os) ? $.os.version : '6')));
-      }
-      else if ($.os.blackberry || $.os.bb10 || $.os.rimtabletos)
-      {
-         $('body').addClass('x-blackberry');
-         $('body').addClass('x-blackberry-' + parseInt(($.os.version)));
-      }
-      else
-      //else if ($.os.android)
-      {
-         $('body').addClass('x-android');
-         $('body').addClass('x-android-' + parseInt(($.os.version)));
-      }
-      if (!($.os && ($.os.phone || $.os.tablet)))
-      {
-         $('body').addClass('x-desktop');
-      }
-      else
-      {
-         $('body').addClass(($.os.phone) ? 'x-phone' : 'x-tablet');
-      }
+         if (!($.os && ($.os.phone || $.os.tablet)) || $.os.ios)
+         {
+            $('body').addClass('x-ios');
+            $('body').addClass('x-ios-' + parseInt((($.os) ? $.os.version : '6')));
+         }
+         else if ($.os.blackberry || $.os.bb10 || $.os.rimtabletos)
+         {
+            $('body').addClass('x-blackberry');
+            $('body').addClass('x-blackberry-' + parseInt(($.os.version)));
+         }
+         else
+         //else if ($.os.android)
+         {
+            $('body').addClass('x-android');
+            $('body').addClass('x-android-' + parseInt(($.os.version)));
+         }
+         if (!($.os && ($.os.phone || $.os.tablet)))
+         {
+            $('body').addClass('x-desktop');
+         }
+         else
+         {
+            $('body').addClass(($.os.phone) ? 'x-phone' : 'x-tablet');
+         }
 
-      var _hide_ = function(e)
-      {
-         me.playSoundFile(me.sound_files['clickSound']);
-         hideEarnPtsPage(e);
-         return false;
-      };
-      $('#earnPtsCancel').on(pfEvent, _hide_);
-      $('#earnPtsDismiss').on(pfEvent, _hide_);
-      $('#earnptspageview')[0].style.top = (-1 * Math.max(window.screen.height, window.screen.width)) + 'px';
-
+         var _hide_ = function(e)
+         {
+            me.playSoundFile(me.sound_files['clickSound']);
+            hideEarnPtsPage(e);
+            return false;
+         };
+         $('#earnPtsCancel').on(pfEvent, _hide_);
+         $('#earnPtsDismiss').on(pfEvent, _hide_);
+         $('#earnptspageview')[0].style.top = (-1 * Math.max(window.screen.height, window.screen.width)) + 'px';
+      }
       // =============================================================
       // Venue Browse/Scroll
       // =============================================================
-      var ajax, i = -1, iscrollInfinite = $('#checkexplorepageview .body');
-      if (!($.os.ios && (parseFloat($.os.version) >= 7.0)))
       {
-         $('#checkexplorepageview .body > div:first-child').addClass('scroller');
-         iscroll = new IScroll('#checkexplorepageview .body',
+         var ajax, i = -1, iscrollInfinite = $('#checkexplorepageview .body');
+         if (enableScroll)
          {
-            scrollbars : true,
-            mouseWheel : true,
-            interactiveScrollbars : false
-         });
-         var origEventHandler = iscroll.handleEvent;
-         iscrollInfinite.infiniteScroll(
-         {
-            threshold : window.screen.height,
-            iScroll : iscroll,
-            onEnd : function()
+            $('#checkexplorepageview .body > div:first-child').addClass('scroller');
+            iscroll = new IScroll('#checkexplorepageview .body',
             {
-               console.debug('No More Results');
-            },
-            onBottom : function(callback)
+               scrollbars : true,
+               mouseWheel : true,
+               interactiveScrollbars : false
+            });
+            var origEventHandler = iscroll.handleEvent;
+            iscrollInfinite.infiniteScroll(
             {
-               if ($('.media').length > 0)
+               threshold : window.screen.height,
+               iScroll : iscroll,
+               onEnd : function()
                {
-                  console.debug('At the end of the page. Loading more!');
-                  getNearestVenues($('.media').length);
+                  console.debug('No More Results');
+               },
+               onBottom : function(callback)
+               {
+                  if ($('.media').length > 0)
+                  {
+                     console.debug('At the end of the page. Loading more!');
+                     getNearestVenues($('.media').length);
+                  }
+                  callback(true);
                }
-               callback(true);
-            }
-         });
+            });
 
-         iscroll.handleEvent = function(e)
-         {
-            origEventHandler.call(iscroll, e);
-            switch ( e.type )
+            iscroll.handleEvent = function(e)
             {
-               case 'touchmove':
-               case 'MSPointerMove':
-               case 'mousemove':
-                  iscrollInfinite.data().infiniteScroll.iScroll.options.onScrollMove();
-                  break;
-            }
-         };
-      }
-      else
-      {
-         $('#checkexplorepageview').addClass('noIScroll');
-      }
-      var _getVenues_ = function(e)
-      {
-         //
-         // Trigger when the list is empty
-         //
-         if ($('.media').length == 0)
-         {
-            me.playSoundFile(me.sound_files['clickSound']);
-            getNearestVenues(0);
+               origEventHandler.call(iscroll, e);
+               switch ( e.type )
+               {
+                  case 'touchmove':
+                  case 'MSPointerMove':
+                  case 'mousemove':
+                     iscrollInfinite.data().infiniteScroll.iScroll.options.onScrollMove();
+                     break;
+               }
+            };
          }
-         return false;
-      };
-      iscrollInfinite.on(pfEvent, _getVenues_);
+         else
+         {
+            $('#checkexplorepageview').removeClass('iScroll').addClass('noIScroll');
+         }
+         var pageX = 0, pageY = 0;
+         var _getVenues_ = function(e)
+         {
+            x1 = parseInt(window.screen.width * (0.5 - (0.50 / 2))), x2 = parseInt(window.screen.width * (0.5 + (0.50 / 2)));
+            y1 = parseInt(window.screen.height * (0.5 - (0.50 / 2))), y2 = parseInt(window.screen.height * (0.5 + (0.50 / 2)));
+
+            //cursor:pointer
+            //console.log("x=" + pageX + ", x1=" + x1 + ", x2=" + x2 + ", y=" + pageY + ", y1=" + y1 + ", y2=" + y2);
+            if ((pageX >= x1 && pageX <= x2) && (pageY >= y1 && pageY <= y2))
+            {
+               var db = Genesis.db.getLocalDB();
+               if (db['auth_code'])
+               {
+                  //
+                  // Trigger when the list is empty
+                  //
+                  if ($('.media').length == 0)
+                  {
+                     me.playSoundFile(me.sound_files['clickSound']);
+                     getNearestVenues(0);
+                  }
+               }
+               else
+               {
+                  me.playSoundFile(me.sound_files['clickSound']);
+                  setChildBrowserVisibility(true);
+               }
+            }
+            return false;
+         };
+         $('#checkexplorepageview').on(pfEvent, _getVenues_);
+         $('#checkexplorepageview').on('touchstart', function(e)
+         {
+            pageX = e.touches[0].clientX;
+            pageY = e.touches[0].clientY;
+         });
+      }
       // =============================================================
       // WelcomePage Actions
       // =============================================================
-      setChildBrowserVisibility(false);
-      var _ptsLoad_ = function()
       {
-         me.playSoundFile(me.sound_files['clickSound']);
-         db = Genesis.db.getLocalDB();
-         if (db['auth_code'])
+         var _ptsLoad_ = function()
          {
-            $('#earnPtsProceed').trigger(pfEvent);
-         }
-         else
-         {
-            setChildBrowserVisibility(true);
-         }
-         return false;
-      };
-      $("#earnPtsLoad").on(pfEvent, _ptsLoad_);
-
+            me.playSoundFile(me.sound_files['clickSound']);
+            var db = Genesis.db.getLocalDB();
+            if (db['auth_code'])
+            {
+               $('#earnPtsProceed').trigger(pfEvent);
+            }
+            else
+            {
+               setChildBrowserVisibility(true);
+            }
+            return false;
+         };
+         $("#earnPtsLoad").on(pfEvent, _ptsLoad_);
+      }
       // =============================================================
       // ExplorePage Actions
       // =============================================================
-      var _home_ = function(e)
       {
-         me.playSoundFile(me.sound_files['clickSound']);
-         //refresh
-         if ($(e.currentTarget).has('.x-button .x-button-icon.refresh').length > 0)
+         var _home_ = function(e)
          {
-            getNearestVenues(0, true);
-         }
-         else
-         //home
-         //else if ($(e.currentTarget).has('.x-button .x-button-icon.home'))
-         {
-            setChildBrowserVisibility(true);
-         }
-         return false;
-      };
-      $('#checkexplorepageview .header .x-layout-box-item').on(pfEvent, _home_);
-      var _preLoad_ = function(e)
-      {
-         var task, privKey;
-
-         if (me.pendingBroadcast)
-         {
-            return;
-         }
-
-         me.playSoundFile(me.sound_files['clickSound']);
-         //
-         // Check for Mobile Number Validation
-         //
-         var message = $('#earnptspageview .x-docked-top .x-innerhtml'), image = $('#earnPtsImage');
-         var db = Genesis.db.getLocalDB(), venue = viewport.getVenue(), venueId, position = viewport.getLastPosition();
-
-         me.identifiers = null;
-
-         //
-         // Get GeoLocation and frequency markers
-         //
-         //if (!notUseGeolocation)
-         {
-            venueId = -1;
-            privKey = Genesis.fn.privKey =
+            var db = Genesis.db.getLocalDB();
+            me.playSoundFile(me.sound_files['clickSound']);
+            //refresh
+            if (db['auth_code'] && ($(e.currentTarget).has('.x-button .x-button-icon.refresh').length > 0))
             {
-               'venueId' : venueId,
-               'venue' : Genesis.constants.debugVenuePrivKey
-            };
-            privKey['r' + venueId] = privKey['p' + venueId] = db['csrf_code'];
-         }
-
-         window.plugins.proximityID.preLoadSend(gblController, true, Ext.bind(function(notUseGeolocation)
-         {
-            me.broadcastLocalID(function(idx)
+               getNearestVenues(0, true);
+            }
+            else
+            //home
+            //else if ($(e.currentTarget).has('.x-button .x-button-icon.home'))
             {
-               me.identifiers = idx;
-               $("#earnptspageview").trigger('kickbak:broadcast');
+               setChildBrowserVisibility(true);
+            }
+            return false;
+         };
+         $('#checkexplorepageview .header .x-layout-box-item').on(pfEvent, _home_);
+         var _preLoad_ = function(e)
+         {
+            var task, privKey;
 
-               console.debug("Broadcast underway ...");
-               position = viewport.getLastPosition();
-               if (notUseGeolocation || position)
+            if (me.pendingBroadcast)
+            {
+               return;
+            }
+
+            me.playSoundFile(me.sound_files['clickSound']);
+            //
+            // Check for Mobile Number Validation
+            //
+            var message = $('#earnptspageview .x-docked-top .x-innerhtml'), image = $('#earnPtsImage');
+            var db = Genesis.db.getLocalDB(), venue = viewport.getVenue(), venueId, position = viewport.getLastPosition();
+
+            me.identifiers = null;
+
+            //
+            // Get GeoLocation and frequency markers
+            //
+            //if (!notUseGeolocation)
+            {
+               venueId = -1;
+               privKey = Genesis.fn.privKey =
                {
-                  var ajax, localID = me.identifiers['localID'], venue = viewport.getVenue(), venueId = null;
-                  var params =
+                  'venueId' : venueId,
+                  'venue' : Genesis.constants.debugVenuePrivKey
+               };
+               privKey['r' + venueId] = privKey['p' + venueId] = db['csrf_code'];
+            }
+
+            window.plugins.proximityID.preLoadSend(gblController, true, Ext.bind(function(notUseGeolocation)
+            {
+               me.broadcastLocalID(function(idx)
+               {
+                  me.identifiers = idx;
+                  $("#earnptspageview").trigger('kickbak:broadcast');
+
+                  console.debug("Broadcast underway ...");
+                  position = viewport.getLastPosition();
+                  if (notUseGeolocation || position)
                   {
-                  };
-                  //
-                  // With or without Geolocation support
-                  //
-                  if (!venueId)
-                  {
+                     var ajax, localID = me.identifiers['localID'], venue = viewport.getVenue(), venueId = null;
+                     var params =
+                     {
+                     };
                      //
-                     // We cannot use short cut method unless we have either GeoLocation or VenueId
+                     // With or without Geolocation support
                      //
-                     if (!position)
+                     if (!venueId)
                      {
                         //
-                        // Stop broadcasting now ...
+                        // We cannot use short cut method unless we have either GeoLocation or VenueId
                         //
-                        if (me.identifiers)
+                        if (!position)
                         {
-                           me.identifiers['cancelFn']();
-                        }
-                        hideEarnPtsPage();
-
-                        setNotificationVisibility(true, 'KICKBAK', me.cannotDetermineLocationMsg, "Dismiss", Ext.emptyFn);
-                        return;
-                     }
-
-                     params = Ext.apply(params,
-                     {
-                        data : me.self.encryptFromParams(
-                        {
-                           'frequency' : localID
-                        }, 'reward'),
-                        'latitude' : position.coords.latitude,
-                        'longitude' : position.coords.longitude
-                     });
-                  }
-                  else
-                  {
-                     params = Ext.apply(params,
-                     {
-                        data : me.self.encryptFromParams(
-                        {
-                           'frequency' : localID
-                        }, 'reward'),
-                        venue_id : venueId
-                     });
-                  }
-
-                  //
-                  // Triggers PrizeCheck and MetaDataChange
-                  // - subject CustomerReward also needs to be reset to ensure property processing of objects
-                  //
-                  console.debug("Transmitting Reward Points Request ...");
-
-                  var _dismiss_ = function(msg)
-                  {
-                     //$('#earnPtsDismiss').off(pfEvent, _dismiss_);
-
-                     me.playSoundFile(me.sound_files['clickSound']);
-                     if (ajax)
-                     {
-                        ajax.abort();
-                     }
-                     if (me.identifiers)
-                     {
-                        me.identifiers['cancelFn']();
-                     }
-                     setLoadMask(false);
-
-                     setNotificationVisibility(true, 'Rewards', ( typeof (msg) != 'string') ? me.transactionCancelledMsg : msg, "Dismiss", function()
-                     {
-                     });
-                     return false;
-                  };
-                  $('#earnPtsDismiss').one(pfEvent, _dismiss_);
-
-                  ajax = $.ajax(
-                  {
-                     type : 'POST',
-                     url : serverHost + '/api/v1/purchase_rewards/earn',
-                     // data to be added to query string:
-                     data : params,
-                     // type of data we are expecting in return:
-                     dataType : 'json',
-                     timeout : 30 * 1000,
-                     context : document,
-                     success : function(data)
-                     {
-                        if (!data)
-                        {
+                           //
+                           // Stop broadcasting now ...
+                           //
                            if (me.identifiers)
                            {
-                              console.debug("AJAX Error Response", me.identifiers);
+                              me.identifiers['cancelFn']();
                            }
-                           $('#earnPtsDismiss').trigger(pfEvent, [me.networkErrorMsg]);
+                           hideEarnPtsPage();
+
+                           setNotificationVisibility(true, 'KICKBAK', me.cannotDetermineLocationMsg, "Dismiss", Ext.emptyFn);
                            return;
                         }
 
-                        //
-                        // Stop broadcasting now ...
-                        //
+                        params = Ext.apply(params,
+                        {
+                           data : me.self.encryptFromParams(
+                           {
+                              'frequency' : localID
+                           }, 'reward'),
+                           'latitude' : position.coords.latitude,
+                           'longitude' : position.coords.longitude
+                        });
+                     }
+                     else
+                     {
+                        params = Ext.apply(params,
+                        {
+                           data : me.self.encryptFromParams(
+                           {
+                              'frequency' : localID
+                           }, 'reward'),
+                           venue_id : venueId
+                        });
+                     }
+
+                     //
+                     // Triggers PrizeCheck and MetaDataChange
+                     // - subject CustomerReward also needs to be reset to ensure property processing of objects
+                     //
+                     console.debug("Transmitting Reward Points Request ...");
+
+                     var _dismiss_ = function(msg)
+                     {
+                        //$('#earnPtsDismiss').off(pfEvent, _dismiss_);
+
+                        me.playSoundFile(me.sound_files['clickSound']);
+                        if (ajax)
+                        {
+                           ajax.abort();
+                        }
                         if (me.identifiers)
                         {
                            me.identifiers['cancelFn']();
                         }
                         setLoadMask(false);
 
-                        console.debug("AJAX Response", data);
-                        setNotificationVisibility(true, 'Rewards', "", "OK", function()
+                        setNotificationVisibility(true, 'Rewards', ( typeof (msg) != 'string') ? me.transactionCancelledMsg : msg, "Dismiss", function()
                         {
                         });
-                     },
-                     error : function(xhr, type)
+                        return false;
+                     };
+                     $('#earnPtsDismiss').one(pfEvent, _dismiss_);
+
+                     ajax = $.ajax(
                      {
-                        if (me.identifiers)
+                        type : 'POST',
+                        url : serverHost + '/api/v1/purchase_rewards/earn',
+                        // data to be added to query string:
+                        data : params,
+                        // type of data we are expecting in return:
+                        dataType : 'json',
+                        timeout : 30 * 1000,
+                        context : document,
+                        success : function(data)
                         {
-                           console.debug("AJAX Error Response", me.identifiers);
+                           if (!data)
+                           {
+                              if (me.identifiers)
+                              {
+                                 console.debug("AJAX Error Response", me.identifiers);
+                              }
+                              $('#earnPtsDismiss').trigger(pfEvent, [me.networkErrorMsg]);
+                              return;
+                           }
+
+                           //
+                           // Stop broadcasting now ...
+                           //
+                           if (me.identifiers)
+                           {
+                              me.identifiers['cancelFn']();
+                           }
+                           setLoadMask(false);
+
+                           console.debug("AJAX Response", data);
+                           setNotificationVisibility(true, 'Rewards', "", "OK", function()
+                           {
+                           });
+                        },
+                        error : function(xhr, type)
+                        {
+                           if (me.identifiers)
+                           {
+                              console.debug("AJAX Error Response", me.identifiers);
+                           }
+                           $('#earnPtsDismiss').trigger(pfEvent, [me.networkErrorMsg]);
                         }
-                        $('#earnPtsDismiss').trigger(pfEvent, [me.networkErrorMsg]);
-                     }
-                  });
-               }
-            }, function()
-            {
-               hideEarnPtsPage();
-               //setLoadMask(false);
-            });
-         }, me, [false]));
-         return false;
-      };
-      $('#earnPtsProceed').on(pfEvent, _preLoad_);
+                     });
+                  }
+               }, function()
+               {
+                  hideEarnPtsPage();
+                  //setLoadMask(false);
+               });
+            }, me, [false]));
+            return false;
+         };
+         $('#earnPtsProceed').on(pfEvent, _preLoad_);
+      }
+      // =============================================================
+      // Facebook Access Token Detect
+      // =============================================================
+      detectAccessToken(href);
+      location.hash = '';
    });
 })();

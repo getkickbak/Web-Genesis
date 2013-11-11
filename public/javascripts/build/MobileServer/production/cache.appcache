@@ -1,9 +1,9 @@
 CACHE MANIFEST
 # 84e9eec7e44fdff6c489735eb05cd24209fdd014
 WebWorkerConsole.js
-# d6927006aa587e6f738205f7ad9febe50c5ce5e1
+# 0950322c478bb0aafd5e3c9bdabac5319f93d9f7
 mcore.js
-# b3a861457df26a0f59e720a775aeeece617040bd
+# 522f14b3d4f1f92d6b3dc9be61360fa003140d2e
 app.js
 # db156aa629488aedddd64ffa3b15f14b12a2d2b1
 index.html
@@ -15,7 +15,7 @@ term_of_service.htm
 privacy.htm
 # 85a09696bd078f9478bcf7897abdabe8a414ca5d
 program_rules.htm
-# 8d14af0c58e3f03a4fa9062c6bb0efba5973e171
+# 687a8653c8d6319954b8dff8399a32c078921ca2
 worker/fft.min.js
 # 1010b20dd5418571215b89912ad9196d147b0e16
 lib/dsp.min.js

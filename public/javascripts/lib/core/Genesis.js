@@ -961,9 +961,28 @@ Genesis.constants =
       },
       scriptOnReadyStateChange : function(loadState, error)
       {
-         var src = this.src;
+         var src = this.src, profile;
          //Url.decode(this.src);
          src = src.replace(location.origin, '');
+         //
+         // PhoneGap App
+         //
+         console.log("scriptOnReadyStateChange: " + location.host);
+         if (location.host == "")
+         {
+            if ($.os.ios)
+            {
+               profile = 'ios_';
+            }
+            else
+            //else if ($.os.android)
+            {
+               profile = 'android_';
+            }
+            src = Genesis.constants.relPath() + src.replace(location.pathname.replace('launch/index_' + profile + 'native.html', ''), '');
+         }
+         console.log("Script: " + src);
+         
          if (!error)
          {
             var rs = this.readyState;

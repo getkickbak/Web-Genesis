@@ -75030,21 +75030,22 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    broadcastLocalID : function(success, fail)
    {
+      var proximityID = window.plugins.proximityID;
       var me = this, c = Genesis.constants, cancel = function()
       {
          Ext.Ajax.abort();
          if (me.send_vol != -1)
          {
-            window.plugins.proximityID.setVolume(-1);
+            proximityID.setVolume(-1);
          }
-         window.plugins.proximityID.stop();
+         proximityID.stop();
       };
 
       me.send_vol = -1;
       success = success || Ext.emptyFn;
       fail = fail || Ext.emptyFn;
 
-      window.plugins.proximityID.send(function(result)
+      proximityID.send(function(result)
       {
          console.debug("ProximityID : Broacasting Local Identity ...");
          success(Genesis.fn.processSendLocalID(result, cancel));
@@ -76505,11 +76506,13 @@ Ext.define('Genesis.controller.RedeemBase',
    onRedeemItemDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
+      var proximityID = window.plugins.proximityID;
+      
       if (me.getSDoneBtn())
       {
          me.getSDoneBtn()['hide']();
       }
-      window.plugins.proximityID.stop();
+      proximityID.stop();
       console.debug("onRedeemItemDeactivate - Done with RewardItem View!");
    },
 
@@ -76948,12 +76951,19 @@ Ext.define('Genesis.view.ViewBase',
    {
       generateTitleBarConfig : function()
       {
+         var height = ((!(Genesis.fn.isNative() && Ext.os.is('iOS') && Ext.os.version.isGreaterThanOrEqual('7.0')) ? '2.6' : '3.7') + 'em');
+         var style = (!(Genesis.fn.isNative() && Ext.os.is('iOS') && Ext.os.version.isGreaterThanOrEqual('7.0')) ? '' :
+         {
+            'padding-top' : '20px'
+         });
          return (
             {
                xtype : 'titlebar',
                docked : 'top',
                tag : 'navigationBarTop',
                cls : 'navigationBarTop',
+               height : height,
+               style : style,
                masked :
                {
                   xtype : 'mask',
@@ -78009,17 +78019,7 @@ Ext.define('Genesis.controller.ViewportBase',
                {
                   if (!Genesis.fb.cb || !Genesis.fb.cb['viewName'])
                   {
-                     var ma_struct = db['ma_struct'];
-                     // Mini App forwarding
-                     if (Ext.isDefined(ma_struct) && (ma_struct['venueId'] > 0))
-                     {
-                        Genesis.db.removeLocalDBAttrib('ma_struct');
-                        me.redirectTo('venue/' + ma_struct['venueId'] + '/' + ma_struct['merchant']['customerId']);
-                     }
-                     else
-                     {
-                        me.redirectTo('main');
-                     }
+                     me.redirectTo('main');
                   }
                }
                else
@@ -78937,7 +78937,6 @@ Ext.define('Genesis.view.widgets.Calculator',
       // -------------------------------------------------------------------
       items : [
       {
-         height : '2.6em',
          docked : 'top',
          xtype : 'toolbar',
          centered : false,
@@ -80663,31 +80662,34 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
    alias : 'widget.popupitemdetailview',
    config :
    {
-      models : ['CustomerReward'],
-      bottom : 0,
-      left : 0,
-      top : 0,
-      right : 0,
-      padding : 0,
-      hideOnMaskTap : false,
-      defaultUnit : 'em',
-      layout :
-      {
-         type : 'vbox',
-         pack : 'middle'
-      },
-      defaults :
-      {
-         xtype : 'container',
-         defaultUnit : 'em'
-      }
    },
    constructor : function(config)
    {
       var me = this;
-      config = config ||
+      config = Ext.apply(config,
       {
-      };
+         models : ['CustomerReward'],
+         bottom : 0,
+         left : 0,
+         top : (!(Genesis.fn.isNative() && Ext.os.is('iOS') && Ext.os.version.isGreaterThanOrEqual('7.0')) ? 0 : '20px'),
+         top : 0,
+         right : 0,
+         padding : 0,
+         hideOnMaskTap : false,
+         defaultUnit : 'em',
+         layout :
+         {
+            type : 'vbox',
+            pack : 'middle'
+         },
+         defaults :
+         {
+            xtype : 'container',
+            defaultUnit : 'em'
+         }
+      }, config ||
+      {
+      });
 
       var buttons = config['buttons'] || [];
       config['origButtons'] = buttons;
@@ -81113,7 +81115,7 @@ Ext.define('Genesis.view.widgets.client.RedeemItemDetail',
    alias : 'widget.clientredeemitemdetailview',
    config :
    {
-   	itemXType : 'redeemitem',
+      itemXType : 'redeemitem',
       items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
          title : 'Prizes',
@@ -81165,32 +81167,46 @@ Ext.define('Genesis.view.widgets.client.PromotionItem',
    alias : 'widget.clientpromotionalitemview',
    config :
    {
-      layout : 'fit',
-      items : [
+   },
+   constructor : function(config)
+   {
+      var me = this;
+      config = Ext.apply(
       {
-         xtype : 'titlebar',
-         docked : 'top',
-         tag : 'navigationBarTop',
-         cls : 'navigationBarTop',
-         title : ' ',
-         defaults :
-         {
-            iconMask : true
-         },
+         layout : 'fit',
          items : [
          {
-            align : 'left',
-            hidden : true,
-            tag : 'back',
-            ui : 'normal',
-            text : 'Back'
-         },
-         {
-            align : 'right',
-            tag : 'done',
-            text : 'Done'
+            xtype : 'titlebar',
+            docked : 'top',
+            tag : 'navigationBarTop',
+            cls : 'navigationBarTop',
+            height : ((!(Genesis.fn.isNative() && Ext.os.is('iOS') && Ext.os.version.isGreaterThanOrEqual('7.0')) ? '2.6' : '3.7') + 'em'),
+            style : (!(Genesis.fn.isNative() && Ext.os.is('iOS') && Ext.os.version.isGreaterThanOrEqual('7.0')) ? '' :
+            {
+               'padding-top' : '20px'
+            }),
+            title : ' ',
+            defaults :
+            {
+               iconMask : true
+            },
+            items : [
+            {
+               align : 'left',
+               hidden : true,
+               tag : 'back',
+               ui : 'normal',
+               text : 'Back'
+            },
+            {
+               align : 'right',
+               tag : 'done',
+               text : 'Done'
+            }]
          }]
-      }]
+      }, config ||
+      {
+      });
    },
    onRedeemItemTap : function(b, e, eOpts)
    {
@@ -82107,7 +82123,8 @@ Ext.define('Genesis.controller.mobileClient.Challenges',
             {
                if (selectedItem.get('require_verif'))
                {
-                  window.plugins.proximityID.preLoadSend(me, false, Ext.bind(function(_selectedItem)
+                  var proximityID = window.plugins.proximityID;
+                  proximityID.preLoadSend(me, false, Ext.bind(function(_selectedItem)
                   {
                      if (_selectedItem.get('type').value == 'photo')
                      {
@@ -82641,7 +82658,7 @@ Ext.define('Genesis.controller.client.Checkins',
    {
       var me = this, viewport = me.getViewPortCntlr(), record = new Ext.create('Genesis.model.Venue', record);
 
-      me.self.playSoundFile(viewport.sound_files['clickSound']);
+      //me.self.playSoundFile(viewport.sound_files['clickSound']);
       viewport.setVenue(record);
       me.onCheckinTap(null, e, eOpts, eInfo);
    },
@@ -83699,20 +83716,23 @@ Ext.define('Genesis.controller.client.Login',
                if (operation.wasSuccessful())
                {
                   Genesis.db.removeLocalDBAttrib('auth_code');
-                  if (!Genesis.fn.isNative())
-                  {
-                     window.parent.setChildBrowserVisibility(false, 'explore');
-                  }
-                  else
-                  {
-                     setChildBrowserVisibility(false, 'explore');
-                  }
+                  /*
+                   if (!Genesis.fn.isNative())
+                   {
+                   window.parent.setChildBrowserVisibility(false, 'explore');
+                   }
+                   else
+                   {
+                   setChildBrowserVisibility(false, 'explore');
+                   }
+                   */
                   console.log("Logout Successful!")
                }
                else
                {
                   console.log("Logout Failed!")
                }
+               me.redirectTo('login');
             }
          });
       }
@@ -84705,7 +84725,21 @@ Ext.define('Genesis.controller.client.MainPage',
       {
          me.persistLoadStores(function()
          {
-            me.redirectTo('main');
+            var viewport = me.getViewPortCntlr(), ma_struct = db['ma_struct'];
+
+            if (viewport.getApsPayload())
+            {
+               viewport.getGeoLocation();
+            }
+            else if (ma_struct)
+            {
+               Genesis.db.removeLocalDBAttrib('ma_struct');
+               me.getApplication().getController('client' + '.Checkins').onExploreDisclose(null, ma_struct);
+            }
+            else
+            {
+               me.redirectTo('main');
+            }
          });
       }
    },
@@ -86996,7 +87030,8 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
          case 'redeemPrize' :
          case 'redeemReward' :
          {
-            window.plugins.proximityID.preLoadSend(me, false, Ext.bind(function(_btn, _venue, _view)
+            var proximityID = window.plugins.proximityID;
+            proximityID.preLoadSend(me, false, Ext.bind(function(_btn, _venue, _view)
             {
                me.fireEvent('redeemitem', _btn, _venue, _view);
             }, me, [btn, venue, view]));
@@ -88717,7 +88752,8 @@ Ext.define('Genesis.controller.client.Rewards',
       }
       else
       {
-         window.plugins.proximityID.preLoadSend(me, !notUseGeolocation, Ext.bind(function(_notUseGeolocation)
+         var proximityID = window.plugins.proximityID;
+         proximityID.preLoadSend(me, !notUseGeolocation, Ext.bind(function(_notUseGeolocation)
          {
             //var earnPts = Ext.bind(me.onEarnPtsSC, me);
             //me.checkReferralPrompt(earnPts, earnPts);
@@ -89671,8 +89707,8 @@ proximityInit = function()
    c.proximityTxTimeout = 20 * 1000;
    c.proximityRxTimeout = 40 * 1000;
 
-   Genesis.fn.printProximityConfig();
-   window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
+    Genesis.fn.printProximityConfig();
+    window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
 };
 soundInit = function(viewport)
 {
@@ -91595,7 +91631,7 @@ Ext.define('Genesis.plugin.PullRefresh',
    }
 });
 
-var pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false;
+var pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false, launched = 0x000;
 
 window.debugMode = true;
 window.merchantMode = false;
@@ -91634,7 +91670,7 @@ will need to resolve manually.
    Genesis.db.getRedeemIndexDB();
    Genesis.db.getRedeemSortedDB();
 
-   var launched = 0x000, flag = 0x001, _error = false;
+   var flag = 0x001, _error = false;
    var appLaunch = function()
    {
       if (launched == 0x111)
@@ -91759,10 +91795,10 @@ will need to resolve manually.
 
    Ext.defer(function()
    {
-      var targetelement = "script", targetattr = "src";
-      var allsuspects = document.getElementsByTagName(targetelement);
-      var imagePath = _hostPath + "resources/themes/images/v1/", images = [new Image(400, 400)], prefix;
-      var resolution = (function()
+      var targetelement = "script", targetattr = "src", version = '?v=' + Genesis.constants.clientVersion, //
+      allsuspects = document.getElementsByTagName(targetelement), //
+      imagePath = _hostPath + "resources/themes/images/v1/", images = [new Image(400, 400)], prefix, //
+      resolution = (function()
       {
          return (((window.screen.height >= 641) && ((window.devicePixelRatio == 1.0) || (window.devicePixelRatio >= 2.0))) ? 'mxhdpi' : 'lhdpi');
       })();
@@ -91785,7 +91821,7 @@ will need to resolve manually.
          if (Ext.os.is('iPhone5'))
          {
             _totalAssetCount++;
-            Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone5.css?v=" + Genesis.constants.clientVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x010], true));
+            Genesis.fn.checkloadjscssfile(_hostPath + 'resources/css/iphone5.css' + version, "css", Ext.bind(appLaunchCallbackFn, null, [0x010], true));
          }
          else
          {
@@ -91802,14 +91838,14 @@ will need to resolve manually.
           {
           case 'lhdpi' :
           {
-          Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-phone-lhdpi.css?v=" + Genesis.constants.clientVersion,
+          Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-phone-lhdpi.css" + version,
           "css",
           Ext.bind(appLaunchCallbackFn, null, [0x011], true));
           break;
           }
           case 'mxhdpi' :
           {
-          Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-phone-mxhdpi.css?v=" + Genesis.constants.clientVersion,
+          Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/android-phone-mxhdpi.css" + version,
           "css", Ext.bind(appLaunchCallbackFn, null, [0x011], true));
           break;
           }
@@ -91855,19 +91891,19 @@ will need to resolve manually.
                }
             };
 
-            Genesis.fn.checkloadjscssfile(_hostPath + 'lib/libmp3lame.min.js', "js", Ext.bind(callback, null, [0x01], true));
-            Genesis.fn.checkloadjscssfile(_hostPath + "worker/encoder.min.js", "js", function(success)
+            Genesis.fn.checkloadjscssfile(_hostPath + 'lib/libmp3lame.min.js' + version, "js", Ext.bind(callback, null, [0x01], true));
+            Genesis.fn.checkloadjscssfile(_hostPath + "worker/encoder.min.js" + version, "js", function(success)
             {
                if (success)
                {
-                  _codec = new Worker('worker/encoder.min.js');
+                  _codec = new Worker('worker/encoder.min.js' + version);
                }
                callback(success, 0x10);
             });
          }
          else
          {
-            _codec = new Worker('worker/encoder.min.js');
+            _codec = new Worker('worker/encoder.min.js' + version);
             appLaunchCallbackFn(true, 0x100);
             console.debug("Enable MP3 Encoder");
          }
@@ -91877,7 +91913,7 @@ will need to resolve manually.
          appLaunchCallbackFn(true, 0x100);
          console.debug("Enable WAV/WebAudio Encoder");
       }
-      images[0].src = prefix + "/prizewon/transmit.png";
+      images[0].src = prefix + "/prizewon/transmit.svg";
    }, 0.1 * 1000);
 })();
 

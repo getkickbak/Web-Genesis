@@ -14,3 +14,8 @@
       background-image: theme_image($theme-path-common + "/toolbar", "logo" + ".svg");
    }
 }
+.x-ios-7.isNative .kbTitle {
+   &:before {
+      top:10px;
+   }
+}

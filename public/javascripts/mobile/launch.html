@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html manifest="cache.appcache" lang="en-US">
+<html manifest="launch_cache.appcache" lang="en-US">
    <head>
       <meta name="format-detection" content="telephone=no">
       <meta name="format-detection" content="address=no">
@@ -9,8 +9,8 @@
       <meta name="apple-mobile-web-app-capable" content="yes">
       <meta name="apple-touch-fullscreen" content="yes">
       <link rel="apple-touch-icon-precomposed" href="resources/icons/icon.png">
-      <link href="../lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-      <link href="resources/css/add2home.css" rel="stylesheet">
+      <link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+      <link href="launch/resources/css/add2home.css" rel="stylesheet">
       <style type="text/css">
          body {
             font-size: 18px !important;
@@ -26,11 +26,30 @@
             margin-top: 0px;
          }         
          .media-object {
-            padding: 32px;
-            width: 0px;
-            height: 0px;
+            float:left;
+            margin-right: 0.7em;
+            width: 57px;
+            height: 57px;
             background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAACsklEQVR4Xu2Y24upYRTGl0PI0JSimHDjMIVETVMzpvzrziLSTIkiLpTcjJLzcfaziuz2Njufsb8La93o+3jX+65nHX55NZ+fnzu6YdOIAFIB0gIyA254BpIMQaGAUEAoIBQQCtywAoJBwaBgUDAoGLxhCMifIcGgYFAwKBgUDAoGb1iBizHYbDap3+/Tbrcjp9NJwWCQNBrNQdJflKF6vU5ms5lisdhv353S/Ro+T+11kQCNRoN6vR7p9Xr2v16vyev1kt/v52eIkkql+L3BYKBEIkFarfbberuGz+82VCzAZrOhdDrNGX17e6PVakXdbpesVis9PDzwnq1Wi9/BTCYTvb6+0mQyoff3d9LpdBSPx2k8HhOCNhqNFIlEKJvNnu3zuOLO7WbFAiyXSz7sdrvloOfzObdAIBDgM8xmM8rlcuTxeGg0GtF0OmWhcNhKpULD4ZBsNhuvw3eoGqxX6vPcwPe/VywAertarbIftADKHIYgQqEQlctlzm4ymaRSqUSLxeIgwLF4WHN/f09PT090ic//LgAynM/nuXRfXl44i8VikXs9HA6zOHd3d+R2u6ndbnOl+Hw+foZ1Oh1+D3t+fuYqutSnEhEUVwAyjhmA3oYA+2cI8Pj4SLVa7Y/zYACiIjAcM5nMoWrsdjtFo9GDDyU+/zVcT4mjWAAEgQpA1lwuF3+irx0OB1cAyhyGg6EdIBAyjeA+Pj5oMBiQxWLhykF1YABirVKfSrKPNYoFwGIMsEKhQCACDO2AXkaQx4bWgACgAAYiBNnTA0KA+5gje5qc61MVChwHiGEHQ0Z/yq7h829nu6gCfipYNf2IAHIjJDdCciMkN0JqTmG19xYKCAWEAkIBoYDak1jN/YUCQgGhgFBAKKDmFFZ7b6GAUEAoIBQQCqg9idXcXyhw6xT4AgyAjZ+ww1kxAAAAAElFTkSuQmCC');
-            background-size: auto;
+            background-size: contain;
+         }
+         .media-body {
+            position : relative;
+         }
+         .media-heading {
+            font-size: 0.8em;
+         }
+         .itemDistance {
+            position:absolute;
+            top : 0;
+            right: 1em;
+            font-weight:bold;
+            font-size: 0.8em;
+         }
+         .itemDesc {
+            font-size: 0.8em;
+            line-height: 1.1em;
+            word-break: break-word;
          }
          .panTopPage {
             left: 0px !important;
@@ -52,16 +71,37 @@
             margin-top: 20px;
          }
          #checkexplorepageview {
-            position : relative;
+            position : absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom:0;
+            padding:0;
+            z-index: 1;
+            background: transparent url('resources/themes/images/v1/ios/mainicons/checkin.svg') no-repeat;
+            background-position: center center;
          }
+         .x-portrait #checkexplorepageview {
+            background-size: auto 50%;
+         }
+         .x-landscape #checkexplorepageview {
+            background-size: 30% auto;
+         }
+         
          #checkexplorepageview .header {
+            height: 2.6em;
+         }
+         #checkexplorepageview.noIScroll .header {
+            position: fixed;
+            width:100%;
+            z-index:1;            
          }
          
          #checkexplorepageview .body {
             position: absolute;
-            z-index: 1;
-            top: 46px;
-            bottom: 72px;
+            z-index: 3;
+            top: 2.6em;
+            bottom: 4.0em;
             left: 0;
             width: 100%;
             background: transparent;
@@ -70,26 +110,9 @@
          #checkexplorepageview.noIScroll .body {
             position: static;
          }
-         #checkexplorepageview.withTb .body {
-            padding-bottom : 72px;
-         }
-         .x-portrait #checkexplorepageview .body::before {
-            position: absolute;
-            background: url('../resources/themes/images/v1/ios/mainicons/checkin.svg') no-repeat;
-            background-size: auto 75%;
-            height: 100%;
-            width: 100%;
-            content: "";
-            background-position: center center;
-         }
-         .x-landscape #checkexplorepageview .body::before {
-            position: absolute;
-            background: url('../resources/themes/images/v1/ios/mainicons/checkin.svg') no-repeat;
-            background-size: 30% auto;
-            height: 100%;
-            width: 100%;
-            content: "";
-            background-position: center center;
+         #checkexplorepageview.noIScroll .body::before, #checkexplorepageview.noIScroll .body {
+            margin-top : 2.6em;
+            margin-bottom : 4.0em;
          }
          #checkexplorepageview .footer {
             position: absolute;
@@ -97,8 +120,9 @@
             left: 0;
             right: 0;
          }
-         #checkexplorepageview.withTb .footer {
+         #checkexplorepageview.noIScroll .footer {
             position: fixed;
+            background-color: #0a78be;
          }
          #checkexplorepageview .scroller {
             position: absolute;
@@ -149,14 +173,14 @@
             z-index: 100;
          }
       </style>
-      <link href="resources/css/mini_client.css" rel="stylesheet">
-      <script type="text/javascript" src="../lib/add2home.js"></script>
+      <link href="launch/resources/css/client.css" rel="stylesheet">
+      <script type="text/javascript" src="lib/add2home.js"></script>
       <meta charset="UTF-8">
       <title>KickBak</title>
    </head>
-   <body class="">
-      <div id="checkexplorepageview" class="x-container x-sheet x-sized" style="padding:0;">
-         <div class="header x-container x-toolbar-dark x-toolbar x-sized navigationBarTop x-dock-item x-docked-top kbTitle" style="height: 2.6em !important; ">
+   <body class="x-sheet-action" style="padding:0;">
+      <div id="checkexplorepageview" class="iScroll x-container x-sized">
+         <div class="header x-container x-toolbar-dark x-toolbar x-sized navigationBarTop x-dock-item x-docked-top kbTitle">
                <div class="x-body">
                   <div class="x-center">
                      <div class="x-unsized x-title x-floating" style="z-index: 8 !important; ">
@@ -289,7 +313,7 @@
       </div>
       <div id="mask" class="x-mask x-sized x-floating x-item-hidden" style="top: 0px !important; left: 0px !important; right: 0px !important; bottom: 0px !important; z-index: 998 !important;"></div>
       <iframe class="iframe x-container x-sheet x-sized x-floating x-item-hidden" style=""></iframe>
-      <script type="text/javascript" src="../lib/zepto.min.js"></script>
+      <script type="text/javascript" src="lib/zepto.min.js"></script>
       <script type="text/javascript">
          window.jQuery = Zepto, serverHost = "";
          var _filesAssetCount = 0, _winHeight = 0, _winWidth = 0;
@@ -404,14 +428,16 @@
                   {
                      setTimeout( function(){ window.scrollTo(0, 0); }, 50 );               
                   }
+                  /*
                   else
                   {
                      var action = ((getHeightOfIOSToolbars() < 60) || ($('.media').length <= 5)) ? 'addTb' : 'removeTb';
                      
                      $('#checkexplorepageview .footer')[(action == 'addTb') ? 'removeClass' : 'addClass']('x-item-hidden');
-                     $('#checkexplorepageview')[(action == 'addTb') ? 'addClass' : 'removeClass']('withTb');
+                     //$('#checkexplorepageview')[(action == 'addTb') ? 'addClass' : 'removeClass']('withTb');
                      //$('#checkexplorepageview .body')[0].style.height = parseInt((_winHeight - (2.6*18))) + 'px';
                   }
+                  */
                }
 
                if (_winWidth != document.body.clientWidth)
@@ -434,7 +460,7 @@
          }, 0.1 * 1000);
          window.addEventListener("load", checkAppCache);
       </script>
-      <script type="text/javascript" src="mccore.js"></script>
-      <script type="text/javascript" src="mclient-all.js"></script>
+      <script type="text/javascript" src="launch/mccore.js"></script>
+      <script type="text/javascript" src="launch/mclient-all.js"></script>
    </body>
 </html>

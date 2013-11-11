@@ -220,11 +220,13 @@ Ext.define('Genesis.controller.RedeemBase',
    onRedeemItemDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
+      var proximityID = window.plugins.proximityID;
+      
       if (me.getSDoneBtn())
       {
          me.getSDoneBtn()['hide']();
       }
-      window.plugins.proximityID.stop();
+      proximityID.stop();
       console.debug("onRedeemItemDeactivate - Done with RewardItem View!");
    },
 

@@ -1,0 +1,25 @@
+CACHE MANIFEST
+#version 1
+#js
+launch/mccore.js
+launch/mclient-all.js
+lib/libmp3lame.min.js
+#workers
+worker/encoder.min.js
+#css
+lib/bootstrap/css/bootstrap.min.css
+launch/resources/css/client.css
+launch/resources/css/add2home.css
+resources/themes/images/v1/ios/mainicons/checkin.svg
+resources/themes/images/v1/ios/prizewon/loyaltycard.svg
+resources/themes/images/v1/ios/prizewon/transmit.svg
+resources/themes/images/v1/ios/prizewon/phoneInHand.svg
+#html
+launch.html
+
+
+FALLBACK:
+
+
+NETWORK:
+*

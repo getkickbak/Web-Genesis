@@ -44,8 +44,8 @@ proximityInit = function()
    c.proximityTxTimeout = 20 * 1000;
    c.proximityRxTimeout = 40 * 1000;
 
-   Genesis.fn.printProximityConfig();
-   window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
+    Genesis.fn.printProximityConfig();
+    window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
 };
 soundInit = function(viewport)
 {

@@ -78062,17 +78062,7 @@ Ext.define('Genesis.controller.ViewportBase',
                {
                   if (!Genesis.fb.cb || !Genesis.fb.cb['viewName'])
                   {
-                     var ma_struct = db['ma_struct'];
-                     // Mini App forwarding
-                     if (Ext.isDefined(ma_struct) && (ma_struct['venueId'] > 0))
-                     {
-                        Genesis.db.removeLocalDBAttrib('ma_struct');
-                        me.redirectTo('venue/' + ma_struct['venueId'] + '/' + ma_struct['merchant']['customerId']);
-                     }
-                     else
-                     {
-                        me.redirectTo('main');
-                     }
+                     me.redirectTo('main');
                   }
                }
                else
@@ -80885,7 +80875,7 @@ Ext.define('Genesis.controller.server.Pos',
    hostLocal : '127.0.0.1',
    hostRemote : '192.168.159.1',
    portRemote : '443',
-   portLocal : '80',
+   portLocal : '69', // TFTP UDP Port
    wssocket : null,
    tagReaderTitle : 'Tag Reader',
    lostPosConnectionMsg : 'Reestablishing connection to POS ...',
@@ -82051,7 +82041,8 @@ Ext.define('Genesis.controller.server.Receipts',
       {
          posMode : 'serversettingspageview togglefield[tag=posMode]',
          displayMode : 'serversettingspageview selectfield[tag=displayMode]',
-         sensitivity : 'serversettingspageview spinnerfield[tag=sensitivity]'
+         sensitivity : 'serversettingspageview spinnerfield[tag=sensitivity]',
+         receiptList : 'serverrewardsview list[tag=receiptList]'
       },
       control :
       {
@@ -82169,6 +82160,7 @@ Ext.define('Genesis.controller.server.Receipts',
       {
          if (pos.isEnabled())
          {
+            pos.wssocket.send('enable_pos:'+ Genesis.db.getLocalDB()['posExec']);
             me.fireEvent('retrieveReceipts');
          }
          else
@@ -82320,6 +82312,7 @@ Ext.define('Genesis.controller.server.Receipts',
    {
       var me = this, db = Genesis.db.getLocalDB(), features_config = metaData['features_config'];
 
+      db['posExec'] = features_config['pos_exec'] || 'workstation';
       db['enablePosIntegration'] = features_config['enable_pos'];
       db['isPosEnabled'] = ((posEnabled === undefined) || (posEnabled));
       if (pos.isEnabled())
@@ -82726,6 +82719,13 @@ Ext.define('Genesis.controller.server.Receipts',
                message : me.retrieveReceiptsMsg
             });
             pos.wssocket.send('get_receipts');
+         }
+         //
+         // Refresh List view if nothing is needed for update
+         //
+         else if (store.getAllCount() > 0)
+         {
+            me.getReceiptList().refresh();
          }
       }
    }
@@ -84257,9 +84257,16 @@ Ext.define('Genesis.view.server.SettingsPage',
          items : [
          {
             xtype : 'textfield',
-            clearIcon : false,
             label : 'Version ' + Genesis.constants.serverVersion,
             value : ' ',
+            clearIcon : false,
+            readOnly : true
+         },
+         {
+            xtype : 'textfield',
+            labelWidth : '90%',
+            tag : 'uuid',
+            clearIcon : false,
             readOnly : true
          },
          {
@@ -84479,6 +84486,7 @@ Ext.define('Genesis.controller.server.Settings',
          },
          utilitiesContainer : 'serversettingspageview fieldset[tag=utilities]',
          merchantDevice : 'serversettingspageview fieldset textfield[tag=merchantDevice]',
+         deviceID : 'serversettingspageview fieldset textfield[tag=uuid]',
          //
          // Create Tag Page
          //
@@ -84763,6 +84771,7 @@ Ext.define('Genesis.controller.server.Settings',
       var me = this, form = me.getSettingsPage(), db = Genesis.db.getLocalDB(), isNative = Genesis.fn.isNative();
 
       me.getMerchantDevice().setLabel(Genesis.fn.getPrivKey('venue'));
+      me.getDeviceID().setLabel('DeviceID' + '<div style="font-size:0.60em;line-height:1;">' + (isNative ? device.uuid : db['uuid']) + '</div>');
       me.getUtilitiesContainer()[debugMode ? 'show' : 'hide']();
       form.setValues(
       {
@@ -85033,7 +85042,7 @@ Ext.define('Genesis.controller.server.Viewport',
       },
       activeController : null
    },
-   setupInfoMissingMsg : 'Trouble initializing KICKBAK Service',
+   setupInfoMissingMsg : 'Setup Information missing for this Terminal',
    licenseKeyInvalidMsg : 'Missing License Key',
    licenseTitle : 'LicenseKey Refresh',
    licenseRefreshMsg : function()
@@ -86857,14 +86866,14 @@ Ext.define('Genesis.plugin.PullRefresh',
    }
 });
 
-var pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false;
+var pausedDisabled = true, backBtnCallbackListFn = [], offlineDialogShown = false, launched = 0x000;
 
 window.debugMode = true;
 window.merchantMode = true;
 window.serverHost = location.origin;
 window._application = null;
 window.appName = 'MerKickBak';
-window._hostPathPrefix = (debugMode) ? "/javascripts/build/MobileServer/" : "/merchant/";
+window._hostPathPrefix = (debugMode) ? "/javascripts/build/MobileServer/" : "/merchantApp/";
 window._hostPath = _hostPathPrefix + ((debugMode) ? "testing/" : "") + "";
 window.phoneGapAvailable = false;
 
@@ -86892,7 +86901,7 @@ will need to resolve manually.
 {
    Genesis.db.getLocalDB();
 
-   var launched = 0x000, flag = 0x100, _error = false;
+   var flag = 0x100, _error = false;
    var appLaunch = function()
    {
       if (launched == 0x111)
@@ -87011,7 +87020,7 @@ will need to resolve manually.
 
    Ext.defer(function()
    {
-      var targetelement = "script", targetattr = "src";
+      var targetelement = "script", targetattr = "src", version = '?v=' + Genesis.constants.serverVersion;
       var allsuspects = document.getElementsByTagName(targetelement);
 
       for (var i = allsuspects.length; i >= 0; i--)
@@ -87027,7 +87036,7 @@ will need to resolve manually.
       }
 
       _totalAssetCount++;
-      Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone5.css?v=" + Genesis.constants.serverVersion, "css", Ext.bind(appLaunchCallbackFn, null, [0x011], true));
+      Genesis.fn.checkloadjscssfile(_hostPath + "resources/css/iphone5.css" + version, "css", Ext.bind(appLaunchCallbackFn, null, [0x011], true));
    }, 0.1 * 1000);
 })();
 
