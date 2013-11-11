@@ -28,6 +28,9 @@ Genesis::Application.routes.draw do
       resources :customers, :only => [:index], :path => "members"
       resources :invoices, :only => [:index, :show]
       resources :promotions, :only => [:index, :new, :create]
+      resources :feedbacks, :only => [:index, :show] do
+        get 'show_charts', :on => :collection
+      end
       #resources :deals
               
       match "/dashboard" => 'analytics#index', :as => :dashboard
@@ -84,9 +87,8 @@ Genesis::Application.routes.draw do
       resources :staffs
       resources :merchants do
         resources :venues, :only => [:index, :edit] do
-          put "update_device_type", :on => :member, :as => :update_device_type
           get "features_config", :on => :member, :as => :features_config
-          put "update_pos_config", :on => :member, :as => :update_pos_config
+          put "update_features_config", :on => :member, :as => :update_features_config
         end
         resources :devices
         resources :invoices do
@@ -196,6 +198,9 @@ Genesis::Application.routes.draw do
     
     match "/dashboard" => 'dashboard#index', :as => :dashboard
     match "/business/:id" => "merchants#show", :as => :business_profile
+    match "/business/:merchant_id/venue/:venue_id/feedback/new" => "merchant_feedbacks#new", :as => :new_merchant_feedback
+    match "/business/:merchant_id/venue/:venue_id/feedback/create" => "merchant_feedbacks#create", :via => :post, :as => :create_merchant_feedback
+    match "/business/:merchant_id/venue/:venue_id/feedback/thank_you" => "merchant_feedbacks#thank_you"
     match "/register_tag" => 'dashboard#register_tag', :via => :post, :as => :register_tag
     match "/deregister_tag" => 'dashboard#deregister_tag', :via => :delete, :as => :deregister_tag
     match "/account" => 'users#edit', :as => :account
@@ -212,15 +217,16 @@ Genesis::Application.routes.draw do
     match "/account/facebook_settings/update_facebook_rewards" => 'users#update_facebook_rewards', :via => :post, :as => :update_facebook_rewards
     
     match "/validate_phone" => 'pages#validate_phone', :via => :post, :as => :validate_phone
-    #match "/how_it_works" => 'pages#how_it_works'
-    match "/privacy" => 'pages#privacy'
-    match "/terms" => 'pages#terms'
-    match "/contact_us" => 'pages#contact_us'
-    match "/contact_us/create" => 'pages#contact_us_create', :via => :post, :as => :create_contact
-    #match "/faq" => 'pages#faq'
+    match "/about_us" => 'pages#about_us'
     match "/business" => 'pages#add_business'
     match "/add_business" => 'pages#add_business'
     match "/add_business/create" => 'pages#add_business_create', :via => :post, :as => :create_merchant_contact
+    #match "/find_locations" => "pages#find_locations"
+    match "/faq" => 'pages#faq'
+    match "/contact_us" => 'pages#contact_us'
+    match "/contact_us/create" => 'pages#contact_us_create', :via => :post, :as => :create_contact
+    match "/privacy" => 'pages#privacy'
+    match "/terms" => 'pages#terms'
     match "/d", :to => 'pages#index'
     match "/download", :to => 'pages#index'
     

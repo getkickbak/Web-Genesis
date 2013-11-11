@@ -4,12 +4,15 @@ class UserDevise::RegistrationsController < Devise::RegistrationsController
   # GET /resource/sign_up
   def new
     @user = build_resource({})
+=begin    
     user = User.first(:phone => session[:phone_number])
     if user
       session[:has_tag] = !user.tags.first.nil?
     else
       session[:has_tag] = false
-    end  
+    end 
+=end 
+    session[:has_tag] = false    
     respond_with @user
   end
   
@@ -62,10 +65,12 @@ class UserDevise::RegistrationsController < Devise::RegistrationsController
   private
   
   def check_phone
+=begin
     if session[:phone_number].nil?
       respond_to do |format|
         format.html { redirect_to root_path }
       end
     end
+=end
   end
 end 

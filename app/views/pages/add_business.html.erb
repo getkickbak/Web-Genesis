@@ -1,93 +1,108 @@
+<% content_for :meta do %> 
+<title>Kickbak - For Business</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="">
+<% end %>
 <% content_for :link do %>
-<link rel="stylesheet" href="/javascripts/desktop/lib/videoLightBox-1.10/css/videolightbox.css"/>
-<link rel="stylesheet" href="/javascripts/desktop/lib/videoLightBox-1.10/css/overlay-minimal.css"/>
-<link rel="stylesheet" href="/javascripts/desktop/css/add_business.css"/>
-<!--[if lt IE 9]>
-<link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
-<![endif]-->
-<style type="text/css">
-	#videogallery a#videolb {
-		display:none;
-	}
-</style>
-<% end %>
-<% content_for :background do %>
-<div id="page-background-top">
-	<img src="https://s3.amazonaws.com/files.getkickbak.com/v1/headerimage6.jpg">
-</div>
-<div id="page-background-bottom">
-	<img src="https://s3.amazonaws.com/files.getkickbak.com/v1/contentbg.png">
-</div>
-<% end %>
-<% content_for :script do %>
-<!-- -->
-<script type="text/javascript" src="http://cdn.jquerytools.org/1.2.7/full/jquery.tools.min.js"></script>
-<script type="text/javascript" src="/javascripts/desktop/lib/videoLightBox-1.10/js/swfobject.js"></script>
-<script type="text/javascript" src="/javascripts/desktop/lib/videoLightBox-1.10/js/videolightbox.js"></script>
-<script type="text/javascript">
-	function onYouTubePlayerReady(playerId) {
-	ytplayer=document.getElementById("onYouTubePlayerReady_overlay");
-	ytplayer.setVolume(80);
-	}
-</script>
 <% end %>
 
-<div id="main" class="container">
-	<!--/Hero Unit-->
-	<div class="row addbusiness">
-		<!--
-		<img src="https://s3.amazonaws.com/files.getkickbak.com/v1/business.gif" />
-		-->
-		<div class="span12">
-			<div class="hero-unit">
-				<h1> KICKBAK loyalty program works to
-				<br>
-				acquire, retain, and increase customers
-				<br>
-				for your business. </h1>
-				<h2>Find out how.</h2>
-			</div>
-			<div id="videogallery">
-				<!--
-				<a rel="#voverlay"
-				href="/javascripts/desktop/lib/videoLightBox-1.10/swf/player.swf?url=../../../movie.f4v&amp;volume=100"
-				title="">
-				-->
-				<a rel="#voverlay" href="http://www.youtube.com/v/t8DmQoEvdsY?autoplay=1&amp;rel=0&amp;enablejsapi=1&amp;playerapiid=ytplayer" > <!-- --> <img border="0" src="/javascripts/desktop/img/icon-video.png" /> </a>
-			</div>
-		</div>
+<section id="slider">
+	<div class="flexslider">
+		<ul class="slides">
+			<li><img src="https://s3.amazonaws.com/files.getkickbak.com/v1/main_desktop/images/shopping-banner.jpg" alt="">
+			</li>
+		</ul>
 	</div>
-	<!--/Cotnact Form-->
-	<div class="row" style="margin-top:40px;">
-		<% if flash[:notice] %>
-		<div class="alert alert-warning">
-			<a class="close" data-dismiss="alert" href="#">×</a>
-			<%= flash[:notice] %>
+</section>
+
+<div class="container">
+	<div class="middle">
+		<iframe class="fb-vid" width="80%" height="350" src="http://www.youtube.com/embed/t8DmQoEvdsY?rel=0" frameborder="0" allowfullscreen>
+			<span class="s-right"></span>
+		</iframe>
+		<h1 class="below-video">Keep customers coming back with rewards.</h1>
+	</div>
+	<div class="alert_green">
+		<div class="a-bg">
+			Daily deals and group discounts are nice but if you want to keep customers coming back, you need what the big brands have - a loyalty program that gives them reason to return. That's what you get from Kickbak.
 		</div>
-		<% end %>
-		<div class="widget">
-			<div class="span12" style="margin-bottom:40px;">
-				<p class="consultation">
-					To schedule a FREE consultation for your business:
+	</div><!--/alert green -->
+</div><!--/container -->
+
+<div class="container">
+	<div class="middle">
+		<br>
+		<br>
+		<div class="row">
+			<div class="span4">
+				<img src="https://s3.amazonaws.com/files.getkickbak.com/v1/main_desktop/images/icon-shop.png" alt="">
+				<br>
+				<br>
+				<h3>Keep customers coming back</h3>
+				<p>
+					Create promos using text, email, and mobile to reach customers more ways with reasons to visit your store again. You can even set up promos to run automatically for birthdays, "we miss you" reminders, and more.
 				</p>
-			</div>
-			<div class="span2"></div>
-			<div class="span8 createForm">
-				<%= simple_form_for @merchant_contact, :url => create_merchant_contact_path do |f| %>
-				<%= f.input :name, :input_html => { :style => 'width:260px;' }, :wrapper_html => { :class => 'span_field' } %>
-				<%= f.input :email, :input_html => { :style => 'width:260px;' }, :wrapper_html => { :class => 'span_field' } %>
-				<%= f.input :business_name, :input_html => { :style => 'width:260px;' }, :wrapper_html => { :class => 'span_field' } %>
-				<%= f.input :phone, :input_html => { :style => 'width:260px;' }, :wrapper_html => { :class => 'span_field' } %>
-				<%= f.input :address, :input_html => { :style => 'width:260px;' }, :wrapper_html => { :class => 'span_field' } %>
-				<%= f.input :city, :input_html => { :style => 'width:260px;' }, :wrapper_html => { :class => 'span_field' } %>
-				<%= f.input :province, :collection => MerchantContact.states, :input_html => { :style => 'width:270px;' }, :wrapper_html => { :class => 'span_field' } %>
-				<%= f.input :message, :as => :text, :required => false, :input_html => { :rows => 5, :style => 'width:260px;' }, :wrapper_html => { :class => 'span_field' } %>
-				<div class="pull-right">
-					<%= f.button :submit, 'Send', :type => :image, :src => 'https://s3.amazonaws.com/files.getkickbak.com/v1/send2.png' %>
-				</div>
-				<% end %>
-			</div>
-			<div class="span2"></div>
-		</div>
-	</div>
-</div>
+			</div><!-- span3 -->
+
+			<div class="span4">
+				<img src="https://s3.amazonaws.com/files.getkickbak.com/v1/main_desktop/images/icon-smile.png" alt="">
+				<br>
+				<br>
+				<h3>Keep customers happy</h3>
+				<p>
+					Measure customer satisfaction with simple surveys that let customers give feedback right away - and help you nip problems in the bud before they post negative reviews.
+				</p>
+			</div><!-- span3 -->
+
+			<div class="span4">
+				<img src="https://s3.amazonaws.com/files.getkickbak.com/v1/main_desktop/images/icon-tag.png" alt="">
+				<br>
+				<br>
+				<h3>Get more business</h3>
+				<p>
+					Because all kinds of local merchants can use Kickbak, you'll get more business as Kickbak customers look for new places to get rewards.
+				</p>
+			</div><!-- span3 -->
+
+		</div><!-- row -->
+		<br>
+		<br>
+		<div class="row">
+
+			<div class="span4">
+				<img src="https://s3.amazonaws.com/files.getkickbak.com/v1/main_desktop/images/icon-smart-customers.png" alt="">
+				<br>
+				<br>
+				<h3>Get smarter about your customers</h3>
+				<p>
+					Find out who your best customers are, what they spend, how many times they visit and more so you get smarter about how to keep them coming back.
+				</p>
+			</div><!-- span3 -->
+
+			<div class="span4">
+				<img src="https://s3.amazonaws.com/files.getkickbak.com/v1/main_desktop/images/icon-customers.png" alt="">
+				<br>
+				<br>
+				<h3>Attract more customers</h3>
+				<p>
+					Because Kickbak works with key tags, cards and smartphones, you give customers the choice to use what they like best.
+				</p>
+			</div><!-- span3 -->
+
+			<div class="span4">
+				<img src="https://s3.amazonaws.com/files.getkickbak.com/v1/main_desktop/images/icon-loud.png" alt="">
+				<br>
+				<br>
+				<h3>Spread the word</h3>
+				<p>
+					Every time you reward a customer, it appears on their Facebook page so all their friends will find out about your program.
+				</p>
+			</div><!-- span3 -->
+
+		</div><!-- row -->
+	</div><!--/middle -->
+	<br>
+	<br>
+	<br>
+</div><!-- /container -->

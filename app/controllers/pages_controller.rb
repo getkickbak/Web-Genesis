@@ -6,6 +6,32 @@ class PagesController < ApplicationController
     @registration_step1 = RegistrationStep1.new
   end
   
+  def about_us
+    
+  end
+  
+  def faq
+    
+  end
+  
+  def add_business
+    @merchant_contact = MerchantContact.new
+  end
+
+  def add_business_create
+    @merchant_contact = MerchantContact.new(params[:merchant_contact])
+    if @merchant_contact.valid?
+      UserMailer.add_merchant_contact_email(@merchant_contact).deliver
+      respond_to do |format|
+        format.html { redirect_to({:action => 'add_business'}, {:notice => 'Email was successfully sent.'}) }
+      end
+    else
+      respond_to do |format|
+        format.html { render :action => 'add_business' }
+      end
+    end
+  end
+  
   def validate_phone
     @registration_step1 = RegistrationStep1.new(params[:registration_step1])
     if @registration_step1.valid?
@@ -18,10 +44,6 @@ class PagesController < ApplicationController
         format.html { render :action => 'index' }
       end
     end  
-  end
-  
-  def how_it_works
-    @show_reward = true
   end
 
   def contact_us
@@ -47,28 +69,6 @@ class PagesController < ApplicationController
         end
       end
     end
-  end
-
-  def add_business
-    @merchant_contact = MerchantContact.new
-  end
-
-  def add_business_create
-    @merchant_contact = MerchantContact.new(params[:merchant_contact])
-    if @merchant_contact.valid?
-      UserMailer.add_merchant_contact_email(@merchant_contact).deliver
-      respond_to do |format|
-        format.html { redirect_to({:action => 'add_business'}, {:notice => 'Email was successfully sent.'}) }
-      end
-    else
-      respond_to do |format|
-        format.html { render :action => 'add_business' }
-      end
-    end
-  end
-  
-  def coming_soon
-      
   end
   
   def terms
