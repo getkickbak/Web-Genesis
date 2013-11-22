@@ -2462,7 +2462,7 @@ var setChildBrowserVisibility = function(visible, hash, pushNotif)
             else
             {
             }
-            $(".iframe")[0].src = '../index.html' + version + '#' + hash;
+            $(".iframe")[0].src = 'index.html' + version + '#' + hash;
             $(".iframe").removeClass('x-item-hidden');
          }
       }

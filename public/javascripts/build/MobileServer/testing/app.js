@@ -50082,6 +50082,179 @@ Ext.define('Ext.data.Errors', {
  * @author Ed Spencer
  * @aside guide models
  *
+ * This singleton contains a set of validation functions that can be used to validate any type of data. They are most
+ * often used in {@link Ext.data.Model Models}, where they are automatically set up and executed.
+ */
+Ext.define('Ext.data.Validations', {
+    alternateClassName: 'Ext.data.validations',
+
+    singleton: true,
+
+    config: {
+        /**
+         * @property {String} presenceMessage
+         * The default error message used when a presence validation fails.
+         */
+        presenceMessage: 'must be present',
+
+        /**
+         * @property {String} lengthMessage
+         * The default error message used when a length validation fails.
+         */
+        lengthMessage: 'is the wrong length',
+
+        /**
+         * @property {Boolean} formatMessage
+         * The default error message used when a format validation fails.
+         */
+        formatMessage: 'is the wrong format',
+
+        /**
+         * @property {String} inclusionMessage
+         * The default error message used when an inclusion validation fails.
+         */
+        inclusionMessage: 'is not included in the list of acceptable values',
+
+        /**
+         * @property {String} exclusionMessage
+         * The default error message used when an exclusion validation fails.
+         */
+        exclusionMessage: 'is not an acceptable value',
+
+        /**
+         * @property {String} emailMessage
+         * The default error message used when an email validation fails
+         */
+        emailMessage: 'is not a valid email address'
+    },
+
+    constructor: function(config) {
+        this.initConfig(config);
+    },
+
+    /**
+     * Returns the configured error message for any of the validation types.
+     * @param {String} type The type of validation you want to get the error message for.
+     * @return {Object}
+     */
+    getMessage: function(type) {
+        var getterFn = this['get' + type[0].toUpperCase() + type.slice(1) + 'Message'];
+        if (getterFn) {
+            return getterFn.call(this);
+        }
+        return '';
+    },
+
+    /**
+     * The regular expression used to validate email addresses
+     * @property emailRe
+     * @type RegExp
+     */
+    emailRe: /^\s*[\w\-\+_]+(\.[\w\-\+_]+)*\@[\w\-\+_]+\.[\w\-\+_]+(\.[\w\-\+_]+)*\s*$/,
+
+    /**
+     * Validates that the given value is present.
+     * For example:
+     *
+     *     validations: [{type: 'presence', field: 'age'}]
+     *
+     * @param {Object} config Config object.
+     * @param {Object} value The value to validate.
+     * @return {Boolean} `true` if validation passed.
+     */
+    presence: function(config, value) {
+        if (arguments.length === 1) {
+            value = config;
+        }
+        return !!value || value === 0;
+    },
+
+    /**
+     * Returns `true` if the given value is between the configured min and max values.
+     * For example:
+     *
+     *     validations: [{type: 'length', field: 'name', min: 2}]
+     *
+     * @param {Object} config Config object.
+     * @param {String} value The value to validate.
+     * @return {Boolean} `true` if the value passes validation.
+     */
+    length: function(config, value) {
+        if (value === undefined || value === null) {
+            return false;
+        }
+
+        var length = value.length,
+            min    = config.min,
+            max    = config.max;
+
+        if ((min && length < min) || (max && length > max)) {
+            return false;
+        } else {
+            return true;
+        }
+    },
+
+    /**
+     * Validates that an email string is in the correct format.
+     * @param {Object} config Config object.
+     * @param {String} email The email address.
+     * @return {Boolean} `true` if the value passes validation.
+     */
+    email: function(config, email) {
+        return Ext.data.validations.emailRe.test(email);
+    },
+
+    /**
+     * Returns `true` if the given value passes validation against the configured `matcher` regex.
+     * For example:
+     *
+     *     validations: [{type: 'format', field: 'username', matcher: /([a-z]+)[0-9]{2,3}/}]
+     *
+     * @param {Object} config Config object.
+     * @param {String} value The value to validate.
+     * @return {Boolean} `true` if the value passes the format validation.
+     */
+    format: function(config, value) {
+        if (value === undefined || value === null) {
+            value = '';
+        }
+        return !!(config.matcher && config.matcher.test(value));
+    },
+
+    /**
+     * Validates that the given value is present in the configured `list`.
+     * For example:
+     *
+     *     validations: [{type: 'inclusion', field: 'gender', list: ['Male', 'Female']}]
+     *
+     * @param {Object} config Config object.
+     * @param {String} value The value to validate.
+     * @return {Boolean} `true` if the value is present in the list.
+     */
+    inclusion: function(config, value) {
+        return config.list && Ext.Array.indexOf(config.list,value) != -1;
+    },
+
+    /**
+     * Validates that the given value is present in the configured `list`.
+     * For example:
+     *
+     *     validations: [{type: 'exclusion', field: 'username', list: ['Admin', 'Operator']}]
+     *
+     * @param {Object} config Config object.
+     * @param {String} value The value to validate.
+     * @return {Boolean} `true` if the value is not present in the list.
+     */
+    exclusion: function(config, value) {
+        return config.list && Ext.Array.indexOf(config.list,value) == -1;
+    }
+});
+
+/**
+ * @author Ed Spencer
+ * @aside guide models
+ *
  * A Model represents some object that your application manages. For example, one might define a Model for Users,
  * Products, Cars, or any other real-world object that we want to model in the system. Models are registered via the
  * {@link Ext.data.ModelManager model manager}, and are used by {@link Ext.data.Store stores}, which are in turn used by many
@@ -51770,6 +51943,75 @@ Ext.define('Ext.data.Model', {
                 onBeforeClassCreated.call(Model, cls, data, hooks);
             });
         };
+    }
+});
+
+/**
+ * @author Ed Spencer
+ * @class Ext.data.reader.Array
+ *
+ * Data reader class to create an Array of {@link Ext.data.Model} objects from an Array.
+ * Each element of that Array represents a row of data fields. The
+ * fields are pulled into a Record object using as a subscript, the `mapping` property
+ * of the field definition if it exists, or the field's ordinal position in the definition.
+ *
+ * Example code:
+ *
+ *     Employee = Ext.define('Employee', {
+ *         extend: 'Ext.data.Model',
+ *         config: {
+ *             fields: [
+ *                 'id',
+ *                 {name: 'name', mapping: 1}, // "mapping" only needed if an "id" field is present which
+ *                 {name: 'occupation', mapping: 2} // precludes using the ordinal position as the index.
+ *             ]
+ *         }
+ *     });
+ *
+ *     var myReader = new Ext.data.reader.Array({
+ *         model: 'Employee'
+ *     }, Employee);
+ *
+ * This would consume an Array like this:
+ *
+ *     [ [1, 'Bill', 'Gardener'], [2, 'Ben', 'Horticulturalist'] ]
+ *
+ * @constructor
+ * Create a new ArrayReader
+ * @param {Object} meta Metadata configuration options.
+ */
+Ext.define('Ext.data.reader.Array', {
+    extend:  Ext.data.reader.Json ,
+    alternateClassName: 'Ext.data.ArrayReader',
+    alias : 'reader.array',
+
+    // For Array Reader, methods in the base which use these properties must not see the defaults
+    config: {
+        totalProperty: undefined,
+        successProperty: undefined
+    },
+
+    /**
+     * @private
+     * Returns an accessor expression for the passed Field from an Array using either the Field's mapping, or
+     * its ordinal position in the fields collection as the index.
+     * This is used by buildExtractors to create optimized on extractor function which converts raw data into model instances.
+     */
+    createFieldAccessExpression: function(field, fieldVarName, dataName) {
+        var me     = this,
+            mapping = field.getMapping(),
+            index  = (mapping == null) ? me.getModel().getFields().indexOf(field) : mapping,
+            result;
+
+        if (typeof index === 'function') {
+            result = fieldVarName + '.getMapping()(' + dataName + ', this)';
+        } else {
+            if (isNaN(index)) {
+                index = '"' + index + '"';
+            }
+            result = dataName + "[" + index + "]";
+        }
+        return result;
     }
 });
 
@@ -54347,179 +54589,6 @@ Ext.define('Ext.data.ArrayStore', {
 });
 
 /**
- * @author Ed Spencer
- * @aside guide models
- *
- * This singleton contains a set of validation functions that can be used to validate any type of data. They are most
- * often used in {@link Ext.data.Model Models}, where they are automatically set up and executed.
- */
-Ext.define('Ext.data.Validations', {
-    alternateClassName: 'Ext.data.validations',
-
-    singleton: true,
-
-    config: {
-        /**
-         * @property {String} presenceMessage
-         * The default error message used when a presence validation fails.
-         */
-        presenceMessage: 'must be present',
-
-        /**
-         * @property {String} lengthMessage
-         * The default error message used when a length validation fails.
-         */
-        lengthMessage: 'is the wrong length',
-
-        /**
-         * @property {Boolean} formatMessage
-         * The default error message used when a format validation fails.
-         */
-        formatMessage: 'is the wrong format',
-
-        /**
-         * @property {String} inclusionMessage
-         * The default error message used when an inclusion validation fails.
-         */
-        inclusionMessage: 'is not included in the list of acceptable values',
-
-        /**
-         * @property {String} exclusionMessage
-         * The default error message used when an exclusion validation fails.
-         */
-        exclusionMessage: 'is not an acceptable value',
-
-        /**
-         * @property {String} emailMessage
-         * The default error message used when an email validation fails
-         */
-        emailMessage: 'is not a valid email address'
-    },
-
-    constructor: function(config) {
-        this.initConfig(config);
-    },
-
-    /**
-     * Returns the configured error message for any of the validation types.
-     * @param {String} type The type of validation you want to get the error message for.
-     * @return {Object}
-     */
-    getMessage: function(type) {
-        var getterFn = this['get' + type[0].toUpperCase() + type.slice(1) + 'Message'];
-        if (getterFn) {
-            return getterFn.call(this);
-        }
-        return '';
-    },
-
-    /**
-     * The regular expression used to validate email addresses
-     * @property emailRe
-     * @type RegExp
-     */
-    emailRe: /^\s*[\w\-\+_]+(\.[\w\-\+_]+)*\@[\w\-\+_]+\.[\w\-\+_]+(\.[\w\-\+_]+)*\s*$/,
-
-    /**
-     * Validates that the given value is present.
-     * For example:
-     *
-     *     validations: [{type: 'presence', field: 'age'}]
-     *
-     * @param {Object} config Config object.
-     * @param {Object} value The value to validate.
-     * @return {Boolean} `true` if validation passed.
-     */
-    presence: function(config, value) {
-        if (arguments.length === 1) {
-            value = config;
-        }
-        return !!value || value === 0;
-    },
-
-    /**
-     * Returns `true` if the given value is between the configured min and max values.
-     * For example:
-     *
-     *     validations: [{type: 'length', field: 'name', min: 2}]
-     *
-     * @param {Object} config Config object.
-     * @param {String} value The value to validate.
-     * @return {Boolean} `true` if the value passes validation.
-     */
-    length: function(config, value) {
-        if (value === undefined || value === null) {
-            return false;
-        }
-
-        var length = value.length,
-            min    = config.min,
-            max    = config.max;
-
-        if ((min && length < min) || (max && length > max)) {
-            return false;
-        } else {
-            return true;
-        }
-    },
-
-    /**
-     * Validates that an email string is in the correct format.
-     * @param {Object} config Config object.
-     * @param {String} email The email address.
-     * @return {Boolean} `true` if the value passes validation.
-     */
-    email: function(config, email) {
-        return Ext.data.validations.emailRe.test(email);
-    },
-
-    /**
-     * Returns `true` if the given value passes validation against the configured `matcher` regex.
-     * For example:
-     *
-     *     validations: [{type: 'format', field: 'username', matcher: /([a-z]+)[0-9]{2,3}/}]
-     *
-     * @param {Object} config Config object.
-     * @param {String} value The value to validate.
-     * @return {Boolean} `true` if the value passes the format validation.
-     */
-    format: function(config, value) {
-        if (value === undefined || value === null) {
-            value = '';
-        }
-        return !!(config.matcher && config.matcher.test(value));
-    },
-
-    /**
-     * Validates that the given value is present in the configured `list`.
-     * For example:
-     *
-     *     validations: [{type: 'inclusion', field: 'gender', list: ['Male', 'Female']}]
-     *
-     * @param {Object} config Config object.
-     * @param {String} value The value to validate.
-     * @return {Boolean} `true` if the value is present in the list.
-     */
-    inclusion: function(config, value) {
-        return config.list && Ext.Array.indexOf(config.list,value) != -1;
-    },
-
-    /**
-     * Validates that the given value is present in the configured `list`.
-     * For example:
-     *
-     *     validations: [{type: 'exclusion', field: 'username', list: ['Admin', 'Operator']}]
-     *
-     * @param {Object} config Config object.
-     * @param {String} value The value to validate.
-     * @return {Boolean} `true` if the value is not present in the list.
-     */
-    exclusion: function(config, value) {
-        return config.list && Ext.Array.indexOf(config.list,value) == -1;
-    }
-});
-
-/**
  * @author Tommy Maintz
  *
  * This class generates UUID's according to RFC 4122. This class has a default id property.
@@ -55290,75 +55359,6 @@ Ext.define('Ext.data.proxy.LocalStorage', {
     //inherit docs
     getStorageObject: function() {
         return window.localStorage;
-    }
-});
-
-/**
- * @author Ed Spencer
- * @class Ext.data.reader.Array
- *
- * Data reader class to create an Array of {@link Ext.data.Model} objects from an Array.
- * Each element of that Array represents a row of data fields. The
- * fields are pulled into a Record object using as a subscript, the `mapping` property
- * of the field definition if it exists, or the field's ordinal position in the definition.
- *
- * Example code:
- *
- *     Employee = Ext.define('Employee', {
- *         extend: 'Ext.data.Model',
- *         config: {
- *             fields: [
- *                 'id',
- *                 {name: 'name', mapping: 1}, // "mapping" only needed if an "id" field is present which
- *                 {name: 'occupation', mapping: 2} // precludes using the ordinal position as the index.
- *             ]
- *         }
- *     });
- *
- *     var myReader = new Ext.data.reader.Array({
- *         model: 'Employee'
- *     }, Employee);
- *
- * This would consume an Array like this:
- *
- *     [ [1, 'Bill', 'Gardener'], [2, 'Ben', 'Horticulturalist'] ]
- *
- * @constructor
- * Create a new ArrayReader
- * @param {Object} meta Metadata configuration options.
- */
-Ext.define('Ext.data.reader.Array', {
-    extend:  Ext.data.reader.Json ,
-    alternateClassName: 'Ext.data.ArrayReader',
-    alias : 'reader.array',
-
-    // For Array Reader, methods in the base which use these properties must not see the defaults
-    config: {
-        totalProperty: undefined,
-        successProperty: undefined
-    },
-
-    /**
-     * @private
-     * Returns an accessor expression for the passed Field from an Array using either the Field's mapping, or
-     * its ordinal position in the fields collection as the index.
-     * This is used by buildExtractors to create optimized on extractor function which converts raw data into model instances.
-     */
-    createFieldAccessExpression: function(field, fieldVarName, dataName) {
-        var me     = this,
-            mapping = field.getMapping(),
-            index  = (mapping == null) ? me.getModel().getFields().indexOf(field) : mapping,
-            result;
-
-        if (typeof index === 'function') {
-            result = fieldVarName + '.getMapping()(' + dataName + ', this)';
-        } else {
-            if (isNaN(index)) {
-                index = '"' + index + '"';
-            }
-            result = dataName + "[" + index + "]";
-        }
-        return result;
     }
 });
 
@@ -71293,1065 +71293,6 @@ Ext.define('Ext.tab.Panel', {
 }, function() {
 });
 
-/**
- * @private
- * Base class for iOS and Android viewports.
- */
-Ext.define('Ext.viewport.Default', {
-    extend:  Ext.Container ,
-
-    xtype: 'viewport',
-
-    PORTRAIT: 'portrait',
-
-    LANDSCAPE: 'landscape',
-
-               
-                       
-                         
-      
-
-    /**
-     * @event ready
-     * Fires when the Viewport is in the DOM and ready.
-     * @param {Ext.Viewport} this
-     */
-
-    /**
-     * @event maximize
-     * Fires when the Viewport is maximized.
-     * @param {Ext.Viewport} this
-     */
-
-    /**
-     * @event orientationchange
-     * Fires when the Viewport orientation has changed.
-     * @param {Ext.Viewport} this
-     * @param {String} newOrientation The new orientation.
-     * @param {Number} width The width of the Viewport.
-     * @param {Number} height The height of the Viewport.
-     */
-
-    config: {
-        /**
-         * @cfg {Boolean} autoMaximize
-         * Whether or not to always automatically maximize the viewport on first load and all subsequent orientation changes.
-         *
-         * This is set to `false` by default for a number of reasons:
-         *
-         * - Orientation change performance is drastically reduced when this is enabled, on all devices.
-         * - On some devices (mostly Android) this can sometimes cause issues when the default browser zoom setting is changed.
-         * - When wrapping your phone in a native shell, you may get a blank screen.
-         * - When bookmarked to the homescreen (iOS), you may get a blank screen.
-         *
-         * @accessor
-         */
-        autoMaximize: false,
-
-        /**
-         * @private
-         */
-        autoBlurInput: true,
-
-        /**
-         * @cfg {Boolean} preventPanning
-         * Whether or not to always prevent default panning behavior of the
-         * browser's viewport.
-         * @accessor
-         */
-        preventPanning: true,
-
-        /**
-         * @cfg {Boolean} preventZooming
-         * `true` to attempt to stop zooming when you double tap on the screen on mobile devices,
-         * typically HTC devices with HTC Sense UI.
-         * @accessor
-         */
-        preventZooming: false,
-
-        /**
-         * @cfg
-         * @private
-         */
-        autoRender: true,
-
-        /**
-         * @cfg {Object/String} layout Configuration for this Container's layout. Example:
-         *
-         *     Ext.create('Ext.Container', {
-         *         layout: {
-         *             type: 'hbox',
-         *             align: 'middle'
-         *         },
-         *         items: [
-         *             {
-         *                 xtype: 'panel',
-         *                 flex: 1,
-         *                 style: 'background-color: red;'
-         *             },
-         *             {
-         *                 xtype: 'panel',
-         *                 flex: 2,
-         *                 style: 'background-color: green'
-         *             }
-         *         ]
-         *     });
-         *
-         * See the [layouts guide](#!/guides/layouts) for more information.
-         *
-         * @accessor
-         */
-        layout: 'card',
-
-        /**
-         * @cfg
-         * @private
-         */
-        width: '100%',
-
-        /**
-         * @cfg
-         * @private
-         */
-        height: '100%',
-
-        useBodyElement: true
-    },
-
-    /**
-     * @property {Boolean} isReady
-     * `true` if the DOM is ready.
-     */
-    isReady: false,
-
-    isViewport: true,
-
-    isMaximizing: false,
-
-    id: 'ext-viewport',
-
-    isInputRegex: /^(input|textarea|select|a)$/i,
-
-    focusedElement: null,
-
-    /**
-     * @private
-     */
-    fullscreenItemCls: Ext.baseCSSPrefix + 'fullscreen',
-
-    constructor: function(config) {
-        var bind = Ext.Function.bind;
-
-        this.doPreventPanning = bind(this.doPreventPanning, this);
-        this.doPreventZooming = bind(this.doPreventZooming, this);
-        this.doBlurInput = bind(this.doBlurInput, this);
-
-        this.maximizeOnEvents = ['ready', 'orientationchange'];
-
-        this.orientation = this.determineOrientation();
-        this.windowWidth = this.getWindowWidth();
-        this.windowHeight = this.getWindowHeight();
-        this.windowOuterHeight = this.getWindowOuterHeight();
-
-        if (!this.stretchHeights) {
-            this.stretchHeights = {};
-        }
-
-        this.callParent([config]);
-
-        // Android is handled separately
-        if (!Ext.os.is.Android || Ext.browser.name == 'ChromeMobile') {
-            if (this.supportsOrientation()) {
-                this.addWindowListener('orientationchange', bind(this.onOrientationChange, this));
-            }
-            else {
-                this.addWindowListener('resize', bind(this.onResize, this));
-            }
-        }
-
-        document.addEventListener('focus', bind(this.onElementFocus, this), true);
-        document.addEventListener('blur', bind(this.onElementBlur, this), true);
-
-        Ext.onDocumentReady(this.onDomReady, this);
-
-        this.on('ready', this.onReady, this, {single: true});
-
-        this.getEventDispatcher().addListener('component', '*', 'fullscreen', 'onItemFullscreenChange', this);
-
-        return this;
-    },
-
-    onDomReady: function() {
-        this.isReady = true;
-        this.updateSize();
-        this.fireEvent('ready', this);
-    },
-
-    onReady: function() {
-        if (this.getAutoRender()) {
-            this.render();
-        }
-    },
-
-    onElementFocus: function(e) {
-        this.focusedElement = e.target;
-    },
-
-    onElementBlur: function() {
-        this.focusedElement = null;
-    },
-
-    render: function() {
-        if (!this.rendered) {
-            var body = Ext.getBody(),
-                clsPrefix = Ext.baseCSSPrefix,
-                classList = [],
-                osEnv = Ext.os,
-                osName = osEnv.name.toLowerCase(),
-                browserName = Ext.browser.name.toLowerCase(),
-                osMajorVersion = osEnv.version.getMajor(),
-                orientation = this.getOrientation();
-
-            this.renderTo(body);
-
-            classList.push(clsPrefix + osEnv.deviceType.toLowerCase());
-
-            if (osEnv.is.iPad) {
-                classList.push(clsPrefix + 'ipad');
-            }
-
-            classList.push(clsPrefix + osName);
-            classList.push(clsPrefix + browserName);
-
-            if (osMajorVersion) {
-                classList.push(clsPrefix + osName + '-' + osMajorVersion);
-            }
-
-            if (osEnv.is.BlackBerry) {
-                classList.push(clsPrefix + 'bb');
-            }
-
-            if (Ext.browser.is.Standalone) {
-                classList.push(clsPrefix + 'standalone');
-            }
-
-            classList.push(clsPrefix + orientation);
-
-            body.addCls(classList);
-        }
-    },
-
-    applyAutoBlurInput: function(autoBlurInput) {
-        var touchstart = (Ext.feature.has.Touch) ? 'touchstart' : 'mousedown';
-
-        if (autoBlurInput) {
-            this.addWindowListener(touchstart, this.doBlurInput, false);
-        }
-        else {
-            this.removeWindowListener(touchstart, this.doBlurInput, false);
-        }
-
-        return autoBlurInput;
-    },
-
-    applyAutoMaximize: function(autoMaximize) {
-        if (Ext.browser.is.WebView) {
-            autoMaximize = false;
-        }
-        if (autoMaximize) {
-            this.on('ready', 'doAutoMaximizeOnReady', this, { single: true });
-            this.on('orientationchange', 'doAutoMaximizeOnOrientationChange', this);
-        }
-        else {
-            this.un('ready', 'doAutoMaximizeOnReady', this);
-            this.un('orientationchange', 'doAutoMaximizeOnOrientationChange', this);
-        }
-
-        return autoMaximize;
-    },
-
-    applyPreventPanning: function(preventPanning) {
-        if (preventPanning) {
-            this.addWindowListener('touchmove', this.doPreventPanning, false);
-        }
-        else {
-            this.removeWindowListener('touchmove', this.doPreventPanning, false);
-        }
-
-        return preventPanning;
-    },
-
-    applyPreventZooming: function(preventZooming) {
-        var touchstart = (Ext.feature.has.Touch) ? 'touchstart' : 'mousedown';
-
-        if (preventZooming) {
-            this.addWindowListener(touchstart, this.doPreventZooming, false);
-        }
-        else {
-            this.removeWindowListener(touchstart, this.doPreventZooming, false);
-        }
-
-        return preventZooming;
-    },
-
-    doAutoMaximizeOnReady: function() {
-        var controller = arguments[arguments.length - 1];
-
-        controller.pause();
-
-        this.isMaximizing = true;
-
-        this.on('maximize', function() {
-            this.isMaximizing = false;
-
-            this.updateSize();
-
-            controller.resume();
-
-            this.fireEvent('ready', this);
-        }, this, { single: true });
-
-        this.maximize();
-    },
-
-    doAutoMaximizeOnOrientationChange: function() {
-        var controller = arguments[arguments.length - 1],
-            firingArguments = controller.firingArguments;
-
-        controller.pause();
-
-        this.isMaximizing = true;
-
-        this.on('maximize', function() {
-            this.isMaximizing = false;
-
-            this.updateSize();
-
-            firingArguments[2] = this.windowWidth;
-            firingArguments[3] = this.windowHeight;
-
-            controller.resume();
-        }, this, { single: true });
-
-        this.maximize();
-    },
-
-    doBlurInput: function(e) {
-        var target = e.target,
-            focusedElement = this.focusedElement;
-
-        if (focusedElement && !this.isInputRegex.test(target.tagName)) {
-            delete this.focusedElement;
-            focusedElement.blur();
-        }
-    },
-
-    doPreventPanning: function(e) {
-        e.preventDefault();
-    },
-
-    doPreventZooming: function(e) {
-        // Don't prevent right mouse event
-        if ('button' in e && e.button !== 0) {
-            return;
-        }
-
-        var target = e.target;
-
-        if (target && target.nodeType === 1 && !this.isInputRegex.test(target.tagName)) {
-            e.preventDefault();
-        }
-    },
-
-    addWindowListener: function(eventName, fn, capturing) {
-        window.addEventListener(eventName, fn, Boolean(capturing));
-    },
-
-    removeWindowListener: function(eventName, fn, capturing) {
-        window.removeEventListener(eventName, fn, Boolean(capturing));
-    },
-
-    doAddListener: function(eventName, fn, scope, options) {
-        if (eventName === 'ready' && this.isReady && !this.isMaximizing) {
-            fn.call(scope);
-            return this;
-        }
-
-        return this.callSuper(arguments);
-    },
-
-    supportsOrientation: function() {
-        return Ext.feature.has.Orientation;
-    },
-
-    onResize: function() {
-        var oldWidth = this.windowWidth,
-            oldHeight = this.windowHeight,
-            width = this.getWindowWidth(),
-            height = this.getWindowHeight(),
-            currentOrientation = this.getOrientation(),
-            newOrientation = this.determineOrientation();
-
-        // Determine orientation change via resize. BOTH width AND height much change, otherwise
-        // this is a keyboard popping up.
-        if ((oldWidth !== width && oldHeight !== height) && currentOrientation !== newOrientation) {
-            this.fireOrientationChangeEvent(newOrientation, currentOrientation);
-        }
-    },
-
-    onOrientationChange: function() {
-        var currentOrientation = this.getOrientation(),
-            newOrientation = this.determineOrientation();
-
-        if (newOrientation !== currentOrientation) {
-            this.fireOrientationChangeEvent(newOrientation, currentOrientation);
-        }
-    },
-
-    fireOrientationChangeEvent: function(newOrientation, oldOrientation) {
-        var clsPrefix = Ext.baseCSSPrefix;
-        Ext.getBody().replaceCls(clsPrefix + oldOrientation, clsPrefix + newOrientation);
-
-        this.orientation = newOrientation;
-
-        this.updateSize();
-        this.fireEvent('orientationchange', this, newOrientation, this.windowWidth, this.windowHeight);
-    },
-
-    updateSize: function(width, height) {
-        this.windowWidth = width !== undefined ? width : this.getWindowWidth();
-        this.windowHeight = height !== undefined ? height : this.getWindowHeight();
-
-        return this;
-    },
-
-    waitUntil: function(condition, onSatisfied, onTimeout, delay, timeoutDuration) {
-        if (!delay) {
-            delay = 50;
-        }
-
-        if (!timeoutDuration) {
-            timeoutDuration = 2000;
-        }
-
-        var scope = this,
-            elapse = 0;
-
-        setTimeout(function repeat() {
-            elapse += delay;
-
-            if (condition.call(scope) === true) {
-                if (onSatisfied) {
-                    onSatisfied.call(scope);
-                }
-            }
-            else {
-                if (elapse >= timeoutDuration) {
-                    if (onTimeout) {
-                        onTimeout.call(scope);
-                    }
-                }
-                else {
-                    setTimeout(repeat, delay);
-                }
-            }
-        }, delay);
-    },
-
-    maximize: function() {
-        this.fireMaximizeEvent();
-    },
-
-    fireMaximizeEvent: function() {
-        this.updateSize();
-        this.fireEvent('maximize', this);
-    },
-
-    doSetHeight: function(height) {
-        Ext.getBody().setHeight(height);
-
-        this.callParent(arguments);
-    },
-
-    doSetWidth: function(width) {
-        Ext.getBody().setWidth(width);
-
-        this.callParent(arguments);
-    },
-
-    scrollToTop: function() {
-        window.scrollTo(0, -1);
-    },
-
-    /**
-     * Retrieves the document width.
-     * @return {Number} width in pixels.
-     */
-    getWindowWidth: function() {
-        return window.innerWidth;
-    },
-
-    /**
-     * Retrieves the document height.
-     * @return {Number} height in pixels.
-     */
-    getWindowHeight: function() {
-        return window.innerHeight;
-    },
-
-    getWindowOuterHeight: function() {
-        return window.outerHeight;
-    },
-
-    getWindowOrientation: function() {
-        return window.orientation;
-    },
-
-    /**
-     * Returns the current orientation.
-     * @return {String} `portrait` or `landscape`
-     */
-    getOrientation: function() {
-        return this.orientation;
-    },
-
-    getSize: function() {
-        return {
-            width: this.windowWidth,
-            height: this.windowHeight
-        };
-    },
-
-    determineOrientation: function() {
-        var portrait = this.PORTRAIT,
-            landscape = this.LANDSCAPE;
-
-        if (this.supportsOrientation()) {
-            if (this.getWindowOrientation() % 180 === 0) {
-                return portrait;
-            }
-
-            return landscape;
-        }
-        else {
-            if (this.getWindowHeight() >= this.getWindowWidth()) {
-                return portrait;
-            }
-
-            return landscape;
-        }
-    },
-
-    onItemFullscreenChange: function(item) {
-        item.addCls(this.fullscreenItemCls);
-        this.add(item);
-    }
-});
-
-/**
- * @private
- * Android version of viewport.
- */
-Ext.define('Ext.viewport.Android', {
-    extend:  Ext.viewport.Default ,
-
-    constructor: function() {
-        this.on('orientationchange', 'doFireOrientationChangeEvent', this, { prepend: true });
-        this.on('orientationchange', 'hideKeyboardIfNeeded', this, { prepend: true });
-
-        this.callParent(arguments);
-
-        this.addWindowListener('resize', Ext.Function.bind(this.onResize, this));
-    },
-
-    getDummyInput: function() {
-        var input = this.dummyInput,
-            focusedElement = this.focusedElement,
-            box = Ext.fly(focusedElement).getPageBox();
-
-        if (!input) {
-            this.dummyInput = input = document.createElement('input');
-            input.style.position = 'absolute';
-            input.style.opacity = '0';
-            document.body.appendChild(input);
-        }
-
-        input.style.left = box.left + 'px';
-        input.style.top = box.top + 'px';
-        input.style.display = '';
-
-        return input;
-    },
-
-    doBlurInput: function(e) {
-        var target = e.target,
-            focusedElement = this.focusedElement,
-            dummy;
-
-        if (focusedElement && !this.isInputRegex.test(target.tagName)) {
-            dummy = this.getDummyInput();
-            delete this.focusedElement;
-            dummy.focus();
-
-            setTimeout(function() {
-                dummy.style.display = 'none';
-            }, 100);
-        }
-    },
-
-    hideKeyboardIfNeeded: function() {
-        var eventController = arguments[arguments.length - 1],
-            focusedElement = this.focusedElement;
-
-        if (focusedElement) {
-            delete this.focusedElement;
-            eventController.pause();
-
-            if (Ext.os.version.lt('4')) {
-                focusedElement.style.display = 'none';
-            }
-            else {
-                focusedElement.blur();
-            }
-
-            setTimeout(function() {
-                focusedElement.style.display = '';
-                eventController.resume();
-            }, 1000);
-        }
-    },
-
-    doFireOrientationChangeEvent: function() {
-        var eventController = arguments[arguments.length - 1];
-
-        this.orientationChanging = true;
-
-        eventController.pause();
-
-        this.waitUntil(function() {
-            return this.getWindowOuterHeight() !== this.windowOuterHeight;
-        }, function() {
-            this.windowOuterHeight = this.getWindowOuterHeight();
-            this.updateSize();
-
-            eventController.firingArguments[2] = this.windowWidth;
-            eventController.firingArguments[3] = this.windowHeight;
-            eventController.resume();
-            this.orientationChanging = false;
-
-        }, function() {
-        });
-
-        return this;
-    },
-
-    applyAutoMaximize: function(autoMaximize) {
-        autoMaximize = this.callParent(arguments);
-
-        this.on('add', 'fixSize', this, { single: true });
-        if (!autoMaximize) {
-            this.on('ready', 'fixSize', this, { single: true });
-            this.onAfter('orientationchange', 'doFixSize', this, { buffer: 100 });
-        }
-        else {
-            this.un('ready', 'fixSize', this);
-            this.unAfter('orientationchange', 'doFixSize', this);
-        }
-    },
-
-    fixSize: function() {
-        this.doFixSize();
-    },
-
-    doFixSize: function() {
-        this.setHeight(this.getWindowHeight());
-    },
-
-    determineOrientation: function() {
-        return (this.getWindowHeight() >= this.getWindowWidth()) ? this.PORTRAIT : this.LANDSCAPE;
-    },
-
-    getActualWindowOuterHeight: function() {
-        return Math.round(this.getWindowOuterHeight() / window.devicePixelRatio);
-    },
-
-    maximize: function() {
-        var stretchHeights = this.stretchHeights,
-            orientation = this.orientation,
-            height;
-
-        height = stretchHeights[orientation];
-
-        if (!height) {
-            stretchHeights[orientation] = height = this.getActualWindowOuterHeight();
-        }
-
-        if (!this.addressBarHeight) {
-            this.addressBarHeight = height - this.getWindowHeight();
-        }
-
-        this.setHeight(height);
-
-        var isHeightMaximized = Ext.Function.bind(this.isHeightMaximized, this, [height]);
-
-        this.scrollToTop();
-        this.waitUntil(isHeightMaximized, this.fireMaximizeEvent, this.fireMaximizeEvent);
-    },
-
-    isHeightMaximized: function(height) {
-        this.scrollToTop();
-        return this.getWindowHeight() === height;
-    }
-
-}, function() {
-    if (!Ext.os.is.Android) {
-        return;
-    }
-
-    var version = Ext.os.version,
-        userAgent = Ext.browser.userAgent,
-        // These Android devices have a nasty bug which causes JavaScript timers to be completely frozen
-        // when the browser's viewport is being panned.
-        isBuggy = /(htc|desire|incredible|ADR6300)/i.test(userAgent) && version.lt('2.3');
-
-    if (isBuggy) {
-        this.override({
-            constructor: function(config) {
-                if (!config) {
-                    config = {};
-                }
-
-                config.autoMaximize = false;
-
-                this.watchDogTick = Ext.Function.bind(this.watchDogTick, this);
-
-                setInterval(this.watchDogTick, 1000);
-
-                return this.callParent([config]);
-            },
-
-            watchDogTick: function() {
-                this.watchDogLastTick = Ext.Date.now();
-            },
-
-            doPreventPanning: function() {
-                var now = Ext.Date.now(),
-                    lastTick = this.watchDogLastTick,
-                    deltaTime = now - lastTick;
-
-                // Timers are frozen
-                if (deltaTime >= 2000) {
-                    return;
-                }
-
-                return this.callParent(arguments);
-            },
-
-            doPreventZooming: function() {
-                var now = Ext.Date.now(),
-                    lastTick = this.watchDogLastTick,
-                    deltaTime = now - lastTick;
-
-                // Timers are frozen
-                if (deltaTime >= 2000) {
-                    return;
-                }
-
-                return this.callParent(arguments);
-            }
-        });
-    }
-
-    if (version.match('2')) {
-        this.override({
-            onReady: function() {
-                this.addWindowListener('resize', Ext.Function.bind(this.onWindowResize, this));
-
-                this.callParent(arguments);
-            },
-
-            scrollToTop: function() {
-                document.body.scrollTop = 100;
-            },
-
-            onWindowResize: function() {
-                var oldWidth = this.windowWidth,
-                    oldHeight = this.windowHeight,
-                    width = this.getWindowWidth(),
-                    height = this.getWindowHeight();
-
-                if (this.getAutoMaximize() && !this.isMaximizing && !this.orientationChanging
-                    && window.scrollY === 0
-                    && oldWidth === width
-                    && height < oldHeight
-                    && ((height >= oldHeight - this.addressBarHeight) || !this.focusedElement)) {
-                        this.scrollToTop();
-                }
-            },
-
-            fixSize: function() {
-                var orientation = this.getOrientation(),
-                    outerHeight = window.outerHeight,
-                    outerWidth = window.outerWidth,
-                    actualOuterHeight;
-
-                // On some Android 2 devices such as the Kindle Fire, outerWidth and outerHeight are reported wrongly
-                // when navigating from another page that has larger size.
-                if (orientation === 'landscape' && (outerHeight < outerWidth)
-                    || orientation === 'portrait' && (outerHeight >= outerWidth)) {
-                    actualOuterHeight = this.getActualWindowOuterHeight();
-                }
-                else {
-                    actualOuterHeight = this.getWindowHeight();
-                }
-
-                this.waitUntil(function() {
-                    return actualOuterHeight > this.getWindowHeight();
-                }, this.doFixSize, this.doFixSize, 50, 1000);
-            }
-        });
-    }
-    else if (version.gtEq('3.1')) {
-        this.override({
-            isHeightMaximized: function(height) {
-                this.scrollToTop();
-                return this.getWindowHeight() === height - 1;
-            }
-        });
-    }
-    else if (version.match('3')) {
-        this.override({
-            isHeightMaximized: function() {
-                this.scrollToTop();
-                return true;
-            }
-        })
-    }
-
-    if (version.gtEq('4')) {
-        this.override({
-            doBlurInput: Ext.emptyFn,
-            onResize: function() {
-                this.callParent();
-                this.doFixSize();
-            }
-        });
-    }
-});
-
-/**
- * @private
- * iOS version of viewport.
- */
-Ext.define('Ext.viewport.Ios', {
-    extend:  Ext.viewport.Default ,
-
-    isFullscreen: function() {
-        return this.isHomeScreen();
-    },
-
-    isHomeScreen: function() {
-        return window.navigator.standalone === true;
-    },
-
-    constructor: function() {
-        this.callParent(arguments);
-
-        if (this.getAutoMaximize() && !this.isFullscreen()) {
-            this.addWindowListener('touchstart', Ext.Function.bind(this.onTouchStart, this));
-        }
-    },
-
-    maximize: function() {
-        if (this.isFullscreen()) {
-            return this.callParent();
-        }
-
-        var stretchHeights = this.stretchHeights,
-            orientation = this.orientation,
-            currentHeight = this.getWindowHeight(),
-            height = stretchHeights[orientation];
-
-        if (window.scrollY > 0) {
-            this.scrollToTop();
-
-            if (!height) {
-                stretchHeights[orientation] = height = this.getWindowHeight();
-            }
-
-            this.setHeight(height);
-            this.fireMaximizeEvent();
-        }
-        else {
-            if (!height) {
-                height = this.getScreenHeight();
-            }
-
-            this.setHeight(height);
-
-            this.waitUntil(function() {
-                this.scrollToTop();
-                return currentHeight !== this.getWindowHeight();
-            }, function() {
-                if (!stretchHeights[orientation]) {
-                    height = stretchHeights[orientation] = this.getWindowHeight();
-                    this.setHeight(height);
-                }
-
-                this.fireMaximizeEvent();
-            }, function() {
-                height = stretchHeights[orientation] = this.getWindowHeight();
-                this.setHeight(height);
-                this.fireMaximizeEvent();
-            }, 50, 1000);
-        }
-    },
-
-    getScreenHeight: function() {
-        return window.screen[this.orientation === this.PORTRAIT ? 'height' : 'width'];
-    },
-
-    onElementFocus: function() {
-        if (this.getAutoMaximize() && !this.isFullscreen()) {
-            clearTimeout(this.scrollToTopTimer);
-        }
-
-        this.callParent(arguments);
-    },
-
-    onElementBlur: function() {
-        if (this.getAutoMaximize() && !this.isFullscreen()) {
-            this.scrollToTopTimer = setTimeout(this.scrollToTop, 500);
-        }
-
-        this.callParent(arguments);
-    },
-
-    onTouchStart: function() {
-        if (this.focusedElement === null) {
-            this.scrollToTop();
-        }
-    },
-
-    scrollToTop: function() {
-        window.scrollTo(0, 0);
-    }
-
-}, function() {
-    if (!Ext.os.is.iOS) {
-        return;
-    }
-
-    if (Ext.os.version.lt('3.2')) {
-        this.override({
-            constructor: function() {
-                var stretchHeights = this.stretchHeights = {};
-
-                stretchHeights[this.PORTRAIT] = 416;
-                stretchHeights[this.LANDSCAPE] = 268;
-
-                return this.callOverridden(arguments);
-            }
-        });
-    }
-
-    if (Ext.os.version.lt('5')) {
-        this.override({
-            fieldMaskClsTest: '-field-mask',
-
-            doPreventZooming: function(e) {
-                var target = e.target;
-
-                if (target && target.nodeType === 1 &&
-                    !this.isInputRegex.test(target.tagName) &&
-                    target.className.indexOf(this.fieldMaskClsTest) == -1) {
-                    e.preventDefault();
-                }
-            }
-        });
-    }
-
-    if (Ext.os.is.iPad) {
-        this.override({
-            isFullscreen: function() {
-                return true;
-            }
-        });
-    }
-});
-
-/**
- * This class acts as a factory for environment-specific viewport implementations.
- *
- * Please refer to the {@link Ext.Viewport} documentation about using the global instance.
- * @private
- */
-Ext.define('Ext.viewport.Viewport', {
-               
-                           
-                              
-      
-
-    constructor: function(config) {
-        var osName = Ext.os.name,
-            viewportName, viewport;
-
-        switch (osName) {
-            case 'Android':
-                viewportName = (Ext.browser.name == 'ChromeMobile') ? 'Default' : 'Android';
-                break;
-            case 'iOS':
-                viewportName = 'Ios';
-                break;
-            default:
-                viewportName = 'Default';
-        }
-
-        viewport = Ext.create('Ext.viewport.' + viewportName, config);
-
-        return viewport;
-    }
-});
-
-// Docs for the singleton instance created by above factory:
-
-/**
- * @class Ext.Viewport
- * @extends Ext.viewport.Default
- * @singleton
- *
- * Ext.Viewport is a instance created when you use {@link Ext#setup}. Because {@link Ext.Viewport} extends from
- * {@link Ext.Container}, it has as {@link #layout} (which defaults to {@link Ext.layout.Card}). This means you
- * can add items to it at any time, from anywhere in your code. The {@link Ext.Viewport} {@link #cfg-fullscreen}
- * configuration is `true` by default, so it will take up your whole screen.
- *
- *     @example raw
- *     Ext.setup({
- *         onReady: function() {
- *             Ext.Viewport.add({
- *                 xtype: 'container',
- *                 html: 'My new container!'
- *             });
- *         }
- *     });
- *
- * If you want to customize anything about this {@link Ext.Viewport} instance, you can do so by adding a property
- * called `viewport` into your {@link Ext#setup} object:
- *
- *     @example raw
- *     Ext.setup({
- *         viewport: {
- *             layout: 'vbox'
- *         },
- *         onReady: function() {
- *             //do something
- *         }
- *     });
- *
- * **Note** if you use {@link Ext#onReady}, this instance of {@link Ext.Viewport} will **not** be created. Though, in most cases,
- * you should **not** use {@link Ext#onReady}.
- */
-
 Ext.define('Genesis.model.Checkin',
 {
    extend :  Ext.data.Model ,
@@ -75083,21 +74024,22 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    broadcastLocalID : function(success, fail)
    {
+      var proximityID = window.plugins.proximityID;
       var me = this, c = Genesis.constants, cancel = function()
       {
          Ext.Ajax.abort();
          if (me.send_vol != -1)
          {
-            window.plugins.proximityID.setVolume(-1);
+            proximityID.setVolume(-1);
          }
-         window.plugins.proximityID.stop();
+         proximityID.stop();
       };
 
       me.send_vol = -1;
       success = success || Ext.emptyFn;
       fail = fail || Ext.emptyFn;
 
-      window.plugins.proximityID.send(function(result)
+      proximityID.send(function(result)
       {
          console.debug("ProximityID : Broacasting Local Identity ...");
          success(Genesis.fn.processSendLocalID(result, cancel));
@@ -76558,11 +75500,13 @@ Ext.define('Genesis.controller.RedeemBase',
    onRedeemItemDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
+      var proximityID = window.plugins.proximityID;
+      
       if (me.getSDoneBtn())
       {
          me.getSDoneBtn()['hide']();
       }
-      window.plugins.proximityID.stop();
+      proximityID.stop();
       console.debug("onRedeemItemDeactivate - Done with RewardItem View!");
    },
 
@@ -77001,12 +75945,19 @@ Ext.define('Genesis.view.ViewBase',
    {
       generateTitleBarConfig : function()
       {
+         var height = ((!(Genesis.fn.isNative() && Ext.os.is('iOS') && Ext.os.version.isGreaterThanOrEqual('7.0')) ? '2.6' : '3.7') + 'em');
+         var style = (!(Genesis.fn.isNative() && Ext.os.is('iOS') && Ext.os.version.isGreaterThanOrEqual('7.0')) ? '' :
+         {
+            'padding-top' : '20px'
+         });
          return (
             {
                xtype : 'titlebar',
                docked : 'top',
                tag : 'navigationBarTop',
                cls : 'navigationBarTop',
+               height : height,
+               style : style,
                masked :
                {
                   xtype : 'mask',
@@ -78572,7 +77523,6 @@ Ext.define('Genesis.view.widgets.Calculator',
       // -------------------------------------------------------------------
       items : [
       {
-         height : '2.6em',
          docked : 'top',
          xtype : 'toolbar',
          centered : false,
@@ -78697,6 +77647,215 @@ Ext.define('Genesis.view.widgets.Calculator',
    }
 });
 
+Ext.define('Genesis.model.Badge',
+{
+   extend :  Ext.data.Model ,
+   id : 'Badge',
+   alternateClassName : 'Badge',
+   config :
+   {
+      idProperty : 'id',
+      fields : ['id', 'type', 'visits', 'rank'],
+      proxy :
+      {
+         type : 'ajax',
+         disableCaching : false,
+         reader :
+         {
+            type : 'json',
+            messageProperty : 'message',
+            rootProperty : 'data'
+         }
+      }
+   },
+   inheritableStatics :
+   {
+      setGetBadgesUrl : function()
+      {
+         this.getProxy().setActionMethods(
+         {
+            read : 'GET'
+         });
+         this.getProxy().setUrl(serverHost + '/api/v1/badges');
+      }
+   }
+});
+
+Ext.define('Genesis.view.client.Badges',
+{
+   extend :  Ext.Carousel ,
+                                                                                  
+   alias : 'widget.clientbadgesview',
+   config :
+   {
+      models : ['Badge'],
+      cls : 'viewport',
+      itemPerPage : 12,
+      preRender : null,
+      direction : 'horizontal',
+      items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
+      {
+         title : 'Badges',
+         items : [
+         {
+            align : 'left',
+            ui : 'normal',
+            tag : 'back',
+            text : 'Back'
+         }]
+      })],
+      listeners : [
+      {
+         element : 'element',
+         delegate : 'div.itemWrapper',
+         event : 'tap',
+         fn : "onItemTap"
+      }]
+   },
+   //disableAnimation : true,
+   initialize : function()
+   {
+      this.setPreRender([]);
+      this.callParent(arguments);
+   },
+   onItemTap : function(e, target, delegate, eOpts)
+   {
+      var data = Ext.create('Genesis.model.Badge', Ext.decode(decodeURIComponent(e.delegatedTarget.getAttribute('data'))));
+      this.fireEvent('itemTap', data);
+   },
+   /**
+    * Removes all items currently in the Container, optionally destroying them all
+    * @param {Boolean} destroy If true, {@link Ext.Component#destroy destroys} each removed Component
+    * @param {Boolean} everything If true, completely remove all items including docked / centered and floating items
+    * @return {Ext.Component} this
+    */
+   cleanView : function()
+   {
+      this.removeAll(true);
+      return Genesis.view.ViewBase.prototype.cleanView.apply(this, arguments);
+   },
+   removeAll : function()
+   {
+      var me = this;
+
+      me.setPreRender([]);
+      me.callParent(arguments);
+   },
+   createView : function()
+   {
+      var me = this, carousel = this;
+
+      switch (Ext.Viewport.getOrientation())
+      {
+         case 'portrait' :
+         {
+            Genesis.view.ViewBase.prototype.calcCarouselSize.apply(me, [2]);
+            break;
+         }
+         case 'landscape' :
+         {
+            Genesis.view.ViewBase.prototype.calcCarouselSize.apply(me, [4/3]);
+            break;
+         }
+      }
+
+      carousel.removeAll(true);
+
+      var app = _application, viewport = app.getController('client' + '.Viewport');
+      var vport = viewport.getViewport(), items = Ext.StoreMgr.get('BadgeStore').getRange(), list = Ext.Array.clone(items);
+
+      for (var i = 0; i < Math.ceil(list.length / me.getItemPerPage()); i++)
+      {
+         me.getPreRender().push(
+         {
+            xtype : 'component',
+            cls : 'badgesMenuSelections',
+            tag : 'badgesMenuSelections',
+            scrollable : undefined,
+            data : Ext.Array.pluck(list.slice(i * me.getItemPerPage(), ((i + 1) * me.getItemPerPage())), 'data'),
+            tpl : Ext.create('Ext.XTemplate',
+            // @formatter:off
+            '<tpl for=".">',
+               '<div class="itemWrapper" data="{[this.encodeData(values)]}">',
+                  '<div class="photo"><img src="{[this.getPhoto(values)]}" /></div>',
+                  '<div class="photoName">{[this.getName(values)]}</div>',
+               '</div>',
+            '</tpl>',
+            // @formatter:on
+            {
+               encodeData : function(values)
+               {
+                  return encodeURIComponent(Ext.encode(values));
+               },
+               getName : function(values)
+               {
+                  return values['type'].display_value;
+               },
+               getPhoto : function(values)
+               {
+                  var type = values['type'];
+                  var customer = _application.getController('client' + '.Viewport').getCustomer();
+                  var badge = Ext.StoreMgr.get('BadgeStore').getById(customer.get('badge_id'));
+                  var rank = badge.get('rank');
+                  return me.self.getPhoto((values['rank'] <= rank) ? type : 'nobadge', 'thumbnail_medium_url');
+               }
+            })
+         });
+      }
+      console.debug("Badge Icons Refreshed.");
+   },
+   showView : function()
+   {
+      // Do not add to view, if there's existing items, only re-render on empty views
+      /*
+       if (this.getInnerItems().length == 0)
+       {
+       this.add(this.getPreRender());
+       }
+       */
+
+      var carousel = this;
+
+      Genesis.view.ViewBase.prototype.showView.apply(this, arguments);
+      if (carousel.getInnerItems().length > 0)
+      {
+         carousel.setActiveItem(0);
+      }
+   },
+   inheritableStatics :
+   {
+      getPhoto : function(type, size)
+      {
+         var url;
+         switch (type)
+         {
+            case 'nobadge':
+            {
+               if (size.match(/small/))
+               {
+                  size = 'small';
+               }
+               else if (size.match(/medium/))
+               {
+                  size = 'medium';
+               }
+               else
+               {
+                  size = 'large';
+               }
+
+               url = Genesis.constants.getIconPath('badges', size + '/' + 'nobadge', false);
+               break;
+            }
+            default:
+               url = type[size];
+               break;
+         }
+         return url;
+      }
+   }
+});
+
 Ext.define('Genesis.view.widgets.ItemDetail',
 {
    extend :  Genesis.view.ViewBase ,
@@ -78745,31 +77904,34 @@ Ext.define('Genesis.view.widgets.PopupItemDetail',
    alias : 'widget.popupitemdetailview',
    config :
    {
-      models : ['CustomerReward'],
-      bottom : 0,
-      left : 0,
-      top : 0,
-      right : 0,
-      padding : 0,
-      hideOnMaskTap : false,
-      defaultUnit : 'em',
-      layout :
-      {
-         type : 'vbox',
-         pack : 'middle'
-      },
-      defaults :
-      {
-         xtype : 'container',
-         defaultUnit : 'em'
-      }
    },
    constructor : function(config)
    {
       var me = this;
-      config = config ||
+      config = Ext.apply(config,
       {
-      };
+         models : ['CustomerReward'],
+         bottom : 0,
+         left : 0,
+         top : (!(Genesis.fn.isNative() && Ext.os.is('iOS') && Ext.os.version.isGreaterThanOrEqual('7.0')) ? 0 : '20px'),
+         top : 0,
+         right : 0,
+         padding : 0,
+         hideOnMaskTap : false,
+         defaultUnit : 'em',
+         layout :
+         {
+            type : 'vbox',
+            pack : 'middle'
+         },
+         defaults :
+         {
+            xtype : 'container',
+            defaultUnit : 'em'
+         }
+      }, config ||
+      {
+      });
 
       var buttons = config['buttons'] || [];
       config['origButtons'] = buttons;
@@ -81861,7 +81023,7 @@ Ext.merge(WebSocket.prototype,
          title : '',
          receipt : Ext.encode(receiptText),
          items : []
-      }
+      };
 
       //console.debug("WebSocketClient::createReceipt[" + Genesis.fn.convertDateFullTime(new Date(receipt['id']*1000)) + "]");
       for ( i = 0; i < receiptText.length; i++)
@@ -81989,17 +81151,14 @@ Ext.merge(WebSocket.prototype,
          //
          // MobileWebServer, we create a popup for cashier to remind customers to use Loyalty Program
          //
-         if (!Genesis.fn.isNative() && receiptMetaList.length > 0)
+         if (!Genesis.fn.isNative() && receiptMetaList.length > 0 && appWindow)
          {
             viewport = _application.getController('server' + '.Viewport');
-            if (appWindow)
+            appWindow.postMessage(
             {
-               appWindow.postMessage(
-               {
-                  cmd : 'notification_post',
-                  receipts : receiptMetaList
-               }, appOrigin);
-            }
+               cmd : 'notification_post',
+               receipts : receiptMetaList
+            }, appOrigin);
          }
 
          Ext.StoreMgr.get('ReceiptStore').add(receiptsList);
@@ -82160,7 +81319,7 @@ Ext.define('Genesis.controller.server.Receipts',
       {
          if (pos.isEnabled())
          {
-            pos.wssocket.send('enable_pos:'+ Genesis.db.getLocalDB()['posExec']);
+            pos.wssocket.send('enable_pos:' + Genesis.db.getLocalDB()['posExec']);
             me.fireEvent('retrieveReceipts');
          }
          else
@@ -85003,8 +84162,8 @@ window.addEventListener('message', function(e)
    {
       case 'init' :
       {
-         appWindow = e.source;
-         appOrigin = e.origin;
+         appWindow = e.source; // Chrome App Window
+         appOrigin = e.origin; // URL domain
 
          console.debug("Webview connection Established.");
          break;
@@ -85232,10 +84391,13 @@ Ext.define('Genesis.controller.server.Viewport',
                buttons : ['Proceed'],
                callback : function(btn)
                {
-                  appWindow.postMessage(
+                  if (appWindow)
                   {
-                     cmd : 'licenseKey'
-                  }, appOrigin);
+                     appWindow.postMessage(
+                     {
+                        cmd : 'licenseKey'
+                     }, appOrigin);
+                  }
                }
             });
          }
@@ -86831,7 +85993,7 @@ Ext.define('Genesis.data.proxy.PagingMemory',
       }
 
       Ext.callback(callback, scope || me, [operation]);
-   },
+   }
 });
 
 // **************************************************************************
