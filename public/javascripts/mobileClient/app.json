@@ -1,24 +1,24 @@
 {
-	/**
-	* The application's namespace, used by Sencha Command to generate classes
-	*/
-	"name": "Genesis",
+   /**
+   * The application's namespace, used by Sencha Command to generate classes
+   */
+   "name": "MobileClient",
 
-	/**
-	* The file path to this application's front HTML document, relative to this app.json file
-	*/
-	"indexHtmlPath": "index.html",
+   /**
+   * The file path to this application's front HTML document, relative to this app.json file
+   */
+   "indexHtmlPath": "index.html",
 
-	/**
-	* The absolute URL to this application in development environment, i.e: the URL to run this application
-	* on your web browser during development, e.g: "http://localhost/myapp/index.html".
-	*
-	* This value is needed when build to resolve your application's dependencies if it requires server-side resources
-	* that are not accessible via file system protocol.
-	*/
-	"url": null,
+   /**
+   * The absolute URL to this application in development environment, i.e: the URL to run this application
+   * on your web browser during development, e.g: "http://localhost/myapp/index.html".
+   *
+   * This value is needed when build to resolve your application's dependencies if it requires server-side resources
+   * that are not accessible via file system protocol.
+   */
+   "url": null,
 
-	/**
+   /**
 	* List of all JavaScript assets in the right execution order.
 	* Each item is an object with the following format:
 	*      {
@@ -44,6 +44,9 @@
          "update": "delta"
       }, {
          "path": "../touch/sencha-touch.js",
+         "x-bootstrap": true
+      }, {
+         "path": "bootstrap.js",
          "x-bootstrap": true
       }, {
          "path": "../mobile/mcore.js",

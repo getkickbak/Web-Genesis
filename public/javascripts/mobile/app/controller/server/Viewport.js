@@ -164,8 +164,8 @@ window.addEventListener('message', function(e)
    {
       case 'init' :
       {
-         appWindow = e.source;
-         appOrigin = e.origin;
+         appWindow = e.source; // Chrome App Window
+         appOrigin = e.origin; // URL domain
 
          console.debug("Webview connection Established.");
          break;
@@ -393,10 +393,13 @@ Ext.define('Genesis.controller.server.Viewport',
                buttons : ['Proceed'],
                callback : function(btn)
                {
-                  appWindow.postMessage(
+                  if (appWindow)
                   {
-                     cmd : 'licenseKey'
-                  }, appOrigin);
+                     appWindow.postMessage(
+                     {
+                        cmd : 'licenseKey'
+                     }, appOrigin);
+                  }
                }
             });
          }

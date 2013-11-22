@@ -1,7 +1,21 @@
 (function()
 {
-   var _notifications = [], _frame, timeout = 30 * 1000;
-   var debugMode = false;
+   var _notifications = [], _frame, timeout = 30 * 1000, _foreground = null;
+   var debugMode = true;
+   var setForeground = function()
+   {
+      var appWindow = chrome.app.window.current();
+
+      if (!_foreground)
+      {
+         _foreground = setTimeout(function()
+         {
+            _foreground = null;
+         }, 5 * 1000);
+         appWindow.restore();
+         appWindow.focus();
+      }
+   };
 
    document.addEventListener("DOMContentLoaded", function(event)
    {
@@ -50,28 +64,49 @@
 
       window.addEventListener('message', function(e)
       {
-         var _dataMeta = e.data;
+         var _dataMeta = e.data, cmd = _dataMeta['cmd'], receipts = _dataMeta['receipts'];
 
          if (!( typeof (_dataMeta) == 'object'))
          {
             return;
          }
 
-         switch (_dataMeta['cmd'])
+         var cmd = _dataMeta['cmd'], receipts = _dataMeta['receipts'];
+         var appWindow = chrome.app.window.current();
+         switch (cmd)
          {
+            case 'bounds' :
+            {
+               var params = _dataMeta['params'];
+               var left = (screen.width) - (params['maxWidth']);
+               var top = (screen.height) - (params['minHeight']);
+
+               appWindow.setBounds(params['bounds']);
+               app.setMinHeight(params['maxHeight']);
+               appWindow.setMaxWidth(params['maxWidth']);
+               appWindow.setMinWidth(params['maxWidth']);
+               appWindow.moveTo(Math.round(left / 2), Math.round(top / 2));
+               break;
+            }
+            case 'foreground' :
+            {
+               setForeground();
+               break;
+            }
             case 'notification_post' :
             {
-               for (var i = 0; i < _dataMeta['receipts'].length; i++)
+               for (var i = 0; i < receipts.length; i++)
                {
-                  var _receipt = _dataMeta['receipts'][i], message = "No items were found";
+                  var _receipt = receipts[i], message = "";
 
-                  if (_receipt['items'].length == 1)
+                  for (var x = 0; x < Math.min(_receipt['items'].length, 2); x++)
                   {
-                     message = _receipt['items'][0];
+                     message += ((x != 0) ? '\n' : '') + _receipt['items'][x].name;
                   }
-                  else if (_receipt['items'].length > 1)
+                  
+                  if (_receipt['items'].length <= 0)
                   {
-                     message = _receipt['items'][0] + '\n' + _receipt['items'][1]
+                     message = 'No items were found';
                   }
 
                   var _notif = window.webkitNotifications.createNotification("resources/icons/icon@72.png", _receipt['price'], message);
@@ -79,22 +114,27 @@
 
                   (function(notif, receipt)
                   {
-                     notif.onClick(function()
+                     notif.onclick = function()
                      {
                         clearTimeout(notif.task);
+                        setForeground();
                         _frame.contentWindow.postMessage(
                         {
                            cmd : 'notification_ack',
                            data : receipt['id']
                         }, "*");
-                     });
-                     notif.onClose(function()
+                        notif.close();
+                     };
+                     notif.onclose = function()
                      {
                         clearTimeout(notif.task);
                         delete notif.task;
                         _notifications.splice(_notifications.indexOf(notif), 1);
-                     });
-                     notif.task = setTimeout(notif.close, timeout);
+                     };
+                     notif.task = setTimeout(function()
+                     {
+                        notif.close();
+                     }, timeout);
                      notif.show();
                      /*
                       chrome.notifications.create("",

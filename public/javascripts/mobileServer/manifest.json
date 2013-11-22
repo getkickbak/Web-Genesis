@@ -7,7 +7,7 @@
          "scripts": ["launch.js"]
       }
    },
-   "update_url": "http://www.getkickbak.com/merchant/updates.xml",
+   "update_url": "http://www.getkickbak.com/merchantApp/updates.xml",
    "manifest_version": 2,
    "minimum_chrome_version": "29",
    "permissions": ["geolocation", "storage", "<all_urls>", "audioCapture" , "webview", "notifications", "fileSystem", "unlimitedStorage", "http://www.dev1getkickbak.com/", "http://www.getkickbak.com/"],

@@ -17,7 +17,7 @@ Ext.merge(WebSocket.prototype,
          title : '',
          receipt : Ext.encode(receiptText),
          items : []
-      }
+      };
 
       //console.debug("WebSocketClient::createReceipt[" + Genesis.fn.convertDateFullTime(new Date(receipt['id']*1000)) + "]");
       for ( i = 0; i < receiptText.length; i++)
@@ -145,17 +145,14 @@ Ext.merge(WebSocket.prototype,
          //
          // MobileWebServer, we create a popup for cashier to remind customers to use Loyalty Program
          //
-         if (!Genesis.fn.isNative() && receiptMetaList.length > 0)
+         if (!Genesis.fn.isNative() && receiptMetaList.length > 0 && appWindow)
          {
             viewport = _application.getController('server' + '.Viewport');
-            if (appWindow)
+            appWindow.postMessage(
             {
-               appWindow.postMessage(
-               {
-                  cmd : 'notification_post',
-                  receipts : receiptMetaList
-               }, appOrigin);
-            }
+               cmd : 'notification_post',
+               receipts : receiptMetaList
+            }, appOrigin);
          }
 
          Ext.StoreMgr.get('ReceiptStore').add(receiptsList);
@@ -316,7 +313,7 @@ Ext.define('Genesis.controller.server.Receipts',
       {
          if (pos.isEnabled())
          {
-            pos.wssocket.send('enable_pos:'+ Genesis.db.getLocalDB()['posExec']);
+            pos.wssocket.send('enable_pos:' + Genesis.db.getLocalDB()['posExec']);
             me.fireEvent('retrieveReceipts');
          }
          else

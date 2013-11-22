@@ -1085,7 +1085,7 @@ Ext.define('Genesis.data.proxy.PagingMemory',
       }
 
       Ext.callback(callback, scope || me, [operation]);
-   },
+   }
 });
 
 // **************************************************************************

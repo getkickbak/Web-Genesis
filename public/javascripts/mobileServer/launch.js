@@ -9,6 +9,8 @@
  * @see http://developer.chrome.com/trunk/apps/app.window.html
  */
 
+var appWindow;
+
 chrome.app.runtime.onLaunched.addListener(function()
 {
    var w = 320;
@@ -31,8 +33,9 @@ chrome.app.runtime.onLaunched.addListener(function()
          height : h
       },
       resizable : false
-   }, function(appWindow)
+   }, function(_appWindow)
    {
+      appWindow = _appWindow;
       appWindow.moveTo(Math.round(left / 2), Math.round(top / 2));
       appWindow.show();
    });
