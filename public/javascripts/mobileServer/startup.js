@@ -1,6 +1,8 @@
 (function()
 {
-   var _notifications = [], _frame, timeout = 30 * 1000, _foreground = null;
+   var _notifications =
+   {
+   }, _frame, timeout = 30 * 1000, _foreground = null;
    var debugMode = true;
    var setForeground = function()
    {
@@ -14,6 +16,17 @@
          }, 5 * 1000);
          appWindow.restore();
          appWindow.focus();
+      }
+   };
+   var closeNotification = function(id, byUser)
+   {
+      try
+      {
+         clearTimeout(_notifications[id].task);
+         delete _notifications[id];
+      }
+      catch(e)
+      {
       }
    };
 
@@ -62,6 +75,26 @@
          }, "*");
       });
 
+      chrome.notifications.onClicked.addListener(function(id, byUser)
+      {
+         closeNotification(id, byUser);
+         try
+         {
+            chrome.notifications.clear(id, function(wasCleared)
+            {
+            });
+            setForeground();
+            _frame.contentWindow.postMessage(
+            {
+               cmd : 'notification_ack',
+               data : id
+            }, "*");
+         }
+         catch(e)
+         {
+         }
+      });
+      chrome.notifications.onClosed.addListener(closeNotification);
       window.addEventListener('message', function(e)
       {
          var _dataMeta = e.data, cmd = _dataMeta['cmd'], receipts = _dataMeta['receipts'];
@@ -97,65 +130,53 @@
             {
                for (var i = 0; i < receipts.length; i++)
                {
-                  var _receipt = receipts[i], message = "";
+                  var _receipt = receipts[i];
 
-                  for (var x = 0; x < Math.min(_receipt['items'].length, 2); x++)
+                  //var _notif = window.webkitNotifications.createNotification("resources/icons/icon@72.png", _receipt['price'],
+                  // message);
+                  (function(receipt)
                   {
-                     message += ((x != 0) ? '\n' : '') + _receipt['items'][x].name;
-                  }
-                  
-                  if (_receipt['items'].length <= 0)
-                  {
-                     message = 'No items were found';
-                  }
-
-                  var _notif = window.webkitNotifications.createNotification("resources/icons/icon@72.png", _receipt['price'], message);
-                  _notifications.push(_notif);
-
-                  (function(notif, receipt)
-                  {
-                     notif.onclick = function()
+                     var items = [], notif =
                      {
-                        clearTimeout(notif.task);
-                        setForeground();
-                        _frame.contentWindow.postMessage(
+                        task : setTimeout(function()
                         {
-                           cmd : 'notification_ack',
-                           data : receipt['id']
-                        }, "*");
-                        notif.close();
+                           closeNotification('' + receipt['id']);
+                           chrome.notifications.clear('' + receipt['id'], function(wasCleared)
+                           {
+                           });
+                        }, timeout)
                      };
-                     notif.onclose = function()
+
+                     _notifications['' + receipt['id']] = notif;
+                     for (var x = 0; x < Math.min(receipt['items'].length, 5); x++)
                      {
-                        clearTimeout(notif.task);
-                        delete notif.task;
-                        _notifications.splice(_notifications.indexOf(notif), 1);
-                     };
-                     notif.task = setTimeout(function()
+                        items.push(
+                        {
+                           title : receipt['items'][x].name,
+                           message : ''
+                        });
+                     }
+                     if (receipt['items'].length <= 0)
                      {
-                        notif.close();
-                     }, timeout);
-                     notif.show();
-                     /*
-                      chrome.notifications.create("",
-                      {
-                      type : 'basic',
-                      iconUrl : 'resources/icons/icon@72.png',
-                      title : receipt['price'],
-                      expandedMessage : 'Testing',
-                      message : receipt['item'],
-                      buttons : [
-                      {
-                      title : 'Earn Points!'
-                      },
-                      {
-                      title : 'Ignore'
-                      }]
-                      }, function()
-                      {
-                      });
-                      */
-                  })(_notif, _receipt);
+                        items.push(
+                        {
+                           title : 'No items were found',
+                           message : ''
+                        });
+                     }
+                     chrome.notifications.create('' + receipt['id'],
+                     {
+                        iconUrl : "resources/icons/icon@72.png",
+                        type : 'list',
+                        message : 'Receipt Details',
+                        title : "$" + receipt['price'],
+                        priority : 2,
+                        eventTime : receipt['id'] * 1000,
+                        items : items
+                     }, function(id)
+                     {
+                     });
+                  })(_receipt);
                }
                break;
             }

@@ -33,8 +33,8 @@ will need to resolve manually.
 Ext.Loader.setPath(
 {
    'Ext' : '../touch/src',
-   'Genesis' : '../mobile/app',
-   'Ext.ux' : '../mobile/app'
+   'Genesis' : 'app',
+   'Ext.ux' : 'app'
 });
 //</debug>
 
@@ -98,7 +98,7 @@ Ext.Loader.setPath(
             },
             name : 'Genesis',
             profiles : ['MobileClient'],
-            requires : ['Ext.MessageBox', 'Ext.device.Notification', 'Ext.device.Geolocation', 'Ext.device.Orientation'],
+            requires : ['Ext.viewport.Viewport', 'Ext.MessageBox', 'Ext.device.Notification', 'Ext.device.Geolocation', 'Ext.device.Orientation'],
             views : ['ViewBase', 'Document', 'client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions',
             // //
             'client.AccountsTransfer', 'client.SettingsPage', 'LoginPage', 'SignInPage', //

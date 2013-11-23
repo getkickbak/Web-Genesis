@@ -32,8 +32,8 @@ will need to resolve manually.
 Ext.Loader.setPath(
 {
    'Ext' : '../touch/src',
-   'Genesis' : '../mobile/app',
-   'Ext.ux' : '../mobile/app'
+   'Genesis' : 'app',
+   'Ext.ux' : 'app'
 });
 //</debug>
 
@@ -95,6 +95,7 @@ Ext.Loader.setPath(
             },
             profiles : ['MobileServer'],
             name : 'Genesis',
+            requires : ['Ext.viewport.Viewport'],
             views : ['Document', 'server.Rewards', 'server.Redemptions', 'server.MerchantAccount', 'server.MainPage', //
             'widgets.server.RedeemItemDetail', 'server.SettingsPage', 'server.TagCreatePage', 'Viewport'],
             controllers : ['server.Pos', 'server.Receipts', 'server.Viewport', 'server.MainPage', 'server.Challenges', 'server.Rewards',
@@ -111,7 +112,7 @@ Ext.Loader.setPath(
                {
                   launched = 0x001;
                }
-               console.debug("Ext App Launch")
+               console.debug("Ext App Launch");
                appLaunch();
             },
             isIconPrecomposed : true,

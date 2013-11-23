@@ -109,7 +109,7 @@ Ext.define('Genesis.controller.server.Pos',
                {
                   Genesis.fn.systemTime = inputStream['systemTime'] * 1000;
                   Genesis.fn.clientTime = new Date().getTime();
-                  //console.debug("WebSocketClient::receipt_incoming ...")
+                  console.debug("WebSocketClient::receipt_incoming ...");
                   me.wssocket.receiptIncomingHandler(inputStream['receipts']);
                   break;
                }
@@ -117,7 +117,7 @@ Ext.define('Genesis.controller.server.Pos',
                {
                   Genesis.fn.systemTime = inputStream['systemTime'] * 1000;
                   Genesis.fn.clientTime = new Date().getTime();
-                  //console.debug("WebSocketClient::receipt_response ...")
+                  console.debug("WebSocketClient::receipt_response ...");
                   me.wssocket.receiptResponseHandler(inputStream['receipts']);
                   break;
                }

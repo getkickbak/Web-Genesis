@@ -46,6 +46,9 @@
          "path": "../touch/sencha-touch.js",
          "x-bootstrap": true
       }, {
+         "path": "bootstrap.js",
+         "x-bootstrap": true
+      }, {
          "path": "../mobile/mcore.js",
          "update": "full"
       }, {
@@ -53,7 +56,7 @@
          "bundle": true,  /* Indicates that all class dependencies are concatenated into this file when build */
          "update": "delta"
 	   }
-     ],
+   ],
 
 	/**
 	* List of all CSS assets in the right inclusion order.
