@@ -84305,6 +84305,32 @@ Ext.define('Genesis.view.server.Rewards',
    }
 });
 
+//
+// Post Notification
+//
+window.addEventListener('message', function(e)
+{
+   var _data = e.data;
+
+   if ( typeof (_data) == 'object' || typeof (_application) == 'undefined' || !_application)
+   {
+      return;
+   }
+
+   var me = _application.getController('server' + '.Rewards');
+   if (_data['cmd'] == 'notification_ack')
+   {
+      var store = Ext.StoreMgr.get('ReceiptStore');
+      var record = store.find('id', _data['id']);
+      if (record)
+      {
+         me.receiptSelected = [record];
+         me.setMode('POS_Selection');
+         me.fireEvent('rewarditem', true);
+      }
+   }
+}, false);
+
 Ext.define('Genesis.controller.server.Rewards',
 {
    extend :  Genesis.controller.ControllerBase ,
@@ -84458,26 +84484,6 @@ Ext.define('Genesis.controller.server.Rewards',
          }
          return false;
       });
-
-      //
-      // Post Notification
-      //
-      window.addEventListener('message', function(e)
-      {
-         var _data = e.data;
-
-         if (( typeof (_data) == 'object') && (_data['cmd'] == 'notification_ack'))
-         {
-            var store = Ext.StoreMgr.get('ReceiptStore');
-            var record = store.find('id', _data['id']);
-            if (record)
-            {
-               me.receiptSelected = [record];
-               me.setMode('POS_Selection');
-               me.fireEvent('rewarditem', true);
-            }
-         }
-      }, false);
    },
    getAmountPrecision : function(num)
    {
