@@ -309,7 +309,7 @@ Ext.define('Genesis.controller.server.Settings',
       var me = this, form = me.getSettingsPage(), db = Genesis.db.getLocalDB(), isNative = Genesis.fn.isNative();
 
       me.getMerchantDevice().setLabel(Genesis.fn.getPrivKey('venue'));
-      me.getDeviceID().setLabel('DeviceID' + '<div style="font-size:0.60em;line-height:1;">' + (isNative ? device.uuid : db['uuid']) + '</div>');
+      me.getDeviceID().setLabel('DeviceID' + '<div style="font-size:0.60em;line-height:1;">' + ( isNative ? device.uuid : db['uuid']) + '</div>');
       me.getUtilitiesContainer()[debugMode ? 'show' : 'hide']();
       form.setValues(
       {
@@ -327,11 +327,14 @@ Ext.define('Genesis.controller.server.Settings',
       field = form.query('selectfield[tag=displayMode]')[0];
       field[!isNative ? 'hide' : 'show']();
       field = form.query('spinnerfield[tag=sensitivity]')[0];
-      field[!isNative ? 'show' : 'hide']();
-      field.setLabel('Sensitivity (' + db["sensitivity"] + ')');
-      field.getComponent().element.setMinWidth(0);
-      //field.setReadOnly(true);
-      //field.disable();
+      if (field)
+      {
+         field[!isNative ? 'show' : 'hide']();
+         field.setLabel('Sensitivity (' + db["sensitivity"] + ')');
+         field.getComponent().element.setMinWidth(0);
+         //field.setReadOnly(true);
+         //field.disable();
+      }
    },
    onDeactivate : function(activeItem, c, oldActiveItem, eOpts)
    {

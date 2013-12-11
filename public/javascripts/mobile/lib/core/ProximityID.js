@@ -668,8 +668,7 @@ window.plugins = window.plugins ||
          {
             var me = this, context = me.context;
 
-            if (Genesis.fn.isNative())
-            //if (true)
+            if (Ext.os.is('MacOS'))
             {
                me.matchCount = 0;
                if (!me.fftWorker)
@@ -769,21 +768,12 @@ window.plugins = window.plugins ||
                      console.debug("Local Identity detecting host ...");
                   });
                }
-               else
-               {
-                  Ext.device.Notification.show(
-                  {
-                     title : 'Local Identity',
-                     message : me.unsupportedBrowserMsg,
-                     buttons : ['OK'],
-                     callback : Ext.emptyFn
-                  });
-               }
             }
             //
             // Call Native code to get Data Stream
+            // Bug in Windows Chrome
             //
-            else if (merchantMode)
+            else if (Ext.os.is('Windows'))
             {
                delete me.freqs;
                if (window.pos)
@@ -791,6 +781,8 @@ window.plugins = window.plugins ||
                   window.pos.wssocket.send('proximityID_start' + Genesis.db.getLocalDB()['sensitivity']);
                   me._onFreqSuccess = win;
                   me._onFreqFail = fail;
+                  
+                  console.debug("Local Identity detecting host ...");
                }
                else
                {
@@ -798,6 +790,16 @@ window.plugins = window.plugins ||
                   // Nothing to do, wait until POS connection is established before trying
                   //
                }
+            }
+            else
+            {
+               Ext.device.Notification.show(
+               {
+                  title : 'Local Identity',
+                  message : me.unsupportedBrowserMsg,
+                  buttons : ['OK'],
+                  callback : Ext.emptyFn
+               });
             }
          },
          stop : function()

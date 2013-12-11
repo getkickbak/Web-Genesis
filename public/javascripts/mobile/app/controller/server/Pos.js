@@ -9,7 +9,7 @@ Ext.define('Genesis.controller.server.Pos',
    hostLocal : '127.0.0.1',
    hostRemote : '192.168.159.1',
    portRemote : '443',
-   portLocal : '69', // TFTP UDP Port
+   portLocal : '70', // Gopher UDP Port
    wssocket : null,
    tagReaderTitle : 'Tag Reader',
    lostPosConnectionMsg : 'Reestablishing connection to POS ...',
@@ -171,7 +171,8 @@ Ext.define('Genesis.controller.server.Pos',
       if (Ext.Viewport && !me.wssocket && //
       ((me.isEnabled() && Genesis.fn.isNative() && Ext.device.Connection.isOnline()) || (!Genesis.fn.isNative() && navigator.onLine)))
       {
-         me.wssocket = new WebSocket(me.url, 'json');
+         //me.wssocket = new WebSocket(me.url, 'json');
+         me.wssocket = new WebSocket(me.url);
 
          me.setupWsCallback();
 

@@ -13,82 +13,105 @@ Ext.define('Genesis.view.server.SettingsPage',
          type : 'vbox',
          align : 'stretch',
          pack : 'start'
+      }
+   },
+   constructor : function(config)
+   {
+      var me = this, //
+      settings = [
+      {
+         align : 'left',
+         tag : 'back',
+         //ui : 'back',
+         ui : 'normal',
+         text : 'Back'
+      }], //
+      properties = [
+      {
+         xtype : 'textfield',
+         label : 'Version ' + Genesis.constants.serverVersion,
+         value : ' ',
+         clearIcon : false,
+         readOnly : true
       },
-      items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
-         title : 'Settings',
-         items : [
-         {
-            align : 'left',
-            tag : 'back',
-            //ui : 'back',
-            ui : 'normal',
-            text : 'Back'
-         }]
-      }),
+         xtype : 'textfield',
+         labelWidth : '90%',
+         tag : 'uuid',
+         clearIcon : false,
+         readOnly : true
+      },
       {
-         xtype : 'fieldset',
-         title : 'Settings',
-         defaults :
+         xtype : 'togglefield',
+         name : 'posMode',
+         tag : 'posMode',
+         label : 'POS Integration',
+         value : (Genesis.db.getLocalDB()['isPosEnabled'] || (Genesis.db.getLocalDB()['isPosEnabled'] == undefined)) ? 1 : 0
+      },
+      {
+         xtype : 'selectfield',
+         label : 'Display Mode',
+         tag : 'displayMode',
+         name : 'displayMode',
+         usePicker : true,
+         options : [
          {
-            labelWidth : '50%'
-         },
-         //instructions : 'Tell us all about yourself',
-         items : [
-         {
-            xtype : 'textfield',
-            label : 'Version ' + Genesis.constants.serverVersion,
-            value : ' ',
-            clearIcon : false,
-            readOnly : true
-         },
-         {
-            xtype : 'textfield',
-            labelWidth : '90%',
-            tag : 'uuid',
-            clearIcon : false,
-            readOnly : true
+            text : 'Mobile',
+            value : 'Mobile'
          },
          {
-            xtype : 'togglefield',
-            name : 'posMode',
-            tag : 'posMode',
-            label : 'POS Integration',
-            value : (Genesis.db.getLocalDB()['isPosEnabled'] || (Genesis.db.getLocalDB()['isPosEnabled'] == undefined)) ? 1 : 0
-         },
+            text : 'Fixed',
+            value : 'Fixed'
+         }],
+         defaultPhonePickerConfig :
          {
-            xtype : 'selectfield',
-            label : 'Display Mode',
-            tag : 'displayMode',
-            name : 'displayMode',
-            usePicker : true,
-            options : [
+            height : '12.5em',
+            doneButton :
             {
-               text : 'Mobile',
-               value : 'Mobile'
-            },
-            {
-               text : 'Fixed',
-               value : 'Fixed'
-            }],
-            defaultPhonePickerConfig :
-            {
-               height : '12.5em',
-               doneButton :
-               {
-                  ui : 'normal'
-               }
+               ui : 'normal'
             }
-         },
+         }
+      }], //
+      deviceSettings = [
+      {
+         xtype : 'textfield',
+         labelWidth : '90%',
+         tag : 'merchantDevice',
+         clearIcon : false,
+         readOnly : true
+      },
+      {
+         xtype : 'listfield',
+         name : 'license',
+         label : 'Refresh License',
+         value : ' '
+      },
+      {
+         xtype : 'listfield',
+         name : 'resetdevice',
+         label : 'Reset Device',
+         value : ' '
+      }], //
+      utilities = [
+      {
+         xtype : 'listfield',
+         tag : 'createTag',
+         label : 'Create TAG',
+         value : ' '
+      }];
+
+      if (Ext.os.is('Windows'))
+      {
+         settings.push(
          {
             xtype : 'spinnerfield',
             label : 'Sensitivity Level',
             tag : 'sensitivity',
             name : 'sensitivity',
-            minValue : 0,
+            minValue : 50,
             maxValue : 120,
             stepValue : 5.0,
-            cycle : false
+            cycle : true
          }
          /*,
           {
@@ -109,53 +132,52 @@ Ext.define('Genesis.view.server.SettingsPage',
           label : 'About Us',
           value : ' '
           }
-          */]
+          */
+         );
+      }
+
+      config = Ext.apply(config ||
+      {
       },
       {
-         xtype : 'fieldset',
-         title : 'KICKBAK Venue',
-         defaults :
+         items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
          {
-            labelWidth : '50%'
-         },
-         items : [
+            title : 'Settings',
+            items : settings
+         }),
          {
-            xtype : 'textfield',
-            labelWidth : '90%',
-            tag : 'merchantDevice',
-            clearIcon : false,
-            readOnly : true
-         },
-         {
-            xtype : 'listfield',
-            name : 'license',
-            label : 'Refresh License',
-            value : ' '
+            xtype : 'fieldset',
+            title : 'Properties',
+            defaults :
+            {
+               labelWidth : '50%'
+            },
+            //instructions : 'Tell us all about yourself',
+            items : properties
          },
          {
-            xtype : 'listfield',
-            name : 'resetdevice',
-            label : 'Reset Device',
-            value : ' '
+            xtype : 'fieldset',
+            title : 'KICKBAK Venue',
+            defaults :
+            {
+               labelWidth : '50%'
+            },
+            items : deviceSettings
+         },
+         {
+            xtype : 'fieldset',
+            hidden : true,
+            tag : 'utilities',
+            title : 'Utilities',
+            defaults :
+            {
+               labelWidth : '50%'
+            },
+            items : utilities
          }]
-      },
-      {
-         xtype : 'fieldset',
-         hidden : true,
-         tag : 'utilities',
-         title : 'Utilities',
-         defaults :
-         {
-            labelWidth : '50%'
-         },
-         items : [
-         {
-            xtype : 'listfield',
-            tag : 'createTag',
-            label : 'Create TAG',
-            value : ' '
-         }]
-      }]
+      });
+
+      me.callParent(arguments);
    },
    initialize : function()
    {

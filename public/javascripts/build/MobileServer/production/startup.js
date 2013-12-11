@@ -1,7 +1,34 @@
 (function()
 {
-   var _notifications = [], _frame, timeout = 30 * 1000;
+   var _notifications =
+   {
+   }, _frame, timeout = 30 * 1000, _foreground = null;
    var debugMode = false;
+   var setForeground = function()
+   {
+      var appWindow = chrome.app.window.current();
+
+      if (!_foreground)
+      {
+         _foreground = setTimeout(function()
+         {
+            _foreground = null;
+         }, 5 * 1000);
+         appWindow.restore();
+         appWindow.focus();
+      }
+   };
+   var closeNotification = function(id, byUser)
+   {
+      try
+      {
+         clearTimeout(_notifications[id].task);
+         delete _notifications[id];
+      }
+      catch(e)
+      {
+      }
+   };
 
    document.addEventListener("DOMContentLoaded", function(event)
    {
@@ -48,74 +75,108 @@
          }, "*");
       });
 
+      chrome.notifications.onClicked.addListener(function(id, byUser)
+      {
+         closeNotification(id, byUser);
+         try
+         {
+            chrome.notifications.clear(id, function(wasCleared)
+            {
+            });
+            setForeground();
+            _frame.contentWindow.postMessage(
+            {
+               cmd : 'notification_ack',
+               data : id
+            }, "*");
+         }
+         catch(e)
+         {
+         }
+      });
+      chrome.notifications.onClosed.addListener(closeNotification);
       window.addEventListener('message', function(e)
       {
-         var _dataMeta = e.data;
+         var _dataMeta = e.data, cmd = _dataMeta['cmd'], receipts = _dataMeta['receipts'];
 
          if (!( typeof (_dataMeta) == 'object'))
          {
             return;
          }
 
-         switch (_dataMeta['cmd'])
+         var cmd = _dataMeta['cmd'], receipts = _dataMeta['receipts'];
+         var appWindow = chrome.app.window.current();
+         switch (cmd)
          {
+            case 'bounds' :
+            {
+               var params = _dataMeta['params'];
+               var left = (screen.width) - (params['maxWidth']);
+               var top = (screen.height) - (params['minHeight']);
+
+               appWindow.setBounds(params['bounds']);
+               app.setMinHeight(params['maxHeight']);
+               appWindow.setMaxWidth(params['maxWidth']);
+               appWindow.setMinWidth(params['maxWidth']);
+               appWindow.moveTo(Math.round(left / 2), Math.round(top / 2));
+               break;
+            }
+            case 'foreground' :
+            {
+               setForeground();
+               break;
+            }
             case 'notification_post' :
             {
-               for (var i = 0; i < _dataMeta['receipts'].length; i++)
+               for (var i = 0; i < receipts.length; i++)
                {
-                  var _receipt = _dataMeta['receipts'][i], message = "No items were found";
+                  var _receipt = receipts[i];
 
-                  if (_receipt['items'].length == 1)
+                  //var _notif = window.webkitNotifications.createNotification("resources/icons/icon@72.png", _receipt['price'],
+                  // message);
+                  (function(receipt)
                   {
-                     message = _receipt['items'][0];
-                  }
-                  else if (_receipt['items'].length > 1)
-                  {
-                     message = _receipt['items'][0] + '\n' + _receipt['items'][1]
-                  }
-
-                  var _notif = window.webkitNotifications.createNotification("resources/icons/icon@72.png", _receipt['price'], message);
-                  _notifications.push(_notif);
-
-                  (function(notif, receipt)
-                  {
-                     notif.onClick(function()
+                     var items = [], notif =
                      {
-                        clearTimeout(notif.task);
-                        _frame.contentWindow.postMessage(
+                        task : setTimeout(function()
                         {
-                           cmd : 'notification_ack',
-                           data : receipt['id']
-                        }, "*");
-                     });
-                     notif.onClose(function()
+                           closeNotification('' + receipt['id']);
+                           chrome.notifications.clear('' + receipt['id'], function(wasCleared)
+                           {
+                           });
+                        }, timeout)
+                     };
+
+                     _notifications['' + receipt['id']] = notif;
+                     for (var x = 0; x < Math.min(receipt['items'].length, 5); x++)
                      {
-                        clearTimeout(notif.task);
-                        delete notif.task;
-                        _notifications.splice(_notifications.indexOf(notif), 1);
+                        items.push(
+                        {
+                           title : receipt['items'][x].name,
+                           message : ''
+                        });
+                     }
+                     if (receipt['items'].length <= 0)
+                     {
+                        items.push(
+                        {
+                           title : 'No items were found',
+                           message : ''
+                        });
+                     }
+                     chrome.notifications.create('' + receipt['id'],
+                     {
+                        iconUrl : "resources/icons/icon@72.png",
+                        type : 'list',
+                        message : 'Receipt Details',
+                        title : "$" + receipt['price'],
+                        priority : 2,
+                        eventTime : receipt['id'] * 1000,
+                        items : items
+                     }, function(id)
+                     {
                      });
-                     notif.task = setTimeout(notif.close, timeout);
-                     notif.show();
-                     /*
-                      chrome.notifications.create("",
-                      {
-                      type : 'basic',
-                      iconUrl : 'resources/icons/icon@72.png',
-                      title : receipt['price'],
-                      expandedMessage : 'Testing',
-                      message : receipt['item'],
-                      buttons : [
-                      {
-                      title : 'Earn Points!'
-                      },
-                      {
-                      title : 'Ignore'
-                      }]
-                      }, function()
-                      {
-                      });
-                      */
-                  })(_notif, _receipt);
+                  })(_receipt);
                }
                break;
             }

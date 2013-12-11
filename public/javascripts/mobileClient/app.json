@@ -1,8 +1,8 @@
 {
-   /**
-   * The application's namespace, used by Sencha Command to generate classes
-   */
-   "name": "MobileClient",
+    /**
+     * The application's namespace, used by Sencha Command to generate classes
+     */
+    "name": "MobileClient",
 
    /**
    * The file path to this application's front HTML document, relative to this app.json file
@@ -137,7 +137,7 @@
 	* Directory path to store all previous production builds. Note that the content generated inside this directory
 	* must be kept intact for proper generation of deltas between updates
 	*/
-	"archivePath": "../build/MobileClient/archive",
+	"archivePath": "archive",
 
     /**
      * List of package names to require for the cmd build process

@@ -39,7 +39,7 @@
       "source": "build.properties.merge",
       "version": "c6e9ce3ed0c79ce24c58d6bc68741d0a8f51e02b",
       "parameters": {
-        "viewNamespace": "Genesis.view",
+        "viewNamespace": "MobileClient.view",
         "frameworkName": "touch",
         "frameworkPath": "../touch",
         "senchadir": ".sencha",
@@ -47,11 +47,11 @@
         "appControllers": "",
         "appViews": "",
         "uniqueId": "b0849797-063d-44af-b2cc-99480c66be86",
-        "appName": "Genesis",
-        "modelNamespace": "Genesis.model",
-        "name": "Genesis",
+        "appName": "MobileClient",
+        "modelNamespace": "MobileClient.model",
+        "name": "MobileClient",
         "library": "core",
-        "controllerNamespace": "Genesis.controller",
+        "controllerNamespace": "MobileClient.controller",
         "appStores": ""
       }
     },
@@ -59,7 +59,7 @@
       "source": "native.properties.merge",
       "version": "07d1a1ee61bad4a32197342ffc02dcc8402c1813",
       "parameters": {
-        "viewNamespace": "Genesis.view",
+        "viewNamespace": "MobileClient.view",
         "frameworkName": "touch",
         "frameworkPath": "../touch",
         "senchadir": ".sencha",
@@ -67,11 +67,11 @@
         "appControllers": "",
         "appViews": "",
         "uniqueId": "b0849797-063d-44af-b2cc-99480c66be86",
-        "appName": "Genesis",
-        "modelNamespace": "Genesis.model",
-        "name": "Genesis",
+        "appName": "MobileClient",
+        "modelNamespace": "MobileClient.model",
+        "name": "MobileClient",
         "library": "core",
-        "controllerNamespace": "Genesis.controller",
+        "controllerNamespace": "MobileClient.controller",
         "appStores": ""
       }
     },
@@ -79,7 +79,7 @@
       "source": "package.properties.merge",
       "version": "3227481d91059b21defcf41e7c96aca501184796",
       "parameters": {
-        "viewNamespace": "Genesis.view",
+        "viewNamespace": "MobileClient.view",
         "frameworkName": "touch",
         "frameworkPath": "../touch",
         "senchadir": ".sencha",
@@ -87,11 +87,11 @@
         "appControllers": "",
         "appViews": "",
         "uniqueId": "b0849797-063d-44af-b2cc-99480c66be86",
-        "appName": "Genesis",
-        "modelNamespace": "Genesis.model",
-        "name": "Genesis",
+        "appName": "MobileClient",
+        "modelNamespace": "MobileClient.model",
+        "name": "MobileClient",
         "library": "core",
-        "controllerNamespace": "Genesis.controller",
+        "controllerNamespace": "MobileClient.controller",
         "appStores": ""
       }
     },
@@ -99,7 +99,7 @@
       "source": "production.properties.merge",
       "version": "ae3049a5e12609718b8e3bd82a2264347f69262f",
       "parameters": {
-        "viewNamespace": "Genesis.view",
+        "viewNamespace": "MobileClient.view",
         "frameworkName": "touch",
         "frameworkPath": "../touch",
         "senchadir": ".sencha",
@@ -107,11 +107,11 @@
         "appControllers": "",
         "appViews": "",
         "uniqueId": "b0849797-063d-44af-b2cc-99480c66be86",
-        "appName": "Genesis",
-        "modelNamespace": "Genesis.model",
-        "name": "Genesis",
+        "appName": "MobileClient",
+        "modelNamespace": "MobileClient.model",
+        "name": "MobileClient",
         "library": "core",
-        "controllerNamespace": "Genesis.controller",
+        "controllerNamespace": "MobileClient.controller",
         "appStores": ""
       }
     },
@@ -119,7 +119,7 @@
       "source": "sencha.cfg.tpl.merge",
       "version": "d2e6e42720f88befc892f12df5fd7bab587f7879",
       "parameters": {
-        "viewNamespace": "Genesis.view",
+        "viewNamespace": "MobileClient.view",
         "frameworkName": "touch",
         "frameworkPath": "../touch",
         "senchadir": ".sencha",
@@ -127,11 +127,11 @@
         "appControllers": "",
         "appViews": "",
         "uniqueId": "b0849797-063d-44af-b2cc-99480c66be86",
-        "appName": "Genesis",
-        "modelNamespace": "Genesis.model",
-        "name": "Genesis",
+        "appName": "MobileClient",
+        "modelNamespace": "MobileClient.model",
+        "name": "MobileClient",
         "library": "core",
-        "controllerNamespace": "Genesis.controller",
+        "controllerNamespace": "MobileClient.controller",
         "appStores": ""
       }
     },
@@ -139,7 +139,7 @@
       "source": "testing.properties.merge",
       "version": "004322eb00e7dbb83fc2fcdf96fcd4949b9e208d",
       "parameters": {
-        "viewNamespace": "Genesis.view",
+        "viewNamespace": "MobileClient.view",
         "frameworkName": "touch",
         "frameworkPath": "../touch",
         "senchadir": ".sencha",
@@ -147,11 +147,11 @@
         "appControllers": "",
         "appViews": "",
         "uniqueId": "b0849797-063d-44af-b2cc-99480c66be86",
-        "appName": "Genesis",
-        "modelNamespace": "Genesis.model",
-        "name": "Genesis",
+        "appName": "MobileClient",
+        "modelNamespace": "MobileClient.model",
+        "name": "MobileClient",
         "library": "core",
-        "controllerNamespace": "Genesis.controller",
+        "controllerNamespace": "MobileClient.controller",
         "appStores": ""
       }
     },
@@ -159,7 +159,7 @@
       "source": "app.json.tpl.merge",
       "version": "a36200bbd84dffd4133a6074252425c15a5f25b1",
       "parameters": {
-        "viewNamespace": "Genesis.view",
+        "viewNamespace": "MobileClient.view",
         "frameworkName": "touch",
         "frameworkPath": "../touch",
         "senchadir": ".sencha",
@@ -167,11 +167,11 @@
         "appControllers": "",
         "appViews": "",
         "uniqueId": "b0849797-063d-44af-b2cc-99480c66be86",
-        "appName": "Genesis",
-        "modelNamespace": "Genesis.model",
-        "name": "Genesis",
+        "appName": "MobileClient",
+        "modelNamespace": "MobileClient.model",
+        "name": "MobileClient",
         "library": "core",
-        "controllerNamespace": "Genesis.controller",
+        "controllerNamespace": "MobileClient.controller",
         "appStores": ""
       }
     },
@@ -179,7 +179,7 @@
       "source": "index.html.tpl.merge",
       "version": "5c2622f8945945e183e62230dbbcdc870ee41e31",
       "parameters": {
-        "viewNamespace": "Genesis.view",
+        "viewNamespace": "MobileClient.view",
         "frameworkName": "touch",
         "frameworkPath": "../touch",
         "senchadir": ".sencha",
@@ -187,11 +187,11 @@
         "appControllers": "",
         "appViews": "",
         "uniqueId": "b0849797-063d-44af-b2cc-99480c66be86",
-        "appName": "Genesis",
-        "modelNamespace": "Genesis.model",
-        "name": "Genesis",
+        "appName": "MobileClient",
+        "modelNamespace": "MobileClient.model",
+        "name": "MobileClient",
         "library": "core",
-        "controllerNamespace": "Genesis.controller",
+        "controllerNamespace": "MobileClient.controller",
         "appStores": ""
       }
     },
@@ -199,7 +199,7 @@
       "source": "packager.json.tpl.merge",
       "version": "a6e435b2542bd5c43d97e0892d5eaa6ff4d6cc89",
       "parameters": {
-        "viewNamespace": "Genesis.view",
+        "viewNamespace": "MobileClient.view",
         "frameworkName": "touch",
         "frameworkPath": "../touch",
         "senchadir": ".sencha",
@@ -207,11 +207,11 @@
         "appControllers": "",
         "appViews": "",
         "uniqueId": "b0849797-063d-44af-b2cc-99480c66be86",
-        "appName": "Genesis",
-        "modelNamespace": "Genesis.model",
-        "name": "Genesis",
+        "appName": "MobileClient",
+        "modelNamespace": "MobileClient.model",
+        "name": "MobileClient",
         "library": "core",
-        "controllerNamespace": "Genesis.controller",
+        "controllerNamespace": "MobileClient.controller",
         "appStores": ""
       }
     },
@@ -219,7 +219,7 @@
       "source": "app.scss.tpl.merge",
       "version": "185c5374133b44981799fe044947175520c8917e",
       "parameters": {
-        "viewNamespace": "Genesis.view",
+        "viewNamespace": "MobileClient.view",
         "frameworkName": "touch",
         "frameworkPath": "../touch",
         "senchadir": ".sencha",
@@ -227,11 +227,11 @@
         "appControllers": "",
         "appViews": "",
         "uniqueId": "b0849797-063d-44af-b2cc-99480c66be86",
-        "appName": "Genesis",
-        "modelNamespace": "Genesis.model",
-        "name": "Genesis",
+        "appName": "MobileClient",
+        "modelNamespace": "MobileClient.model",
+        "name": "MobileClient",
         "library": "core",
-        "controllerNamespace": "Genesis.controller",
+        "controllerNamespace": "MobileClient.controller",
         "appStores": ""
       }
     },
@@ -239,7 +239,7 @@
       "source": "config.rb.tpl.merge",
       "version": "e254e92dd21bc9ecb27f3b8251d67dfbc79fa1af",
       "parameters": {
-        "viewNamespace": "Genesis.view",
+        "viewNamespace": "MobileClient.view",
         "frameworkName": "touch",
         "frameworkPath": "../touch",
         "senchadir": ".sencha",
@@ -247,11 +247,11 @@
         "appControllers": "",
         "appViews": "",
         "uniqueId": "b0849797-063d-44af-b2cc-99480c66be86",
-        "appName": "Genesis",
-        "modelNamespace": "Genesis.model",
-        "name": "Genesis",
+        "appName": "MobileClient",
+        "modelNamespace": "MobileClient.model",
+        "name": "MobileClient",
         "library": "core",
-        "controllerNamespace": "Genesis.controller",
+        "controllerNamespace": "MobileClient.controller",
         "appStores": ""
       }
     }
