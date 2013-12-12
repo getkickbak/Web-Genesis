@@ -102,7 +102,7 @@ Ext.define('Genesis.view.server.SettingsPage',
 
       if (Ext.os.is('Windows'))
       {
-         settings.push(
+         properties.push(
          {
             xtype : 'spinnerfield',
             label : 'Sensitivity Level',
